@@ -1,0 +1,29 @@
+{
+  "name": "@stomp/stompjs",
+  "version": "0.0.1",
+  "description": "STOMP cleint for Javascript and Typescript",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stomp-js/stompjs.git"
+  },
+  "keywords": [
+    "STOMP",
+    "RabbitMQ",
+    "ActiveMQ",
+    "Websocket",
+    "SockJS"
+  ],
+  "author": "deepak@kreatio.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stomp-js/stompjs/issues"
+  },
+  "homepage": "https://github.com/stomp-js/stompjs#readme",
+  "devDependencies": {
+    "typescript": "^2.9.2"
+  }
+}
