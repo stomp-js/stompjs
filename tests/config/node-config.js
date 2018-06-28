@@ -11,7 +11,7 @@ TEST = {
 };
 
 WebSocket = require('websocket').w3cwebsocket;
-StompJs = require('../../lib/');
+StompJs = require('../../esm5/');
 Stomp = StompJs.Stomp;
 // Stomp.WebSocketClass = require('websocket').w3cwebsocket;
 
