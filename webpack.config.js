@@ -3,7 +3,7 @@ const webpack = require("webpack");
 
 const PATHS = {
   entryPoint: path.resolve(__dirname, 'src/index.ts'),
-  bundles: path.resolve(__dirname, '_bundles'),
+  bundles: path.resolve(__dirname, 'bundles'),
 };
 
 const config = {
@@ -20,7 +20,7 @@ const config = {
   // it will be accessible at `window.MyLib`
   output: {
     path: PATHS.bundles,
-    filename: '[name].js',
+    filename: '[name].umd.js',
     libraryTarget: 'umd',
     library: 'StompJs',
     umdNamedDefine: true

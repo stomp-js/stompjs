@@ -2,10 +2,11 @@
   "name": "@stomp/stompjs",
   "version": "0.0.1",
   "description": "STOMP cleint for Javascript and Typescript",
-  "main": "dist/index.js",
   "scripts": {
-    "clean": "rm -rf _bundles lib lib-esm",
-    "build": "npm run clean && tsc && tsc -m es6 --outDir lib-esm && webpack && webpack --mode=production --output-filename=stomp.min.js",
+    "clean": "shx rm -rf bundles esm5 esm6",
+    "build-tsc": "tsc -m es6 --outDir esm6",
+    "build-webpack": "webpack && webpack --mode=production --output-filename=stomp.umd.min.js",
+    "build": "npm run clean && tsc && npm run build-tsc && npm run build-webpack",
     "test": "qunit --timeout 10000 -c tests/config/node-config.js -t tests/unit/*"
   },
   "repository": {
@@ -29,9 +30,15 @@
     "awesome-typescript-loader": "^5.2.0",
     "jquery": "^3.3.1",
     "qunit": "^1.0.0",
+    "shx": "^0.3.1",
     "typescript": "^2.9.2",
     "webpack": "^4.12.1",
     "webpack-cli": "^3.0.8",
     "websocket": "^1.0.26"
-  }
+  },
+  "esm5": "./esm5/index.js",
+  "esm6": "./esm6/index.js",
+  "main": "bundles/stomp.umd.js",
+  "typings": "index.d.ts",
+  "sideEffects": false
 }
