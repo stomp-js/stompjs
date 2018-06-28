@@ -1,6 +1,6 @@
 import {Stomp} from "./stomp";
 
-export * from './headers';
+export * from './stomp-headers';
 export * from './client';
 export * from './frame';
 export * from './stomp';
