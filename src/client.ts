@@ -1,3 +1,7 @@
+// STOMP Client Class
+//
+// All STOMP protocol is exposed as methods of this class (`connect()`,
+// `send()`, etc.)
 // `send()`, etc.)
 
 import {Frame} from "./frame";
@@ -6,7 +10,7 @@ import {Byte} from "./byte";
 import {StompHeaders} from "./headers";
 
 export class Client {
-  public ws_fn: () => WebSocket;
+  public ws_fn: () => any;
   public reconnect_delay: number;
   private counter: number;
   private connected: boolean;
@@ -47,7 +51,7 @@ export class Client {
     // @private
     //
     // @see Stomp
-    constructor(ws_fn) {
+    constructor(ws_fn: () => any) {
       this.ws_fn = function () {
         const ws = ws_fn();
         ws.binaryType = "arraybuffer";
@@ -123,6 +127,7 @@ export class Client {
           }
         } else {
           this.ws.send(out);
+          return;
         }
       }
     }
@@ -254,6 +259,8 @@ export class Client {
       const {errorCallback} = this;
       const {closeEventCallback} = this;
 
+      this.debug(headers);
+
       if (typeof this.debug === 'function') {
         this.debug("Opening Web Socket...");
       }
@@ -262,6 +269,7 @@ export class Client {
       this.ws = this.ws_fn();
 
       this.ws.onmessage = evt => {
+        this.debug('Received data');
         const data = (() => {
           if ((typeof(ArrayBuffer) !== 'undefined') && evt.data instanceof ArrayBuffer) {
             // the data is stored inside an ArrayBuffer, we decode it to get the
@@ -284,6 +292,7 @@ export class Client {
             return evt.data;
           }
         })();
+        this.debug(data);
         this.serverActivity = Client.now();
         if (data === Byte.LF) { // heartbeat
           if (typeof this.debug === 'function') {
@@ -427,7 +436,8 @@ export class Client {
         }
         headers["accept-version"] = Stomp.VERSIONS.supportedVersions();
         headers["heart-beat"] = [this.heartbeat.outgoing, this.heartbeat.incoming].join(',');
-        return this._transmit("CONNECT", headers);
+        this.debug(headers);
+        this._transmit("CONNECT", headers);
       };
     }
 

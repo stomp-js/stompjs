@@ -25,7 +25,6 @@
 // @mixin
 //
 // @private
-import {StompHeaders} from "./headers";
 import {Client} from "./client";
 
 

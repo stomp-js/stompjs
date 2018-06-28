@@ -4,7 +4,9 @@
   "description": "STOMP cleint for Javascript and Typescript",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "rm -rf _bundles lib lib-esm",
+    "build": "npm run clean && tsc && tsc -m es6 --outDir lib-esm && webpack && webpack --mode=production --output-filename=stomp.min.js",
+    "test": "qunit --timeout 10000 -c tests/config/node-config.js -t tests/unit/*"
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,12 @@
   },
   "homepage": "https://github.com/stomp-js/stompjs#readme",
   "devDependencies": {
-    "typescript": "^2.9.2"
+    "awesome-typescript-loader": "^5.2.0",
+    "jquery": "^3.3.1",
+    "qunit": "^1.0.0",
+    "typescript": "^2.9.2",
+    "webpack": "^4.12.1",
+    "webpack-cli": "^3.0.8",
+    "websocket": "^1.0.26"
   }
 }
