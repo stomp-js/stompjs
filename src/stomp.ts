@@ -44,7 +44,7 @@ export class Stomp {
    *        var client = Stomp.client(url);
    * ```
    */
-  public static client (url, protocols): Client {
+  public static client (url: string, protocols: string[]): Client {
     // This is a hack to allow another implementation than the standard
     // HTML5 WebSocket class.
     //
@@ -98,7 +98,7 @@ export class Stomp {
   /**
    * @internal
    */
-  public static clearInterval(id) {
+  public static clearInterval(id: number) {
     clearInterval(id)
   };
 }

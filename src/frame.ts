@@ -72,7 +72,8 @@ export class Frame {
    */
   private static sizeOfUTF8(s: string): number {
     if (s) {
-      return encodeURI(s).match(/%..|./g).length;
+      const matches = encodeURI(s).match(/%..|./g) || [];
+      return matches.length;
     } else {
       return 0;
     }
@@ -87,20 +88,24 @@ export class Frame {
     // search for 2 consecutives LF byte to split the command
     // and headers from the body
     const divider = data.search(new RegExp(`${Byte.LF}${Byte.LF}`));
-    const headerLines = data.substring(0, divider).split(Byte.LF);
+    const headerLines: string[] = data.substring(0, divider).split(Byte.LF);
     const command = headerLines.shift();
-    const headers = {};
+    const headers: StompHeaders = {};
     // utility function to trim any whitespace before and after a string
-    const trim = str => str.replace(/^\s+|\s+$/g, '');
+    const trim = (str: string): string => str.replace(/^\s+|\s+$/g, '');
     // Parse headers in reverse order so that for repeated headers, the 1st
     // value is used
     for (let line of headerLines.reverse()) {
       const idx = line.indexOf(':');
+
+      const key = <string>trim(line.substring(0, idx));
+      let value = trim(line.substring(idx + 1));
+
       if (escapeHeaderValues && (command !== 'CONNECT') && (command !== 'CONNECTED')) {
-        headers[trim(line.substring(0, idx))] = Frame.frUnEscape(trim(line.substring(idx + 1)));
-      } else {
-        headers[trim(line.substring(0, idx))] = trim(line.substring(idx + 1));
+        value = Frame.frUnEscape(value);
       }
+
+      headers[key] = value;
     }
     // Parse body
     // check for content-length or  topping at the first NULL byte found.
@@ -108,7 +113,7 @@ export class Frame {
     // skip the 2 LF bytes that divides the headers from the body
     const start = divider + 2;
     if (headers['content-length']) {
-      const len = parseInt(headers['content-length']);
+      const len = parseInt(<string>headers['content-length']);
       body = (`${data}`).substring(start, start + len);
     } else {
       let chr = null;
@@ -120,7 +125,7 @@ export class Frame {
         body += chr;
       }
     }
-    return new Frame(command, headers, body, escapeHeaderValues);
+    return new Frame(<string>command, headers, body, escapeHeaderValues);
   }
 
   /**
@@ -145,7 +150,7 @@ export class Frame {
       frames: [],
       partial: ''
     };
-    r.frames = (frames.slice(0, -1).map((frame) => Frame.unmarshallSingle(frame, escapeHeaderValues)));
+    r.frames = (frames.slice(0, -1).map((frame: Frame) => Frame.unmarshallSingle(frame, escapeHeaderValues)));
 
     // If this contains a final full message or just a acknowledgement of a PING
     // without any other content, process this frame, otherwise return the

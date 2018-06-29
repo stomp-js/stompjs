@@ -36,7 +36,7 @@ export class Client {
   /**
    * Underlying WebSocket instance
    */
-  public ws: WebSocket;
+  public ws: any;
 
   /**
    * This function will be called for any unhandled messages. It is useful to receive messages sent to
@@ -45,33 +45,33 @@ export class Client {
    * It can also be called for stray messages while the server is processing a request to unsubcribe
    * from an endpoint.
    */
-  public onreceive: messageCallbackType;
+  public onreceive: messageCallbackType|null = null;
 
   /**
    * STOMP brokers can be requested to notify when an operation is actually completed.
    *
    * TODO: add example
    */
-  public onreceipt: receiptCallbackType;
+  public onreceipt: receiptCallbackType|null = null;
 
   private subscriptions: any;
   private partialData: any;
-  private escapeHeaderValues: boolean;
+  private escapeHeaderValues: boolean = false;
   private counter: number;
   private connected: boolean;
   private pinger: any;
   private ponger: any;
   private serverActivity: any;
-  private headers: StompHeaders;
+  private headers: StompHeaders = {};
   private connectCallback: any;
   private errorCallback: any;
   private closeEventCallback: any;
-  private _active: boolean;
-  private version: string;
-  private closeReceipt: string;
+  private _active: boolean = false;
+  private version: string = '';
+  private closeReceipt: string = '';
   private _disconnectCallback: any;
   private _reconnector: any;
-  private partial: string;
+  private partial: string = '';
 
   private static now(): any {
     if (Date.now) {
@@ -138,11 +138,11 @@ export class Client {
    *
    * Note: the default can generate lot of log on the console. Set it to empty function to disable.
    */
-  public debug = (...message) => {
+  public debug = (...message: any[]) => {
     console.log(...message);
   };
 
-  private _transmit(command, headers, body = ''): void {
+  private _transmit(command: string, headers: StompHeaders, body: string = ''): void {
     let out = Frame.marshall(command, headers, body, this.escapeHeaderValues);
     if (typeof this.debug === 'function') {
       this.debug(`>>> ${out}`);
@@ -163,8 +163,8 @@ export class Client {
     }
   }
 
-  private _setupHeartbeat(headers): void {
-    let ttl;
+  private _setupHeartbeat(headers: StompHeaders): void {
+    let ttl: number;
     if ((headers.version !== Stomp.VERSIONS.V1_1 && headers.version !== Stomp.VERSIONS.V1_2)) {
       return;
     }
@@ -172,7 +172,7 @@ export class Client {
     // heart-beat header received from the server looks like:
     //
     //     heart-beat: sx, sy
-    const [serverOutgoing, serverIncoming] = headers['heart-beat'].split(",").map((v) => parseInt(v));
+    const [serverOutgoing, serverIncoming] = (<string>headers['heart-beat']).split(",").map((v: string) => parseInt(v));
 
     if ((this.heartbeat.outgoing !== 0) && (serverIncoming !== 0)) {
       ttl = Math.max(this.heartbeat.outgoing, serverIncoming);
@@ -205,9 +205,9 @@ export class Client {
     }
   }
 
-  private _parseConnect(...args): any {
+  private _parseConnect(...args: any[]): any {
     let closeEventCallback, connectCallback, errorCallback;
-    let headers = {};
+    let headers: StompHeaders = {};
     if (args.length < 2) {
       throw("Connect requires at least 2 arguments");
     }
@@ -266,7 +266,7 @@ export class Client {
    *
    * @see http:*stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame CONNECT Frame
    */
-  public connect(...args): void {
+  public connect(...args: any[]): void {
     this.escapeHeaderValues = false;
     const out = this._parseConnect(...args);
     [this.headers, this.connectCallback, this.errorCallback, this.closeEventCallback] = out;
@@ -291,7 +291,7 @@ export class Client {
     // Get the actual Websocket (or a similar object)
     this.ws = this.ws_fn();
 
-    this.ws.onmessage = evt => {
+    this.ws.onmessage = (evt: any) => {
       this.debug('Received data');
       const data = (() => {
         if ((typeof(ArrayBuffer) !== 'undefined') && evt.data instanceof ArrayBuffer) {
@@ -373,12 +373,12 @@ export class Client {
             // bless the frame to be a Message
             const message = <Message>frame;
             if (onreceive) {
-              let messageId;
+              let messageId: string;
               const client = this;
               if (this.version === Stomp.VERSIONS.V1_2) {
-                messageId = message.headers["ack"];
+                messageId = <string>message.headers["ack"];
               } else {
-                messageId = message.headers["message-id"];
+                messageId = <string>message.headers["message-id"];
               }
               // add `ack()` and `nack()` methods directly to the returned frame
               // so that a simple call to `message.ack()` can acknowledge the message.
@@ -436,7 +436,7 @@ export class Client {
       }
     };
 
-    this.ws.onclose = closeEvent => {
+    this.ws.onclose = (closeEvent: any) => {
       const msg = `Whoops! Lost connection to ${this.ws.url}`;
       if (typeof this.debug === 'function') {
         this.debug(msg);
@@ -490,7 +490,7 @@ export class Client {
    *
    * @see http://stomp.github.com/stomp-specification-1.2.html#DISCONNECT DISCONNECT Frame
    */
-  public disconnect(disconnectCallback, headers = {}): void {
+  public disconnect(disconnectCallback: any, headers: StompHeaders = {}): void {
     this._disconnectCallback = disconnectCallback;
 
     // indicate that auto reconnect loop should terminate
@@ -500,7 +500,7 @@ export class Client {
       if (!headers['receipt']) {
         headers['receipt'] = `close-${this.counter++}`;
       }
-      this.closeReceipt = headers['receipt'];
+      this.closeReceipt = <string>headers['receipt'];
       try {
         this._transmit("DISCONNECT", headers);
       } catch (error) {
@@ -616,7 +616,7 @@ export class Client {
    *
    * @see http://stomp.github.com/stomp-specification-1.2.html#UNSUBSCRIBE UNSUBSCRIBE Frame
    */
-  public unsubscribe(id: string, headers: StompHeaders): void {
+  public unsubscribe(id: string, headers: StompHeaders = {}): void {
     if (headers == null) {
       headers = {};
     }
