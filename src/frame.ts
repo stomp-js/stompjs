@@ -183,7 +183,7 @@ export class Frame {
   }
 
   /**
-   * Escape header values
+   * UnEscape header values
    */
   private static frUnEscape(str: string): string {
     return str.replace(/\\r/g, "\r").replace(/\\n/g, "\n").replace(/\\c/g, ":").replace(/\\\\/g, "\\");
