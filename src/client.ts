@@ -62,7 +62,7 @@ export class Client {
   private pinger: any;
   private ponger: any;
   private serverActivity: any;
-  private headers: StompHeaders = {};
+  private connectHeaders: StompHeaders = {};
   private connectCallback: any;
   private errorCallback: any;
   private closeEventCallback: any;
@@ -269,7 +269,7 @@ export class Client {
   public connect(...args: any[]): void {
     this.escapeHeaderValues = false;
     const out = this._parseConnect(...args);
-    [this.headers, this.connectCallback, this.errorCallback, this.closeEventCallback] = out;
+    [this.connectHeaders, this.connectCallback, this.errorCallback, this.closeEventCallback] = out;
 
     // Indicate that this connection is active (it will keep trying to connect)
     this._active = true;
@@ -278,12 +278,6 @@ export class Client {
   }
 
   private _connect(): void {
-    const {headers} = this;
-    const {errorCallback} = this;
-    const {closeEventCallback} = this;
-
-    this.debug(headers);
-
     if (typeof this.debug === 'function') {
       this.debug("Opening Web Socket...");
     }
@@ -424,8 +418,8 @@ export class Client {
             break;
           // [ERROR Frame](http://stomp.github.com/stomp-specification-1.2.html#ERROR)
           case "ERROR":
-            if (typeof errorCallback === 'function') {
-              errorCallback(frame);
+            if (typeof this.errorCallback === 'function') {
+              this.errorCallback(frame);
             }
             break;
           default:
@@ -441,12 +435,12 @@ export class Client {
       if (typeof this.debug === 'function') {
         this.debug(msg);
       }
-      if (typeof closeEventCallback === 'function') {
-        closeEventCallback(closeEvent);
+      if (typeof this.closeEventCallback === 'function') {
+        this.closeEventCallback(closeEvent);
       }
       this._cleanUp();
-      if (typeof errorCallback === 'function') {
-        errorCallback(msg);
+      if (typeof this.errorCallback === 'function') {
+        this.errorCallback(msg);
       }
       return this._schedule_reconnect();
     };
@@ -455,10 +449,9 @@ export class Client {
       if (typeof this.debug === 'function') {
         this.debug('Web Socket Opened...');
       }
-      headers["accept-version"] = Stomp.VERSIONS.supportedVersions();
-      headers["heart-beat"] = [this.heartbeat.outgoing, this.heartbeat.incoming].join(',');
-      this.debug(headers);
-      this._transmit("CONNECT", headers);
+      this.connectHeaders["accept-version"] = Stomp.VERSIONS.supportedVersions();
+      this.connectHeaders["heart-beat"] = [this.heartbeat.outgoing, this.heartbeat.incoming].join(',');
+      this._transmit("CONNECT", this.connectHeaders);
     };
   }
 
