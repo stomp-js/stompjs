@@ -1,24 +1,39 @@
-// @see http://stomp.github.com/stomp-specification-1.2.html#STOMP_Frames STOMP Frame
-//
-// Frame class represents a STOMP frame
-//
-import {StompHeaders} from "./headers";
+import {StompHeaders} from "./stomp-headers";
 import {Byte} from "./byte";
 
-export class Frame {
-  public command: string;
-  public headers: StompHeaders;
-  public body: any;
-  public escapeHeaderValues: boolean;
+type unmarshallResults = { frames: Frame[]; partial: string };
 
-// Frame constructor. `command`, `headers` and `body` are available as properties.
-//
-// Many of the Client methods pass instance of received Frame to the callback.
-//
-// @param command [String]
-// @param headers [Object]
-// @param body [String]
-// @param escapeHeaderValues [Boolean]
+/**
+ * Frame class represents a STOMP frame. Many of the callbacks pass the Frame received from
+ * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
+ *
+ * {@link Message} is an extended Frame.
+ *
+ * @see http://stomp.github.com/stomp-specification-1.2.html#STOMP_Frames STOMP Frame
+ */
+export class Frame {
+  /**
+   * STOMP Command
+   */
+  public command: string;
+
+  /**
+   * Headers, key value pairs.
+   */
+  public headers: StompHeaders;
+
+  /**
+   * It is serialized string
+   */
+  public body: any;
+
+  private escapeHeaderValues: boolean;
+
+  /**
+   * Frame constructor. `command`, `headers` and `body` are available as properties.
+   *
+   * @internal
+   */
   constructor(command: string, headers: StompHeaders = {}, body: any = '', escapeHeaderValues: boolean = false) {
     this.command = command;
     this.headers = headers;
@@ -26,10 +41,9 @@ export class Frame {
     this.escapeHeaderValues = escapeHeaderValues;
   }
 
-// Provides a textual representation of the frame
-// suitable to be sent to the server
-//
-// @private
+  /**
+   * @internal
+   */
   public toString(): string {
     const lines = [this.command];
     const skipContentLength = (this.headers['content-length'] === false) ? true : false;
@@ -52,10 +66,10 @@ export class Frame {
     return lines.join(Byte.LF);
   }
 
-// Compute the size of a UTF-8 string by counting its number of bytes
-// (and not the number of characters composing the string)
-//
-// @private
+  /**
+   * Compute the size of a UTF-8 string by counting its number of bytes
+   * (and not the number of characters composing the string)
+   */
   private static sizeOfUTF8(s: string): number {
     if (s) {
       return encodeURI(s).match(/%..|./g).length;
@@ -64,9 +78,11 @@ export class Frame {
     }
   }
 
-  // Unmarshall a single STOMP frame from a `data` string
-  //
-  // @private
+  /**
+   * deserialize a STOMP Frame from raw data.
+   *
+   * @internal
+   */
   public static unmarshallSingle(data: any, escapeHeaderValues: boolean): Frame {
     // search for 2 consecutives LF byte to split the command
     // and headers from the body
@@ -107,17 +123,15 @@ export class Frame {
     return new Frame(command, headers, body, escapeHeaderValues);
   }
 
-// Split the data before unmarshalling every single STOMP frame.
-// Web socket servers can send multiple frames in a single websocket message.
-// If the message size exceeds the websocket message size, then a single
-// frame can be fragmented across multiple messages.
-//
-// `datas` is a string.
-//
-// returns an *array* of Frame objects
-//
-// @private
-  public static unmarshall(datas: any, escapeHeaderValues: boolean) {
+  /**
+   * Split the data before unmarshalling every single STOMP frame.
+   * Web socket servers can send multiple frames in a single websocket message.
+   * If the message size exceeds the websocket message size, then a single
+   * frame can be fragmented across multiple messages.
+   *
+   * @internal
+   */
+  public static unmarshall(datas: any, escapeHeaderValues: boolean): unmarshallResults {
     // Ugly list comprehension to split and unmarshall *multiple STOMP frames*
     // contained in a *single WebSocket frame*.
     // The data is split when a NULL byte (followed by zero or many LF bytes) is
@@ -127,7 +141,7 @@ export class Frame {
     }
     const frames = datas.split(new RegExp(`${Byte.NULL}${Byte.LF}*`));
 
-    const r = {
+    const r: unmarshallResults = {
       frames: [],
       partial: ''
     };
@@ -146,24 +160,26 @@ export class Frame {
     return r;
   }
 
-// Marshall a Stomp frame
-//
-// @private
+  /**
+   * Serialize a STOMP frame as per STOMP standards, suitable to be sent to the STOMP broker.
+   *
+   * @internal
+   */
   public static marshall(command: string, headers: StompHeaders, body: any, escapeHeaderValues: boolean) {
     const frame = new Frame(command, headers, body, escapeHeaderValues);
     return frame.toString() + Byte.NULL;
   }
 
-// Escape header values
-//
-// @private
+  /**
+   *  Escape header values
+   */
   private static frEscape(str: string): string {
     return str.replace(/\\/g, "\\\\").replace(/\r/g, "\\r").replace(/\n/g, "\\n").replace(/:/g, "\\c");
   }
 
-// Escape header values
-//
-// @private
+  /**
+   * Escape header values
+   */
   private static frUnEscape(str: string): string {
     return str.replace(/\\r/g, "\r").replace(/\\n/g, "\n").replace(/\\c/g, ":").replace(/\\\\/g, "\\");
   }
