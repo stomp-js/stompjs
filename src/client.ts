@@ -54,24 +54,25 @@ export class Client {
    */
   public onreceipt: receiptCallbackType|null = null;
 
-  private subscriptions: any;
-  private partialData: any;
-  private escapeHeaderValues: boolean = false;
-  private counter: number;
   private connected: boolean;
-  private pinger: any;
-  private ponger: any;
-  private serverActivity: any;
-  private connectHeaders: StompHeaders = {};
   private connectCallback: any;
   private errorCallback: any;
   private closeEventCallback: any;
-  private _active: boolean = false;
   private version: string = '';
-  private closeReceipt: string = '';
+
+  private subscriptions: any;
+  private _partialData: any;
+  private _escapeHeaderValues: boolean = false;
+  private _counter: number;
+  private _pinger: any;
+  private _ponger: any;
+  private _lastServerActivityTS: any;
+  private _connectHeaders: StompHeaders = {}; // Convert to local variable
+  private _active: boolean = false;
+  private _closeReceipt: string = '';
   private _disconnectCallback: any;
   private _reconnector: any;
-  private partial: string = '';
+  private _partial: string = '';
 
   private static now(): any {
     if (Date.now) {
@@ -95,7 +96,7 @@ export class Client {
     this.reconnect_delay = 0;
 
     // used to index subscribers
-    this.counter = 0;
+    this._counter = 0;
 
     // @property [Boolean] current connection state
     this.connected = false;
@@ -115,7 +116,7 @@ export class Client {
     this.maxWebSocketFrameSize = 16 * 1024;
     // subscription callbacks indexed by subscriber's ID
     this.subscriptions = {};
-    this.partialData = '';
+    this._partialData = '';
   }
 
   /**
@@ -143,7 +144,7 @@ export class Client {
   };
 
   private _transmit(command: string, headers: StompHeaders, body: string = ''): void {
-    let out = Frame.marshall(command, headers, body, this.escapeHeaderValues);
+    let out = Frame.marshall(command, headers, body, this._escapeHeaderValues);
     if (typeof this.debug === 'function') {
       this.debug(`>>> ${out}`);
     }
@@ -181,7 +182,7 @@ export class Client {
       }
       // The `Stomp.setInterval` is a wrapper to handle regular callback
       // that depends on the runtime environment (Web browser or node.js app)
-      this.pinger = Stomp.setInterval(ttl, () => {
+      this._pinger = Stomp.setInterval(ttl, () => {
         this.ws.send(Byte.LF);
         return (typeof this.debug === 'function' ? this.debug(">>> PING") : undefined);
       });
@@ -192,8 +193,8 @@ export class Client {
       if (typeof this.debug === 'function') {
         this.debug(`check PONG every ${ttl}ms`);
       }
-      return this.ponger = Stomp.setInterval(ttl, () => {
-        const delta = Client.now() - this.serverActivity;
+      return this._ponger = Stomp.setInterval(ttl, () => {
+        const delta = Client.now() - this._lastServerActivityTS;
         // We wait twice the TTL to be flexible on window's setInterval calls
         if (delta > (ttl * 2)) {
           if (typeof this.debug === 'function') {
@@ -267,9 +268,9 @@ export class Client {
    * @see http:*stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame CONNECT Frame
    */
   public connect(...args: any[]): void {
-    this.escapeHeaderValues = false;
+    this._escapeHeaderValues = false;
     const out = this._parseConnect(...args);
-    [this.connectHeaders, this.connectCallback, this.errorCallback, this.closeEventCallback] = out;
+    [this._connectHeaders, this.connectCallback, this.errorCallback, this.closeEventCallback] = out;
 
     // Indicate that this connection is active (it will keep trying to connect)
     this._active = true;
@@ -310,7 +311,7 @@ export class Client {
         }
       })();
       this.debug(data);
-      this.serverActivity = Client.now();
+      this._lastServerActivityTS = Client.now();
       if (data === Byte.LF) { // heartbeat
         if (typeof this.debug === 'function') {
           this.debug("<<< PONG");
@@ -323,8 +324,8 @@ export class Client {
       // Handle STOMP frames received from the server
       // The unmarshall function returns the frames parsed and any remaining
       // data from partial frames.
-      const unmarshalledData = Frame.unmarshall(this.partialData + data, this.escapeHeaderValues);
-      this.partialData = unmarshalledData.partial;
+      const unmarshalledData = Frame.unmarshall(this._partialData + data, this._escapeHeaderValues);
+      this._partialData = unmarshalledData.partial;
       for (let frame of unmarshalledData.frames) {
         switch (frame.command) {
           // [CONNECTED Frame](http://stomp.github.com/stomp-specification-1.2.html#CONNECTED_Frame)
@@ -336,7 +337,7 @@ export class Client {
             this.version = <string>frame.headers.version;
             // STOMP version 1.2 needs header values to be escaped
             if (this.version === Stomp.VERSIONS.V1_2) {
-              this.escapeHeaderValues = true;
+              this._escapeHeaderValues = true;
             }
 
             // If a disconnect was requested while I was connecting, issue a disconnect
@@ -401,7 +402,7 @@ export class Client {
           //     }
           case "RECEIPT":
             // if this is the receipt for a DISCONNECT, close the websocket
-            if (frame.headers["receipt-id"] === this.closeReceipt) {
+            if (frame.headers["receipt-id"] === this._closeReceipt) {
               // Discard the onclose callback to avoid calling the errorCallback when
               // the client is properly disconnected.
               this.ws.onclose = null;
@@ -449,9 +450,9 @@ export class Client {
       if (typeof this.debug === 'function') {
         this.debug('Web Socket Opened...');
       }
-      this.connectHeaders["accept-version"] = Stomp.VERSIONS.supportedVersions();
-      this.connectHeaders["heart-beat"] = [this.heartbeat.outgoing, this.heartbeat.incoming].join(',');
-      this._transmit("CONNECT", this.connectHeaders);
+      this._connectHeaders["accept-version"] = Stomp.VERSIONS.supportedVersions();
+      this._connectHeaders["heart-beat"] = [this.heartbeat.outgoing, this.heartbeat.incoming].join(',');
+      this._transmit("CONNECT", this._connectHeaders);
     };
   }
 
@@ -491,9 +492,9 @@ export class Client {
 
     if (this.connected) {
       if (!headers['receipt']) {
-        headers['receipt'] = `close-${this.counter++}`;
+        headers['receipt'] = `close-${this._counter++}`;
       }
-      this.closeReceipt = <string>headers['receipt'];
+      this._closeReceipt = <string>headers['receipt'];
       try {
         this._transmit("DISCONNECT", headers);
       } catch (error) {
@@ -510,12 +511,12 @@ export class Client {
 
     this.connected = false;
     this.subscriptions = {};
-    this.partial = '';
-    if (this.pinger) {
-      Stomp.clearInterval(this.pinger);
+    this._partial = '';
+    if (this._pinger) {
+      Stomp.clearInterval(this._pinger);
     }
-    if (this.ponger) {
-      Stomp.clearInterval(this.ponger);
+    if (this._ponger) {
+      Stomp.clearInterval(this._ponger);
     }
   }
 
@@ -579,7 +580,7 @@ export class Client {
    */
   public subscribe(destination: string, callback: messageCallbackType, headers: StompHeaders = {}): StompSubscription {
     if (!headers.id) {
-      headers.id = `sub-${this.counter++}`;
+      headers.id = `sub-${this._counter++}`;
     }
     headers.destination = destination;
     this.subscriptions[<string>headers.id] = callback;
@@ -628,7 +629,7 @@ export class Client {
    * @see http://stomp.github.com/stomp-specification-1.2.html#BEGIN BEGIN Frame
    */
   public begin(transactionId: string): Transaction {
-    const txId = transactionId || (`tx-${this.counter++}`);
+    const txId = transactionId || (`tx-${this._counter++}`);
     this._transmit("BEGIN", {
       transaction: txId
     });
