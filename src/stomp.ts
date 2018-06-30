@@ -87,18 +87,4 @@ export class Stomp {
 
     return new Client(ws_fn);
   }
-
-  /**
-   * @internal
-   */
-  public static setInterval(interval: number, f: Function) {
-    setInterval(f, interval);
-  }
-
-  /**
-   * @internal
-   */
-  public static clearInterval(id: number) {
-    clearInterval(id)
-  };
 }

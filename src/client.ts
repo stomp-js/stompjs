@@ -7,7 +7,7 @@ import {StompSubscription} from "./stomp-subscription";
 import {Transaction} from "./transaction";
 
 type messageCallbackType = (message: Message) => void;
-type receiptCallbackType = (receipt: Frame) => void;
+type frameCallbackType = (receipt: Frame) => void;
 
 /**
  * STOMP Client Class.
@@ -21,7 +21,7 @@ export class Client {
   /**
    *  automatically reconnect with delay in milliseconds, set to 0 to disable
    */
-  public reconnect_delay: number;
+  public reconnectDelay: number;
 
   /**
    * outgoing and incoming heartbeat interval in milliseconds. Set to 0 to disable
@@ -36,7 +36,10 @@ export class Client {
   /**
    * Underlying WebSocket instance, READONLY
    */
-  public ws: any;
+  get webSocket(): any {
+    return this._webSocket;
+  }
+  private _webSocket: any;
 
   /**
    * This function will be called for any unhandled messages. It is useful to receive messages sent to
@@ -52,7 +55,7 @@ export class Client {
    *
    * TODO: add example
    */
-  public onreceipt: receiptCallbackType|null = null;
+  public onreceipt: frameCallbackType|null = null;
 
   /**
    * `true` if there is a active connection with STOMP Broker
@@ -95,7 +98,6 @@ export class Client {
   private _active: boolean = false;
   private _closeReceipt: string = '';
   private _reconnector: any;
-  private _partial: string = '';
 
   private static now(): any {
     if (Date.now) {
@@ -116,7 +118,7 @@ export class Client {
       return ws;
     };
 
-    this.reconnect_delay = 0;
+    this.reconnectDelay = 0;
 
     // used to index subscribers
     this._counter = 0;
@@ -175,13 +177,13 @@ export class Client {
     // *WebSocket* frames
     while (true) {
       if (out.length > this.maxWebSocketFrameSize) {
-        this.ws.send(out.substring(0, this.maxWebSocketFrameSize));
+        this._webSocket.send(out.substring(0, this.maxWebSocketFrameSize));
         out = out.substring(this.maxWebSocketFrameSize);
         if (typeof this.debug === 'function') {
           this.debug(`remaining = ${out.length}`);
         }
       } else {
-        this.ws.send(out);
+        this._webSocket.send(out);
         return;
       }
     }
@@ -203,12 +205,10 @@ export class Client {
       if (typeof this.debug === 'function') {
         this.debug(`send PING every ${ttl}ms`);
       }
-      // The `Stomp.setInterval` is a wrapper to handle regular callback
-      // that depends on the runtime environment (Web browser or node.js app)
-      this._pinger = Stomp.setInterval(ttl, () => {
-        this.ws.send(Byte.LF);
+      this._pinger = setInterval(() => {
+        this._webSocket.send(Byte.LF);
         return (typeof this.debug === 'function' ? this.debug(">>> PING") : undefined);
-      });
+      }, ttl);
     }
 
     if ((this.heartbeat.incoming !== 0) && (serverOutgoing !== 0)) {
@@ -216,16 +216,16 @@ export class Client {
       if (typeof this.debug === 'function') {
         this.debug(`check PONG every ${ttl}ms`);
       }
-      return this._ponger = Stomp.setInterval(ttl, () => {
+      this._ponger = setInterval(() => {
         const delta = Client.now() - this._lastServerActivityTS;
         // We wait twice the TTL to be flexible on window's setInterval calls
         if (delta > (ttl * 2)) {
           if (typeof this.debug === 'function') {
             this.debug(`did not receive server activity for the last ${delta}ms`);
           }
-          return this.ws.close();
+          return this._webSocket.close();
         }
-      });
+      }, ttl);
     }
   }
 
@@ -307,9 +307,9 @@ export class Client {
     }
 
     // Get the actual Websocket (or a similar object)
-    this.ws = this.webSocketFactory();
+    this._webSocket = this.webSocketFactory();
 
-    this.ws.onmessage = (evt: any) => {
+    this._webSocket.onmessage = (evt: any) => {
       this.debug('Received data');
       const data = (() => {
         if ((typeof(ArrayBuffer) !== 'undefined') && evt.data instanceof ArrayBuffer) {
@@ -428,8 +428,8 @@ export class Client {
             if (frame.headers["receipt-id"] === this._closeReceipt) {
               // Discard the onclose callback to avoid calling the errorCallback when
               // the client is properly disconnected.
-              this.ws.onclose = null;
-              this.ws.close();
+              this._webSocket.onclose = null;
+              this._webSocket.close();
               this._cleanUp();
               if (typeof this.onDisconnect === 'function') {
                 this.onDisconnect();
@@ -454,8 +454,8 @@ export class Client {
       }
     };
 
-    this.ws.onclose = (closeEvent: any) => {
-      const msg = `Whoops! Lost connection to ${this.ws.url}`;
+    this._webSocket.onclose = (closeEvent: any) => {
+      const msg = `Whoops! Lost connection to ${this._webSocket.url}`;
       if (typeof this.debug === 'function') {
         this.debug(msg);
       }
@@ -469,7 +469,7 @@ export class Client {
       return this._schedule_reconnect();
     };
 
-    this.ws.onopen = () => {
+    this._webSocket.onopen = () => {
       if (typeof this.debug === 'function') {
         this.debug('Web Socket Opened...');
       }
@@ -480,9 +480,9 @@ export class Client {
   }
 
   private _schedule_reconnect(): any {
-    if (this.reconnect_delay > 0) {
+    if (this.reconnectDelay > 0) {
       if (typeof this.debug === 'function') {
-        this.debug(`STOMP: scheduling reconnection in ${this.reconnect_delay}ms`);
+        this.debug(`STOMP: scheduling reconnection in ${this.reconnectDelay}ms`);
       }
       // setTimeout is available in both Browser and Node.js environments
       return this._reconnector = setTimeout(() => {
@@ -495,7 +495,7 @@ export class Client {
             return this._connect();
           }
         }
-        , this.reconnect_delay);
+        , this.reconnectDelay);
     }
   }
 
@@ -534,12 +534,11 @@ export class Client {
 
     this.connected = false;
     this.subscriptions = {};
-    this._partial = '';
     if (this._pinger) {
-      Stomp.clearInterval(this._pinger);
+      clearInterval(this._pinger);
     }
     if (this._ponger) {
-      Stomp.clearInterval(this._ponger);
+      clearInterval(this._ponger);
     }
   }
 
@@ -758,5 +757,13 @@ export class Client {
     }
     headers.subscription = subscriptionId;
     return this._transmit("NACK", headers);
+  }
+
+  // Deprecated code
+  set reconnect_delay(value: number) {
+    this.reconnectDelay = value;
+  }
+  get ws(): any {
+    return this._webSocket;
   }
 }
