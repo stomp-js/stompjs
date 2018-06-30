@@ -5,6 +5,7 @@ import {StompHeaders} from "./stomp-headers";
 import {Message} from "./message";
 import {StompSubscription} from "./stomp-subscription";
 import {Transaction} from "./transaction";
+import {Versions} from "./versions";
 
 type messageCallbackType = (message: Message) => void;
 type frameCallbackType = (receipt: Frame) => void;
@@ -191,7 +192,7 @@ export class Client {
 
   private _setupHeartbeat(headers: StompHeaders): void {
     let ttl: number;
-    if ((headers.version !== Stomp.VERSIONS.V1_1 && headers.version !== Stomp.VERSIONS.V1_2)) {
+    if ((headers.version !== Versions.V1_1 && headers.version !== Versions.V1_2)) {
       return;
     }
 
@@ -359,7 +360,7 @@ export class Client {
             this.connected = true;
             this.version = <string>frame.headers.version;
             // STOMP version 1.2 needs header values to be escaped
-            if (this.version === Stomp.VERSIONS.V1_2) {
+            if (this.version === Versions.V1_2) {
               this._escapeHeaderValues = true;
             }
 
@@ -393,7 +394,7 @@ export class Client {
             if (onreceive) {
               let messageId: string;
               const client = this;
-              if (this.version === Stomp.VERSIONS.V1_2) {
+              if (this.version === Versions.V1_2) {
                 messageId = <string>message.headers["ack"];
               } else {
                 messageId = <string>message.headers["message-id"];
@@ -473,7 +474,7 @@ export class Client {
       if (typeof this.debug === 'function') {
         this.debug('Web Socket Opened...');
       }
-      this._connectHeaders["accept-version"] = Stomp.VERSIONS.supportedVersions();
+      this._connectHeaders["accept-version"] = Versions.supportedVersions();
       this._connectHeaders["heart-beat"] = [this.heartbeat.outgoing, this.heartbeat.incoming].join(',');
       this._transmit("CONNECT", this._connectHeaders);
     };
@@ -725,7 +726,7 @@ export class Client {
    * @see http://stomp.github.com/stomp-specification-1.2.html#ACK ACK Frame
    */
   public ack(messageId: string, subscriptionId: string, headers: StompHeaders = {}): void {
-    if (this.version === Stomp.VERSIONS.V1_2) {
+    if (this.version === Versions.V1_2) {
       headers["id"] = messageId;
     } else {
       headers["message-id"] = messageId;
@@ -750,7 +751,7 @@ export class Client {
    * @see http://stomp.github.com/stomp-specification-1.2.html#NACK NACK Frame
    */
   public nack(messageId: string, subscriptionId: string, headers: StompHeaders = {}): void {
-    if (this.version === Stomp.VERSIONS.V1_2) {
+    if (this.version === Versions.V1_2) {
       headers["id"] = messageId;
     } else {
       headers["message-id"] = messageId;

@@ -1,27 +1,10 @@
 import {Client} from "./client";
+import {Versions} from "./versions";
 
 /**
  * STOMP Class, acts like a factory to create {@link Client}.
  */
 export class Stomp {
-  /**
-   * @internal
-   */
-  public static VERSIONS = {
-    V1_0: '1.0',
-    V1_1: '1.1',
-    V1_2: '1.2',
-
-    /**
-     * Versions of STOMP specifications supported
-     *
-     * @internal
-     */
-    supportedVersions: function () {
-      return '1.2,1.1,1.0';
-    }
-  };
-
   /**
    * In case you need to use a non standard class for WebSocket.
    *
@@ -58,7 +41,7 @@ export class Stomp {
     // instead.
 
     // See remarks on the function Stomp.over
-    if (protocols == null) { protocols = ['v10.stomp', 'v11.stomp', 'v12.stomp']; }
+    if (protocols == null) { protocols = Versions.protocolVersions(); }
     const ws_fn= function() {
       const klass = Stomp.WebSocketClass || WebSocket;
       return new klass(url, protocols);

@@ -31,7 +31,7 @@ QUnit.test("Should receive messages sent to destination after subscribing", func
 
 QUnit.test("Should receive messages with special chars in headers", function (assert) {
   // This is a test intended for version 1.2 of STOMP client
-  if (client.version !== Stomp.VERSIONS.V1_2) {
+  if (client.version !== StompJs.Versions.V1_2) {
     assert.expect(0);
     return;
   }
