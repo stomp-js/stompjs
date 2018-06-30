@@ -16,7 +16,7 @@ export class Client {
   /**
    * This function should return a WebSocket or a similar (e.g. SockJS) object.
    */
-  public ws_fn: () => any;
+  public webSocketFactory: () => any;
 
   /**
    *  automatically reconnect with delay in milliseconds, set to 0 to disable
@@ -34,7 +34,7 @@ export class Client {
   public maxWebSocketFrameSize: number;
 
   /**
-   * Underlying WebSocket instance
+   * Underlying WebSocket instance, READONLY
    */
   public ws: any;
 
@@ -54,11 +54,35 @@ export class Client {
    */
   public onreceipt: receiptCallbackType|null = null;
 
-  private connected: boolean;
-  private connectCallback: any;
-  private errorCallback: any;
-  private closeEventCallback: any;
-  private version: string = '';
+  /**
+   * `true` if there is a active connection with STOMP Broker
+   */
+  public connected: boolean;
+
+  /**
+   * Callback
+   */
+  public onConnect: any;
+
+  /**
+   * Callback
+   */
+  private onDisconnect: any;
+
+  /**
+   * Callback
+   */
+  public onStompError: any;
+
+  /**
+   * Callback
+   */
+  public onWebSocketClose: any;
+
+  /**
+   * version of STOMP protocol negotiated with the server, READONLY
+   */
+  public version: string = '';
 
   private subscriptions: any;
   private _partialData: any;
@@ -70,7 +94,6 @@ export class Client {
   private _connectHeaders: StompHeaders = {}; // Convert to local variable
   private _active: boolean = false;
   private _closeReceipt: string = '';
-  private _disconnectCallback: any;
   private _reconnector: any;
   private _partial: string = '';
 
@@ -87,7 +110,7 @@ export class Client {
    * [Stomp.over]{@link Stomp#over} in {@link Stomp}.
    */
   constructor(ws_fn: () => any) {
-    this.ws_fn = function () {
+    this.webSocketFactory = function () {
       const ws = ws_fn();
       ws.binaryType = "arraybuffer";
       return ws;
@@ -270,7 +293,7 @@ export class Client {
   public connect(...args: any[]): void {
     this._escapeHeaderValues = false;
     const out = this._parseConnect(...args);
-    [this._connectHeaders, this.connectCallback, this.errorCallback, this.closeEventCallback] = out;
+    [this._connectHeaders, this.onConnect, this.onStompError, this.onWebSocketClose] = out;
 
     // Indicate that this connection is active (it will keep trying to connect)
     this._active = true;
@@ -284,7 +307,7 @@ export class Client {
     }
 
     // Get the actual Websocket (or a similar object)
-    this.ws = this.ws_fn();
+    this.ws = this.webSocketFactory();
 
     this.ws.onmessage = (evt: any) => {
       this.debug('Received data');
@@ -350,8 +373,8 @@ export class Client {
             }
 
             this._setupHeartbeat(frame.headers);
-            if (typeof this.connectCallback === 'function') {
-              this.connectCallback(frame);
+            if (typeof this.onConnect === 'function') {
+              this.onConnect(frame);
             }
             break;
           // [MESSAGE Frame](http://stomp.github.com/stomp-specification-1.2.html#MESSAGE)
@@ -408,8 +431,8 @@ export class Client {
               this.ws.onclose = null;
               this.ws.close();
               this._cleanUp();
-              if (typeof this._disconnectCallback === 'function') {
-                this._disconnectCallback();
+              if (typeof this.onDisconnect === 'function') {
+                this.onDisconnect();
               }
             } else {
               if (typeof this.onreceipt === 'function') {
@@ -419,8 +442,8 @@ export class Client {
             break;
           // [ERROR Frame](http://stomp.github.com/stomp-specification-1.2.html#ERROR)
           case "ERROR":
-            if (typeof this.errorCallback === 'function') {
-              this.errorCallback(frame);
+            if (typeof this.onStompError === 'function') {
+              this.onStompError(frame);
             }
             break;
           default:
@@ -436,12 +459,12 @@ export class Client {
       if (typeof this.debug === 'function') {
         this.debug(msg);
       }
-      if (typeof this.closeEventCallback === 'function') {
-        this.closeEventCallback(closeEvent);
+      if (typeof this.onWebSocketClose === 'function') {
+        this.onWebSocketClose(closeEvent);
       }
       this._cleanUp();
-      if (typeof this.errorCallback === 'function') {
-        this.errorCallback(msg);
+      if (typeof this.onStompError === 'function') {
+        this.onStompError(msg);
       }
       return this._schedule_reconnect();
     };
@@ -485,7 +508,7 @@ export class Client {
    * @see http://stomp.github.com/stomp-specification-1.2.html#DISCONNECT DISCONNECT Frame
    */
   public disconnect(disconnectCallback: any, headers: StompHeaders = {}): void {
-    this._disconnectCallback = disconnectCallback;
+    this.onDisconnect = disconnectCallback;
 
     // indicate that auto reconnect loop should terminate
     this._active = false;
