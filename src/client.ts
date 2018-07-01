@@ -6,9 +6,7 @@ import {Message} from "./message";
 import {StompSubscription} from "./stomp-subscription";
 import {Transaction} from "./transaction";
 import {Versions} from "./versions";
-
-type messageCallbackType = (message: Message) => void;
-type frameCallbackType = (receipt: Frame) => void;
+import {frameCallbackType, messageCallbackType} from "./types";
 
 /**
  * STOMP Client Class.
@@ -48,20 +46,25 @@ export class Client {
   public connectHeaders: StompHeaders = {};
 
   /**
+   * Disconnection headers
+   */
+  public disconnectHeaders: StompHeaders = {};
+
+  /**
    * This function will be called for any unhandled messages. It is useful to receive messages sent to
    * temporary queues (for example RabbitMQ supports such queues).
    *
    * It can also be called for stray messages while the server is processing a request to unsubcribe
    * from an endpoint.
    */
-  public onreceive: messageCallbackType|null = null;
+  public onUnhandledMessage: messageCallbackType|null = null;
 
   /**
    * STOMP brokers can be requested to notify when an operation is actually completed.
    *
    * TODO: add example
    */
-  public onreceipt: frameCallbackType|null = null;
+  public onReceipt: frameCallbackType|null = null;
 
   /**
    * `true` if there is a active connection with STOMP Broker
@@ -76,7 +79,7 @@ export class Client {
   /**
    * Callback
    */
-  private onDisconnect: any;
+  public onDisconnect: any;
 
   /**
    * Callback
@@ -317,10 +320,7 @@ export class Client {
 
             // If a disconnect was requested while I was connecting, issue a disconnect
             if (!this._active) {
-              // TODO: disconnect callback can no longer be part of disconnect call, it needs to be property of the
-              // client
-              this.disconnect(() => {
-              });
+              this.disconnect();
               return;
             }
 
@@ -339,7 +339,7 @@ export class Client {
             // on the browser side (e.g. [RabbitMQ's temporary
             // queues](http://www.rabbitmq.com/stomp.html)).
             const subscription = <string>frame.headers.subscription;
-            const onreceive = this.subscriptions[subscription] || this.onreceive;
+            const onreceive = this.subscriptions[subscription] || this.onUnhandledMessage;
             // bless the frame to be a Message
             const message = <Message>frame;
             if (onreceive) {
@@ -387,8 +387,8 @@ export class Client {
                 this.onDisconnect();
               }
             } else {
-              if (typeof this.onreceipt === 'function') {
-                this.onreceipt(frame);
+              if (typeof this.onReceipt === 'function') {
+                this.onReceipt(frame);
               }
             }
             break;
@@ -465,19 +465,17 @@ export class Client {
    *
    * @see http://stomp.github.com/stomp-specification-1.2.html#DISCONNECT DISCONNECT Frame
    */
-  public disconnect(disconnectCallback: any, headers: StompHeaders = {}): void {
-    this.onDisconnect = disconnectCallback;
-
+  public disconnect(): void {
     // indicate that auto reconnect loop should terminate
     this._active = false;
 
     if (this.connected) {
-      if (!headers['receipt']) {
-        headers['receipt'] = `close-${this._counter++}`;
+      if (!this.disconnectHeaders['receipt']) {
+        this.disconnectHeaders['receipt'] = `close-${this._counter++}`;
       }
-      this._closeReceipt = <string>headers['receipt'];
+      this._closeReceipt = <string>this.disconnectHeaders['receipt'];
       try {
-        this._transmit("DISCONNECT", headers);
+        this._transmit("DISCONNECT", this.disconnectHeaders);
       } catch (error) {
         (typeof this.debug === 'function' ? this.debug('Ignoring error during disconnect', error) : undefined);
       }

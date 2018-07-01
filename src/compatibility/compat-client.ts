@@ -1,5 +1,6 @@
 import {Client} from "../client";
 import {StompHeaders} from "../stomp-headers";
+import {frameCallbackType, messageCallbackType} from "../types";
 
 export class CompatClient extends Client {
 
@@ -76,11 +77,37 @@ export class CompatClient extends Client {
     super.connect();
   }
 
-  // Deprecated code
+  public disconnect(disconnectCallback?: any, headers: StompHeaders = {}): void {
+    if (disconnectCallback) {
+      this.onDisconnect = disconnectCallback;
+    }
+    this.disconnectHeaders = headers;
+
+    super.disconnect();
+  }
+
   set reconnect_delay(value: number) {
     this.reconnectDelay = value;
   }
+
   get ws(): any {
     return this._webSocket;
   }
+
+  get onreceive(): messageCallbackType | null {
+    return this.onUnhandledMessage;
+  }
+
+  set onreceive(value: messageCallbackType | null) {
+    this.onUnhandledMessage = value;
+  }
+
+  get onreceipt(): frameCallbackType | null {
+    return this.onReceipt;
+  }
+
+  set onreceipt(value: frameCallbackType | null) {
+    this.onReceipt = value;
+  }
+
 }
