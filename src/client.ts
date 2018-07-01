@@ -96,7 +96,7 @@ export class Client {
    */
   public version: string = '';
 
-  private subscriptions: any;
+  private _subscriptions: any;
   private _partialData: any;
   private _escapeHeaderValues: boolean = false;
   private _counter: number;
@@ -142,7 +142,7 @@ export class Client {
     // WebSocket frames (default is 16KiB)
     this.maxWebSocketFrameSize = 16 * 1024;
     // subscription callbacks indexed by subscriber's ID
-    this.subscriptions = {};
+    this._subscriptions = {};
     this._partialData = '';
   }
 
@@ -339,7 +339,7 @@ export class Client {
             // on the browser side (e.g. [RabbitMQ's temporary
             // queues](http://www.rabbitmq.com/stomp.html)).
             const subscription = <string>frame.headers.subscription;
-            const onreceive = this.subscriptions[subscription] || this.onUnhandledMessage;
+            const onreceive = this._subscriptions[subscription] || this.onUnhandledMessage;
             // bless the frame to be a Message
             const message = <Message>frame;
             if (onreceive) {
@@ -489,7 +489,7 @@ export class Client {
     }
 
     this.connected = false;
-    this.subscriptions = {};
+    this._subscriptions = {};
     if (this._pinger) {
       clearInterval(this._pinger);
     }
@@ -561,7 +561,7 @@ export class Client {
       headers.id = `sub-${this._counter++}`;
     }
     headers.destination = destination;
-    this.subscriptions[<string>headers.id] = callback;
+    this._subscriptions[<string>headers.id] = callback;
     this._transmit("SUBSCRIBE", headers);
     const client = this;
     return {
@@ -592,7 +592,7 @@ export class Client {
     if (headers == null) {
       headers = {};
     }
-    delete this.subscriptions[id];
+    delete this._subscriptions[id];
     headers.id = id;
     this._transmit("UNSUBSCRIBE", headers);
   }
