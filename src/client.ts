@@ -17,7 +17,7 @@ export class Client {
   /**
    * This function should return a WebSocket or a similar (e.g. SockJS) object.
    */
-  public webSocketFactory: () => any;
+  public webSocketFactory: () => any = () => null;
 
   /**
    *  automatically reconnect with delay in milliseconds, set to 0 to disable
@@ -41,6 +41,11 @@ export class Client {
     return this._webSocket;
   }
   protected _webSocket: any;
+
+  /**
+   * Connection headers, important keys - `login`, `passcode`, `host`
+   */
+  public connectHeaders: StompHeaders = {};
 
   /**
    * This function will be called for any unhandled messages. It is useful to receive messages sent to
@@ -95,7 +100,6 @@ export class Client {
   private _pinger: any;
   private _ponger: any;
   private _lastServerActivityTS: any;
-  private _connectHeaders: StompHeaders = {}; // Convert to local variable
   private _active: boolean = false;
   private _closeReceipt: string = '';
   private _reconnector: any;
@@ -112,13 +116,7 @@ export class Client {
    * Please do not create instance of this class directly, use one of the methods [Stomp.client]{@link Stomp#client},
    * [Stomp.over]{@link Stomp#over} in {@link Stomp}.
    */
-  constructor(ws_fn: () => any) {
-    this.webSocketFactory = function () {
-      const ws = ws_fn();
-      ws.binaryType = "arraybuffer";
-      return ws;
-    };
-
+  constructor() {
     this.reconnectDelay = 0;
 
     // used to index subscribers
@@ -230,54 +228,9 @@ export class Client {
     }
   }
 
-  private _parseConnect(...args: any[]): any {
-    let closeEventCallback, connectCallback, errorCallback;
-    let headers: StompHeaders = {};
-    if (args.length < 2) {
-      throw("Connect requires at least 2 arguments");
-    }
-    if (typeof(args[1]) === 'function') {
-      [headers, connectCallback, errorCallback, closeEventCallback] = args;
-    } else {
-      switch (args.length) {
-        case 6:
-          [headers['login'], headers['passcode'], connectCallback, errorCallback, closeEventCallback, headers['host']] = args;
-          break;
-        default:
-          [headers['login'], headers['passcode'], connectCallback, errorCallback, closeEventCallback] = args;
-      }
-    }
-
-    return [headers, connectCallback, errorCallback, closeEventCallback];
-  }
-
   /**
    * The `connect` method accepts different number of arguments and types. See the Overloads list. Use the
    * version with headers to pass your broker specific options.
-   *
-   * @overload connect(headers, connectCallback)
-   *
-   * @overload connect(headers, connectCallback, errorCallback)
-   *
-   * @overload connect(login, passcode, connectCallback)
-   *
-   * @overload connect(login, passcode, connectCallback, errorCallback)
-   *
-   * @overload connect(login, passcode, connectCallback, errorCallback, closeEventCallback)
-   *
-   * @overload connect(login, passcode, connectCallback, errorCallback, closeEventCallback, host)
-   *
-   * @param headers [Object]
-   * @option headers [String] login
-   * @option headers [String] passcode
-   * @option headers [String] host virtual host to connect to. STOMP 1.2 makes it mandatory, however the broker may not mandate it
-   * @param connectCallback [function(Frame)] Called upon a successful connect or reconnect
-   * @param errorCallback [function(any)] Optional, called upon an error. The passed paramer may be a {Frame} or a message
-   * @param closeEventCallback [function(CloseEvent)] Optional, called when the websocket is closed.
-   *
-   * @param login [String]
-   * @param passcode [String]
-   * @param host [String] Optional, virtual host to connect to. STOMP 1.2 makes it mandatory, however the broker may not mandate it
    *
    * @example
    *        client.connect('guest, 'guest', function(frame) {
@@ -291,10 +244,8 @@ export class Client {
    *
    * @see http:*stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame CONNECT Frame
    */
-  public connect(...args: any[]): void {
+  public connect(): void {
     this._escapeHeaderValues = false;
-    const out = this._parseConnect(...args);
-    [this._connectHeaders, this.onConnect, this.onStompError, this.onWebSocketClose] = out;
 
     // Indicate that this connection is active (it will keep trying to connect)
     this._active = true;
@@ -308,7 +259,7 @@ export class Client {
     }
 
     // Get the actual Websocket (or a similar object)
-    this._webSocket = this.webSocketFactory();
+    this._webSocket = this._createWebSocket();
 
     this._webSocket.onmessage = (evt: any) => {
       this.debug('Received data');
@@ -474,10 +425,16 @@ export class Client {
       if (typeof this.debug === 'function') {
         this.debug('Web Socket Opened...');
       }
-      this._connectHeaders["accept-version"] = Versions.supportedVersions();
-      this._connectHeaders["heart-beat"] = [this.heartbeat.outgoing, this.heartbeat.incoming].join(',');
-      this._transmit("CONNECT", this._connectHeaders);
+      this.connectHeaders["accept-version"] = Versions.supportedVersions();
+      this.connectHeaders["heart-beat"] = [this.heartbeat.outgoing, this.heartbeat.incoming].join(',');
+      this._transmit("CONNECT", this.connectHeaders);
     };
+  }
+
+  private _createWebSocket() {
+    const webSocket = this.webSocketFactory();
+    webSocket.binaryType = "arraybuffer";
+    return webSocket;
   }
 
   private _schedule_reconnect(): any {
