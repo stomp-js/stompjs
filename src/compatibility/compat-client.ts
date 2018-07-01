@@ -110,4 +110,35 @@ export class CompatClient extends Client {
     this.onReceipt = value;
   }
 
+  private _heartbeatInfo: HeartbeatInfo = new HeartbeatInfo(this);
+
+  get heartbeat() {
+    return this._heartbeatInfo;
+  }
+
+  set heartbeat(value: {incoming: number, outgoing: number}) {
+    this.heartbeatIncoming = value.incoming;
+    this.heartbeatOutgoing = value.outgoing;
+  }
+}
+
+class HeartbeatInfo {
+  constructor (private client: CompatClient) {
+  }
+
+  get outgoing(): number {
+    return this.client.heartbeatOutgoing;
+  }
+
+  set outgoing(value: number) {
+    this.client.heartbeatOutgoing = value;
+  }
+
+  get incoming(): number {
+    return this.client.heartbeatIncoming;
+  }
+
+  set incoming(value: number) {
+    this.client.heartbeatIncoming = value;
+  }
 }

@@ -23,9 +23,16 @@ export class Client {
   public reconnectDelay: number;
 
   /**
-   * outgoing and incoming heartbeat interval in milliseconds. Set to 0 to disable
+   * Incoming heartbeat interval in milliseconds. Set to 0 to disable
    */
-  public heartbeat: { outgoing: number; incoming: number };
+  public heartbeatIncoming: number;
+
+  /**
+   * Outgoing heartbeat interval in milliseconds. Set to 0 to disable
+   */
+  public heartbeatOutgoing: number;
+
+  // public heartbeat: { outgoing: number; incoming: number };
 
   /**
    * Packet sizes above these will be split
@@ -128,15 +135,12 @@ export class Client {
     // @property [Boolean] current connection state
     this.connected = false;
 
-    // @property [{outgoing: Number, incoming: Number}] outgoing and incoming
-    // heartbeat in milliseconds, set to 0 to disable
-    this.heartbeat = {
-      // send heartbeat every 10s by default (value is in ms)
-      outgoing: 10000,
-      // expect to receive server heartbeat at least every 10s by default
-      // (value in ms)
-      incoming: 10000
-    };
+    // send heartbeat every 10s by default (value is in ms)
+    this.heartbeatOutgoing = 10000;
+    // expect to receive server heartbeat at least every 10s by default
+    // (value in ms)
+    this.heartbeatIncoming = 10000;
+
     // maximum *WebSocket* frame size sent by the client. If the STOMP frame
     // is bigger than this value, the STOMP frame will be sent using multiple
     // WebSocket frames (default is 16KiB)
@@ -202,8 +206,8 @@ export class Client {
     //     heart-beat: sx, sy
     const [serverOutgoing, serverIncoming] = (<string>headers['heart-beat']).split(",").map((v: string) => parseInt(v));
 
-    if ((this.heartbeat.outgoing !== 0) && (serverIncoming !== 0)) {
-      ttl = Math.max(this.heartbeat.outgoing, serverIncoming);
+    if ((this.heartbeatOutgoing !== 0) && (serverIncoming !== 0)) {
+      ttl = Math.max(this.heartbeatOutgoing, serverIncoming);
       if (typeof this.debug === 'function') {
         this.debug(`send PING every ${ttl}ms`);
       }
@@ -213,8 +217,8 @@ export class Client {
       }, ttl);
     }
 
-    if ((this.heartbeat.incoming !== 0) && (serverOutgoing !== 0)) {
-      ttl = Math.max(this.heartbeat.incoming, serverOutgoing);
+    if ((this.heartbeatIncoming !== 0) && (serverOutgoing !== 0)) {
+      ttl = Math.max(this.heartbeatIncoming, serverOutgoing);
       if (typeof this.debug === 'function') {
         this.debug(`check PONG every ${ttl}ms`);
       }
@@ -426,7 +430,7 @@ export class Client {
         this.debug('Web Socket Opened...');
       }
       this.connectHeaders["accept-version"] = Versions.supportedVersions();
-      this.connectHeaders["heart-beat"] = [this.heartbeat.outgoing, this.heartbeat.incoming].join(',');
+      this.connectHeaders["heart-beat"] = [this.heartbeatOutgoing, this.heartbeatIncoming].join(',');
       this._transmit("CONNECT", this.connectHeaders);
     };
   }
