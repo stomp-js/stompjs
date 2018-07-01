@@ -1,5 +1,5 @@
-import {Client} from "./client";
-import {Versions} from "./versions";
+import {Versions} from "../versions";
+import {CompatClient} from "./compat-client";
 
 /**
  * STOMP Class, acts like a factory to create {@link Client}.
@@ -27,7 +27,7 @@ export class Stomp {
    *        var client = Stomp.client(url);
    * ```
    */
-  public static client (url: string, protocols: string[]): Client {
+  public static client (url: string, protocols: string[]): CompatClient {
     // This is a hack to allow another implementation than the standard
     // HTML5 WebSocket class.
     //
@@ -47,7 +47,7 @@ export class Stomp {
       return new klass(url, protocols);
     };
 
-    return new Client(ws_fn);
+    return new CompatClient(ws_fn);
   }
 
   /**
@@ -65,9 +65,9 @@ export class Stomp {
    *        });
    * ```
    */
-  public static over (ws: any): Client {
+  public static over (ws: any): CompatClient {
     const ws_fn = typeof(ws) === "function" ? ws : () => ws;
 
-    return new Client(ws_fn);
+    return new CompatClient(ws_fn);
   }
 }

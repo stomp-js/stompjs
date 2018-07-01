@@ -1,5 +1,5 @@
 import {Frame} from "./frame";
-import {Stomp} from "./stomp";
+import {Stomp} from "./compatibility/stomp";
 import {Byte} from "./byte";
 import {StompHeaders} from "./stomp-headers";
 import {Message} from "./message";
@@ -40,7 +40,7 @@ export class Client {
   get webSocket(): any {
     return this._webSocket;
   }
-  private _webSocket: any;
+  protected _webSocket: any;
 
   /**
    * This function will be called for any unhandled messages. It is useful to receive messages sent to
@@ -758,13 +758,5 @@ export class Client {
     }
     headers.subscription = subscriptionId;
     return this._transmit("NACK", headers);
-  }
-
-  // Deprecated code
-  set reconnect_delay(value: number) {
-    this.reconnectDelay = value;
-  }
-  get ws(): any {
-    return this._webSocket;
   }
 }
