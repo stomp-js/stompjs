@@ -6,7 +6,7 @@ TEST = {
   badUrl: "ws://localhost:61625",
   timeout: 2000,
   debug: function (str) {
-    console.log(str);
+    console.log('CLIENT ' + this.id + ': ', str);
   }
 };
 
@@ -18,8 +18,12 @@ badStompClient = function () {
   return Stomp.client(TEST.badUrl);
 };
 
+id = 0;
+
 stompClient = function () {
-  return Stomp.client(TEST.url);
+  var compatClient = Stomp.client(TEST.url);
+  compatClient.id = '' + ++id;
+  return compatClient;
 };
 
 /*
