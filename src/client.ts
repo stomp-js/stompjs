@@ -262,7 +262,7 @@ export class Client {
 
   private _connect(): void {
     if (!this._active) {
-      this.debug('Connection has been marked inactive, will not attempt to connect');
+      this.debug('Client has been marked inactive, will not attempt to connect');
       return;
     }
 
