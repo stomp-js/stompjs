@@ -261,6 +261,11 @@ export class Client {
   }
 
   private _connect(): void {
+    if (!this._active) {
+      this.debug('Connection has been marked inactive, will not attempt to connect');
+      return;
+    }
+
     if (typeof this.debug === 'function') {
       this.debug("Opening Web Socket...");
     }
