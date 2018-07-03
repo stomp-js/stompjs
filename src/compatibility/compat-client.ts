@@ -122,6 +122,9 @@ export class CompatClient extends Client {
   }
 }
 
+/**
+ * @internal
+ */
 class HeartbeatInfo {
   constructor (private client: CompatClient) {
   }
