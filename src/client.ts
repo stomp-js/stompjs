@@ -120,10 +120,6 @@ export class Client {
   private _closeReceipt: string;
   private _reconnector: any;
 
-  private static now(): number {
-    return Date.now();
-  }
-
   /**
    * Please do not create instance of this class directly, use one of the methods [Stomp.client]{@link Stomp#client},
    * [Stomp.over]{@link Stomp#over} in {@link Stomp}.
@@ -176,7 +172,7 @@ export class Client {
 
     this._escapeHeaderValues = false;
 
-    this._lastServerActivityTS = Client.now();
+    this._lastServerActivityTS = Date.now();
   }
 
   /**
@@ -244,7 +240,7 @@ export class Client {
       ttl = Math.max(this.heartbeatIncoming, serverOutgoing);
       this.debug(`check PONG every ${ttl}ms`);
       this._ponger = setInterval(() => {
-        const delta = Client.now() - this._lastServerActivityTS;
+        const delta = Date.now() - this._lastServerActivityTS;
         // We wait twice the TTL to be flexible on window's setInterval calls
         if (delta > (ttl * 2)) {
           this.debug(`did not receive server activity for the last ${delta}ms`);
@@ -313,7 +309,7 @@ export class Client {
         }
       })();
       this.debug(data);
-      this._lastServerActivityTS = Client.now();
+      this._lastServerActivityTS = Date.now();
       if (data === Byte.LF) { // heartbeat
         this.debug("<<< PONG");
         return;
@@ -519,13 +515,7 @@ export class Client {
    *
    * @see http://stomp.github.com/stomp-specification-1.2.html#SEND SEND Frame
    */
-  public send(destination: string, headers: StompHeaders, body: string): void {
-    if (headers == null) {
-      headers = {};
-    }
-    if (body == null) {
-      body = '';
-    }
+  public send(destination: string, headers: StompHeaders = {}, body: string = ''): void {
     headers.destination = destination;
     this._transmit("SEND", headers, body);
   }
@@ -553,11 +543,6 @@ export class Client {
    *        var mySubId = 'my-subscription-id-001';
    *        var subscription = client.subscribe(destination, callback, { id: mySubId });
    * ```
-   *
-   * @param {string} destination
-   * @param {(message: Message) => void} callback
-   * @param {StompHeaders} headers
-   * @returns {StompSubscription}
    *
    * @see http://stomp.github.com/stomp-specification-1.2.html#SUBSCRIBE SUBSCRIBE Frame
    */
@@ -588,9 +573,6 @@ export class Client {
    *        subscription.unsubscribe();
    * ```
    *
-   * @param {string} id
-   * @param {StompHeaders} headers
-   *
    * @see http://stomp.github.com/stomp-specification-1.2.html#UNSUBSCRIBE UNSUBSCRIBE Frame
    */
   public unsubscribe(id: string, headers: StompHeaders = {}): void {
@@ -605,9 +587,6 @@ export class Client {
   /**
    * Start a transaction, the returned {@link Transaction} has methods - [commit]{@link Transaction#commit}
    * and [abort]{@link Transaction#abort}.
-   *
-   * @param {string} transactionId
-   * @returns {Transaction}
    *
    * @see http://stomp.github.com/stomp-specification-1.2.html#BEGIN BEGIN Frame
    */
@@ -639,8 +618,6 @@ export class Client {
    *        tx.commit();
    * ```
    *
-   * @param {string} transactionId
-   *
    * @see http://stomp.github.com/stomp-specification-1.2.html#COMMIT COMMIT Frame
    */
   public commit(transactionId: string): void {
@@ -659,8 +636,6 @@ export class Client {
    *        //...
    *        tx.abort();
    * ```
-   *
-   * @param {string} transactionId
    *
    * @see http://stomp.github.com/stomp-specification-1.2.html#ABORT ABORT Frame
    */
