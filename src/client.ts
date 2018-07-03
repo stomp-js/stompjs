@@ -15,7 +15,7 @@ export class Client {
   /**
    * This function should return a WebSocket or a similar (e.g. SockJS) object.
    */
-  public webSocketFactory: () => any = () => null;
+  public webSocketFactory: () => any;
 
   /**
    *  automatically reconnect with delay in milliseconds, set to 0 to disable
@@ -76,7 +76,10 @@ export class Client {
   /**
    * `true` if there is a active connection with STOMP Broker
    */
-  public connected: boolean;
+  get connected(): boolean {
+    return this._connected;
+  }
+  private _connected: boolean;
 
   /**
    * Callback
@@ -101,25 +104,24 @@ export class Client {
   /**
    * version of STOMP protocol negotiated with the server, READONLY
    */
-  public version: string = '';
+  get version(): string {
+    return this._version;
+  }
+  private _version: string;
 
   private _subscriptions: any;
-  private _partialData: any;
-  private _escapeHeaderValues: boolean = false;
+  private _partialData: string;
+  private _escapeHeaderValues: boolean;
   private _counter: number;
   private _pinger: any;
   private _ponger: any;
-  private _lastServerActivityTS: any;
+  private _lastServerActivityTS: number;
   private _active: boolean = false;
-  private _closeReceipt: string = '';
+  private _closeReceipt: string;
   private _reconnector: any;
 
-  private static now(): any {
-    if (Date.now) {
-      return Date.now();
-    } else {
-      return new Date().valueOf;
-    }
+  private static now(): number {
+    return Date.now();
   }
 
   /**
@@ -134,19 +136,10 @@ export class Client {
     this.onUnhandledMessage = noOp;
     this.onReceipt = noOp;
 
-    // These parameters would typically get proper values before connect is called
-    this.connectHeaders = {};
-    this.disconnectHeaders = {};
+    // Default values for important parameters
 
-    // Initialization
-
+    // No auto reconnection
     this.reconnectDelay = 0;
-
-    // used to index subscribers
-    this._counter = 0;
-
-    // @property [Boolean] current connection state
-    this.connected = false;
 
     // send heartbeat every 10s by default (value is in ms)
     this.heartbeatOutgoing = 10000;
@@ -158,9 +151,32 @@ export class Client {
     // is bigger than this value, the STOMP frame will be sent using multiple
     // WebSocket frames (default is 16KiB)
     this.maxWebSocketFrameSize = 16 * 1024;
+
+    // These parameters would typically get proper values before connect is called
+    this.connectHeaders = {};
+    this.disconnectHeaders = {};
+    this.webSocketFactory = () => null;
+
+    // Internal fields
+
+    // used to index subscribers
+    this._counter = 0;
+
+    // current connection state
+    this._connected = false;
+
     // subscription callbacks indexed by subscriber's ID
     this._subscriptions = {};
+
     this._partialData = '';
+
+    this._closeReceipt = '';
+
+    this._version  = '';
+
+    this._escapeHeaderValues = false;
+
+    this._lastServerActivityTS = Client.now();
   }
 
   /**
@@ -313,10 +329,10 @@ export class Client {
           // [CONNECTED Frame](http://stomp.github.com/stomp-specification-1.2.html#CONNECTED_Frame)
           case "CONNECTED":
             this.debug(`connected to server ${frame.headers.server}`);
-            this.connected = true;
-            this.version = <string>frame.headers.version;
+            this._connected = true;
+            this._version = <string>frame.headers.version;
             // STOMP version 1.2 needs header values to be escaped
-            if (this.version === Versions.V1_2) {
+            if (this._version === Versions.V1_2) {
               this._escapeHeaderValues = true;
             }
 
@@ -347,7 +363,7 @@ export class Client {
             if (onreceive) {
               let messageId: string;
               const client = this;
-              if (this.version === Versions.V1_2) {
+              if (this._version === Versions.V1_2) {
                 messageId = <string>message.headers["ack"];
               } else {
                 messageId = <string>message.headers["message-id"];
@@ -436,7 +452,7 @@ export class Client {
       this.debug(`STOMP: scheduling reconnection in ${this.reconnectDelay}ms`);
       // setTimeout is available in both Browser and Node.js environments
       this._reconnector = setTimeout(() => {
-          if (this.connected) {
+          if (this._connected) {
             this.debug('STOMP: already connected')
           } else {
             this.debug('STOMP: attempting to reconnect');
@@ -458,7 +474,7 @@ export class Client {
     // indicate that auto reconnect loop should terminate
     this._active = false;
 
-    if (this.connected) {
+    if (this._connected) {
       if (!this.disconnectHeaders['receipt']) {
         this.disconnectHeaders['receipt'] = `close-${this._counter++}`;
       }
@@ -477,7 +493,7 @@ export class Client {
       clearTimeout(this._reconnector);
     }
 
-    this.connected = false;
+    this._connected = false;
     this._subscriptions = {};
     if (this._pinger) {
       clearInterval(this._pinger);
@@ -670,7 +686,7 @@ export class Client {
    * @see http://stomp.github.com/stomp-specification-1.2.html#ACK ACK Frame
    */
   public ack(messageId: string, subscriptionId: string, headers: StompHeaders = {}): void {
-    if (this.version === Versions.V1_2) {
+    if (this._version === Versions.V1_2) {
       headers["id"] = messageId;
     } else {
       headers["message-id"] = messageId;
@@ -695,7 +711,7 @@ export class Client {
    * @see http://stomp.github.com/stomp-specification-1.2.html#NACK NACK Frame
    */
   public nack(messageId: string, subscriptionId: string, headers: StompHeaders = {}): void {
-    if (this.version === Versions.V1_2) {
+    if (this._version === Versions.V1_2) {
       headers["id"] = messageId;
     } else {
       headers["message-id"] = messageId;
