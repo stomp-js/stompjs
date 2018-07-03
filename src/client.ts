@@ -50,12 +50,12 @@ export class Client {
   /**
    * Connection headers, important keys - `login`, `passcode`, `host`
    */
-  public connectHeaders: StompHeaders = {};
+  public connectHeaders: StompHeaders;
 
   /**
    * Disconnection headers
    */
-  public disconnectHeaders: StompHeaders = {};
+  public disconnectHeaders: StompHeaders;
 
   /**
    * This function will be called for any unhandled messages. It is useful to receive messages sent to
@@ -64,14 +64,14 @@ export class Client {
    * It can also be called for stray messages while the server is processing a request to unsubcribe
    * from an endpoint.
    */
-  public onUnhandledMessage: messageCallbackType | null = null;
+  public onUnhandledMessage: messageCallbackType;
 
   /**
    * STOMP brokers can be requested to notify when an operation is actually completed.
    *
    * TODO: add example
    */
-  public onReceipt: frameCallbackType | null = null;
+  public onReceipt: frameCallbackType;
 
   /**
    * `true` if there is a active connection with STOMP Broker
@@ -81,12 +81,12 @@ export class Client {
   /**
    * Callback
    */
-  public onConnect: any;
+  public onConnect: frameCallbackType;
 
   /**
    * Callback
    */
-  public onDisconnect: any;
+  public onDisconnect: frameCallbackType;
 
   /**
    * Callback
@@ -127,6 +127,19 @@ export class Client {
    * [Stomp.over]{@link Stomp#over} in {@link Stomp}.
    */
   constructor() {
+    // Dummy callbacks
+    const noOp = () => {};
+    this.onConnect = noOp;
+    this.onDisconnect = noOp;
+    this.onUnhandledMessage = noOp;
+    this.onReceipt = noOp;
+
+    // These parameters would typically get proper values before connect is called
+    this.connectHeaders = {};
+    this.disconnectHeaders = {};
+
+    // Initialization
+
     this.reconnectDelay = 0;
 
     // used to index subscribers
@@ -371,7 +384,7 @@ export class Client {
               this._webSocket.close();
               this._cleanUp();
               if (typeof this.onDisconnect === 'function') {
-                this.onDisconnect();
+                this.onDisconnect(frame);
               }
             } else {
               if (typeof this.onReceipt === 'function') {

@@ -94,19 +94,19 @@ export class CompatClient extends Client {
     return this._webSocket;
   }
 
-  get onreceive(): messageCallbackType | null {
+  get onreceive(): messageCallbackType {
     return this.onUnhandledMessage;
   }
 
-  set onreceive(value: messageCallbackType | null) {
+  set onreceive(value: messageCallbackType) {
     this.onUnhandledMessage = value;
   }
 
-  get onreceipt(): frameCallbackType | null {
+  get onreceipt(): frameCallbackType {
     return this.onReceipt;
   }
 
-  set onreceipt(value: frameCallbackType | null) {
+  set onreceipt(value: frameCallbackType) {
     this.onReceipt = value;
   }
 
