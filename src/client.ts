@@ -64,14 +64,14 @@ export class Client {
    * It can also be called for stray messages while the server is processing a request to unsubcribe
    * from an endpoint.
    */
-  public onUnhandledMessage: messageCallbackType|null = null;
+  public onUnhandledMessage: messageCallbackType | null = null;
 
   /**
    * STOMP brokers can be requested to notify when an operation is actually completed.
    *
    * TODO: add example
    */
-  public onReceipt: frameCallbackType|null = null;
+  public onReceipt: frameCallbackType | null = null;
 
   /**
    * `true` if there is a active connection with STOMP Broker
@@ -176,18 +176,14 @@ export class Client {
 
   private _transmit(command: string, headers: StompHeaders, body: string = ''): void {
     let out = Frame.marshall(command, headers, body, this._escapeHeaderValues);
-    if (typeof this.debug === 'function') {
-      this.debug(`>>> ${out}`);
-    }
+    this.debug(`>>> ${out}`);
     // if necessary, split the *STOMP* frame to send it on many smaller
     // *WebSocket* frames
     while (true) {
       if (out.length > this.maxWebSocketFrameSize) {
         this._webSocket.send(out.substring(0, this.maxWebSocketFrameSize));
         out = out.substring(this.maxWebSocketFrameSize);
-        if (typeof this.debug === 'function') {
-          this.debug(`remaining = ${out.length}`);
-        }
+        this.debug(`remaining = ${out.length}`);
       } else {
         this._webSocket.send(out);
         return;
@@ -208,28 +204,22 @@ export class Client {
 
     if ((this.heartbeatOutgoing !== 0) && (serverIncoming !== 0)) {
       ttl = Math.max(this.heartbeatOutgoing, serverIncoming);
-      if (typeof this.debug === 'function') {
-        this.debug(`send PING every ${ttl}ms`);
-      }
+      this.debug(`send PING every ${ttl}ms`);
       this._pinger = setInterval(() => {
         this._webSocket.send(Byte.LF);
-        return (typeof this.debug === 'function' ? this.debug(">>> PING") : undefined);
+        this.debug(">>> PING");
       }, ttl);
     }
 
     if ((this.heartbeatIncoming !== 0) && (serverOutgoing !== 0)) {
       ttl = Math.max(this.heartbeatIncoming, serverOutgoing);
-      if (typeof this.debug === 'function') {
-        this.debug(`check PONG every ${ttl}ms`);
-      }
+      this.debug(`check PONG every ${ttl}ms`);
       this._ponger = setInterval(() => {
         const delta = Client.now() - this._lastServerActivityTS;
         // We wait twice the TTL to be flexible on window's setInterval calls
         if (delta > (ttl * 2)) {
-          if (typeof this.debug === 'function') {
-            this.debug(`did not receive server activity for the last ${delta}ms`);
-          }
-          return this._webSocket.close();
+          this.debug(`did not receive server activity for the last ${delta}ms`);
+          this._webSocket.close();
         }
       }, ttl);
     }
@@ -266,9 +256,7 @@ export class Client {
       return;
     }
 
-    if (typeof this.debug === 'function') {
-      this.debug("Opening Web Socket...");
-    }
+    this.debug("Opening Web Socket...");
 
     // Get the actual Websocket (or a similar object)
     this._webSocket = this._createWebSocket();
@@ -280,9 +268,7 @@ export class Client {
           // the data is stored inside an ArrayBuffer, we decode it to get the
           // data as a String
           const arr = new Uint8Array(evt.data);
-          if (typeof this.debug === 'function') {
-            this.debug(`--- got data length: ${arr.length}`);
-          }
+          this.debug(`--- got data length: ${arr.length}`);
           // Return a string formed by all the char codes stored in the Uint8array
           let j, len1, results;
           results = [];
@@ -300,14 +286,10 @@ export class Client {
       this.debug(data);
       this._lastServerActivityTS = Client.now();
       if (data === Byte.LF) { // heartbeat
-        if (typeof this.debug === 'function') {
-          this.debug("<<< PONG");
-        }
+        this.debug("<<< PONG");
         return;
       }
-      if (typeof this.debug === 'function') {
-        this.debug(`<<< ${data}`);
-      }
+      this.debug(`<<< ${data}`);
       // Handle STOMP frames received from the server
       // The unmarshall function returns the frames parsed and any remaining
       // data from partial frames.
@@ -317,9 +299,7 @@ export class Client {
         switch (frame.command) {
           // [CONNECTED Frame](http://stomp.github.com/stomp-specification-1.2.html#CONNECTED_Frame)
           case "CONNECTED":
-            if (typeof this.debug === 'function') {
-              this.debug(`connected to server ${frame.headers.server}`);
-            }
+            this.debug(`connected to server ${frame.headers.server}`);
             this.connected = true;
             this.version = <string>frame.headers.version;
             // STOMP version 1.2 needs header values to be escaped
@@ -369,9 +349,7 @@ export class Client {
               };
               onreceive(message);
             } else {
-              if (typeof this.debug === 'function') {
-                this.debug(`Unhandled received MESSAGE: ${message}`);
-              }
+              this.debug(`Unhandled received MESSAGE: ${message}`);
             }
             break;
           // [RECEIPT Frame](http://stomp.github.com/stomp-specification-1.2.html#RECEIPT)
@@ -408,18 +386,14 @@ export class Client {
             }
             break;
           default:
-            if (typeof this.debug === 'function') {
-              this.debug(`Unhandled frame: ${frame}`);
-            }
+            this.debug(`Unhandled frame: ${frame}`);
         }
       }
     };
 
-    this._webSocket.onclose = (closeEvent: any) => {
+    this._webSocket.onclose = (closeEvent: any): void => {
       const msg = `Whoops! Lost connection to ${this._webSocket.url}`;
-      if (typeof this.debug === 'function') {
-        this.debug(msg);
-      }
+      this.debug(msg);
       if (typeof this.onWebSocketClose === 'function') {
         this.onWebSocketClose(closeEvent);
       }
@@ -427,13 +401,11 @@ export class Client {
       if (typeof this.onStompError === 'function') {
         this.onStompError(msg);
       }
-      return this._schedule_reconnect();
+      this._schedule_reconnect();
     };
 
     this._webSocket.onopen = () => {
-      if (typeof this.debug === 'function') {
-        this.debug('Web Socket Opened...');
-      }
+      this.debug('Web Socket Opened...');
       this.connectHeaders["accept-version"] = Versions.supportedVersions();
       this.connectHeaders["heart-beat"] = [this.heartbeatOutgoing, this.heartbeatIncoming].join(',');
       this._transmit("CONNECT", this.connectHeaders);
@@ -446,23 +418,18 @@ export class Client {
     return webSocket;
   }
 
-  private _schedule_reconnect(): any {
+  private _schedule_reconnect(): void {
     if (this.reconnectDelay > 0) {
-      if (typeof this.debug === 'function') {
-        this.debug(`STOMP: scheduling reconnection in ${this.reconnectDelay}ms`);
-      }
+      this.debug(`STOMP: scheduling reconnection in ${this.reconnectDelay}ms`);
       // setTimeout is available in both Browser and Node.js environments
-      return this._reconnector = setTimeout(() => {
+      this._reconnector = setTimeout(() => {
           if (this.connected) {
-            return (typeof this.debug === 'function' ? this.debug('STOMP: already connected') : undefined);
+            this.debug('STOMP: already connected')
           } else {
-            if (typeof this.debug === 'function') {
-              this.debug('STOMP: attempting to reconnect');
-            }
-            return this._connect();
+            this.debug('STOMP: attempting to reconnect');
+            this._connect();
           }
-        }
-        , this.reconnectDelay);
+        }, this.reconnectDelay);
     }
   }
 
@@ -486,7 +453,7 @@ export class Client {
       try {
         this._transmit("DISCONNECT", this.disconnectHeaders);
       } catch (error) {
-        (typeof this.debug === 'function' ? this.debug('Ignoring error during disconnect', error) : undefined);
+        this.debug('Ignoring error during disconnect', error);
       }
     }
   }
