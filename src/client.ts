@@ -20,24 +20,26 @@ export class Client {
   /**
    *  automatically reconnect with delay in milliseconds, set to 0 to disable
    */
-  public reconnectDelay: number;
+  public reconnectDelay: number = 5000;
 
   /**
    * Incoming heartbeat interval in milliseconds. Set to 0 to disable
    */
-  public heartbeatIncoming: number;
+  public heartbeatIncoming: number = 10000;
 
   /**
    * Outgoing heartbeat interval in milliseconds. Set to 0 to disable
    */
-  public heartbeatOutgoing: number;
+  public heartbeatOutgoing: number = 10000;
 
   // public heartbeat: { outgoing: number; incoming: number };
 
   /**
-   * Packet sizes above these will be split
+   * Maximum WebSocket frame size sent by the client. If the STOMP frame
+   * is bigger than this value, the STOMP frame will be sent using multiple
+   * WebSocket frames (default is 16KiB)
    */
-  public maxWebSocketFrameSize: number;
+  public maxWebSocketFrameSize: number = 16 * 1024;
 
   /**
    * Underlying WebSocket instance, READONLY
@@ -45,6 +47,10 @@ export class Client {
   get webSocket(): any {
     return this._webSocket;
   }
+  /**
+   * Underlying WebSocket instance
+   * @internal
+   */
   protected _webSocket: any;
 
   /**
@@ -109,7 +115,7 @@ export class Client {
   }
   private _version: string;
 
-  private _subscriptions: any;
+  private _subscriptions: { [key: string]: messageCallbackType };
   private _partialData: string;
   private _escapeHeaderValues: boolean;
   private _counter: number;
@@ -131,22 +137,6 @@ export class Client {
     this.onDisconnect = noOp;
     this.onUnhandledMessage = noOp;
     this.onReceipt = noOp;
-
-    // Default values for important parameters
-
-    // No auto reconnection
-    this.reconnectDelay = 0;
-
-    // send heartbeat every 10s by default (value is in ms)
-    this.heartbeatOutgoing = 10000;
-    // expect to receive server heartbeat at least every 10s by default
-    // (value in ms)
-    this.heartbeatIncoming = 10000;
-
-    // maximum *WebSocket* frame size sent by the client. If the STOMP frame
-    // is bigger than this value, the STOMP frame will be sent using multiple
-    // WebSocket frames (default is 16KiB)
-    this.maxWebSocketFrameSize = 16 * 1024;
 
     // These parameters would typically get proper values before connect is called
     this.connectHeaders = {};
@@ -254,13 +244,14 @@ export class Client {
    * The `connect` method accepts different number of arguments and types. See the Overloads list. Use the
    * version with headers to pass your broker specific options.
    *
-   * @example
+   * ```javascript
    *        client.connect('guest, 'guest', function(frame) {
    *          client.debug("connected to Stomp");
    *          client.subscribe(destination, function(message) {
    *            $("#messages").append("<p>" + message.body + "</p>\n");
    *          });
    *        });
+   * ```
    *
    * @note When auto reconnect is active, `connectCallback` and `errorCallback` will be called on each connect or error
    *

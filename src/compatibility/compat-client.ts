@@ -6,6 +6,7 @@ export class CompatClient extends Client {
 
   constructor(webSocketFactory: () => any) {
     super();
+    this.reconnect_delay = 0; // Default from previous version is no auto reconnect
     this.webSocketFactory = webSocketFactory;
   }
 
