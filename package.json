@@ -9,7 +9,8 @@
     "build": "npm run clean && tsc && npm run build-tsc && npm run build-webpack",
     "doc": "bin/doc-gen.sh",
     "doc-serve": "bin/doc-gen.sh -r 59320 -s -w -o",
-    "test": "jasmine"
+    "test": "jasmine",
+    "karma": "karma start --single-run"
   },
   "repository": {
     "type": "git",
@@ -35,6 +36,9 @@
     "awesome-typescript-loader": "^5.2.0",
     "jasmine": "^3.1.0",
     "jquery": "^3.3.1",
+    "karma": "^2.0.4",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-jasmine": "^1.1.2",
     "shx": "^0.3.1",
     "typescript": "^2.9.2",
     "webpack": "^4.12.1",
@@ -45,5 +49,6 @@
   "esm6": "./esm6/index.js",
   "main": "bundles/stomp.umd.js",
   "typings": "index.d.ts",
-  "sideEffects": false
+  "sideEffects": false,
+  "dependencies": {}
 }
