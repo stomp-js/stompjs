@@ -4,7 +4,8 @@
     "**/*[sS]pec.js"
   ],
   "helpers": [
-    "config/node-config.js"
+    "config/node-config.js",
+    "helpers/**/*.js"
   ],
   "stopSpecOnExpectationFailure": false,
   "random": true
