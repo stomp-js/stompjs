@@ -1,6 +1,6 @@
 # STOMP.js
 
-[![Build Status](https://travis-ci.org/stomp-js/stomp-websocket.svg?branch=master)](https://travis-ci.org/stomp-js/stomp-websocket)
+[![Build Status](https://travis-ci.org/stomp-js/stompjs.svg?branch=master)](https://travis-ci.org/stomp-js/stompjs)
 
 This library provides a WebSocket over STOMP client for Web browser or node.js 
 applications.
