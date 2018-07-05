@@ -1,56 +1,50 @@
-QUnit.module("Stomp Acknowledgement");
+describe("Stomp Acknowledgement", function () {
+  let client;
 
-QUnit.test("Subscribe using client ack mode, send a message and ack it", function (assert) {
-
-  var done = assert.async();
-
-  var body = Math.random();
-
-  var client = stompClient();
-
-  client.debug = TEST.debug;
-  client.connect(TEST.login, TEST.password, function () {
-    var onmessage = function (message) {
-      // we should receive the 2nd message outside the transaction
-      assert.equal(message.body, body);
-      var receipt = Math.random();
-      client.onreceipt = function (frame) {
-        assert.equal(receipt, frame.headers['receipt-id']);
-        client.disconnect();
-
-        done();
-      };
-      message.ack({'receipt': receipt});
-    };
-    var sub = client.subscribe(TEST.destination, onmessage, {'ack': 'client'});
-    client.send(TEST.destination, {}, body);
+  beforeEach(function () {
+    client = stompClient();
   });
-});
 
-QUnit.test("Subscribe using client ack mode, send a message and nack it", function (assert) {
-  var done = assert.async();
+  afterEach(function () {
+    disconnectStomp(client);
+  });
 
-  var body = Math.random();
+  it("Subscribe using client ack mode, send a message and ack it", function (done) {
+    const body = randomText();
 
-  var client = stompClient();
+    client.connect(TEST.login, TEST.password, function () {
+      const onmessage = function (message) {
+        // we should receive the 2nd message outside the transaction
+        expect(message.body).toEqual(body);
+        const receipt = randomText();
+        client.onreceipt = function (frame) {
+          expect(frame.headers['receipt-id']).toEqual(receipt);
 
-  client.debug = TEST.debug;
-  client.connect(TEST.login, TEST.password, function () {
-    var onmessage = function (message) {
-
-      assert.equal(message.body, body);
-      var receipt = Math.random();
-      client.onreceipt = function (frame) {
-        assert.equal(receipt, frame.headers['receipt-id']);
-        client.disconnect();
-
-        setTimeout(function () {
           done();
-        }, 100);
+        };
+        message.ack({'receipt': receipt});
       };
-      message.nack({'receipt': receipt});
-    };
-    var sub = client.subscribe(TEST.destination, onmessage, {'ack': 'client'});
-    client.send(TEST.destination, {}, body);
+      const sub = client.subscribe(TEST.destination, onmessage, {'ack': 'client'});
+      client.send(TEST.destination, {}, body);
+    });
+  });
+
+  it("Subscribe using client ack mode, send a message and nack it", function (done) {
+    const body = randomText();
+
+    client.connect(TEST.login, TEST.password, function () {
+      const onmessage = function (message) {
+
+        expect(message.body).toEqual(body);
+        const receipt = randomText();
+        client.onreceipt = function (frame) {
+          expect(frame.headers['receipt-id']).toEqual(receipt);
+          done();
+        };
+        message.nack({'receipt': receipt});
+      };
+      const sub = client.subscribe(TEST.destination, onmessage, {'ack': 'client'});
+      client.send(TEST.destination, {}, body);
+    });
   });
 });

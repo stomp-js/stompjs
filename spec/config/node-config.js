@@ -21,17 +21,19 @@ badStompClient = function () {
 id = 0;
 
 stompClient = function () {
-  var compatClient = Stomp.client(TEST.url);
+  const compatClient = Stomp.client(TEST.url);
   compatClient.id = '' + ++id;
+  compatClient.debug = TEST.debug;
   return compatClient;
 };
 
-/*
-stompClient = function () {
-  return Stomp.overWS(TEST.url);
+disconnectStomp = function (client) {
+  if (client) {
+    client.disconnect();
+    client = null;
+  }
 };
 
-stompClient = function () {
-  return Stomp.overTCP('localhost', 61613);
+randomText = function () {
+  return '' + Math.random();
 };
-*/

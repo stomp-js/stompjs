@@ -1,77 +1,71 @@
-var client = null;
+describe("Stomp Subscription", function () {
 
-QUnit.module("Stomp Subscription", {
-  beforeEach: function () {
+  let client;
+
+  beforeEach(function () {
     client = stompClient();
-    client.debug = TEST.debug;
-  },
+  });
 
-  afterEach: function () {
-    if(client.connected) {
-      client.disconnect();
+  afterEach(function () {
+    disconnectStomp(client);
+  });
+
+  it("Should receive messages sent to destination after subscribing", function (done) {
+
+    const msg = 'Is anybody out there?';
+
+    client.connect(TEST.login, TEST.password, function () {
+      client.subscribe(TEST.destination, function (frame) {
+        expect(frame.body).toEqual(msg);
+
+        done();
+      });
+
+      client.send(TEST.destination, {}, msg);
+    });
+  });
+
+  it("Should receive messages with special chars in headers", function (done) {
+    // This is a test intended for version 1.2 of STOMP client
+    if (client.version !== StompJs.Versions.V1_2) {
+      done();
     }
-  }
-});
 
-QUnit.test("Should receive messages sent to destination after subscribing", function (assert) {
-  var done = assert.async();
+    const msg = 'Is anybody out there?';
+    const cust = 'f:o:o\nbar\rbaz\\foo\nbar\rbaz\\';
 
-  var msg = 'Is anybody out there?';
+    client.connect(TEST.login, TEST.password, function () {
+      client.subscribe(TEST.destination, function (frame) {
+        expect(frame.body).toEqual(msg);
+        expect(frame.headers.cust).toEqual(cust);
 
-  client.connect(TEST.login, TEST.password, function () {
-    client.subscribe(TEST.destination, function (frame) {
-      assert.equal(frame.body, msg);
+        done();
+      });
 
-      done();
+      client.send(TEST.destination, {"cust": cust}, msg);
     });
-
-    client.send(TEST.destination, {}, msg);
   });
-});
 
-QUnit.test("Should receive messages with special chars in headers", function (assert) {
-  // This is a test intended for version 1.2 of STOMP client
-  if (client.version !== StompJs.Versions.V1_2) {
-    assert.expect(0);
-    return;
-  }
+  it("Should no longer receive messages after unsubscribing to destination", function (done) {
+    const msg1 = 'Calling all cars!';
+    let subscription1 = null,
+      subscription2 = null;
 
-  var done = assert.async();
+    client.connect(TEST.login, TEST.password, function () {
+      subscription1 = client.subscribe(TEST.destination, function (frame) {
+        // Should not have received message
+        expect(false).toBe(true);
+      });
 
-  var msg = 'Is anybody out there?';
-  var cust = 'f:o:o\nbar\rbaz\\foo\nbar\rbaz\\';
+      subscription2 = client.subscribe(TEST.destination, function (frame) {
+        expect(frame.body).toEqual(msg1);
 
-  client.connect(TEST.login, TEST.password, function () {
-    client.subscribe(TEST.destination, function (frame) {
-      assert.equal(frame.body, msg);
-      assert.equal(frame.headers.cust, cust);
+        done();
+      });
 
-      done();
+      subscription1.unsubscribe();
+      client.send(TEST.destination, {}, msg1);
     });
-
-    client.send(TEST.destination, {"cust": cust}, msg);
   });
-});
 
-QUnit.test("Should no longer receive messages after unsubscribing to destination", function (assert) {
-  var done = assert.async();
-
-  var msg1 = 'Calling all cars!',
-    subscription1 = null,
-    subscription2 = null;
-
-  client.connect(TEST.login, TEST.password, function () {
-    subscription1 = client.subscribe(TEST.destination, function (frame) {
-      assert.ok(false, 'Should not have received message!');
-    });
-
-    subscription2 = client.subscribe(TEST.destination, function (frame) {
-      assert.equal(frame.body, msg1);
-
-      done();
-    });
-
-    subscription1.unsubscribe();
-    client.send(TEST.destination, {}, msg1);
-  });
 });

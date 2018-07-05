@@ -1,41 +1,51 @@
-QUnit.module("Stomp Connection");
+describe("Stomp Connection", function () {
+  let client;
 
-QUnit.test("Should not connect to an invalid Stomp server", function (assert) {
-  var done = assert.async();
+  afterEach(function () {
+    disconnectStomp(client);
+  });
 
-  var client = badStompClient();
-  client.connect("foo", "bar",
-    function () {
-      assert.ok(false, 'Should not connect to invalid Stomp Server');
-      done();
-    },
-    function () {
-      assert.ok(true, 'Error in connecting to invalid Stomp Server');
-      done();
-    });
-});
-
-QUnit.test("Connect to a valid Stomp server", function (assert) {
-  var done = assert.async();
-
-  var client = stompClient();
-  client.connect(TEST.login, TEST.password,
-    function () {
-      assert.ok(true, 'Connected to valid Stomp Server');
-      done();
-    });
-});
-
-QUnit.test("Disconnect", function (assert) {
-  var done = assert.async();
-
-  var client = stompClient();
-  client.connect(TEST.login, TEST.password,
-    function () {
-      // once connected, we disconnect
-      client.disconnect(function () {
-        assert.ok(true, 'Disconnected from Stomp Server');
+  it("Should not connect to an invalid Stomp server", function (done) {
+    client = badStompClient();
+    client.connect("foo", "bar",
+      function () {
+        expect(false).toBe(true);
+        done();
+      },
+      function () {
         done();
       });
-    });
+  });
+
+  it("Connect to a valid Stomp server", function (done) {
+    client = stompClient();
+    client.connect(TEST.login, TEST.password,
+      function () {
+        done();
+      });
+  });
+
+  it("Should not connect with invalid credentials", function (done) {
+    client = stompClient();
+    client.connect(TEST.login, "bad-passcode",
+      function () {
+        expect(false).toBe(true);
+        done();
+      },
+      function (frame) {
+        done();
+      });
+  });
+
+  it("Disconnect", function (done) {
+    client = stompClient();
+    client.connect(TEST.login, TEST.password,
+      function () {
+        // once connected, we disconnect
+        client.disconnect(function () {
+          done();
+        });
+      });
+  });
+
 });

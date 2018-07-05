@@ -9,7 +9,7 @@
     "build": "npm run clean && tsc && npm run build-tsc && npm run build-webpack",
     "doc": "bin/doc-gen.sh",
     "doc-serve": "bin/doc-gen.sh -r 59320 -s -w -o",
-    "test": "qunit --timeout 10000 -c tests/config/node-config.js -t tests/unit/*"
+    "test": "jasmine"
   },
   "repository": {
     "type": "git",
@@ -33,8 +33,8 @@
   "devDependencies": {
     "@compodoc/compodoc": "^1.1.3",
     "awesome-typescript-loader": "^5.2.0",
+    "jasmine": "^3.1.0",
     "jquery": "^3.3.1",
-    "qunit": "^1.0.0",
     "shx": "^0.3.1",
     "typescript": "^2.9.2",
     "webpack": "^4.12.1",

@@ -1,43 +1,46 @@
-QUnit.module("Stomp Message");
+describe("Stomp Message", function () {
+  let client;
 
-QUnit.test("Send and receive a message", function (assert) {
-  var done = assert.async();
+  beforeEach(function () {
+    client = stompClient();
+  });
 
-  var body = Math.random();
+  afterEach(function () {
+    disconnectStomp(client);
+  });
 
-  var client = stompClient();
-  client.debug = TEST.debug;
-  client.connect(TEST.login, TEST.password,
-    function () {
-      client.subscribe(TEST.destination, function (message) {
-        assert.equal(message.body, body);
-        client.disconnect();
+  it("Send and receive a message", function (done) {
+    const body = randomText();
 
-        done();
+    client.connect(TEST.login, TEST.password,
+      function () {
+        client.subscribe(TEST.destination, function (message) {
+          expect(message.body).toEqual(body);
+          client.disconnect();
+
+          done();
+        });
+
+        client.send(TEST.destination, {}, body);
       });
+  });
 
-      client.send(TEST.destination, {}, body);
-    });
-});
+  it("Send and receive a message with a JSON body", function (done) {
+    const payload = {text: "hello", bool: true, value: randomText()};
 
-QUnit.test("Send and receive a message with a JSON body", function (assert) {
-  var done = assert.async();
+    client.connect(TEST.login, TEST.password,
+      function () {
+        client.subscribe(TEST.destination, function (message) {
+          const res = JSON.parse(message.body);
+          expect(res.text).toEqual(payload.text);
+          expect(res.bool).toEqual(payload.bool);
+          expect(res.value).toEqual(payload.value);
+          client.disconnect();
 
-  var client = stompClient();
-  var payload = {text: "hello", bool: true, value: Math.random()};
+          done();
+        });
 
-  client.connect(TEST.login, TEST.password,
-    function () {
-      client.subscribe(TEST.destination, function (message) {
-        var res = JSON.parse(message.body);
-        assert.equal(res.text, payload.text);
-        assert.equal(res.bool, payload.bool);
-        assert.equal(res.value, payload.value);
-        client.disconnect();
-
-        done();
+        client.send(TEST.destination, {}, JSON.stringify(payload));
       });
-
-      client.send(TEST.destination, {}, JSON.stringify(payload));
-    });
+  });
 });

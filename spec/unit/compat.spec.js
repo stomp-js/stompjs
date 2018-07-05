@@ -1,30 +1,34 @@
-QUnit.module("Compat mode");
 
-QUnit.test("Should set incoming heartbeat interval", function (assert) {
-  var client = stompClient();
+describe("Compat mode", function () {
+  let client;
 
-  client.heartbeat.incoming = 5200;
-  assert.equal(5200, client.heartbeatIncoming);
-  assert.equal(client.heartbeat.incoming, client.heartbeatIncoming);
+  beforeEach(function () {
+    client = stompClient();
+  });
+
+  afterEach(function () {
+    disconnectStomp(client);
+  });
+
+  it("Should set incoming heartbeat interval", function () {
+    client.heartbeat.incoming = 5200;
+    expect(client.heartbeatIncoming).toEqual(5200);
+    expect(client.heartbeat.incoming).toEqual(client.heartbeatIncoming);
+  });
+
+  it("Should set outgoing heartbeat interval", function () {
+    client.heartbeat.outgoing = 3100;
+    expect(client.heartbeatOutgoing).toEqual(3100);
+    expect(client.heartbeat.outgoing).toEqual(client.heartbeatOutgoing);
+  });
+
+  it("Should set incoming/outgoing heartbeat interval", function () {
+    client.heartbeat = {incoming: 2500, outgoing: 3750};
+
+    expect(client.heartbeatIncoming).toEqual(2500);
+    expect(client.heartbeatOutgoing).toEqual(3750);
+
+    expect(client.heartbeat.incoming).toEqual(client.heartbeatIncoming);
+    expect(client.heartbeat.outgoing).toEqual(client.heartbeatOutgoing);
+  });
 });
-
-QUnit.test("Should set outgoing heartbeat interval", function (assert) {
-  var client = stompClient();
-
-  client.heartbeat.outgoing = 3100;
-  assert.equal(3100, client.heartbeatOutgoing);
-  assert.equal(client.heartbeat.outgoing, client.heartbeatOutgoing);
-});
-
-QUnit.test("Should set incoming/outgoing heartbeat interval", function (assert) {
-  var client = stompClient();
-
-  client.heartbeat = {incoming: 2500, outgoing: 3750};
-
-  assert.equal(2500, client.heartbeatIncoming);
-  assert.equal(3750, client.heartbeatOutgoing);
-
-  assert.equal(client.heartbeat.incoming, client.heartbeatIncoming);
-  assert.equal(client.heartbeat.outgoing, client.heartbeatOutgoing);
-});
-
