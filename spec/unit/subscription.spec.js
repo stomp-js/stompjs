@@ -14,7 +14,7 @@ describe("Stomp Subscription", function () {
 
     const msg = 'Is anybody out there?';
 
-    client.connect(TEST.login, TEST.password, function () {
+    client.onConnect = function () {
       client.subscribe(TEST.destination, function (frame) {
         expect(frame.body).toEqual(msg);
 
@@ -22,7 +22,8 @@ describe("Stomp Subscription", function () {
       });
 
       client.send(TEST.destination, {}, msg);
-    });
+    };
+    client.connect();
   });
 
   it("Should receive messages with special chars in headers", function (done) {
@@ -34,7 +35,7 @@ describe("Stomp Subscription", function () {
     const msg = 'Is anybody out there?';
     const cust = 'f:o:o\nbar\rbaz\\foo\nbar\rbaz\\';
 
-    client.connect(TEST.login, TEST.password, function () {
+    client.onConnect = function () {
       client.subscribe(TEST.destination, function (frame) {
         expect(frame.body).toEqual(msg);
         expect(frame.headers.cust).toEqual(cust);
@@ -43,7 +44,8 @@ describe("Stomp Subscription", function () {
       });
 
       client.send(TEST.destination, {"cust": cust}, msg);
-    });
+    };
+    client.connect();
   });
 
   it("Should no longer receive messages after unsubscribing to destination", function (done) {
@@ -51,7 +53,7 @@ describe("Stomp Subscription", function () {
     let subscription1 = null,
       subscription2 = null;
 
-    client.connect(TEST.login, TEST.password, function () {
+    client.onConnect = function () {
       subscription1 = client.subscribe(TEST.destination, function (frame) {
         // Should not have received message
         expect(false).toBe(true);
@@ -65,7 +67,8 @@ describe("Stomp Subscription", function () {
 
       subscription1.unsubscribe();
       client.send(TEST.destination, {}, msg1);
-    });
+    };
+    client.connect();
   });
 
 });

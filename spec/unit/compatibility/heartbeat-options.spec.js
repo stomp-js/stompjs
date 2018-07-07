@@ -3,7 +3,7 @@ describe("Compat mode", function () {
   let client;
 
   beforeEach(function () {
-    client = stompClient();
+    client = StompJs.Stomp.client();
   });
 
   afterEach(function () {

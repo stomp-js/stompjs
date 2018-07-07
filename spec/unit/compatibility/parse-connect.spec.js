@@ -27,7 +27,7 @@ describe("Parse connect method arguments", function () {
   let client;
 
   beforeEach(function () {
-    client = stompClient();
+    client = StompJs.Stomp.client();
   });
 
   it("connect(login, passcode, connectCallback)", function () {

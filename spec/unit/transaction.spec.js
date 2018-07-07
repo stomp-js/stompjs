@@ -13,54 +13,54 @@ describe("Stomp Transaction", function () {
     const body = randomText();
     const body2 = randomText();
 
-    client.connect(TEST.login, TEST.password,
-      function () {
-        client.subscribe(TEST.destination, function (message) {
-          // we should receive the 2nd message outside the transaction
-          expect(message.body).toEqual(body2);
+    client.onConnect = function () {
+      client.subscribe(TEST.destination, function (message) {
+        // we should receive the 2nd message outside the transaction
+        expect(message.body).toEqual(body2);
 
-          done();
-        });
-
-        const tx = client.begin("txid_" + Math.random());
-        client.send(TEST.destination, {transaction: tx.id}, body);
-        tx.abort();
-        client.send(TEST.destination, {}, body2);
+        done();
       });
+
+      const tx = client.begin("txid_" + Math.random());
+      client.send(TEST.destination, {transaction: tx.id}, body);
+      tx.abort();
+      client.send(TEST.destination, {}, body2);
+    };
+    client.connect();
   });
 
   it("Send a message in a transaction and commit", function (done) {
     const body = randomText();
 
-    client.connect(TEST.login, TEST.password,
-      function () {
-        client.subscribe(TEST.destination, function (message) {
-          expect(message.body).toEqual(body);
+    client.onConnect = function () {
+      client.subscribe(TEST.destination, function (message) {
+        expect(message.body).toEqual(body);
 
-          done();
-        });
-        const tx = client.begin();
-        client.send(TEST.destination, {transaction: tx.id}, body);
-        tx.commit();
+        done();
       });
+      const tx = client.begin();
+      client.send(TEST.destination, {transaction: tx.id}, body);
+      tx.commit();
+    };
+    client.connect();
   });
 
   it("Send a message outside a transaction and abort", function (done) {
     const body = randomText();
 
-    client.connect(TEST.login, TEST.password,
-      function () {
-        client.subscribe(TEST.destination, function (message) {
-          // we should receive the message since it was sent outside the transaction
-          expect(message.body).toEqual(body);
+    client.onConnect = function () {
+      client.subscribe(TEST.destination, function (message) {
+        // we should receive the message since it was sent outside the transaction
+        expect(message.body).toEqual(body);
 
-          done();
-        });
-
-        const tx = client.begin();
-        client.send(TEST.destination, {}, body);
-        tx.abort();
+        done();
       });
+
+      const tx = client.begin();
+      client.send(TEST.destination, {}, body);
+      tx.abort();
+    };
+    client.connect();
   });
 
 });

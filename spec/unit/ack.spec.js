@@ -12,39 +12,43 @@ describe("Stomp Acknowledgement", function () {
   it("Subscribe using client ack mode, send a message and ack it", function (done) {
     const body = randomText();
 
-    client.connect(TEST.login, TEST.password, function () {
-      const onmessage = function (message) {
+    client.onConnect = function () {
+      const onMessage = function (message) {
         // we should receive the 2nd message outside the transaction
         expect(message.body).toEqual(body);
         const receipt = randomText();
-        client.onreceipt = function (frame) {
+        client.onReceipt = function (frame) {
           expect(frame.headers['receipt-id']).toEqual(receipt);
 
           done();
         };
         message.ack({'receipt': receipt});
       };
-      const sub = client.subscribe(TEST.destination, onmessage, {'ack': 'client'});
+      const sub = client.subscribe(TEST.destination, onMessage, {'ack': 'client'});
       client.send(TEST.destination, {}, body);
-    });
+    };
+
+    client.connect();
   });
 
   it("Subscribe using client ack mode, send a message and nack it", function (done) {
     const body = randomText();
 
-    client.connect(TEST.login, TEST.password, function () {
-      const onmessage = function (message) {
+    client.onConnect = function () {
+      const onMessage = function (message) {
 
         expect(message.body).toEqual(body);
         const receipt = randomText();
-        client.onreceipt = function (frame) {
+        client.onReceipt = function (frame) {
           expect(frame.headers['receipt-id']).toEqual(receipt);
           done();
         };
         message.nack({'receipt': receipt});
       };
-      const sub = client.subscribe(TEST.destination, onmessage, {'ack': 'client'});
+      const sub = client.subscribe(TEST.destination, onMessage, {'ack': 'client'});
       client.send(TEST.destination, {}, body);
-    });
+    };
+
+    client.connect();
   });
 });

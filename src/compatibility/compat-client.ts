@@ -6,8 +6,12 @@ export class CompatClient extends Client {
 
   constructor(webSocketFactory: () => any) {
     super();
-    this.reconnect_delay = 0; // Default from previous version is no auto reconnect
+    this.reconnect_delay = 0;
     this.webSocketFactory = webSocketFactory;
+    // Default from previous version
+    this.debug = (...message: any[]) => {
+      console.log(...message);
+    };
   }
 
   private _parseConnect(...args: any[]): any {

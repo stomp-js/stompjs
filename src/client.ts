@@ -7,6 +7,7 @@ import {StompSubscription} from "./stomp-subscription";
 import {Transaction} from "./transaction";
 import {Versions} from "./versions";
 import {frameCallbackType, messageCallbackType} from "./types";
+import {StompConfig} from "./stomp-config";
 
 /**
  * STOMP Client Class.
@@ -108,6 +109,20 @@ export class Client {
   public onWebSocketClose: any;
 
   /**
+   * By default, debug messages are discarded. To log to `console` following can be used:
+   *
+   * ```javascript
+   *        client.debug = function(str) {
+   *          console.log(str);
+   *        };
+   * ```
+   *
+   * This method is called for every actual transmission of the STOMP frames over the
+   * WebSocket.
+   */
+  public debug: (...message: any[]) => void = (...message: any[]) => {};
+
+  /**
    * version of STOMP protocol negotiated with the server, READONLY
    */
   get version(): string {
@@ -130,7 +145,7 @@ export class Client {
    * Please do not create instance of this class directly, use one of the methods [Stomp.client]{@link Stomp#client},
    * [Stomp.over]{@link Stomp#over} in {@link Stomp}.
    */
-  constructor() {
+  constructor(conf: StompConfig = {}) {
     // Dummy callbacks
     const noOp = () => {};
     this.onConnect = noOp;
@@ -163,31 +178,18 @@ export class Client {
     this._escapeHeaderValues = false;
 
     this._lastServerActivityTS = Date.now();
+
+    // Apply configuration
+    this.configure(conf);
   }
 
   /**
-   * By default, debug messages are logged in the window's console if it is defined.
-   * This method is called for every actual transmission of the STOMP frames over the
-   * WebSocket.
-   *
-   * It is possible to set a `debug(message)` method
-   * on a client instance to handle differently the debug messages:
-   *
-   * ```javascript
-   *        client.debug = function(str) {
-   *          // append the debug log to a #debug div
-   *          $("#debug").append(str + "\n");
-   *        };
-   *
-   *        // Disable logging
-   *        client.debug = function(str) {};
-   * ```
-   *
-   * Note: the default can generate lot of log on the console. Set it to empty function to disable.
+   * Update configuration. See {@link StompConfig} for details of configuration options.
    */
-  public debug = (...message: any[]) => {
-    console.log(...message);
-  };
+  public configure(conf: StompConfig): void {
+    // bulk assign all properties to this
+    (<any>Object).assign(this, conf);
+  }
 
   private _transmit(command: string, headers: StompHeaders, body: string = ''): void {
     let out = Frame.marshall(command, headers, body, this._escapeHeaderValues);

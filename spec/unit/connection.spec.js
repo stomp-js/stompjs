@@ -19,33 +19,40 @@ describe("Stomp Connection", function () {
 
   it("Connect to a valid Stomp server", function (done) {
     client = stompClient();
-    client.connect(TEST.login, TEST.password,
-      function () {
-        done();
-      });
+    client.onConnect = function () {
+      done();
+    };
+    client.connect()
   });
 
   it("Should not connect with invalid credentials", function (done) {
     client = stompClient();
-    client.connect(TEST.login, "bad-passcode",
-      function () {
+    client.configure({
+      connectHeaders: {login: TEST.login, passcode: "bad-passcode"},
+      onConnect: function () {
         expect(false).toBe(true);
         done();
       },
-      function (frame) {
+      onStompError: function (frame) {
         done();
-      });
+      }
+    });
+    client.connect();
   });
 
   it("Disconnect", function (done) {
     client = stompClient();
-    client.connect(TEST.login, TEST.password,
-      function () {
+    client.configure({
+      onConnect: function () {
         // once connected, we disconnect
-        client.disconnect(function () {
-          done();
-        });
-      });
+        client.disconnect();
+      },
+      onDisconnect: function () {
+        done();
+      }
+    });
+
+    client.connect();
   });
 
 });
