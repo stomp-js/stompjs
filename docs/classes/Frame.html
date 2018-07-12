@@ -1,0 +1,826 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>@stomp/stompjs documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/Vagrant.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">@stomp/stompjs documentation</a>
+            <button type="button" class="btn btn-default btn-menu fa fa-bars" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+            <div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search">
+</div>
+            <nav>
+
+    <ul class="list">
+
+        <li class="title">
+            <a href="index.html" data-type="index-link">@stomp/stompjs documentation</a>
+        </li>
+
+        <li class="divider"></li>
+
+
+        <li class="chapter">
+            <a data-type="chapter-link" href="index.html"><span class="fa fa-home"></span>Getting started</a>
+            <ul class="links">
+                    <li class="link">
+                        <a 
+                            
+                             href="overview.html" 
+                             href="overview.html" 
+                            data-type="chapter-link">
+                            <span class="fa fa-fw fa-th"></span>Overview
+                        </a>
+                    </li>
+                    <li class="link">
+                      <a href="index.html" data-type="chapter-link"><span class="fa fa-file-text-o"></span>README</a>
+                    </li>
+                    <li class="link">
+                            <a href="license.html"
+                        data-type="chapter-link">
+                            <span class="fa fa-fw fa-file-text-o"></span>LICENSE
+                        </a>
+                    </li>
+            </ul>
+        </li>
+
+        <li class="chapter">
+            <div class="simple menu-toggler" data-toggle="collapse"
+                    data-target="#xs-additional-pages"
+                >
+                <span class="fa fa-fw fa-book"></span>
+                <span>Guides</span>
+                <span class="fa fa-angle-down"></span>
+            </div>
+            <ul class="links collapse"
+                    id="xs-additional-pages"
+                >
+                    <li class="link ">
+                        <a href="additional-documentation/introduction.html" data-type="entity-link" data-context-id="additional">Introduction</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/usage.html" data-type="entity-link" data-context-id="additional">Usage</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/stomp-brokers.html" data-type="entity-link" data-context-id="additional">STOMP Brokers</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/upgrading.html" data-type="entity-link" data-context-id="additional">Upgrading</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/sockjs-support.html" data-type="entity-link" data-context-id="additional">SockJS Support</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/change-log.html" data-type="entity-link" data-context-id="additional">Change Log</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/how-to-contribute.html" data-type="entity-link" data-context-id="additional">How to Contribute</a>
+                    </li>
+            </ul>
+        </li>
+
+
+
+
+        <li class="chapter">
+            <div class="simple menu-toggler" data-toggle="collapse"
+                    data-target="#xs-classes-links"
+                >
+                <span class="fa fa-fw fa-file-code-o"></span>
+                <span>Classes</span>
+                <span class="fa fa-angle-down"></span>
+            </div>
+            <ul class="links collapse"
+                    id="xs-classes-links"
+                >
+                    <li class="link">
+                        <a href="classes/Client.html" data-type="entity-link">Client</a>
+                    </li>
+                    <li class="link">
+                        <a href="classes/CompatClient.html" data-type="entity-link">CompatClient</a>
+                    </li>
+                    <li class="link">
+                        <a href="classes/Frame.html" data-type="entity-link">Frame</a>
+                    </li>
+                    <li class="link">
+                        <a href="classes/Stomp.html" data-type="entity-link">Stomp</a>
+                    </li>
+                    <li class="link">
+                        <a href="classes/Versions.html" data-type="entity-link">Versions</a>
+                    </li>
+            </ul>
+        </li>
+
+
+
+        <li class="chapter">
+            <div class="simple menu-toggler" data-toggle="collapse"
+                    data-target="#xs-interfaces-links"
+                >
+                <span class="fa fa-fw fa-info"></span>
+                <span>Interfaces</span>
+                <span class="fa fa-angle-down"></span>
+            </div>
+            <ul class="links collapse"
+                    id="xs-interfaces-links"
+                >
+                    <li class="link">
+                        <a href="interfaces/Message.html" data-type="entity-link">Message</a>
+                    </li>
+                    <li class="link">
+                        <a href="interfaces/StompConfig.html" data-type="entity-link">StompConfig</a>
+                    </li>
+                    <li class="link">
+                        <a href="interfaces/StompHeaders.html" data-type="entity-link">StompHeaders</a>
+                    </li>
+                    <li class="link">
+                        <a href="interfaces/StompSubscription.html" data-type="entity-link">StompSubscription</a>
+                    </li>
+                    <li class="link">
+                        <a href="interfaces/Transaction.html" data-type="entity-link">Transaction</a>
+                    </li>
+            </ul>
+        </li>
+
+
+        <li class="chapter">
+            <div class="simple menu-toggler" data-toggle="collapse"
+                    data-target="#xs-miscellaneous-links"
+                >
+                <span class="fa fa-fw fa-cubes"></span>
+                <span>Miscellaneous</span>
+                <span class="fa fa-angle-down"></span>
+            </div>
+            <ul class="links collapse"
+                    id="xs-miscellaneous-links"
+                >
+                    <li class="link">
+                      <a href="miscellaneous/typealiases.html" data-type="entity-link">Type aliases</a>
+                    </li>
+            </ul>
+        </li>
+
+
+        <li class="chapter">
+            <a data-type="chapter-link" href="coverage.html"><span class="fa fa-fw fa-tasks"></span>Documentation coverage</a>
+        </li>
+
+
+    </ul>
+
+</nav>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <nav>
+
+    <ul class="list">
+
+        <li class="title">
+            <a href="index.html" data-type="index-link">@stomp/stompjs documentation</a>
+        </li>
+
+        <li class="divider"></li>
+
+            <div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search">
+</div>
+
+        <li class="chapter">
+            <a data-type="chapter-link" href="index.html"><span class="fa fa-home"></span>Getting started</a>
+            <ul class="links">
+                    <li class="link">
+                        <a 
+                            
+                             href="overview.html" 
+                             href="overview.html" 
+                            data-type="chapter-link">
+                            <span class="fa fa-fw fa-th"></span>Overview
+                        </a>
+                    </li>
+                    <li class="link">
+                      <a href="index.html" data-type="chapter-link"><span class="fa fa-file-text-o"></span>README</a>
+                    </li>
+                    <li class="link">
+                            <a href="license.html"
+                        data-type="chapter-link">
+                            <span class="fa fa-fw fa-file-text-o"></span>LICENSE
+                        </a>
+                    </li>
+            </ul>
+        </li>
+
+        <li class="chapter">
+            <div class="simple menu-toggler" data-toggle="collapse"
+                    data-target="#additional-pages"
+>
+                <span class="fa fa-fw fa-book"></span>
+                <span>Guides</span>
+                <span class="fa fa-angle-down"></span>
+            </div>
+            <ul class="links collapse"
+                    id="additional-pages"
+>
+                    <li class="link ">
+                        <a href="additional-documentation/introduction.html" data-type="entity-link" data-context-id="additional">Introduction</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/usage.html" data-type="entity-link" data-context-id="additional">Usage</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/stomp-brokers.html" data-type="entity-link" data-context-id="additional">STOMP Brokers</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/upgrading.html" data-type="entity-link" data-context-id="additional">Upgrading</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/sockjs-support.html" data-type="entity-link" data-context-id="additional">SockJS Support</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/change-log.html" data-type="entity-link" data-context-id="additional">Change Log</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/how-to-contribute.html" data-type="entity-link" data-context-id="additional">How to Contribute</a>
+                    </li>
+            </ul>
+        </li>
+
+
+
+
+        <li class="chapter">
+            <div class="simple menu-toggler" data-toggle="collapse"
+                    data-target="#classes-links"
+>
+                <span class="fa fa-fw fa-file-code-o"></span>
+                <span>Classes</span>
+                <span class="fa fa-angle-down"></span>
+            </div>
+            <ul class="links collapse"
+                    id="classes-links"
+>
+                    <li class="link">
+                        <a href="classes/Client.html" data-type="entity-link">Client</a>
+                    </li>
+                    <li class="link">
+                        <a href="classes/CompatClient.html" data-type="entity-link">CompatClient</a>
+                    </li>
+                    <li class="link">
+                        <a href="classes/Frame.html" data-type="entity-link">Frame</a>
+                    </li>
+                    <li class="link">
+                        <a href="classes/Stomp.html" data-type="entity-link">Stomp</a>
+                    </li>
+                    <li class="link">
+                        <a href="classes/Versions.html" data-type="entity-link">Versions</a>
+                    </li>
+            </ul>
+        </li>
+
+
+
+        <li class="chapter">
+            <div class="simple menu-toggler" data-toggle="collapse"
+                    data-target="#interfaces-links"
+>
+                <span class="fa fa-fw fa-info"></span>
+                <span>Interfaces</span>
+                <span class="fa fa-angle-down"></span>
+            </div>
+            <ul class="links collapse"
+                    id="interfaces-links"
+>
+                    <li class="link">
+                        <a href="interfaces/Message.html" data-type="entity-link">Message</a>
+                    </li>
+                    <li class="link">
+                        <a href="interfaces/StompConfig.html" data-type="entity-link">StompConfig</a>
+                    </li>
+                    <li class="link">
+                        <a href="interfaces/StompHeaders.html" data-type="entity-link">StompHeaders</a>
+                    </li>
+                    <li class="link">
+                        <a href="interfaces/StompSubscription.html" data-type="entity-link">StompSubscription</a>
+                    </li>
+                    <li class="link">
+                        <a href="interfaces/Transaction.html" data-type="entity-link">Transaction</a>
+                    </li>
+            </ul>
+        </li>
+
+
+        <li class="chapter">
+            <div class="simple menu-toggler" data-toggle="collapse"
+                    data-target="#miscellaneous-links"
+>
+                <span class="fa fa-fw fa-cubes"></span>
+                <span>Miscellaneous</span>
+                <span class="fa fa-angle-down"></span>
+            </div>
+            <ul class="links collapse"
+                    id="miscellaneous-links"
+>
+                    <li class="link">
+                      <a href="miscellaneous/typealiases.html" data-type="entity-link">Type aliases</a>
+                    </li>
+            </ul>
+        </li>
+
+
+        <li class="chapter">
+            <a data-type="chapter-link" href="coverage.html"><span class="fa fa-fw fa-tasks"></span>Documentation coverage</a>
+        </li>
+
+
+    </ul>
+
+</nav>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content class">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Classes</li>
+  <li>Frame</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/frame.ts</code>
+        </p>
+
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>Frame class represents a STOMP frame. Many of the callbacks pass the Frame received from
+the STOMP broker. For advanced usage you might need to access <a href="../classes/Frame.html#headers">headers</a>.</p>
+<p><a href="../interfaces/Message.html">Message</a> is an extended Frame.</p>
+
+            </p>
+
+
+
+            <p class="comment">
+                <h3>Example</h3>
+            </p>
+            <div class="io-description">
+            </div>
+
+            <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#body">body</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#command">command</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#headers">headers</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+
+            <section>
+    
+        <h3 id="inputs">
+            Properties
+        </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="body"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            body
+                            </b>
+                            <a href="#body"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <span class="modifier-icon fa fa-reset"></span><code>body:     <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/frame.ts:28</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>It is serialized string</p>
+</div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="command"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            command
+                            </b>
+                            <a href="#command"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <span class="modifier-icon fa fa-reset"></span><code>command:     <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/frame.ts:18</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>STOMP Command</p>
+</div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="headers"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            headers
+                            </b>
+                            <a href="#headers"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <span class="modifier-icon fa fa-reset"></span><code>headers:     <code><a href="../interfaces/StompHeaders.html" target="_self" >StompHeaders</a></code>
+</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code><a href="../interfaces/StompHeaders.html" target="_self" >StompHeaders</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/frame.ts:23</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>Headers, key value pairs.</p>
+</div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {StompHeaders} from &quot;./stomp-headers&quot;;
+import {Byte} from &quot;./byte&quot;;
+
+type unmarshallResults &#x3D; { frames: Frame[]; partial: string };
+
+/**
+ * Frame class represents a STOMP frame. Many of the callbacks pass the Frame received from
+ * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
+ *
+ * {@link Message} is an extended Frame.
+ *
+ * @see http://stomp.github.com/stomp-specification-1.2.html#STOMP_Frames STOMP Frame
+ */
+export class Frame {
+  /**
+   * STOMP Command
+   */
+  public command: string;
+
+  /**
+   * Headers, key value pairs.
+   */
+  public headers: StompHeaders;
+
+  /**
+   * It is serialized string
+   */
+  public body: any;
+
+  private escapeHeaderValues: boolean;
+
+  /**
+   * Frame constructor. &#x60;command&#x60;, &#x60;headers&#x60; and &#x60;body&#x60; are available as properties.
+   *
+   * @internal
+   */
+  constructor(command: string, headers: StompHeaders &#x3D; {}, body: any &#x3D; &#x27;&#x27;, escapeHeaderValues: boolean &#x3D; false) {
+    this.command &#x3D; command;
+    this.headers &#x3D; headers;
+    this.body &#x3D; body;
+    this.escapeHeaderValues &#x3D; escapeHeaderValues;
+  }
+
+  /**
+   * @internal
+   */
+  public toString(): string {
+    const lines &#x3D; [this.command];
+    const skipContentLength &#x3D; (this.headers[&#x27;content-length&#x27;] &#x3D;&#x3D;&#x3D; false) ? true : false;
+    if (skipContentLength) {
+      delete this.headers[&#x27;content-length&#x27;];
+    }
+
+    for (let name of Object.keys(this.headers || {})) {
+      const value &#x3D; this.headers[name];
+      if (this.escapeHeaderValues &amp;&amp; (this.command !&#x3D;&#x3D; &#x27;CONNECT&#x27;) &amp;&amp; (this.command !&#x3D;&#x3D; &#x27;CONNECTED&#x27;)) {
+        lines.push(&#x60;${name}:${Frame.frEscape(&#x60;${value}&#x60;)}&#x60;);
+      } else {
+        lines.push(&#x60;${name}:${value}&#x60;);
+      }
+    }
+    if (this.body &amp;&amp; !skipContentLength) {
+      lines.push(&#x60;content-length:${Frame.sizeOfUTF8(this.body)}&#x60;);
+    }
+    lines.push(Byte.LF + this.body);
+    return lines.join(Byte.LF);
+  }
+
+  /**
+   * Compute the size of a UTF-8 string by counting its number of bytes
+   * (and not the number of characters composing the string)
+   */
+  private static sizeOfUTF8(s: string): number {
+    if (s) {
+      const matches &#x3D; encodeURI(s).match(/%..|./g) || [];
+      return matches.length;
+    } else {
+      return 0;
+    }
+  }
+
+  /**
+   * deserialize a STOMP Frame from raw data.
+   *
+   * @internal
+   */
+  public static unmarshallSingle(data: any, escapeHeaderValues: boolean): Frame {
+    // search for 2 consecutives LF byte to split the command
+    // and headers from the body
+    const divider &#x3D; data.search(new RegExp(&#x60;${Byte.LF}${Byte.LF}&#x60;));
+    const headerLines: string[] &#x3D; data.substring(0, divider).split(Byte.LF);
+    const command &#x3D; headerLines.shift();
+    const headers: StompHeaders &#x3D; {};
+    // utility function to trim any whitespace before and after a string
+    const trim &#x3D; (str: string): string &#x3D;&gt; str.replace(/^\s+|\s+$/g, &#x27;&#x27;);
+    // Parse headers in reverse order so that for repeated headers, the 1st
+    // value is used
+    for (let line of headerLines.reverse()) {
+      const idx &#x3D; line.indexOf(&#x27;:&#x27;);
+
+      const key &#x3D; &lt;string&gt;trim(line.substring(0, idx));
+      let value &#x3D; trim(line.substring(idx + 1));
+
+      if (escapeHeaderValues &amp;&amp; (command !&#x3D;&#x3D; &#x27;CONNECT&#x27;) &amp;&amp; (command !&#x3D;&#x3D; &#x27;CONNECTED&#x27;)) {
+        value &#x3D; Frame.frUnEscape(value);
+      }
+
+      headers[key] &#x3D; value;
+    }
+    // Parse body
+    // check for content-length or  topping at the first NULL byte found.
+    let body &#x3D; &#x27;&#x27;;
+    // skip the 2 LF bytes that divides the headers from the body
+    const start &#x3D; divider + 2;
+    if (headers[&#x27;content-length&#x27;]) {
+      const len &#x3D; parseInt(&lt;string&gt;headers[&#x27;content-length&#x27;]);
+      body &#x3D; (&#x60;${data}&#x60;).substring(start, start + len);
+    } else {
+      let chr &#x3D; null;
+      for (let i &#x3D; start, end &#x3D; data.length, asc &#x3D; start &lt;&#x3D; end; asc ? i &lt; end : i &gt; end; asc ? i++ : i--) {
+        chr &#x3D; data.charAt(i);
+        if (chr &#x3D;&#x3D;&#x3D; Byte.NULL) {
+          break;
+        }
+        body +&#x3D; chr;
+      }
+    }
+    return new Frame(&lt;string&gt;command, headers, body, escapeHeaderValues);
+  }
+
+  /**
+   * Split the data before unmarshalling every single STOMP frame.
+   * Web socket servers can send multiple frames in a single websocket message.
+   * If the message size exceeds the websocket message size, then a single
+   * frame can be fragmented across multiple messages.
+   *
+   * @internal
+   */
+  public static unmarshall(datas: any, escapeHeaderValues: boolean): unmarshallResults {
+    // Ugly list comprehension to split and unmarshall *multiple STOMP frames*
+    // contained in a *single WebSocket frame*.
+    // The data is split when a NULL byte (followed by zero or many LF bytes) is
+    // found
+    if (escapeHeaderValues &#x3D;&#x3D; null) {
+      escapeHeaderValues &#x3D; false;
+    }
+    const frames &#x3D; datas.split(new RegExp(&#x60;${Byte.NULL}${Byte.LF}*&#x60;));
+
+    const r: unmarshallResults &#x3D; {
+      frames: [],
+      partial: &#x27;&#x27;
+    };
+    r.frames &#x3D; (frames.slice(0, -1).map((frame: Frame) &#x3D;&gt; Frame.unmarshallSingle(frame, escapeHeaderValues)));
+
+    // If this contains a final full message or just a acknowledgement of a PING
+    // without any other content, process this frame, otherwise return the
+    // contents of the buffer to the caller.
+    const last_frame &#x3D; frames.slice(-1)[0];
+
+    if ((last_frame &#x3D;&#x3D;&#x3D; Byte.LF) || ((last_frame.search(new RegExp(&#x60;${Byte.NULL}${Byte.LF}*$&#x60;))) !&#x3D;&#x3D; -1)) {
+      r.frames.push(Frame.unmarshallSingle(last_frame, escapeHeaderValues));
+    } else {
+      r.partial &#x3D; last_frame;
+    }
+    return r;
+  }
+
+  /**
+   * Serialize a STOMP frame as per STOMP standards, suitable to be sent to the STOMP broker.
+   *
+   * @internal
+   */
+  public static marshall(command: string, headers: StompHeaders, body: any, escapeHeaderValues: boolean) {
+    const frame &#x3D; new Frame(command, headers, body, escapeHeaderValues);
+    return frame.toString() + Byte.NULL;
+  }
+
+  /**
+   *  Escape header values
+   */
+  private static frEscape(str: string): string {
+    return str.replace(/\\/g, &quot;\\\\&quot;).replace(/\r/g, &quot;\\r&quot;).replace(/\n/g, &quot;\\n&quot;).replace(/:/g, &quot;\\c&quot;);
+  }
+
+  /**
+   * UnEscape header values
+   */
+  private static frUnEscape(str: string): string {
+    return str.replace(/\\r/g, &quot;\r&quot;).replace(/\\n/g, &quot;\n&quot;).replace(/\\c/g, &quot;:&quot;).replace(/\\\\/g, &quot;\\&quot;);
+  }
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+        <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'Frame.html';
+        </script>
+
+       <script src="../js/search/search.js"></script>
+       <script src="../js/search/lunr.min.js"></script>
+       <script src="../js/search/search-lunr.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+       <script src="../js/search/search_index.js"></script>
+
+
+    </body>
+</html>

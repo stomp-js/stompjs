@@ -1,15 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var byte_1 = require("./byte");
+/**
+ * Frame class represents a STOMP frame. Many of the callbacks pass the Frame received from
+ * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
+ *
+ * {@link Message} is an extended Frame.
+ *
+ * @see http://stomp.github.com/stomp-specification-1.2.html#STOMP_Frames STOMP Frame
+ */
 var Frame = /** @class */ (function () {
-    // Frame constructor. `command`, `headers` and `body` are available as properties.
-    //
-    // Many of the Client methods pass instance of received Frame to the callback.
-    //
-    // @param command [String]
-    // @param headers [Object]
-    // @param body [String]
-    // @param escapeHeaderValues [Boolean]
+    /**
+     * Frame constructor. `command`, `headers` and `body` are available as properties.
+     *
+     * @internal
+     */
     function Frame(command, headers, body, escapeHeaderValues) {
         if (headers === void 0) { headers = {}; }
         if (body === void 0) { body = ''; }
@@ -19,10 +24,9 @@ var Frame = /** @class */ (function () {
         this.body = body;
         this.escapeHeaderValues = escapeHeaderValues;
     }
-    // Provides a textual representation of the frame
-    // suitable to be sent to the server
-    //
-    // @private
+    /**
+     * @internal
+     */
     Frame.prototype.toString = function () {
         var lines = [this.command];
         var skipContentLength = (this.headers['content-length'] === false) ? true : false;
@@ -45,21 +49,24 @@ var Frame = /** @class */ (function () {
         lines.push(byte_1.Byte.LF + this.body);
         return lines.join(byte_1.Byte.LF);
     };
-    // Compute the size of a UTF-8 string by counting its number of bytes
-    // (and not the number of characters composing the string)
-    //
-    // @private
+    /**
+     * Compute the size of a UTF-8 string by counting its number of bytes
+     * (and not the number of characters composing the string)
+     */
     Frame.sizeOfUTF8 = function (s) {
         if (s) {
-            return encodeURI(s).match(/%..|./g).length;
+            var matches = encodeURI(s).match(/%..|./g) || [];
+            return matches.length;
         }
         else {
             return 0;
         }
     };
-    // Unmarshall a single STOMP frame from a `data` string
-    //
-    // @private
+    /**
+     * deserialize a STOMP Frame from raw data.
+     *
+     * @internal
+     */
     Frame.unmarshallSingle = function (data, escapeHeaderValues) {
         // search for 2 consecutives LF byte to split the command
         // and headers from the body
@@ -74,12 +81,12 @@ var Frame = /** @class */ (function () {
         for (var _i = 0, _a = headerLines.reverse(); _i < _a.length; _i++) {
             var line = _a[_i];
             var idx = line.indexOf(':');
+            var key = trim(line.substring(0, idx));
+            var value = trim(line.substring(idx + 1));
             if (escapeHeaderValues && (command !== 'CONNECT') && (command !== 'CONNECTED')) {
-                headers[trim(line.substring(0, idx))] = Frame.frUnEscape(trim(line.substring(idx + 1)));
+                value = Frame.frUnEscape(value);
             }
-            else {
-                headers[trim(line.substring(0, idx))] = trim(line.substring(idx + 1));
-            }
+            headers[key] = value;
         }
         // Parse body
         // check for content-length or  topping at the first NULL byte found.
@@ -102,16 +109,14 @@ var Frame = /** @class */ (function () {
         }
         return new Frame(command, headers, body, escapeHeaderValues);
     };
-    // Split the data before unmarshalling every single STOMP frame.
-    // Web socket servers can send multiple frames in a single websocket message.
-    // If the message size exceeds the websocket message size, then a single
-    // frame can be fragmented across multiple messages.
-    //
-    // `datas` is a string.
-    //
-    // returns an *array* of Frame objects
-    //
-    // @private
+    /**
+     * Split the data before unmarshalling every single STOMP frame.
+     * Web socket servers can send multiple frames in a single websocket message.
+     * If the message size exceeds the websocket message size, then a single
+     * frame can be fragmented across multiple messages.
+     *
+     * @internal
+     */
     Frame.unmarshall = function (datas, escapeHeaderValues) {
         // Ugly list comprehension to split and unmarshall *multiple STOMP frames*
         // contained in a *single WebSocket frame*.
@@ -138,22 +143,24 @@ var Frame = /** @class */ (function () {
         }
         return r;
     };
-    // Marshall a Stomp frame
-    //
-    // @private
+    /**
+     * Serialize a STOMP frame as per STOMP standards, suitable to be sent to the STOMP broker.
+     *
+     * @internal
+     */
     Frame.marshall = function (command, headers, body, escapeHeaderValues) {
         var frame = new Frame(command, headers, body, escapeHeaderValues);
         return frame.toString() + byte_1.Byte.NULL;
     };
-    // Escape header values
-    //
-    // @private
+    /**
+     *  Escape header values
+     */
     Frame.frEscape = function (str) {
         return str.replace(/\\/g, "\\\\").replace(/\r/g, "\\r").replace(/\n/g, "\\n").replace(/:/g, "\\c");
     };
-    // Escape header values
-    //
-    // @private
+    /**
+     * UnEscape header values
+     */
     Frame.frUnEscape = function (str) {
         return str.replace(/\\r/g, "\r").replace(/\\n/g, "\n").replace(/\\c/g, ":").replace(/\\\\/g, "\\");
     };

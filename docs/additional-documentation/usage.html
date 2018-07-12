@@ -1,0 +1,656 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>@stomp/stompjs documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/Vagrant.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">@stomp/stompjs documentation</a>
+            <button type="button" class="btn btn-default btn-menu fa fa-bars" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+            <div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search">
+</div>
+            <nav>
+
+    <ul class="list">
+
+        <li class="title">
+            <a href="index.html" data-type="index-link">@stomp/stompjs documentation</a>
+        </li>
+
+        <li class="divider"></li>
+
+
+        <li class="chapter">
+            <a data-type="chapter-link" href="index.html"><span class="fa fa-home"></span>Getting started</a>
+            <ul class="links">
+                    <li class="link">
+                        <a 
+                            
+                             href="overview.html" 
+                             href="overview.html" 
+                            data-type="chapter-link">
+                            <span class="fa fa-fw fa-th"></span>Overview
+                        </a>
+                    </li>
+                    <li class="link">
+                      <a href="index.html" data-type="chapter-link"><span class="fa fa-file-text-o"></span>README</a>
+                    </li>
+                    <li class="link">
+                            <a href="license.html"
+                        data-type="chapter-link">
+                            <span class="fa fa-fw fa-file-text-o"></span>LICENSE
+                        </a>
+                    </li>
+            </ul>
+        </li>
+
+        <li class="chapter">
+            <div class="simple menu-toggler" data-toggle="collapse"
+                    data-target="#xs-additional-pages"
+                >
+                <span class="fa fa-fw fa-book"></span>
+                <span>Guides</span>
+                <span class="fa fa-angle-down"></span>
+            </div>
+            <ul class="links collapse"
+                    id="xs-additional-pages"
+                >
+                    <li class="link ">
+                        <a href="additional-documentation/introduction.html" data-type="entity-link" data-context-id="additional">Introduction</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/usage.html" data-type="entity-link" data-context-id="additional">Usage</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/stomp-brokers.html" data-type="entity-link" data-context-id="additional">STOMP Brokers</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/upgrading.html" data-type="entity-link" data-context-id="additional">Upgrading</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/sockjs-support.html" data-type="entity-link" data-context-id="additional">SockJS Support</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/change-log.html" data-type="entity-link" data-context-id="additional">Change Log</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/how-to-contribute.html" data-type="entity-link" data-context-id="additional">How to Contribute</a>
+                    </li>
+            </ul>
+        </li>
+
+
+
+
+        <li class="chapter">
+            <div class="simple menu-toggler" data-toggle="collapse"
+                    data-target="#xs-classes-links"
+                >
+                <span class="fa fa-fw fa-file-code-o"></span>
+                <span>Classes</span>
+                <span class="fa fa-angle-down"></span>
+            </div>
+            <ul class="links collapse"
+                    id="xs-classes-links"
+                >
+                    <li class="link">
+                        <a href="classes/Client.html" data-type="entity-link">Client</a>
+                    </li>
+                    <li class="link">
+                        <a href="classes/CompatClient.html" data-type="entity-link">CompatClient</a>
+                    </li>
+                    <li class="link">
+                        <a href="classes/Frame.html" data-type="entity-link">Frame</a>
+                    </li>
+                    <li class="link">
+                        <a href="classes/Stomp.html" data-type="entity-link">Stomp</a>
+                    </li>
+                    <li class="link">
+                        <a href="classes/Versions.html" data-type="entity-link">Versions</a>
+                    </li>
+            </ul>
+        </li>
+
+
+
+        <li class="chapter">
+            <div class="simple menu-toggler" data-toggle="collapse"
+                    data-target="#xs-interfaces-links"
+                >
+                <span class="fa fa-fw fa-info"></span>
+                <span>Interfaces</span>
+                <span class="fa fa-angle-down"></span>
+            </div>
+            <ul class="links collapse"
+                    id="xs-interfaces-links"
+                >
+                    <li class="link">
+                        <a href="interfaces/Message.html" data-type="entity-link">Message</a>
+                    </li>
+                    <li class="link">
+                        <a href="interfaces/StompConfig.html" data-type="entity-link">StompConfig</a>
+                    </li>
+                    <li class="link">
+                        <a href="interfaces/StompHeaders.html" data-type="entity-link">StompHeaders</a>
+                    </li>
+                    <li class="link">
+                        <a href="interfaces/StompSubscription.html" data-type="entity-link">StompSubscription</a>
+                    </li>
+                    <li class="link">
+                        <a href="interfaces/Transaction.html" data-type="entity-link">Transaction</a>
+                    </li>
+            </ul>
+        </li>
+
+
+        <li class="chapter">
+            <div class="simple menu-toggler" data-toggle="collapse"
+                    data-target="#xs-miscellaneous-links"
+                >
+                <span class="fa fa-fw fa-cubes"></span>
+                <span>Miscellaneous</span>
+                <span class="fa fa-angle-down"></span>
+            </div>
+            <ul class="links collapse"
+                    id="xs-miscellaneous-links"
+                >
+                    <li class="link">
+                      <a href="miscellaneous/typealiases.html" data-type="entity-link">Type aliases</a>
+                    </li>
+            </ul>
+        </li>
+
+
+        <li class="chapter">
+            <a data-type="chapter-link" href="coverage.html"><span class="fa fa-fw fa-tasks"></span>Documentation coverage</a>
+        </li>
+
+
+    </ul>
+
+</nav>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <nav>
+
+    <ul class="list">
+
+        <li class="title">
+            <a href="index.html" data-type="index-link">@stomp/stompjs documentation</a>
+        </li>
+
+        <li class="divider"></li>
+
+            <div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search">
+</div>
+
+        <li class="chapter">
+            <a data-type="chapter-link" href="index.html"><span class="fa fa-home"></span>Getting started</a>
+            <ul class="links">
+                    <li class="link">
+                        <a 
+                            
+                             href="overview.html" 
+                             href="overview.html" 
+                            data-type="chapter-link">
+                            <span class="fa fa-fw fa-th"></span>Overview
+                        </a>
+                    </li>
+                    <li class="link">
+                      <a href="index.html" data-type="chapter-link"><span class="fa fa-file-text-o"></span>README</a>
+                    </li>
+                    <li class="link">
+                            <a href="license.html"
+                        data-type="chapter-link">
+                            <span class="fa fa-fw fa-file-text-o"></span>LICENSE
+                        </a>
+                    </li>
+            </ul>
+        </li>
+
+        <li class="chapter">
+            <div class="simple menu-toggler" data-toggle="collapse"
+                    data-target="#additional-pages"
+>
+                <span class="fa fa-fw fa-book"></span>
+                <span>Guides</span>
+                <span class="fa fa-angle-down"></span>
+            </div>
+            <ul class="links collapse"
+                    id="additional-pages"
+>
+                    <li class="link ">
+                        <a href="additional-documentation/introduction.html" data-type="entity-link" data-context-id="additional">Introduction</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/usage.html" data-type="entity-link" data-context-id="additional">Usage</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/stomp-brokers.html" data-type="entity-link" data-context-id="additional">STOMP Brokers</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/upgrading.html" data-type="entity-link" data-context-id="additional">Upgrading</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/sockjs-support.html" data-type="entity-link" data-context-id="additional">SockJS Support</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/change-log.html" data-type="entity-link" data-context-id="additional">Change Log</a>
+                    </li>
+                    <li class="link ">
+                        <a href="additional-documentation/how-to-contribute.html" data-type="entity-link" data-context-id="additional">How to Contribute</a>
+                    </li>
+            </ul>
+        </li>
+
+
+
+
+        <li class="chapter">
+            <div class="simple menu-toggler" data-toggle="collapse"
+                    data-target="#classes-links"
+>
+                <span class="fa fa-fw fa-file-code-o"></span>
+                <span>Classes</span>
+                <span class="fa fa-angle-down"></span>
+            </div>
+            <ul class="links collapse"
+                    id="classes-links"
+>
+                    <li class="link">
+                        <a href="classes/Client.html" data-type="entity-link">Client</a>
+                    </li>
+                    <li class="link">
+                        <a href="classes/CompatClient.html" data-type="entity-link">CompatClient</a>
+                    </li>
+                    <li class="link">
+                        <a href="classes/Frame.html" data-type="entity-link">Frame</a>
+                    </li>
+                    <li class="link">
+                        <a href="classes/Stomp.html" data-type="entity-link">Stomp</a>
+                    </li>
+                    <li class="link">
+                        <a href="classes/Versions.html" data-type="entity-link">Versions</a>
+                    </li>
+            </ul>
+        </li>
+
+
+
+        <li class="chapter">
+            <div class="simple menu-toggler" data-toggle="collapse"
+                    data-target="#interfaces-links"
+>
+                <span class="fa fa-fw fa-info"></span>
+                <span>Interfaces</span>
+                <span class="fa fa-angle-down"></span>
+            </div>
+            <ul class="links collapse"
+                    id="interfaces-links"
+>
+                    <li class="link">
+                        <a href="interfaces/Message.html" data-type="entity-link">Message</a>
+                    </li>
+                    <li class="link">
+                        <a href="interfaces/StompConfig.html" data-type="entity-link">StompConfig</a>
+                    </li>
+                    <li class="link">
+                        <a href="interfaces/StompHeaders.html" data-type="entity-link">StompHeaders</a>
+                    </li>
+                    <li class="link">
+                        <a href="interfaces/StompSubscription.html" data-type="entity-link">StompSubscription</a>
+                    </li>
+                    <li class="link">
+                        <a href="interfaces/Transaction.html" data-type="entity-link">Transaction</a>
+                    </li>
+            </ul>
+        </li>
+
+
+        <li class="chapter">
+            <div class="simple menu-toggler" data-toggle="collapse"
+                    data-target="#miscellaneous-links"
+>
+                <span class="fa fa-fw fa-cubes"></span>
+                <span>Miscellaneous</span>
+                <span class="fa fa-angle-down"></span>
+            </div>
+            <ul class="links collapse"
+                    id="miscellaneous-links"
+>
+                    <li class="link">
+                      <a href="miscellaneous/typealiases.html" data-type="entity-link">Type aliases</a>
+                    </li>
+            </ul>
+        </li>
+
+
+        <li class="chapter">
+            <a data-type="chapter-link" href="coverage.html"><span class="fa fa-fw fa-tasks"></span>Documentation coverage</a>
+        </li>
+
+
+    </ul>
+
+</nav>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content additional-page">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1 id="using-stomp-js">Using STOMP JS</h1>
+<h2 id="the-stomp-broker">The STOMP Broker</h2>
+<p>Ensure that your STOMP broker supports STOMP over WebSockets. Some messaging
+brokers supports it out of the box while some may need special configuration 
+or activating plugins. See <a href="./STOMP-brokers.md">STOMP Brokers</a> for a non
+authoritative list.</p>
+<h2 id="include-stomp-js">Include STOMP.js</h2>
+<h3 id="in-web-browser">In Web Browser</h3>
+<ul>
+<li>Download <a href="https://raw.githubusercontent.com/stomp-js/stomp-websocket/master/lib/stomp.js">stomp.js</a>
+or <a href="https://raw.githubusercontent.com/stomp-js/stomp-websocket/master/lib/stomp.min.js">stomp.min.js</a></li>
+<li>Include in your web page.</li>
+<li><code>Stomp</code> object will now be available. Read along to learn how to use it.</li>
+</ul>
+<h3 id="in-nodejs">In NodeJS</h3>
+<ul>
+<li><p>Add npm modules <code>@stomp/stompjs</code> and <code>websocket</code> to your project.</p>
+<ul>
+<li>using <code>npm</code><div><pre class="line-numbers"><code class="language-bash">$ npm install &#64;stomp/stompjs websocket --save</code></pre></div></li>
+<li>using <code>yarn</code><div><pre class="line-numbers"><code class="language-bash">$ yarn add &#64;stomp/stompjs websocket</code></pre></div></li>
+</ul>
+</li>
+<li><p>Require the module</p>
+<div><pre class="line-numbers"><code class="language-javascript">  var Stomp = require(&#39;&#64;stomp/stompjs&#39;);</code></pre></div></li>
+<li>Read along to learn how to use the <code>Stomp</code> object.</li>
+</ul>
+<h2 id="create-a-stomp-client">Create a STOMP client</h2>
+<p>STOMP JavaScript clients will communicate to a STOMP server using a <code>ws://</code> URL.</p>
+<p>To create a STOMP client JavaScript object, you need to call <code>Stomp.client(url)</code>
+ with the URL corresponding to the server&#39;s WebSocket endpoint:</p>
+<div><pre class="line-numbers"><code class="language-javascript">  var url = &quot;ws://localhost:15674/ws&quot;;
+  var client = Stomp.client(url);</code></pre></div><p>The Stomp.client(url, protocols) can also be used to override the 
+default subprotocols provided by the library: 
+[&#39;v10.stomp&#39;, &#39;v11.stomp&#39;, &#39;v12.stomp&#39;] (for STOMP 1.0, 1.1, &amp; 1.2 
+specifications). This second argument can either be a single string
+ or an array of strings to specify multiple subprotocols.</p>
+<p><strong>Notes:</strong> </p>
+<ul>
+<li>In older versions of this library creating the client NodeJS was different.
+If you need the old behavior please use version 3.x.x of the library.</li>
+<li>Recent versions of all web browsers and nodejs support WebSocket. However
+if you need to support older browsers, please see <a href="sockjs.md.html">SockJS Support</a>.</li>
+</ul>
+<h2 id="connection-to-the-server">Connection to the server</h2>
+<p>Once a STOMP client is created, it must call its <code>connect()</code> method to 
+effectively connect and authenticate to the STOMP server. Usually the STOMP
+ borker needs
+ two arguments, <code>login</code> and <code>passcode</code> corresponding to the user
+  credentials. As per STOMP 1.2 <code>host</code> is mandatory, however many
+  STOMP brokers do not insist on this.</p>
+<p>Behind the scene, the client will open a connection using a WebSocket and send a
+ <a href="http://stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame">CONNECT</a>
+frame.</p>
+<p>The connection is done asynchronously: you have no guarantee to be effectively
+connected when the call to <code>connect</code> returns. To be notified of the connection, 
+you need to pass a <code>connect_callback</code> function to the <code>connect()</code> method:</p>
+<div><pre class="line-numbers"><code class="language-javascript">  var connect_callback = function() {
+    // called back after the client is connected and authenticated to the STOMP server
+  };</code></pre></div><p>But what happens if the connection fails? the <code>connect()</code> method accepts an
+  optional <code>error_callback</code> argument which will be called if the client is not able
+  to connect to the server.
+  The callback will be called with a single argument, an error object 
+  corresponding to STOMP
+  <a href="http://stomp.github.com/stomp-specification-1.2.html#ERROR">ERROR</a> frame:</p>
+<div><pre class="line-numbers"><code class="language-javascript">  var error_callback = function(error) {
+    // display the error&#39;s message header:
+    alert(error.headers.message);
+  };</code></pre></div><p>The <code>connect()</code> method accepts different number of arguments to provide a simple 
+API to use in most cases:</p>
+<div><pre class="line-numbers"><code class="language-javascript">  client.connect(login, passcode, connectCallback);
+  client.connect(login, passcode, connectCallback, errorCallback);
+  client.connect(login, passcode, connectCallback, errorCallback, closeEventCallback);
+  client.connect(login, passcode, connectCallback, errorCallback, closeEventCallback, host);</code></pre></div><p>where <code>login</code>, <code>passcode</code> and <code>host</code> are strings. <code>connectCallback</code> and
+<code>errorCallback</code> is a function which will receive a <code>Frame</code> as argument and 
+<code>closeEventCallback</code> is a function which will receive a <a href="https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent">CloseEvent</a></p>
+<p>The <code>connect()</code> method also accepts two other variants if you need
+ to pass additional headers:</p>
+<div><pre class="line-numbers"><code class="language-javascript">  client.connect(headers, connectCallback);
+  client.connect(headers, connectCallback, errorCallback);
+  client.connect(headers, connectCallback, errorCallback, closeEventCallback);</code></pre></div><p>where <code>header</code> is a <code>map</code>. <code>connectCallback</code> and
+<code>errorCallback</code> is a function which will receive a <code>Frame</code> as argument and 
+<code>closeEventCallback</code> is a function which will receive a <a href="https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent">CloseEvent</a></p>
+<p>Please note that if you use these forms, you will typically add <code>login</code>,
+ <code>passcode</code> (and <code>host</code>) headers yourself:</p>
+<div><pre class="line-numbers"><code class="language-javascript">    var headers = {
+      login: &#39;mylogin&#39;,
+      passcode: &#39;mypasscode&#39;,
+      // additional header
+      &#39;client-id&#39;: &#39;my-client-id&#39;
+    };
+    client.connect(headers, connectCallback);</code></pre></div><p>To disconnect a client from the server, you can call its <code>disconnect()</code>
+ method. The disconnection is asynchronous: to be notified when 
+ the disconnection is effective, the <code>disconnect</code> method takes an 
+ optional <code>callback</code> argument.</p>
+<div><pre class="line-numbers"><code class="language-javascript">  client.disconnect(function() {
+    alert(&quot;See you next time!&quot;);
+  });</code></pre></div><p>When a client is disconnected, it can no longer send or receive messages.</p>
+<h2 id="heart-beating">Heart-beating</h2>
+<p>If the STOMP broker accepts STOMP 1.1 or higher frames, 
+heart-beating is enabled by default.</p>
+<p>The <code>client</code> object has a <code>heartbeat</code> field which can be used to configure 
+heart-beating by changing its incoming and outgoing integer fields 
+(default value for both is 10,000ms). These can be disabled by setting to 0.</p>
+<div><pre class="line-numbers"><code class="language-javascript">    client.heartbeat.outgoing = 20000; // client will send heartbeats every 20000ms
+    client.heartbeat.incoming = 0;     // client does not want to receive heartbeats
+                                       // from the server</code></pre></div><h2 id="auto-reconnect">Auto Reconnect</h2>
+<p>The <code>client</code> supports automatic reconnecting in case of a connection failure. It is
+controlled by a field <code>reconnect_delay</code>. Default value is 0, which indicates auto
+reconnect is disabled.</p>
+<div><pre class="line-numbers"><code class="language-javascript">  // Add the following if you need automatic reconnect (delay is in milli seconds)
+  client.reconnect_delay = 5000;</code></pre></div><h2 id="send-messages">Send messages</h2>
+<p>When the client is connected to the server, it can send STOMP messages using
+  the <code>send()</code> method. The method takes a mandatory <code>destination</code>
+  argument corresponding to the STOMP destination. It also takes two optional
+  arguments: <code>headers</code>, a JavaScript object containing additional
+  message headers and <code>body</code>, a String.</p>
+<div><pre class="line-numbers"><code class="language-javascript">  client.send(&quot;/queue/test&quot;, {priority: 9}, &quot;Hello, STOMP&quot;);</code></pre></div><p>The client will send a STOMP 
+<a href="http://stomp.github.com/stomp-specification-1.2.html#SEND">SEND</a>
+frame to <code>/queue/test</code> destination with a header <code>priority</code> set to <code>9</code> and
+ a body <code>Hello, STOMP</code>.</p>
+<p>If you want to send a message with a <code>body</code>, you must also pass the <code>headers</code>
+ argument. If you have no <code>headers</code> to pass, use an empty JavaScript literal <code>{}</code>:</p>
+<div><pre class="line-numbers"><code class="language-javascript">  client.send(destination, {}, body);</code></pre></div><h2 id="subscribe-and-receive-messages">Subscribe and receive messages</h2>
+<p>To receive messages in the browser, the STOMP client must first subscribe to 
+a destination.</p>
+<p>You can use the <code>subscribe()</code> method to subscribe to a destination. The method
+takes 2 mandatory arguments: <code>destination</code>, a String corresponding to the 
+destination and <code>callback</code>, a function with one message argument and an optional
+argument <code>headers</code>, a JavaScript object for additional headers.</p>
+<div><pre class="line-numbers"><code class="language-javascript">  var subscription = client.subscribe(&quot;/queue/test&quot;, callback);</code></pre></div><p>The subscribe() methods returns a JavaScript object with one attribute, <code>id</code>, 
+that correspond to the client subscription ID and one method <code>unsubscribe()</code> 
+that can be used later on to unsubscribe the client from this destination.</p>
+<p>By default, the library will generate an unique ID if there is none provided
+in the headers. To use your own ID, pass it using the headers argument:</p>
+<div><pre class="line-numbers"><code class="language-javascript">  var mysubid = &#39;my-subscription-id-001&#39;;
+  var subscription = client.subscribe(destination, callback, { id: mysubid });</code></pre></div><p>The client will send a STOMP 
+<a href="http://stomp.github.com/stomp-specification-1.2.html#SUBSCRIBE">SUBSCRIBE</a> 
+frame to the server and register the callback. Every time the server sends 
+a message to the client, the client will in turn call the callback with a 
+STOMP <code>Frame</code> object corresponding to the message:</p>
+<div><pre class="line-numbers"><code class="language-javascript">  callback = function(message) {
+    // called when the client receives a STOMP message from the server
+    if (message.body) {
+      alert(&quot;got message with body &quot; + message.body)
+    } else {
+      alert(&quot;got empty message&quot;);
+    }
+  };</code></pre></div><p>The <code>subscribe()</code> method takes an optional headers argument to specify 
+additional <code>headers</code> when subscribing to a destination:</p>
+<div><pre class="line-numbers"><code class="language-javascript">  var headers = {ack: &#39;client&#39;, &#39;selector&#39;: &quot;location = &#39;Europe&#39;&quot;};
+  client.subscribe(&quot;/queue/test&quot;, message_callback, headers);</code></pre></div><p>The client specifies that it will handle the message acknowledgement and 
+is interested to receive only messages matching the selector location = &#39;Europe&#39;.</p>
+<p>If you want to subscribe the client to multiple destinations, you can use
+the same callback to receive all the messages:</p>
+<div><pre class="line-numbers"><code class="language-javascript">  onmessage = function(message) {
+    // called every time the client receives a message
+  };
+
+  var sub1 = client.subscribe(&quot;queue/test&quot;, onmessage);
+  var sub2 = client.subscribe(&quot;queue/another&quot;, onmessage);</code></pre></div><p>To stop receiving messages, the client can use the <code>unsubscribe()</code> method on 
+the object returned by the <code>subscribe()</code> method.</p>
+<div><pre class="line-numbers"><code class="language-javascript">  var subscription = client.subscribe(&quot;queue/test&quot;, onmessage);
+
+  // ... use the subscription ...
+
+  subscription.unsubscribe();</code></pre></div><p>JSON support</p>
+<p>The body of a STOMP message must be a String. If you want to send and receive
+<a href="http://json.org/">JSON</a> objects, you can use <code>JSON.stringify()</code> and 
+<code>JSON.parse()</code> to transform the JSON object to a String and vice versa.</p>
+<div><pre class="line-numbers"><code class="language-javascript">  var quote = {symbol: &#39;APPL&#39;, value: 195.46};
+  client.send(&quot;/topic/stocks&quot;, {}, JSON.stringify(quote));
+
+  client.subcribe(&quot;/topic/stocks&quot;, function(message) {
+    var quote = JSON.parse(message.body);
+    alert(quote.symbol + &quot; is at &quot; + quote.value);
+  });</code></pre></div><h2 id="acknowledgment">Acknowledgment</h2>
+<p>By default, STOMP messages will be automatically acknowledged by the server
+before the message is delivered to the client.</p>
+<p>The client can choose instead to handle message 
+<a href="http://stomp.github.com/stomp-specification-1.2.html#SUBSCRIBE_ack_Header">acknowledgement</a> by subscribing 
+to a destination and specify a <code>ack</code> header set to <code>client</code> or 
+<code>client-individual</code>.</p>
+<p>In that case, the client must use the <code>message.ack()</code> method to inform the 
+server that it has acknowledge the message. This method sends an 
+<a href="http://stomp.github.io/stomp-specification-1.2.html#ACK">ACK</a> Frame to the
+broker.</p>
+<div><pre class="line-numbers"><code class="language-javascript">  var subscription = client.subscribe(&quot;/queue/test&quot;,
+    function(message) {
+      // do something with the message
+      // ...
+      // and acknowledge it
+      message.ack();
+    },
+    {ack: &#39;client&#39;}
+  );</code></pre></div><p>The <code>ack()</code> method accepts a <code>headers</code> argument for additional headers to 
+acknowledge the message. For example, it is possible to acknowledge a 
+message as part of a transaction and ask for a receipt when the <code>ACK</code> STOMP 
+frame has effectively be processed by the broker:</p>
+<div><pre class="line-numbers"><code class="language-javascript">  var tx = client.begin();
+  message.ack({ transaction: tx.id, receipt: &#39;my-receipt&#39; });
+  tx.commit();</code></pre></div><p>The <code>message.nack()</code> method can also be used to inform STOMP 1.1 or higher
+brokers that the client did not consume the message using a
+<a href="http://stomp.github.io/stomp-specification-1.2.html#NACK">NACK</a> Frame. It 
+takes the same arguments than the <code>ack()</code> method.</p>
+<h2 id="transactions">Transactions</h2>
+<p>Messages can be sent and acknowledged <em>in a transaction</em>.</p>
+<p>A transaction is started by the client using its <code>begin()</code> method which 
+takes an optional <code>transaction_id</code>, a String which uniquely identifies the 
+transaction. If no <code>transaction_id</code> is passed, the library will generate 
+one automatically.</p>
+<p>This methods returns a JavaScript object with an <code>id</code> attribute corresponding
+to the transaction ID and two methods:</p>
+<ul>
+<li><code>commit()</code> to commit the transaction</li>
+<li><code>abort()</code> to abort the transaction</li>
+</ul>
+<p>The client can then send and/or acknowledge messages in the transaction
+by specifying a <code>transaction</code> set with the transaction <code>id</code>.</p>
+<div><pre class="line-numbers"><code class="language-javascript">  // start the transaction
+  var tx = client.begin();
+  // send the message in a transaction
+  client.send(&quot;/queue/test&quot;, {transaction: tx.id}, &quot;message in a transaction&quot;);
+  // commit the transaction to effectively send the message
+  tx.commit();</code></pre></div><p><em>If you forget to add the <code>transaction</code> header when calling <code>send()</code> the message
+will not be part of the transaction and will be sent directly without waiting
+for the completion of the transaction.</em></p>
+<div><pre class="line-numbers"><code class="language-javascript">  var txid = &quot;unique_transaction_identifier&quot;;
+  // start the transaction
+  var tx = client.begin();
+  // oops! send the message outside the transaction
+  client.send(&quot;/queue/test&quot;, {}, &quot;I thought I was in a transaction!&quot;);
+  tx.abort(); // Too late! the message has been sent</code></pre></div><h2 id="debug">Debug</h2>
+<p>There are few tests in the code and it is helpful to see what is sent and 
+received from the library to debug application.</p>
+<p>The client can set its <code>debug</code> property to a function with takes a <code>String</code> 
+argument to see all the debug statements of the library:</p>
+<div><pre class="line-numbers"><code class="language-javascript">  client.debug = function(str) {
+    // append the debug log to a #debug div somewhere in the page using JQuery:
+    $(&quot;#debug&quot;).append(str + &quot;\n&quot;);
+  };</code></pre></div><p>By default, the debug messages are logged in the browser window&#39;s console.</p>
+<p>On a busy system the logs can be overwhelming, to disable logging, set it to
+an empty function:</p>
+<div><pre class="line-numbers"><code class="language-javascript">  client.debug = function(str) {};</code></pre></div>
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+        <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'additional-page';
+            var COMPODOC_CURRENT_PAGE_URL = 'usage.html';
+        </script>
+
+       <script src="../js/search/search.js"></script>
+       <script src="../js/search/lunr.min.js"></script>
+       <script src="../js/search/search-lunr.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+       <script src="../js/search/search_index.js"></script>
+
+
+    </body>
+</html>
