@@ -9,6 +9,12 @@ import {frameCallbackType, messageCallbackType} from "../types";
  */
 export class CompatClient extends Client {
 
+  /**
+   * Available for backward compatibility, please shift to using {@link Client}
+   * and [Client#webSocketFactory]{@link Client#webSocketFactory}.
+   *
+   * **Deprecated**
+   */
   constructor(webSocketFactory: () => any) {
     super();
     this.reconnect_delay = 0;
@@ -63,7 +69,8 @@ export class CompatClient extends Client {
    * - closeEventCallback, see [Client#onWebSocketClose]{@link Client#onWebSocketClose}
    * - login [String]
    * - passcode [String]
-   * - host [String] Optional, virtual host to connect to. STOMP 1.2 makes it mandatory, however the broker may not mandate it
+   * - host [String] Optional, virtual host to connect to. STOMP 1.2 makes it mandatory,
+   *                 however the broker may not mandate it
    *
    * ```javascript
    *        client.connect('guest, 'guest', function(frame) {
@@ -79,8 +86,7 @@ export class CompatClient extends Client {
    * See also: [CONNECT Frame]{@link http://stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame}
    */
   public connect(...args: any[]): void {
-    const out = this._parseConnect(...args);
-    [this.connectHeaders, this.onConnect, this.onStompError, this.onWebSocketClose] = out;
+    [this.connectHeaders, this.onConnect, this.onStompError, this.onWebSocketClose] = this._parseConnect(...args);
 
     super.activate();
   }
@@ -103,36 +109,78 @@ export class CompatClient extends Client {
     super.deactivate();
   }
 
+  /**
+   * Available for backward compatibility, renamed to [Client#reconnectDelay]{@link Client#reconnectDelay}.
+   *
+   * **Deprecated**
+   */
   set reconnect_delay(value: number) {
     this.reconnectDelay = value;
   }
 
+  /**
+   * Available for backward compatibility, renamed to [Client#webSocket]{@link Client#webSocket}.
+   *
+   * **Deprecated**
+   */
   get ws(): any {
     return this._webSocket;
   }
 
+  /**
+   * Available for backward compatibility, renamed to [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
+   *
+   * **Deprecated**
+   */
   get onreceive(): messageCallbackType {
     return this.onUnhandledMessage;
   }
 
+  /**
+   * Available for backward compatibility, renamed to [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
+   *
+   * **Deprecated**
+   */
   set onreceive(value: messageCallbackType) {
     this.onUnhandledMessage = value;
   }
 
+  /**
+   * Available for backward compatibility, renamed to [Client#onReceipt]{@link Client#onReceipt}.
+   *
+   * **Deprecated**
+   */
   get onreceipt(): frameCallbackType {
     return this.onReceipt;
   }
 
+  /**
+   * Available for backward compatibility, renamed to [Client#onReceipt]{@link Client#onReceipt}.
+   *
+   * **Deprecated**
+   */
   set onreceipt(value: frameCallbackType) {
     this.onReceipt = value;
   }
 
   private _heartbeatInfo: HeartbeatInfo = new HeartbeatInfo(this);
 
+  /**
+   * Available for backward compatibility, renamed to [Client#heartbeatIncoming]{@link Client#heartbeatIncoming}
+   * [Client#heartbeatOutgoing]{@link Client#heartbeatOutgoing}.
+   *
+   * **Deprecated**
+   */
   get heartbeat() {
     return this._heartbeatInfo;
   }
 
+  /**
+   * Available for backward compatibility, renamed to [Client#heartbeatIncoming]{@link Client#heartbeatIncoming}
+   * [Client#heartbeatOutgoing]{@link Client#heartbeatOutgoing}.
+   *
+   * **Deprecated**
+   */
   set heartbeat(value: {incoming: number, outgoing: number}) {
     this.heartbeatIncoming = value.incoming;
     this.heartbeatOutgoing = value.outgoing;
