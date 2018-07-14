@@ -7,14 +7,14 @@ describe("Stomp Connection", function () {
 
   it("Should not connect to an invalid Stomp server", function (done) {
     client = badStompClient();
-    client.connect("foo", "bar",
-      function () {
-        expect(false).toBe(true);
-        done();
-      },
-      function () {
-        done();
-      });
+    client.onConnect = function () {
+      expect(false).toBe(true);
+      done();
+    };
+    client.onStompError = function () {
+      done();
+    };
+    client.activate();
   });
 
   it("Connect to a valid Stomp server", function (done) {

@@ -20,7 +20,11 @@ stompClient = function () {
 };
 
 badStompClient = function () {
-  return Stomp.client(TEST.badUrl);
+  const client = stompClient();
+  client.webSocketFactory = function () {
+    return new WebSocket(TEST.badUrl);
+  };
+  return client;
 };
 
 disconnectStomp = function (client) {
