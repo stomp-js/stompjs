@@ -25,7 +25,7 @@ badStompClient = function () {
 
 disconnectStomp = function (client) {
   if (client) {
-    client.disconnect();
+    client.deactivate();
     client = null;
   }
 };

@@ -22,7 +22,7 @@ describe("Stomp Connection", function () {
     client.onConnect = function () {
       done();
     };
-    client.connect()
+    client.activate()
   });
 
   it("Should not connect with invalid credentials", function (done) {
@@ -37,7 +37,7 @@ describe("Stomp Connection", function () {
         done();
       }
     });
-    client.connect();
+    client.activate();
   });
 
   it("Disconnect", function (done) {
@@ -45,14 +45,14 @@ describe("Stomp Connection", function () {
     client.configure({
       onConnect: function () {
         // once connected, we disconnect
-        client.disconnect();
+        client.deactivate();
       },
       onDisconnect: function () {
         done();
       }
     });
 
-    client.connect();
+    client.activate();
   });
 
 });

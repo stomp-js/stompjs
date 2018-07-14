@@ -259,7 +259,7 @@ export class Client {
    *
    * @see http:*stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame CONNECT Frame
    */
-  public connect(): void {
+  public activate(): void {
     this._escapeHeaderValues = false;
 
     // Indicate that this connection is active (it will keep trying to connect)
@@ -327,7 +327,7 @@ export class Client {
 
             // If a disconnect was requested while I was connecting, issue a disconnect
             if (!this._active) {
-              this.disconnect();
+              this.deactivate();
               return;
             }
 
@@ -459,7 +459,7 @@ export class Client {
    *
    * @see http://stomp.github.com/stomp-specification-1.2.html#DISCONNECT DISCONNECT Frame
    */
-  public disconnect(): void {
+  public deactivate(): void {
     // indicate that auto reconnect loop should terminate
     this._active = false;
 

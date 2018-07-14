@@ -23,7 +23,7 @@ describe("Stomp Subscription", function () {
 
       client.send(TEST.destination, {}, msg);
     };
-    client.connect();
+    client.activate();
   });
 
   it("Should receive messages with special chars in headers", function (done) {
@@ -45,7 +45,7 @@ describe("Stomp Subscription", function () {
 
       client.send(TEST.destination, {"cust": cust}, msg);
     };
-    client.connect();
+    client.activate();
   });
 
   it("Should no longer receive messages after unsubscribing to destination", function (done) {
@@ -68,7 +68,7 @@ describe("Stomp Subscription", function () {
       subscription1.unsubscribe();
       client.send(TEST.destination, {}, msg1);
     };
-    client.connect();
+    client.activate();
   });
 
 });

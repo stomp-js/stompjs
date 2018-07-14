@@ -26,7 +26,7 @@ describe("Stomp Transaction", function () {
       tx.abort();
       client.send(TEST.destination, {}, body2);
     };
-    client.connect();
+    client.activate();
   });
 
   it("Send a message in a transaction and commit", function (done) {
@@ -42,7 +42,7 @@ describe("Stomp Transaction", function () {
       client.send(TEST.destination, {transaction: tx.id}, body);
       tx.commit();
     };
-    client.connect();
+    client.activate();
   });
 
   it("Send a message outside a transaction and abort", function (done) {
@@ -60,7 +60,7 @@ describe("Stomp Transaction", function () {
       client.send(TEST.destination, {}, body);
       tx.abort();
     };
-    client.connect();
+    client.activate();
   });
 
 });

@@ -2,6 +2,11 @@ import {Client} from "../client";
 import {StompHeaders} from "../stomp-headers";
 import {frameCallbackType, messageCallbackType} from "../types";
 
+/**
+ * Available for backward compatibility, please shift to using {@link Client}.
+ *
+ * **Deprecated**
+ */
 export class CompatClient extends Client {
 
   constructor(webSocketFactory: () => any) {
@@ -36,59 +41,66 @@ export class CompatClient extends Client {
   }
 
   /**
+   * Available for backward compatibility, please shift to using [Client#activate]{@link Client#activate}.
+   *
+   * **Deprecated**
+   *
    * The `connect` method accepts different number of arguments and types. See the Overloads list. Use the
    * version with headers to pass your broker specific options.
    *
-   * @overload connect(headers, connectCallback)
+   * overloads:
+   * - connect(headers, connectCallback)
+   * - connect(headers, connectCallback, errorCallback)
+   * - connect(login, passcode, connectCallback)
+   * - connect(login, passcode, connectCallback, errorCallback)
+   * - connect(login, passcode, connectCallback, errorCallback, closeEventCallback)
+   * - connect(login, passcode, connectCallback, errorCallback, closeEventCallback, host)
    *
-   * @overload connect(headers, connectCallback, errorCallback)
+   * params:
+   * - headers, see [Client#connectHeaders]{@link Client#connectHeaders}
+   * - connectCallback, see [Client#onConnect]{@link Client#onConnect}
+   * - errorCallback, see [Client#onStompError]{@link Client#onStompError}
+   * - closeEventCallback, see [Client#onWebSocketClose]{@link Client#onWebSocketClose}
+   * - login [String]
+   * - passcode [String]
+   * - host [String] Optional, virtual host to connect to. STOMP 1.2 makes it mandatory, however the broker may not mandate it
    *
-   * @overload connect(login, passcode, connectCallback)
-   *
-   * @overload connect(login, passcode, connectCallback, errorCallback)
-   *
-   * @overload connect(login, passcode, connectCallback, errorCallback, closeEventCallback)
-   *
-   * @overload connect(login, passcode, connectCallback, errorCallback, closeEventCallback, host)
-   *
-   * @param headers [Object]
-   * @option headers [String] login
-   * @option headers [String] passcode
-   * @option headers [String] host virtual host to connect to. STOMP 1.2 makes it mandatory, however the broker may not mandate it
-   * @param connectCallback [function(Frame)] Called upon a successful connect or reconnect
-   * @param errorCallback [function(any)] Optional, called upon an error. The passed paramer may be a {Frame} or a message
-   * @param closeEventCallback [function(CloseEvent)] Optional, called when the websocket is closed.
-   *
-   * @param login [String]
-   * @param passcode [String]
-   * @param host [String] Optional, virtual host to connect to. STOMP 1.2 makes it mandatory, however the broker may not mandate it
-   *
-   * @example
+   * ```javascript
    *        client.connect('guest, 'guest', function(frame) {
    *          client.debug("connected to Stomp");
    *          client.subscribe(destination, function(message) {
    *            $("#messages").append("<p>" + message.body + "</p>\n");
    *          });
    *        });
+   * ```
    *
-   * @note When auto reconnect is active, `connectCallback` and `errorCallback` will be called on each connect or error
+   * Note: When auto reconnect is active, `connectCallback` and `errorCallback` will be called on each connect or error
    *
-   * @see http:*stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame CONNECT Frame
+   * See also: [CONNECT Frame]{@link http://stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame}
    */
   public connect(...args: any[]): void {
     const out = this._parseConnect(...args);
     [this.connectHeaders, this.onConnect, this.onStompError, this.onWebSocketClose] = out;
 
-    super.connect();
+    super.activate();
   }
 
+  /**
+   * Available for backward compatibility, please shift to using [Client#activate]{@link Client#activate}.
+   *
+   * **Deprecated**
+   *
+   * See:
+   * [Client#onDisconnect]{@link Client#onDisconnect}, and
+   * [Client#disconnectHeaders]{@link Client#disconnectHeaders}
+   */
   public disconnect(disconnectCallback?: any, headers: StompHeaders = {}): void {
     if (disconnectCallback) {
       this.onDisconnect = disconnectCallback;
     }
     this.disconnectHeaders = headers;
 
-    super.disconnect();
+    super.deactivate();
   }
 
   set reconnect_delay(value: number) {

@@ -29,7 +29,7 @@ describe("Stomp Reconnect", function () {
       num_try++;
     };
 
-    client.connect();
+    client.activate();
 
     setTimeout(function () {
       // in 200 ms the client should be disconnected
@@ -39,7 +39,7 @@ describe("Stomp Reconnect", function () {
     setTimeout(function () {
       // in 1000 ms the client should be connected again
       expect(client.connected).toBe(true);
-      client.disconnect();
+      client.deactivate();
 
       done();
     }, 1000);
@@ -56,7 +56,7 @@ describe("Stomp Reconnect", function () {
       onConnect: function () {
         expect(client.connected).toBe(true);
 
-        client.disconnect();
+        client.deactivate();
       },
       onDisconnect: function () {
         expect(client.connected).toBe(false);
@@ -64,7 +64,7 @@ describe("Stomp Reconnect", function () {
       }
     });
 
-    client.connect();
+    client.activate();
 
     setTimeout(function () {
       expect(disconnectCallbackCalled).toBe(true);
@@ -96,12 +96,12 @@ describe("Stomp Reconnect", function () {
       }
     });
 
-    client.connect();
+    client.activate();
 
     setTimeout(function () {
       // in 200 ms the client should be disconnected
       expect(client.connected).toBe(false);
-      client.disconnect();
+      client.deactivate();
     }, 200);
 
     // wait longer before declaring the test complete, in this interval

@@ -28,7 +28,7 @@ describe("Stomp Acknowledgement", function () {
       client.send(TEST.destination, {}, body);
     };
 
-    client.connect();
+    client.activate();
   });
 
   it("Subscribe using client ack mode, send a message and nack it", function (done) {
@@ -49,6 +49,6 @@ describe("Stomp Acknowledgement", function () {
       client.send(TEST.destination, {}, body);
     };
 
-    client.connect();
+    client.activate();
   });
 });

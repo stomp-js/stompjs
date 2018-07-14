@@ -14,14 +14,14 @@ describe("Stomp Message", function () {
     client.onConnect = function () {
       client.subscribe(TEST.destination, function (message) {
         expect(message.body).toEqual(body);
-        client.disconnect();
+        client.deactivate();
 
         done();
       });
 
       client.send(TEST.destination, {}, body);
     };
-    client.connect();
+    client.activate();
   });
 
   it("Send and receive a message with a JSON body", function (done) {
@@ -32,13 +32,13 @@ describe("Stomp Message", function () {
         expect(res.text).toEqual(payload.text);
         expect(res.bool).toEqual(payload.bool);
         expect(res.value).toEqual(payload.value);
-        client.disconnect();
+        client.deactivate();
 
         done();
       });
 
       client.send(TEST.destination, {}, JSON.stringify(payload));
     };
-    client.connect();
+    client.activate();
   });
 });
