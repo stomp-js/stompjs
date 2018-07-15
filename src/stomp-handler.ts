@@ -39,14 +39,9 @@ export class StompHandler {
 
   public onWebSocketClose: closeEventCallbackType;
 
-
-  /**
-   * version of STOMP protocol negotiated with the server, READONLY
-   */
   get version(): string {
     return this._version;
   }
-
   private _version: string;
 
   get connected(): boolean {
@@ -136,43 +131,37 @@ export class StompHandler {
             }
 
             this._setupHeartbeat(frame.headers);
-            if (typeof this.onConnect === 'function') {
-              this.onConnect(frame);
-            }
+            this.onConnect(frame);
             break;
           // [MESSAGE Frame](http://stomp.github.com/stomp-specification-1.2.html#MESSAGE)
           case "MESSAGE":
-            // the `onreceive` callback is registered when the client calls
+            // the `onReceive` callback is registered when the client calls
             // `subscribe()`.
             // If there is registered subscription for the received message,
-            // we used the default `onreceive` method that the client can set.
+            // we used the default `onReceive` method that the client can set.
             // This is useful for subscriptions that are automatically created
             // on the browser side (e.g. [RabbitMQ's temporary
             // queues](http://www.rabbitmq.com/stomp.html)).
             const subscription = <string>frame.headers.subscription;
-            const onreceive = this._subscriptions[subscription] || this.onUnhandledMessage;
+            const onReceive = this._subscriptions[subscription] || this.onUnhandledMessage;
             // bless the frame to be a Message
             const message = <Message>frame;
-            if (onreceive) {
-              let messageId: string;
-              const client = this;
-              if (this._version === Versions.V1_2) {
-                messageId = <string>message.headers["ack"];
-              } else {
-                messageId = <string>message.headers["message-id"];
-              }
-              // add `ack()` and `nack()` methods directly to the returned frame
-              // so that a simple call to `message.ack()` can acknowledge the message.
-              message.ack = (headers: StompHeaders = {}): void => {
-                return client.ack(messageId, subscription, headers);
-              };
-              message.nack = (headers: StompHeaders = {}): void => {
-                return client.nack(messageId, subscription, headers);
-              };
-              onreceive(message);
+            let messageId: string;
+            const client = this;
+            if (this._version === Versions.V1_2) {
+              messageId = <string>message.headers["ack"];
             } else {
-              this.debug(`Unhandled received MESSAGE: ${message}`);
+              messageId = <string>message.headers["message-id"];
             }
+            // add `ack()` and `nack()` methods directly to the returned frame
+            // so that a simple call to `message.ack()` can acknowledge the message.
+            message.ack = (headers: StompHeaders = {}): void => {
+              return client.ack(messageId, subscription, headers);
+            };
+            message.nack = (headers: StompHeaders = {}): void => {
+              return client.nack(messageId, subscription, headers);
+            };
+            onReceive(message);
             break;
           // [RECEIPT Frame](http://stomp.github.com/stomp-specification-1.2.html#RECEIPT)
          case "RECEIPT":
@@ -182,9 +171,7 @@ export class StompHandler {
               // Server will acknowledge only once, remove the callback
               delete this._receiptWatchers[<string>frame.headers["receipt-id"]];
             } else {
-              if (typeof this.onUnhandledReceipt === 'function') {
-                this.onUnhandledReceipt(frame);
-              }
+              this.onUnhandledReceipt(frame);
             }
             break;
           // [ERROR Frame](http://stomp.github.com/stomp-specification-1.2.html#ERROR)
