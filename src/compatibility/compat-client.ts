@@ -86,7 +86,12 @@ export class CompatClient extends Client {
    * See also: [CONNECT Frame]{@link http://stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame}
    */
   public connect(...args: any[]): void {
-    [this.connectHeaders, this.onConnect, this.onStompError, this.onWebSocketClose] = this._parseConnect(...args);
+    const out = this._parseConnect(...args);
+
+    if (out[0]) { this.connectHeaders = out[0]; }
+    if (out[1]) { this.onConnect = out[1]; }
+    if (out[2]) { this.onStompError = out[2]; }
+    if (out[3]) { this.onWebSocketClose = out[3]; }
 
     super.activate();
   }
