@@ -1,5 +1,4 @@
 import {StompHeaders} from "./stomp-headers";
-import {Message} from "./message";
 import {StompSubscription} from "./stomp-subscription";
 import {Transaction} from "./transaction";
 import {closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType} from "./types";
