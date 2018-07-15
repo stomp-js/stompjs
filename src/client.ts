@@ -72,10 +72,10 @@ export class Client {
 
   /**
    * STOMP brokers can be requested to notify when an operation is actually completed.
-   *
-   * TODO: add example
+   * Prefer using [Client#watchForReceipt]{@link Client#watchForReceipt}. See
+   * [Client#watchForReceipt]{@link Client#watchForReceipt} for examples.
    */
-  public onReceipt: frameCallbackType;
+  public onUnhandledReceipt: frameCallbackType;
 
   /**
    * `true` if there is a active connection with STOMP Broker
@@ -156,7 +156,7 @@ export class Client {
     this.onConnect = noOp;
     this.onDisconnect = noOp;
     this.onUnhandledMessage = noOp;
-    this.onReceipt = noOp;
+    this.onUnhandledReceipt = noOp;
     this.onStompError = noOp;
     this.onWebSocketClose = noOp;
 
@@ -235,8 +235,8 @@ export class Client {
       onUnhandledMessage: (message) => {
         this.onUnhandledMessage(message);
       },
-      onReceipt: (frame) => {
-        this.onReceipt(frame);
+      onUnhandledReceipt: (frame) => {
+        this.onUnhandledReceipt(frame);
       }
     });
 
@@ -308,6 +308,28 @@ export class Client {
   /**
    * Watch for a receipt, callback will receive the STOMP frame as parameter.
    *
+   * The receipt id needs to be unique for each use. Typically a sequence, a UUID, a
+   * random number or a combination would be used.
+   *
+   * Example:
+   * ```javascript
+   *        // Receipt for Subscription
+   *        let receiptId = randomText();
+   *
+   *        client.watchForReceipt(receiptId, function() {
+   *          // Will be called after server acknowledges
+   *        });
+   *
+   *        client.subscribe(TEST.destination, onMessage, {receipt: receiptId});
+   *
+   *        // Receipt for message send
+   *        receiptId = randomText();
+   *
+   *        client.watchForReceipt(receiptId, function() {
+   *          // Will be called after server acknowledges
+   *        });
+   *        client.send(TEST.destination, {receipt: receiptId}, msg);
+   * ```
    */
   public watchForReceipt(receiptId: string, callback: frameCallbackType): void {
     this._stompHandler.watchForReceipt(receiptId, callback);

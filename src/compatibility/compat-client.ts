@@ -151,21 +151,22 @@ export class CompatClient extends Client {
   }
 
   /**
-   * Available for backward compatibility, renamed to [Client#onReceipt]{@link Client#onReceipt}.
+   * Available for backward compatibility, renamed to [Client#onUnhandledReceipt]{@link Client#onUnhandledReceipt}.
+   * Prefer using [Client#watchForReceipt]{@link Client#watchForReceipt}.
    *
    * **Deprecated**
    */
   get onreceipt(): frameCallbackType {
-    return this.onReceipt;
+    return this.onUnhandledReceipt;
   }
 
   /**
-   * Available for backward compatibility, renamed to [Client#onReceipt]{@link Client#onReceipt}.
+   * Available for backward compatibility, renamed to [Client#onUnhandledReceipt]{@link Client#onUnhandledReceipt}.
    *
    * **Deprecated**
    */
   set onreceipt(value: frameCallbackType) {
-    this.onReceipt = value;
+    this.onUnhandledReceipt = value;
   }
 
   private _heartbeatInfo: HeartbeatInfo = new HeartbeatInfo(this);

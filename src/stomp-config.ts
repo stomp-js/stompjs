@@ -56,7 +56,7 @@ export interface StompConfig {
   /**
    * STOMP brokers can be requested to notify when an operation is actually completed.
    */
-  onReceipt?: frameCallbackType;
+  onUnhandledReceipt?: frameCallbackType;
 
   /**
    * Callback

@@ -27,7 +27,7 @@ export class StompHandler {
 
   public onUnhandledMessage: messageCallbackType;
 
-  public onReceipt: frameCallbackType;
+  public onUnhandledReceipt: frameCallbackType;
 
   public maxWebSocketFrameSize: number;
 
@@ -175,24 +175,15 @@ export class StompHandler {
             }
             break;
           // [RECEIPT Frame](http://stomp.github.com/stomp-specification-1.2.html#RECEIPT)
-          //
-          // The client instance can set its `onreceipt` field to a function taking
-          // a frame argument that will be called when a receipt is received from
-          // the server:
-          //
-          //     client.onreceipt = function(frame) {
-          //       receiptID = frame.headers['receipt-id'];
-          //       ...
-          //     }
-          case "RECEIPT":
+         case "RECEIPT":
             const callback = this._receiptWatchers[<string>frame.headers["receipt-id"]];
             if (callback) {
               callback(frame);
               // Server will acknowledge only once, remove the callback
               delete this._receiptWatchers[<string>frame.headers["receipt-id"]];
             } else {
-              if (typeof this.onReceipt === 'function') {
-                this.onReceipt(frame);
+              if (typeof this.onUnhandledReceipt === 'function') {
+                this.onUnhandledReceipt(frame);
               }
             }
             break;

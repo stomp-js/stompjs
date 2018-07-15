@@ -17,7 +17,7 @@ describe("Stomp Acknowledgement", function () {
         // we should receive the 2nd message outside the transaction
         expect(message.body).toEqual(body);
         const receipt = randomText();
-        client.onReceipt = function (frame) {
+        client.onUnhandledReceipt = function (frame) {
           expect(frame.headers['receipt-id']).toEqual(receipt);
 
           done();
@@ -39,7 +39,7 @@ describe("Stomp Acknowledgement", function () {
 
         expect(message.body).toEqual(body);
         const receipt = randomText();
-        client.onReceipt = function (frame) {
+        client.onUnhandledReceipt = function (frame) {
           expect(frame.headers['receipt-id']).toEqual(receipt);
           done();
         };
