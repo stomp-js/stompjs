@@ -89,22 +89,27 @@ export class Client {
   private _connected: boolean;
 
   /**
-   * Callback
+   * Callback, invoked on every successful connection to the STOMP broker. The CONNECTED frame received from the
+   * STOMP broker will be passed as parameter to the callback.
    */
   public onConnect: frameCallbackType;
 
   /**
-   * Callback
+   * Callback, invoked on every successful disconnection from the STOMP broker. It will not be invoked if
+   * the STOMP broker disconnected due to an error. The DISCONNECTED frame received from the
+   * STOMP broker will be passed as parameter to the callback.
    */
   public onDisconnect: frameCallbackType;
 
   /**
-   * Callback
+   * Callback, invoked on every ERROR frame received from the STOMP Broker.
+   * A compliant STOMP Broker will close the connection after this type of frame.
+   * See {@link https://stomp.github.io/stomp-specification-1.2.html#ERROR}.
    */
   public onStompError: any;
 
   /**
-   * Callback
+   * Callback, invoked when underlying WebSocket is closed.
    */
   public onWebSocketClose: any;
 
