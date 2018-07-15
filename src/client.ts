@@ -306,6 +306,14 @@ export class Client {
   }
 
   /**
+   * Watch for a receipt, callback will receive the STOMP frame as parameter.
+   *
+   */
+  public watchForReceipt(receiptId: string, callback: frameCallbackType): void {
+    this._stompHandler.watchForReceipt(receiptId, callback);
+  }
+
+  /**
    * Subscribe to a STOMP Broker location. The callbck will be invoked for each received message with
    * the {@link Message} as argument.
    *

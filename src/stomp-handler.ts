@@ -55,15 +55,14 @@ export class StompHandler {
 
   private _connected: boolean;
 
-  private _subscriptions: { [key: string]: messageCallbackType };
+  private readonly _subscriptions: { [key: string]: messageCallbackType };
+  private readonly _receiptWatchers: { [key: string]: frameCallbackType };
   private _partialData: string;
   private _escapeHeaderValues: boolean;
   private _counter: number;
   private _pinger: any;
   private _ponger: any;
   private _lastServerActivityTS: number;
-  private _closeReceipt: string;
-
 
   constructor(private _client: Client, private _webSocket: WebSocket, config: StompConfig = {}) {
     // used to index subscribers
@@ -71,6 +70,9 @@ export class StompHandler {
 
     // subscription callbacks indexed by subscriber's ID
     this._subscriptions = {};
+
+    // receipt-watchers indexed by receipts-ids
+    this._receiptWatchers = {};
 
     this._partialData = '';
 
@@ -183,11 +185,11 @@ export class StompHandler {
           //       ...
           //     }
           case "RECEIPT":
-            // if this is the receipt for a DISCONNECT, close the websocket
-            if (frame.headers["receipt-id"] === this._closeReceipt) {
-              this._webSocket.close();
-              this._cleanUp();
-              this.onDisconnect(frame);
+            const callback = this._receiptWatchers[<string>frame.headers["receipt-id"]];
+            if (callback) {
+              callback(frame);
+              // Server will acknowledge only once, remove the callback
+              delete this._receiptWatchers[<string>frame.headers["receipt-id"]];
             } else {
               if (typeof this.onReceipt === 'function') {
                 this.onReceipt(frame);
@@ -270,11 +272,15 @@ export class StompHandler {
 
   public dispose(): void {
     if (this.connected) {
-      if (!this.disconnectHeaders['receipt']) {
-        this.disconnectHeaders['receipt'] = `close-${this._counter++}`;
-      }
-      this._closeReceipt = <string>this.disconnectHeaders['receipt'];
       try {
+        if (!this.disconnectHeaders['receipt']) {
+          this.disconnectHeaders['receipt'] = `close-${this._counter++}`;
+        }
+        this.watchForReceipt(<string>this.disconnectHeaders['receipt'], (frame) => {
+          this._webSocket.close();
+          this._cleanUp();
+          this.onDisconnect(frame);
+        });
         this._transmit("DISCONNECT", this.disconnectHeaders);
       } catch (error) {
         this.debug('Ignoring error during disconnect', error);
@@ -300,6 +306,10 @@ export class StompHandler {
   public send(destination: string, headers: StompHeaders = {}, body: string = ''): void {
     headers.destination = destination;
     this._transmit("SEND", headers, body);
+  }
+
+  public watchForReceipt(receiptId: string, callback: frameCallbackType): void {
+    this._receiptWatchers[receiptId] = callback;
   }
 
   public subscribe(destination: string, callback: messageCallbackType, headers: StompHeaders = {}): StompSubscription {
