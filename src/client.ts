@@ -85,27 +85,38 @@ export class Client {
   }
 
   /**
-   * Callback, invoked on every successful connection to the STOMP broker. The CONNECTED frame received from the
-   * STOMP broker will be passed as parameter to the callback.
+   * Callback, invoked on every successful connection to the STOMP broker.
+   *
+   * The actual frame is passed as parameter to the callback.
    */
   public onConnect: frameCallbackType;
 
   /**
    * Callback, invoked on every successful disconnection from the STOMP broker. It will not be invoked if
-   * the STOMP broker disconnected due to an error. The DISCONNECTED frame received from the
-   * STOMP broker will be passed as parameter to the callback.
+   * the STOMP broker disconnected due to an error.
+   *
+   * The actual frame is passed as parameter to the callback.
+   *
+   * The way STOMP protocol is designed, the connection may close/terminate without the client
+   * receiving the DISCONNECT frame.
+   * You might find [Client#onWebSocketClose]{@link Client#onWebSocketClose} more appropriate.
    */
   public onDisconnect: frameCallbackType;
 
   /**
-   * Callback, invoked on every ERROR frame received from the STOMP Broker.
+   * Callback, invoked on an ERROR frame received from the STOMP Broker.
    * A compliant STOMP Broker will close the connection after this type of frame.
-   * See {@link https://stomp.github.io/stomp-specification-1.2.html#ERROR}.
+   *
+   * The actual frame is passed as parameter to the callback.
+   *
+   * See https://stomp.github.io/stomp-specification-1.2.html#ERROR.
    */
   public onStompError: frameCallbackType;
 
   /**
    * Callback, invoked when underlying WebSocket is closed.
+   *
+   * Actual `event` is passed as parameter to the callback.
    */
   public onWebSocketClose: closeEventCallbackType;
 
