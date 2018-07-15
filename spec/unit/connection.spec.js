@@ -11,7 +11,7 @@ describe("Stomp Connection", function () {
       expect(false).toBe(true);
       done();
     };
-    client.onStompError = function () {
+    client.onWebSocketClose = function () {
       done();
     };
     client.activate();
