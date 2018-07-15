@@ -19,7 +19,7 @@ describe("Stomp Message", function () {
         done();
       });
 
-      client.send(TEST.destination, {}, body);
+      client.publish({destination: TEST.destination, body: body});
     };
     client.activate();
   });
@@ -37,7 +37,7 @@ describe("Stomp Message", function () {
         done();
       });
 
-      client.send(TEST.destination, {}, JSON.stringify(payload));
+      client.publish({destination: TEST.destination, body: JSON.stringify(payload)});
     };
     client.activate();
   });

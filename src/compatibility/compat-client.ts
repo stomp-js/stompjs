@@ -115,6 +115,30 @@ export class CompatClient extends Client {
   }
 
   /**
+   * Available for backward compatibility, use [Client#publish]{@link Client#publish}.
+   *
+   * Send a message to a named destination. Refer to your STOMP broker documentation for types
+   * and naming of destinations. The headers will, typically, be available to the subscriber.
+   * However, there may be special purpose headers corresponding to your STOMP broker.
+   *
+   *  **Deprecated**, use [Client#publish]{@link Client#publish}
+   *
+   * Note: Body must be String. You will need to covert the payload to string in case it is not string (e.g. JSON)
+   *
+   * ```javascript
+   *        client.send("/queue/test", {priority: 9}, "Hello, STOMP");
+   *
+   *        // If you want to send a message with a body, you must also pass the headers argument.
+   *        client.send("/queue/test", {}, "Hello, STOMP");
+   * ```
+   *
+   * See: http://stomp.github.com/stomp-specification-1.2.html#SEND SEND Frame
+   */
+  public send(destination: string, headers: StompHeaders = {}, body: string = ''): void {
+    this.publish({destination: destination, headers: headers, body: body});
+  }
+
+  /**
    * Available for backward compatibility, renamed to [Client#reconnectDelay]{@link Client#reconnectDelay}.
    *
    * **Deprecated**

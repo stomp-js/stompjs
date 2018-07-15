@@ -18,7 +18,7 @@ describe("Stomp Receipts", function () {
       const receiptId = randomText();
 
       client.watchForReceipt(receiptId, function() {
-        client.send(TEST.destination, {}, msg);
+        client.publish({destination: TEST.destination, body: msg});
       });
 
       client.subscribe(TEST.destination, function (frame) {
@@ -40,7 +40,7 @@ describe("Stomp Receipts", function () {
       client.watchForReceipt(receiptId, function() {
         done();
       });
-      client.send(TEST.destination, {receipt: receiptId}, msg);
+      client.publish({destination: TEST.destination, headers: {receipt: receiptId}, body: msg});
     };
     client.activate();
   });

@@ -25,7 +25,7 @@ describe("Stomp Acknowledgement", function () {
         message.ack({'receipt': receipt});
       };
       const sub = client.subscribe(TEST.destination, onMessage, {'ack': 'client'});
-      client.send(TEST.destination, {}, body);
+      client.publish({destination: TEST.destination, body: body});
     };
 
     client.activate();
@@ -46,7 +46,7 @@ describe("Stomp Acknowledgement", function () {
         message.nack({'receipt': receipt});
       };
       const sub = client.subscribe(TEST.destination, onMessage, {'ack': 'client'});
-      client.send(TEST.destination, {}, body);
+      client.publish({destination: TEST.destination, body: body});
     };
 
     client.activate();

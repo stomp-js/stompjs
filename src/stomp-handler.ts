@@ -291,9 +291,9 @@ export class StompHandler {
     }
   }
 
-  public send(destination: string, headers: StompHeaders = {}, body: string = ''): void {
-    headers.destination = destination;
-    this._transmit("SEND", headers, body);
+  public publish(params: { destination: string, headers: StompHeaders, body: string }): void {
+    params.headers.destination = params.destination;
+    this._transmit("SEND", params.headers, params.body);
   }
 
   public watchForReceipt(receiptId: string, callback: frameCallbackType): void {

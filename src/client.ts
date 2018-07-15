@@ -1,7 +1,7 @@
 import {StompHeaders} from "./stomp-headers";
 import {StompSubscription} from "./stomp-subscription";
 import {Transaction} from "./transaction";
-import {closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType} from "./types";
+import {closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, publishParams} from "./types";
 import {StompConfig} from './stomp-config';
 import {StompHandler} from "./stomp-handler";
 
@@ -301,16 +301,21 @@ export class Client {
    * Note: Body must be String. You will need to covert the payload to string in case it is not string (e.g. JSON)
    *
    * ```javascript
-   *        client.send("/queue/test", {priority: 9}, "Hello, STOMP");
+   *        client.send({destination: "/queue/test", headers: {priority: 9}, body: "Hello, STOMP"});
    *
-   *        // If you want to send a message with a body, you must also pass the headers argument.
-   *        client.send("/queue/test", {}, "Hello, STOMP");
+   *        // Only destination is mandatory parameter
+   *        client.send({destination: "/queue/test", body: "Hello, STOMP"});
    * ```
    *
    * See: http://stomp.github.com/stomp-specification-1.2.html#SEND SEND Frame
    */
-  public send(destination: string, headers: StompHeaders = {}, body: string = ''): void {
-    this._stompHandler.send(destination, headers, body);
+  public publish(params: publishParams) {
+    let {destination, headers, body} = params;
+    this._stompHandler.publish({
+      destination: destination,
+      headers: headers || {},
+      body: body || ''
+    });
   }
 
   /**

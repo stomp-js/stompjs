@@ -22,9 +22,9 @@ describe("Stomp Transaction", function () {
       });
 
       const tx = client.begin("txid_" + Math.random());
-      client.send(TEST.destination, {transaction: tx.id}, body);
+      client.publish({destination: TEST.destination, headers: {transaction: tx.id}, body: body});
       tx.abort();
-      client.send(TEST.destination, {}, body2);
+      client.publish({destination: TEST.destination, body: body2});
     };
     client.activate();
   });
@@ -39,7 +39,7 @@ describe("Stomp Transaction", function () {
         done();
       });
       const tx = client.begin();
-      client.send(TEST.destination, {transaction: tx.id}, body);
+      client.publish({destination: TEST.destination, headers: {transaction: tx.id}, body: body});
       tx.commit();
     };
     client.activate();
@@ -57,7 +57,7 @@ describe("Stomp Transaction", function () {
       });
 
       const tx = client.begin();
-      client.send(TEST.destination, {}, body);
+      client.publish({destination: TEST.destination, body: body});
       tx.abort();
     };
     client.activate();

@@ -21,7 +21,7 @@ describe("Stomp Subscription", function () {
         done();
       });
 
-      client.send(TEST.destination, {}, msg);
+      client.publish({destination: TEST.destination, body: msg});
     };
     client.activate();
   });
@@ -45,7 +45,7 @@ describe("Stomp Subscription", function () {
         done();
       });
 
-      client.send(TEST.destination, {"cust": cust}, msg);
+      client.publish({destination: TEST.destination, headers: {"cust": cust}, body: msg});
     };
     client.activate();
   });
@@ -68,7 +68,7 @@ describe("Stomp Subscription", function () {
       });
 
       subscription1.unsubscribe();
-      client.send(TEST.destination, {}, msg1);
+      client.publish({destination: TEST.destination, body: msg1});
     };
     client.activate();
   });
