@@ -133,14 +133,6 @@ export class StompHandler {
               this._escapeHeaderValues = true;
             }
 
-            /*
-                        // If a disconnect was requested while I was connecting, issue a disconnect
-                        if (!this._active) {
-                          this.deactivate();
-                          return;
-                        }
-
-            */
             this._setupHeartbeat(frame.headers);
             if (typeof this.onConnect === 'function') {
               this.onConnect(frame);
@@ -193,9 +185,6 @@ export class StompHandler {
           case "RECEIPT":
             // if this is the receipt for a DISCONNECT, close the websocket
             if (frame.headers["receipt-id"] === this._closeReceipt) {
-              // Discard the onclose callback to avoid calling the errorCallback when
-              // the client is properly disconnected.
-              // this._webSocket.onclose = null;
               this._webSocket.close();
               this._cleanUp();
               this.onDisconnect(frame);
@@ -207,9 +196,7 @@ export class StompHandler {
             break;
           // [ERROR Frame](http://stomp.github.com/stomp-specification-1.2.html#ERROR)
           case "ERROR":
-            if (typeof this.onStompError === 'function') {
-              this.onStompError(frame);
-            }
+            this.onStompError(frame);
             break;
           default:
             this.debug(`Unhandled frame: ${frame}`);
@@ -218,14 +205,9 @@ export class StompHandler {
     };
 
     this._webSocket.onclose = (closeEvent: any): void => {
-      const msg = `Whoops! Lost connection to ${this._webSocket.url}`;
-      this.debug(msg);
+      this.debug(`Connection closed to ${this._webSocket.url}`);
       this.onWebSocketClose(closeEvent);
       this._cleanUp();
-      // if (typeof this.onStompError === 'function') {
-      //   this.onStompError(msg);
-      // }
-//      this._schedule_reconnect();
     };
 
     this._webSocket.onopen = () => {
@@ -237,7 +219,6 @@ export class StompHandler {
   }
 
   private _setupHeartbeat(headers: StompHeaders): void {
-    let ttl: number;
     if ((headers.version !== Versions.V1_1 && headers.version !== Versions.V1_2)) {
       return;
     }
@@ -248,7 +229,7 @@ export class StompHandler {
     const [serverOutgoing, serverIncoming] = (<string>headers['heart-beat']).split(",").map((v: string) => parseInt(v));
 
     if ((this.heartbeatOutgoing !== 0) && (serverIncoming !== 0)) {
-      ttl = Math.max(this.heartbeatOutgoing, serverIncoming);
+      let ttl: number = Math.max(this.heartbeatOutgoing, serverIncoming);
       this.debug(`send PING every ${ttl}ms`);
       this._pinger = setInterval(() => {
         this._webSocket.send(Byte.LF);
@@ -257,7 +238,7 @@ export class StompHandler {
     }
 
     if ((this.heartbeatIncoming !== 0) && (serverOutgoing !== 0)) {
-      ttl = Math.max(this.heartbeatIncoming, serverOutgoing);
+      let ttl: number = Math.max(this.heartbeatIncoming, serverOutgoing);
       this.debug(`check PONG every ${ttl}ms`);
       this._ponger = setInterval(() => {
         const delta = Date.now() - this._lastServerActivityTS;
@@ -298,7 +279,6 @@ export class StompHandler {
       } catch (error) {
         this.debug('Ignoring error during disconnect', error);
       }
-      // this._cleanUp();
     } else {
       if (this._webSocket.readyState === WebSocket.CONNECTING || this._webSocket.readyState === WebSocket.OPEN) {
         this._webSocket.close();

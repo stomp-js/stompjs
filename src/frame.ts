@@ -9,7 +9,7 @@ type unmarshallResults = { frames: Frame[]; partial: string };
  *
  * {@link Message} is an extended Frame.
  *
- * @see http://stomp.github.com/stomp-specification-1.2.html#STOMP_Frames STOMP Frame
+ * See: http://stomp.github.com/stomp-specification-1.2.html#STOMP_Frames STOMP Frame
  */
 export class Frame {
   /**

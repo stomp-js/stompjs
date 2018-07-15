@@ -195,6 +195,11 @@ export class Client {
       return;
     }
 
+    if (this.connected) {
+      this.debug('STOMP: already connected, nothing to do');
+      return;
+    }
+
     this.debug("Opening Web Socket...");
 
     // Get the actual Websocket (or a similar object)
@@ -247,25 +252,19 @@ export class Client {
   private _schedule_reconnect(): void {
     if (this.reconnectDelay > 0) {
       this.debug(`STOMP: scheduling reconnection in ${this.reconnectDelay}ms`);
-      // setTimeout is available in both Browser and Node.js environments
+
       this._reconnector = setTimeout(() => {
-        if (this.connected) {
-          this.debug('STOMP: already connected')
-        } else {
-          this.debug('STOMP: attempting to reconnect');
-          this._connect();
-        }
+        this._connect();
       }, this.reconnectDelay);
     }
   }
 
   /**
-   * Disconnect from the STOMP broker. To ensure graceful shutdown it sends a DISCONNECT Frame
-   * and wait till the broker acknowledges.
+   * Disconnect and stop auto reconnect loop.
    *
-   * disconnectCallback will be called only if the broker was actually connected.
+   * Appropriate callbacks will be invoked if underlying STOMP connection is connected.
    *
-   * @see http://stomp.github.com/stomp-specification-1.2.html#DISCONNECT DISCONNECT Frame
+   * See: http://stomp.github.com/stomp-specification-1.2.html#DISCONNECT
    */
   public deactivate(): void {
     // indicate that auto reconnect loop should terminate
@@ -300,7 +299,7 @@ export class Client {
    *        client.send("/queue/test", {}, "Hello, STOMP");
    * ```
    *
-   * @see http://stomp.github.com/stomp-specification-1.2.html#SEND SEND Frame
+   * See: http://stomp.github.com/stomp-specification-1.2.html#SEND SEND Frame
    */
   public send(destination: string, headers: StompHeaders = {}, body: string = ''): void {
     this._stompHandler.send(destination, headers, body);
@@ -330,7 +329,7 @@ export class Client {
    *        var subscription = client.subscribe(destination, callback, { id: mySubId });
    * ```
    *
-   * @see http://stomp.github.com/stomp-specification-1.2.html#SUBSCRIBE SUBSCRIBE Frame
+   * See: http://stomp.github.com/stomp-specification-1.2.html#SUBSCRIBE SUBSCRIBE Frame
    */
   public subscribe(destination: string, callback: messageCallbackType, headers: StompHeaders = {}): StompSubscription {
     return this._stompHandler.subscribe(destination, callback, headers);
@@ -346,7 +345,7 @@ export class Client {
    *        subscription.unsubscribe();
    * ```
    *
-   * @see http://stomp.github.com/stomp-specification-1.2.html#UNSUBSCRIBE UNSUBSCRIBE Frame
+   * See: http://stomp.github.com/stomp-specification-1.2.html#UNSUBSCRIBE UNSUBSCRIBE Frame
    */
   public unsubscribe(id: string, headers: StompHeaders = {}): void {
     this._stompHandler.unsubscribe(id, headers);
@@ -356,7 +355,7 @@ export class Client {
    * Start a transaction, the returned {@link Transaction} has methods - [commit]{@link Transaction#commit}
    * and [abort]{@link Transaction#abort}.
    *
-   * @see http://stomp.github.com/stomp-specification-1.2.html#BEGIN BEGIN Frame
+   * See: http://stomp.github.com/stomp-specification-1.2.html#BEGIN BEGIN Frame
    */
   public begin(transactionId: string): Transaction {
     return this._stompHandler.begin(transactionId);
@@ -373,7 +372,7 @@ export class Client {
    *        tx.commit();
    * ```
    *
-   * @see http://stomp.github.com/stomp-specification-1.2.html#COMMIT COMMIT Frame
+   * See: http://stomp.github.com/stomp-specification-1.2.html#COMMIT COMMIT Frame
    */
   public commit(transactionId: string): void {
     this._stompHandler.commit(transactionId);
@@ -390,7 +389,7 @@ export class Client {
    *        tx.abort();
    * ```
    *
-   * @see http://stomp.github.com/stomp-specification-1.2.html#ABORT ABORT Frame
+   * See: http://stomp.github.com/stomp-specification-1.2.html#ABORT ABORT Frame
    */
   public abort(transactionId: string): void {
     this._stompHandler.abort(transactionId);
@@ -409,7 +408,7 @@ export class Client {
    *        client.subscribe(destination, callback, {'ack': 'client'});
    * ```
    *
-   * @see http://stomp.github.com/stomp-specification-1.2.html#ACK ACK Frame
+   * See: http://stomp.github.com/stomp-specification-1.2.html#ACK ACK Frame
    */
   public ack(messageId: string, subscriptionId: string, headers: StompHeaders = {}): void {
     this._stompHandler.ack(messageId, subscriptionId, headers);
@@ -428,7 +427,7 @@ export class Client {
    *        client.subscribe(destination, callback, {'ack': 'client'});
    * ```
    *
-   * @see http://stomp.github.com/stomp-specification-1.2.html#NACK NACK Frame
+   * See: http://stomp.github.com/stomp-specification-1.2.html#NACK NACK Frame
    */
   public nack(messageId: string, subscriptionId: string, headers: StompHeaders = {}): void {
     this._stompHandler.nack(messageId, subscriptionId, headers);
