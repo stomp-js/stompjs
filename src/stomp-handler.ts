@@ -4,9 +4,10 @@ import {Versions} from "./versions";
 import {Message} from "./message";
 import {Frame} from "./frame";
 import {StompHeaders} from "./stomp-headers";
-import {closeEventCallbackType, frameCallbackType, messageCallbackType} from "./types";
+import {closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType} from "./types";
 import {StompSubscription} from "./stomp-subscription";
 import {Transaction} from "./transaction";
+import {StompConfig} from "./stomp-config";
 
 /**
  * The STOMP protocol handler
@@ -14,37 +15,21 @@ import {Transaction} from "./transaction";
  * @internal
  */
 export class StompHandler {
-  get debug() {
-    return this._client.debug;
-  }
+  public debug: debugFnType;
 
-  get connectHeaders() {
-    return this._client.connectHeaders;
-  }
+  public connectHeaders: StompHeaders;
 
-  get disconnectHeaders() {
-    return this._client.disconnectHeaders;
-  }
+  public disconnectHeaders: StompHeaders;
 
-  get heartbeatIncoming() {
-    return this._client.heartbeatIncoming;
-  }
+  public heartbeatIncoming: number;
 
-  get heartbeatOutgoing() {
-    return this._client.heartbeatOutgoing;
-  }
+  public heartbeatOutgoing: number;
 
-  get onUnhandledMessage() {
-    return this._client.onUnhandledMessage;
-  }
+  public onUnhandledMessage: messageCallbackType;
 
-  get onReceipt() {
-    return this._client.onReceipt;
-  }
+  public onReceipt: frameCallbackType;
 
-  get maxWebSocketFrameSize() {
-    return this._client.maxWebSocketFrameSize;
-  }
+  public maxWebSocketFrameSize: number;
 
   public onConnect: frameCallbackType;
 
@@ -80,8 +65,7 @@ export class StompHandler {
   private _closeReceipt: string;
 
 
-  constructor(private _client: Client, private _webSocket: WebSocket) {
-
+  constructor(private _client: Client, private _webSocket: WebSocket, config: StompConfig = {}) {
     // used to index subscribers
     this._counter = 0;
 
@@ -93,6 +77,13 @@ export class StompHandler {
     this._escapeHeaderValues = false;
 
     this._lastServerActivityTS = Date.now();
+
+    this.configure(config);
+  }
+
+  public configure(conf: StompConfig): void {
+    // bulk assign all properties to this
+    (<any>Object).assign(this, conf);
   }
 
   public start(): void {

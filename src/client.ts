@@ -2,7 +2,7 @@ import {StompHeaders} from "./stomp-headers";
 import {Message} from "./message";
 import {StompSubscription} from "./stomp-subscription";
 import {Transaction} from "./transaction";
-import {closeEventCallbackType, frameCallbackType, messageCallbackType} from "./types";
+import {closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType} from "./types";
 import {StompConfig} from './stomp-config';
 import {StompHandler} from "./stomp-handler";
 
@@ -132,7 +132,7 @@ export class Client {
    * This method is called for every actual transmission of the STOMP frames over the
    * WebSocket.
    */
-  public debug: (...message: any[]) => void = (...message: any[]) => {};
+  public debug: debugFnType;
 
   /**
    * version of STOMP protocol negotiated with the server, READONLY
@@ -152,6 +152,7 @@ export class Client {
   constructor(conf: StompConfig = {}) {
     // Dummy callbacks
     const noOp = () => {};
+    this.debug = noOp;
     this.onConnect = noOp;
     this.onDisconnect = noOp;
     this.onUnhandledMessage = noOp;
@@ -163,8 +164,6 @@ export class Client {
     this.connectHeaders = {};
     this.disconnectHeaders = {};
     this.webSocketFactory = () => null;
-
-    // Internal fields
 
     // Apply configuration
     this.configure(conf);
@@ -179,21 +178,9 @@ export class Client {
   }
 
   /**
-   * The `connect` method accepts different number of arguments and types. See the Overloads list. Use the
-   * version with headers to pass your broker specific options.
+   * Initiate the connection. If the connection breaks it will keep trying to reconnect.
    *
-   * ```javascript
-   *        client.connect('guest, 'guest', function(frame) {
-   *          client.debug("connected to Stomp");
-   *          client.subscribe(destination, function(message) {
-   *            $("#messages").append("<p>" + message.body + "</p>\n");
-   *          });
-   *        });
-   * ```
-   *
-   * @note When auto reconnect is active, `connectCallback` and `errorCallback` will be called on each connect or error
-   *
-   * @see http:*stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame CONNECT Frame
+   * Call [Client#deactivate]{@link Client#deactivate} to disconnect and stop reconnection attempts.
    */
   public activate(): void {
     // Indicate that this connection is active (it will keep trying to connect)
@@ -213,31 +200,40 @@ export class Client {
     // Get the actual Websocket (or a similar object)
     this._webSocket = this._createWebSocket();
 
-    this._stompHandler = new StompHandler(this, this._webSocket);
-
-    this._stompHandler.onConnect = (frame) => {
-      if (!this._active) {
-        this.debug('STOMP got connected while deactivate was issued, will disconnect now');
-        this._disposeStompHandler();
-        return;
+    this._stompHandler = new StompHandler(this, this._webSocket, {
+      debug: this.debug,
+      connectHeaders: this.connectHeaders,
+      disconnectHeaders: this.disconnectHeaders,
+      heartbeatIncoming: this.heartbeatIncoming,
+      heartbeatOutgoing: this.heartbeatOutgoing,
+      maxWebSocketFrameSize: this.maxWebSocketFrameSize,
+      onConnect: (frame) => {
+        if (!this._active) {
+          this.debug('STOMP got connected while deactivate was issued, will disconnect now');
+          this._disposeStompHandler();
+          return;
+        }
+        this.onConnect(frame);
+      },
+      onDisconnect: (frame) => {
+        this.onDisconnect(frame);
+      },
+      onStompError: (frame) => {
+        this.onStompError(frame);
+      },
+      onWebSocketClose: (evt) => {
+        this.onWebSocketClose(evt);
+        if (this._active) {
+          this._schedule_reconnect();
+        }
+      },
+      onUnhandledMessage: (message) => {
+        this.onUnhandledMessage(message);
+      },
+      onReceipt: (frame) => {
+        this.onReceipt(frame);
       }
-      this.onConnect(frame);
-    };
-
-    this._stompHandler.onDisconnect = (frame) => {
-      this.onDisconnect(frame);
-    };
-
-    this._stompHandler.onStompError = (frame) => {
-      this.onStompError(frame);
-    };
-
-    this._stompHandler.onWebSocketClose = (evt) => {
-      this.onWebSocketClose(evt);
-      if (this._active) {
-        this._schedule_reconnect();
-      }
-    };
+    });
 
     this._stompHandler.start();
   }
