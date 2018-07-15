@@ -27,15 +27,17 @@ describe("Stomp Subscription", function () {
   });
 
   it("Should receive messages with special chars in headers", function (done) {
-    // This is a test intended for version 1.2 of STOMP client
-    if (client.version !== StompJs.Versions.V1_2) {
-      done();
-    }
-
     const msg = 'Is anybody out there?';
     const cust = 'f:o:o\nbar\rbaz\\foo\nbar\rbaz\\';
 
     client.onConnect = function () {
+      // This is a test intended for version 1.2 of STOMP client
+      if (client.version !== StompJs.Versions.V1_2) {
+        client.debug(`Skipping 1.2 specific test, current STOMP version: ${client.version}`);
+        done();
+        return;
+      }
+
       client.subscribe(TEST.destination, function (frame) {
         expect(frame.body).toEqual(msg);
         expect(frame.headers.cust).toEqual(cust);
