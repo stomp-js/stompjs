@@ -1,12 +1,8 @@
-import {Frame} from "./frame";
-import {Stomp} from "./compatibility/stomp";
-import {Byte} from "./byte";
 import {StompHeaders} from "./stomp-headers";
 import {Message} from "./message";
 import {StompSubscription} from "./stomp-subscription";
 import {Transaction} from "./transaction";
-import {Versions} from "./versions";
-import {frameCallbackType, messageCallbackType} from "./types";
+import {closeEventCallbackType, frameCallbackType, messageCallbackType} from "./types";
 import {StompConfig} from './stomp-config';
 import {StompHandler} from "./stomp-handler";
 
@@ -46,14 +42,14 @@ export class Client {
   /**
    * Underlying WebSocket instance, READONLY
    */
-  get webSocket(): any {
+  get webSocket(): WebSocket {
     return this._webSocket;
   }
   /**
    * Underlying WebSocket instance
    * @internal
    */
-  protected _webSocket: any;
+  protected _webSocket: WebSocket;
 
   /**
    * Connection headers, important keys - `login`, `passcode`, `host`
@@ -106,12 +102,12 @@ export class Client {
    * A compliant STOMP Broker will close the connection after this type of frame.
    * See {@link https://stomp.github.io/stomp-specification-1.2.html#ERROR}.
    */
-  public onStompError: any;
+  public onStompError: frameCallbackType;
 
   /**
    * Callback, invoked when underlying WebSocket is closed.
    */
-  public onWebSocketClose: any;
+  public onWebSocketClose: closeEventCallbackType;
 
   /**
    * By default, debug messages are discarded. To log to `console` following can be used:
@@ -140,8 +136,7 @@ export class Client {
   private _reconnector: any;
 
   /**
-   * Please do not create instance of this class directly, use one of the methods [Stomp.client]{@link Stomp#client},
-   * [Stomp.over]{@link Stomp#over} in {@link Stomp}.
+   * Create an instance.
    */
   constructor(conf: StompConfig = {}) {
     // Dummy callbacks
@@ -150,6 +145,7 @@ export class Client {
     this.onDisconnect = noOp;
     this.onUnhandledMessage = noOp;
     this.onReceipt = noOp;
+    this.onStompError = noOp;
     this.onWebSocketClose = noOp;
 
     // These parameters would typically get proper values before connect is called
@@ -216,11 +212,11 @@ export class Client {
       this.onDisconnect(frame);
     };
 
-    this._stompHandler.onStompError = (frame:any) => {
+    this._stompHandler.onStompError = (frame) => {
       this.onStompError(frame);
     };
 
-    this._stompHandler.onWebSocketClose = (evt: any) => {
+    this._stompHandler.onWebSocketClose = (evt) => {
       this.onWebSocketClose(evt);
       if (this._active) {
         this._schedule_reconnect();

@@ -4,7 +4,7 @@ import {Versions} from "./versions";
 import {Message} from "./message";
 import {Frame} from "./frame";
 import {StompHeaders} from "./stomp-headers";
-import {frameCallbackType, messageCallbackType} from "./types";
+import {closeEventCallbackType, frameCallbackType, messageCallbackType} from "./types";
 import {StompSubscription} from "./stomp-subscription";
 import {Transaction} from "./transaction";
 
@@ -50,9 +50,9 @@ export class StompHandler {
 
   public onDisconnect: frameCallbackType;
 
-  public onStompError: any;
+  public onStompError: frameCallbackType;
 
-  public onWebSocketClose: any;
+  public onWebSocketClose: closeEventCallbackType;
 
 
   /**
@@ -89,10 +89,6 @@ export class StompHandler {
     this._subscriptions = {};
 
     this._partialData = '';
-
-    this._closeReceipt = '';
-
-    this._version = '';
 
     this._escapeHeaderValues = false;
 
