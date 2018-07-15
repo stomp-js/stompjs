@@ -1,6 +1,8 @@
 id = 0;
 
 stompClient = function () {
+  const myId= ++id;
+
   const stompConfig = {
     connectHeaders: {
       login: TEST.login,
@@ -10,12 +12,11 @@ stompClient = function () {
       return new WebSocket(TEST.url);
     },
     debug: function (str) {
-      console.log('CLIENT ' + this.id + ': ', str);
+      console.log('CLIENT ' + myId + ': ' + str);
     },
     reconnectDelay: 0
   };
   const client = new StompJs.Client(stompConfig);
-  client.id = '' + ++id;
   return client;
 };
 
