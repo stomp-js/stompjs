@@ -59,6 +59,11 @@ export interface StompConfig {
   onUnhandledReceipt?: frameCallbackType;
 
   /**
+   * If we receive an unknown frame type from the STOMP Broker.
+   */
+  onUnhandledFrame?: frameCallbackType;
+
+  /**
    * Callback
    */
   onConnect?: frameCallbackType;

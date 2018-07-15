@@ -78,6 +78,11 @@ export class Client {
   public onUnhandledReceipt: frameCallbackType;
 
   /**
+   * Will be invoked if we receive an unknown frame type from the STOMP broker
+   */
+  public onUnhandledFrame: frameCallbackType;
+
+  /**
    * `true` if there is a active connection with STOMP Broker
    */
   get connected(): boolean {
@@ -157,6 +162,7 @@ export class Client {
     this.onDisconnect = noOp;
     this.onUnhandledMessage = noOp;
     this.onUnhandledReceipt = noOp;
+    this.onUnhandledFrame = noOp;
     this.onStompError = noOp;
     this.onWebSocketClose = noOp;
 
@@ -237,6 +243,9 @@ export class Client {
       },
       onUnhandledReceipt: (frame) => {
         this.onUnhandledReceipt(frame);
+      },
+      onUnhandledFrame: (frame) => {
+        this.onUnhandledFrame(frame);
       }
     });
 
