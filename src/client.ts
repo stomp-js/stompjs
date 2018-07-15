@@ -216,6 +216,11 @@ export class Client {
     this._stompHandler = new StompHandler(this, this._webSocket);
 
     this._stompHandler.onConnect = (frame) => {
+      if (!this._active) {
+        this.debug('STOMP got connected while deactivate was issued, will disconnect now');
+        this._disposeStompHandler();
+        return;
+      }
       this.onConnect(frame);
     };
 
@@ -248,13 +253,13 @@ export class Client {
       this.debug(`STOMP: scheduling reconnection in ${this.reconnectDelay}ms`);
       // setTimeout is available in both Browser and Node.js environments
       this._reconnector = setTimeout(() => {
-          if (this.connected) {
-            this.debug('STOMP: already connected')
-          } else {
-            this.debug('STOMP: attempting to reconnect');
-            this._connect();
-          }
-        }, this.reconnectDelay);
+        if (this.connected) {
+          this.debug('STOMP: already connected')
+        } else {
+          this.debug('STOMP: attempting to reconnect');
+          this._connect();
+        }
+      }, this.reconnectDelay);
     }
   }
 
@@ -274,7 +279,10 @@ export class Client {
     if (this._reconnector) {
       clearTimeout(this._reconnector);
     }
+    this._disposeStompHandler();
+  }
 
+  private _disposeStompHandler() {
     // Dispose STOMP Handler
     if (this._stompHandler) {
       this._stompHandler.dispose();
