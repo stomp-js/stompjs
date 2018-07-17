@@ -28,18 +28,23 @@ export class Frame {
   public body: any;
 
   private escapeHeaderValues: boolean;
+  private skipContentLengthHeader: boolean;
 
   /**
    * Frame constructor. `command`, `headers` and `body` are available as properties.
    *
    * @internal
    */
-  constructor(parameters: { command: string, headers?: StompHeaders, body?: any, escapeHeaderValues?: boolean }) {
-    let {command, headers, body, escapeHeaderValues} = parameters;
+  constructor(params: {
+    command: string, headers?: StompHeaders, body: any,
+    escapeHeaderValues?: boolean, skipContentLengthHeader?: boolean
+  }) {
+    let {command, headers, body, escapeHeaderValues, skipContentLengthHeader} = params;
     this.command = command;
     this.headers = headers || {};
     this.body = body || '';
     this.escapeHeaderValues = escapeHeaderValues || false;
+    this.skipContentLengthHeader =  skipContentLengthHeader || false;
   }
 
   /**
@@ -47,8 +52,7 @@ export class Frame {
    */
   public toString(): string {
     const lines = [this.command];
-    const skipContentLength = (this.headers['content-length'] === false) ? true : false;
-    if (skipContentLength) {
+    if (this.skipContentLengthHeader) {
       delete this.headers['content-length'];
     }
 
@@ -60,7 +64,7 @@ export class Frame {
         lines.push(`${name}:${value}`);
       }
     }
-    if (this.body && !skipContentLength) {
+    if (this.body && !this.skipContentLengthHeader) {
       lines.push(`content-length:${Frame.sizeOfUTF8(this.body)}`);
     }
     lines.push(Byte.LF + this.body);
@@ -171,7 +175,10 @@ export class Frame {
    *
    * @internal
    */
-  public static marshall(params: { command: string, headers?: StompHeaders, body: any, escapeHeaderValues?: boolean }) {
+  public static marshall(params: {
+    command: string, headers?: StompHeaders, body: any,
+    escapeHeaderValues?: boolean, skipContentLengthHeader?: boolean
+  }) {
     const frame = new Frame(params);
     return frame.toString() + Byte.NULL;
   }
