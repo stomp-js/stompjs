@@ -18,16 +18,17 @@
 
   it("marshall a SEND frame", function () {
     const out = StompJs.Frame.marshall({command: "SEND", headers: {destination: '/queue/test'}, body: "hello, world!"});
-    expect(out, "SEND\ndestination:/queue/test\ncontent-length:13\n\nhello).toEqual( world!\0");
+    expect(out).toEqual("SEND\ndestination:/queue/test\ncontent-length:13\n\nhello, world!\0");
   });
 
   it("marshall a SEND frame without content-length", function () {
     const out = StompJs.Frame.marshall({
       command: "SEND",
-      headers: {destination: '/queue/test', 'content-length': false},
-      body: "hello, world!"
+      headers: {destination: '/queue/test'},
+      body: "hello, world!",
+      skipContentLengthHeader: true
     });
-    expect(out, "SEND\ndestination:/queue/test\n\nhello).toEqual( world!\0");
+    expect(out).toEqual("SEND\ndestination:/queue/test\n\nhello, world!\0");
   });
 
   it("unmarshall a CONNECTED frame", function () {
@@ -43,7 +44,7 @@
     const frame = StompJs.Frame.unmarshall(data).frames[0];
     expect(frame.command).toEqual("RECEIVE");
     expect(frame.headers).toEqual({foo: 'abc', bar: "1234"});
-    expect(frame.body, "hello).toEqual( world!");
+    expect(frame.body).toEqual("hello, world!");
   });
 
   it("unmarshall should not include the null byte in the body", function () {
