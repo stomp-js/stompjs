@@ -310,12 +310,7 @@ export class Client {
    * See: http://stomp.github.com/stomp-specification-1.2.html#SEND SEND Frame
    */
   public publish(params: publishParams) {
-    let {destination, headers, body} = params;
-    this._stompHandler.publish({
-      destination: destination,
-      headers: headers || {},
-      body: body || ''
-    });
+    this._stompHandler.publish(params);
   }
 
   /**

@@ -12,17 +12,21 @@
   });
 
   it("marshall a CONNECT frame", function () {
-    const out = StompJs.Frame.marshall("CONNECT", {login: 'jmesnil', passcode: 'wombats'});
+    const out = StompJs.Frame.marshall({command: "CONNECT", headers: {login: 'jmesnil', passcode: 'wombats'}});
     expect(out).toEqual("CONNECT\nlogin:jmesnil\npasscode:wombats\n\n\0");
   });
 
   it("marshall a SEND frame", function () {
-    const out = StompJs.Frame.marshall("SEND", {destination: '/queue/test'}, "hello, world!");
+    const out = StompJs.Frame.marshall({command: "SEND", headers: {destination: '/queue/test'}, body: "hello, world!"});
     expect(out, "SEND\ndestination:/queue/test\ncontent-length:13\n\nhello).toEqual( world!\0");
   });
 
   it("marshall a SEND frame without content-length", function () {
-    const out = StompJs.Frame.marshall("SEND", {destination: '/queue/test', 'content-length': false}, "hello, world!");
+    const out = StompJs.Frame.marshall({
+      command: "SEND",
+      headers: {destination: '/queue/test', 'content-length': false},
+      body: "hello, world!"
+    });
     expect(out, "SEND\ndestination:/queue/test\n\nhello).toEqual( world!\0");
   });
 
@@ -76,7 +80,12 @@
     const dest = 'f:o:o\nbar\rbaz\\foo\nbar\rbaz\\',
       msg = "MESSAGE\ndestination:" + 'f\\co\\co\\nbar\\rbaz\\\\foo\\nbar\\rbaz\\\\' + "\nmessage-id:456\n\n\0";
 
-    expect(StompJs.Frame.marshall("MESSAGE", {"destination": dest, "message-id": "456"}, "", true)).toEqual(msg);
+    expect(StompJs.Frame.marshall({
+      command: "MESSAGE",
+      headers: {"destination": dest, "message-id": "456"},
+      body: "",
+      escapeHeaderValues: true
+    })).toEqual(msg);
   });
 
   it("marshal/unmarshall should support \\, \\n and \\r in header values with escaping", function () {
@@ -85,7 +94,7 @@
     const headers = {"destination": dest, "message-id": "456"};
     const body = "";
 
-    const msg = StompJs.Frame.marshall(command, headers, body, true);
+    const msg = StompJs.Frame.marshall({command: command, headers: headers, body: body, escapeHeaderValues: true});
     const frame = StompJs.Frame.unmarshall(msg, true).frames[0];
 
     expect(frame.headers).toEqual(headers);

@@ -139,7 +139,7 @@ export class StompHandler {
       this.debug('Web Socket Opened...');
       this.connectHeaders["accept-version"] = Versions.supportedVersions();
       this.connectHeaders["heart-beat"] = [this.heartbeatOutgoing, this.heartbeatIncoming].join(',');
-      this._transmit("CONNECT", this.connectHeaders);
+      this._transmit({command: "CONNECT", headers: this.connectHeaders});
     };
   }
 
@@ -241,8 +241,14 @@ export class StompHandler {
     }
   }
 
-  private _transmit(command: string, headers: StompHeaders, body: string = ''): void {
-    let out = Frame.marshall(command, headers, body, this._escapeHeaderValues);
+  private _transmit(params: { command: string, headers?: StompHeaders, body?: string }): void {
+    let {command, headers, body} = params;
+    let out = Frame.marshall({
+      command: command,
+      headers: headers,
+      body: body,
+      escapeHeaderValues: this._escapeHeaderValues
+    });
     this.debug(`>>> ${out}`);
     // if necessary, split the *STOMP* frame to send it on many smaller
     // *WebSocket* frames
@@ -269,7 +275,7 @@ export class StompHandler {
           this._cleanUp();
           this.onDisconnect(frame);
         });
-        this._transmit("DISCONNECT", this.disconnectHeaders);
+        this._transmit({command: "DISCONNECT", headers: this.disconnectHeaders});
       } catch (error) {
         this.debug('Ignoring error during disconnect', error);
       }
@@ -291,9 +297,10 @@ export class StompHandler {
     }
   }
 
-  public publish(params: { destination: string, headers: StompHeaders, body: string }): void {
-    params.headers.destination = params.destination;
-    this._transmit("SEND", params.headers, params.body);
+  public publish(params: { destination: string, headers?: StompHeaders, body?: string }): void {
+    let {destination, headers, body} = params;
+    headers = (<any>Object).assign({destination: destination}, headers);
+    this._transmit({command: "SEND", headers: headers, body: body});
   }
 
   public watchForReceipt(receiptId: string, callback: frameCallbackType): void {
@@ -306,7 +313,7 @@ export class StompHandler {
     }
     headers.destination = destination;
     this._subscriptions[<string>headers.id] = callback;
-    this._transmit("SUBSCRIBE", headers);
+    this._transmit({command: "SUBSCRIBE", headers: headers});
     const client = this;
     return {
       id: <string>headers.id,
@@ -323,13 +330,15 @@ export class StompHandler {
     }
     delete this._subscriptions[id];
     headers.id = id;
-    this._transmit("UNSUBSCRIBE", headers);
+    this._transmit({command: "UNSUBSCRIBE", headers: headers});
   }
 
   public begin(transactionId: string): Transaction {
     const txId = transactionId || (`tx-${this._counter++}`);
-    this._transmit("BEGIN", {
-      transaction: txId
+    this._transmit({
+      command: "BEGIN", headers: {
+        transaction: txId
+      }
     });
     const client = this;
     return {
@@ -344,14 +353,18 @@ export class StompHandler {
   }
 
   public commit(transactionId: string): void {
-    this._transmit("COMMIT", {
-      transaction: transactionId
+    this._transmit({
+      command: "COMMIT", headers: {
+        transaction: transactionId
+      }
     });
   }
 
   public abort(transactionId: string): void {
-    this._transmit("ABORT", {
-      transaction: transactionId
+    this._transmit({
+      command: "ABORT", headers: {
+        transaction: transactionId
+      }
     });
   }
 
@@ -362,7 +375,7 @@ export class StompHandler {
       headers["message-id"] = messageId;
     }
     headers.subscription = subscriptionId;
-    this._transmit("ACK", headers);
+    this._transmit({command: "ACK", headers: headers});
   }
 
   public nack(messageId: string, subscriptionId: string, headers: StompHeaders = {}): void {
@@ -372,7 +385,7 @@ export class StompHandler {
       headers["message-id"] = messageId;
     }
     headers.subscription = subscriptionId;
-    return this._transmit("NACK", headers);
+    return this._transmit({command: "NACK", headers: headers});
   }
 
 }

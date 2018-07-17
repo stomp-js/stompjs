@@ -34,11 +34,12 @@ export class Frame {
    *
    * @internal
    */
-  constructor(command: string, headers: StompHeaders = {}, body: any = '', escapeHeaderValues: boolean = false) {
+  constructor(parameters: { command: string, headers?: StompHeaders, body?: any, escapeHeaderValues?: boolean }) {
+    let {command, headers, body, escapeHeaderValues} = parameters;
     this.command = command;
-    this.headers = headers;
-    this.body = body;
-    this.escapeHeaderValues = escapeHeaderValues;
+    this.headers = headers || {};
+    this.body = body || '';
+    this.escapeHeaderValues = escapeHeaderValues || false;
   }
 
   /**
@@ -125,7 +126,7 @@ export class Frame {
         body += chr;
       }
     }
-    return new Frame(<string>command, headers, body, escapeHeaderValues);
+    return new Frame({command: <string>command, headers: headers, body: body, escapeHeaderValues: escapeHeaderValues});
   }
 
   /**
@@ -170,8 +171,8 @@ export class Frame {
    *
    * @internal
    */
-  public static marshall(command: string, headers: StompHeaders, body: any, escapeHeaderValues: boolean) {
-    const frame = new Frame(command, headers, body, escapeHeaderValues);
+  public static marshall(params: { command: string, headers?: StompHeaders, body: any, escapeHeaderValues?: boolean }) {
+    const frame = new Frame(params);
     return frame.toString() + Byte.NULL;
   }
 
