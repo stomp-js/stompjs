@@ -149,7 +149,7 @@ export class StompHandler {
     'CONNECTED': (frame) => {
       this.debug(`connected to server ${frame.headers.server}`);
       this._connected = true;
-      this._version = <string>frame.headers.version;
+      this._version = frame.headers.version;
       // STOMP version 1.2 needs header values to be escaped
       if (this._version === Versions.V1_2) {
         this._escapeHeaderValues = true;
@@ -168,16 +168,16 @@ export class StompHandler {
       // This is useful for subscriptions that are automatically created
       // on the browser side (e.g. [RabbitMQ's temporary
       // queues](http://www.rabbitmq.com/stomp.html)).
-      const subscription = <string>frame.headers.subscription;
+      const subscription = frame.headers.subscription;
       const onReceive = this._subscriptions[subscription] || this.onUnhandledMessage;
       // bless the frame to be a Message
       const message = <Message>frame;
       let messageId: string;
       const client = this;
       if (this._version === Versions.V1_2) {
-        messageId = <string>message.headers["ack"];
+        messageId = message.headers["ack"];
       } else {
-        messageId = <string>message.headers["message-id"];
+        messageId = message.headers["message-id"];
       }
       // add `ack()` and `nack()` methods directly to the returned frame
       // so that a simple call to `message.ack()` can acknowledge the message.
@@ -192,11 +192,11 @@ export class StompHandler {
 
     // [RECEIPT Frame](http://stomp.github.com/stomp-specification-1.2.html#RECEIPT)
     "RECEIPT": (frame) => {
-      const callback = this._receiptWatchers[<string>frame.headers["receipt-id"]];
+      const callback = this._receiptWatchers[frame.headers["receipt-id"]];
       if (callback) {
         callback(frame);
         // Server will acknowledge only once, remove the callback
-        delete this._receiptWatchers[<string>frame.headers["receipt-id"]];
+        delete this._receiptWatchers[frame.headers["receipt-id"]];
       } else {
         this.onUnhandledReceipt(frame);
       }
@@ -216,7 +216,7 @@ export class StompHandler {
     // heart-beat header received from the server looks like:
     //
     //     heart-beat: sx, sy
-    const [serverOutgoing, serverIncoming] = (<string>headers['heart-beat']).split(",").map((v: string) => parseInt(v));
+    const [serverOutgoing, serverIncoming] = (headers['heart-beat']).split(",").map((v: string) => parseInt(v));
 
     if ((this.heartbeatOutgoing !== 0) && (serverIncoming !== 0)) {
       let ttl: number = Math.max(this.heartbeatOutgoing, serverIncoming);
@@ -270,7 +270,7 @@ export class StompHandler {
         if (!this.disconnectHeaders['receipt']) {
           this.disconnectHeaders['receipt'] = `close-${this._counter++}`;
         }
-        this.watchForReceipt(<string>this.disconnectHeaders['receipt'], (frame) => {
+        this.watchForReceipt(this.disconnectHeaders['receipt'], (frame) => {
           this._webSocket.close();
           this._cleanUp();
           this.onDisconnect(frame);
@@ -312,14 +312,14 @@ export class StompHandler {
       headers.id = `sub-${this._counter++}`;
     }
     headers.destination = destination;
-    this._subscriptions[<string>headers.id] = callback;
+    this._subscriptions[headers.id] = callback;
     this._transmit({command: "SUBSCRIBE", headers: headers});
     const client = this;
     return {
-      id: <string>headers.id,
+      id: headers.id,
 
       unsubscribe(hdrs) {
-        return client.unsubscribe(<string>headers.id, hdrs);
+        return client.unsubscribe(headers.id, hdrs);
       }
     };
   }

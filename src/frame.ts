@@ -103,7 +103,7 @@ export class Frame {
     for (let line of headerLines.reverse()) {
       const idx = line.indexOf(':');
 
-      const key = <string>trim(line.substring(0, idx));
+      const key = trim(line.substring(0, idx));
       let value = trim(line.substring(idx + 1));
 
       if (escapeHeaderValues && (command !== 'CONNECT') && (command !== 'CONNECTED')) {
@@ -118,7 +118,7 @@ export class Frame {
     // skip the 2 LF bytes that divides the headers from the body
     const start = divider + 2;
     if (headers['content-length']) {
-      const len = parseInt(<string>headers['content-length']);
+      const len = parseInt(headers['content-length']);
       body = (`${data}`).substring(start, start + len);
     } else {
       let chr = null;
@@ -130,7 +130,7 @@ export class Frame {
         body += chr;
       }
     }
-    return new Frame({command: <string>command, headers: headers, body: body, escapeHeaderValues: escapeHeaderValues});
+    return new Frame({command: command, headers: headers, body: body, escapeHeaderValues: escapeHeaderValues});
   }
 
   /**
