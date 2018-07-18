@@ -11,5 +11,6 @@ export type closeEventCallbackType = (evt: CloseEvent) => void;
 export interface publishParams {
   destination: string,
   headers?: StompHeaders,
-  body?: string
+  body?: string,
+  skipContentLengthHeader: boolean
 }

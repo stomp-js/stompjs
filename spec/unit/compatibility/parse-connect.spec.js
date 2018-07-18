@@ -1,4 +1,4 @@
-describe("Parse connect method arguments", function () {
+describe("Compat Parse connect method arguments", function () {
   // prepare something for all following tests
   const myConnectCallback = function () {
     // called back when the client is connected to STOMP broker

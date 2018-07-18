@@ -4,7 +4,7 @@ import {Versions} from "./versions";
 import {Message} from "./message";
 import {Frame} from "./frame";
 import {StompHeaders} from "./stomp-headers";
-import {closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType} from "./types";
+import {closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, publishParams} from "./types";
 import {StompSubscription} from "./stomp-subscription";
 import {Transaction} from "./transaction";
 import {StompConfig} from "./stomp-config";
@@ -241,13 +241,14 @@ export class StompHandler {
     }
   }
 
-  private _transmit(params: { command: string, headers?: StompHeaders, body?: string }): void {
-    let {command, headers, body} = params;
+  private _transmit(params: { command: string, headers?: StompHeaders, body?: string, skipContentLengthHeader?: boolean }): void {
+    let {command, headers, body, skipContentLengthHeader} = params;
     let out = Frame.marshall({
       command: command,
       headers: headers,
       body: body,
-      escapeHeaderValues: this._escapeHeaderValues
+      escapeHeaderValues: this._escapeHeaderValues,
+      skipContentLengthHeader: skipContentLengthHeader
     });
     this.debug(`>>> ${out}`);
     // if necessary, split the *STOMP* frame to send it on many smaller
@@ -297,10 +298,10 @@ export class StompHandler {
     }
   }
 
-  public publish(params: { destination: string, headers?: StompHeaders, body?: string }): void {
-    let {destination, headers, body} = params;
+  public publish(params: publishParams): void {
+    let {destination, headers, body, skipContentLengthHeader} = params;
     headers = (<any>Object).assign({destination: destination}, headers);
-    this._transmit({command: "SEND", headers: headers, body: body});
+    this._transmit({command: "SEND", headers: headers, body: body, skipContentLengthHeader: skipContentLengthHeader});
   }
 
   public watchForReceipt(receiptId: string, callback: frameCallbackType): void {

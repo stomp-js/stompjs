@@ -134,8 +134,17 @@ export class CompatClient extends Client {
    *
    * See: http://stomp.github.com/stomp-specification-1.2.html#SEND SEND Frame
    */
-  public send(destination: string, headers: StompHeaders = {}, body: string = ''): void {
-    this.publish({destination: destination, headers: headers, body: body});
+  public send(destination: string, headers: {[key:string]: any} = {}, body: string = ''): void {
+    const skipContentLengthHeader = (headers['content-length'] === false);
+    if (skipContentLengthHeader) {
+      delete headers['content-length'];
+    }
+    this.publish({
+      destination: destination,
+      headers: <StompHeaders>headers,
+      body: body,
+      skipContentLengthHeader: skipContentLengthHeader
+    });
   }
 
   /**
