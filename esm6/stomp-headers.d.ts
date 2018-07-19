@@ -3,5 +3,5 @@
  * The headers sent by Broker will be available as [Frame#headers]{@link Frame#headers}.
  */
 export interface StompHeaders {
-    [key: string]: string | number | boolean;
+    [key: string]: string;
 }

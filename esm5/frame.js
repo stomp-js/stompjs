@@ -7,7 +7,7 @@ var byte_1 = require("./byte");
  *
  * {@link Message} is an extended Frame.
  *
- * @see http://stomp.github.com/stomp-specification-1.2.html#STOMP_Frames STOMP Frame
+ * See: http://stomp.github.com/stomp-specification-1.2.html#STOMP_Frames STOMP Frame
  */
 var Frame = /** @class */ (function () {
     /**
@@ -15,22 +15,20 @@ var Frame = /** @class */ (function () {
      *
      * @internal
      */
-    function Frame(command, headers, body, escapeHeaderValues) {
-        if (headers === void 0) { headers = {}; }
-        if (body === void 0) { body = ''; }
-        if (escapeHeaderValues === void 0) { escapeHeaderValues = false; }
+    function Frame(params) {
+        var command = params.command, headers = params.headers, body = params.body, escapeHeaderValues = params.escapeHeaderValues, skipContentLengthHeader = params.skipContentLengthHeader;
         this.command = command;
-        this.headers = headers;
-        this.body = body;
-        this.escapeHeaderValues = escapeHeaderValues;
+        this.headers = headers || {};
+        this.body = body || '';
+        this.escapeHeaderValues = escapeHeaderValues || false;
+        this.skipContentLengthHeader = skipContentLengthHeader || false;
     }
     /**
      * @internal
      */
     Frame.prototype.toString = function () {
         var lines = [this.command];
-        var skipContentLength = (this.headers['content-length'] === false) ? true : false;
-        if (skipContentLength) {
+        if (this.skipContentLengthHeader) {
             delete this.headers['content-length'];
         }
         for (var _i = 0, _a = Object.keys(this.headers || {}); _i < _a.length; _i++) {
@@ -43,7 +41,7 @@ var Frame = /** @class */ (function () {
                 lines.push(name_1 + ":" + value);
             }
         }
-        if (this.body && !skipContentLength) {
+        if (this.body && !this.skipContentLengthHeader) {
             lines.push("content-length:" + Frame.sizeOfUTF8(this.body));
         }
         lines.push(byte_1.Byte.LF + this.body);
@@ -107,7 +105,7 @@ var Frame = /** @class */ (function () {
                 body += chr;
             }
         }
-        return new Frame(command, headers, body, escapeHeaderValues);
+        return new Frame({ command: command, headers: headers, body: body, escapeHeaderValues: escapeHeaderValues });
     };
     /**
      * Split the data before unmarshalling every single STOMP frame.
@@ -148,8 +146,8 @@ var Frame = /** @class */ (function () {
      *
      * @internal
      */
-    Frame.marshall = function (command, headers, body, escapeHeaderValues) {
-        var frame = new Frame(command, headers, body, escapeHeaderValues);
+    Frame.marshall = function (params) {
+        var frame = new Frame(params);
         return frame.toString() + byte_1.Byte.NULL;
     };
     /**

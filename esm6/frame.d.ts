@@ -9,7 +9,7 @@ declare type unmarshallResults = {
  *
  * {@link Message} is an extended Frame.
  *
- * @see http://stomp.github.com/stomp-specification-1.2.html#STOMP_Frames STOMP Frame
+ * See: http://stomp.github.com/stomp-specification-1.2.html#STOMP_Frames STOMP Frame
  */
 export declare class Frame {
     /**
@@ -25,12 +25,19 @@ export declare class Frame {
      */
     body: any;
     private escapeHeaderValues;
+    private skipContentLengthHeader;
     /**
      * Frame constructor. `command`, `headers` and `body` are available as properties.
      *
      * @internal
      */
-    constructor(command: string, headers?: StompHeaders, body?: any, escapeHeaderValues?: boolean);
+    constructor(params: {
+        command: string;
+        headers?: StompHeaders;
+        body: any;
+        escapeHeaderValues?: boolean;
+        skipContentLengthHeader?: boolean;
+    });
     /**
      * @internal
      */
@@ -60,7 +67,13 @@ export declare class Frame {
      *
      * @internal
      */
-    static marshall(command: string, headers: StompHeaders, body: any, escapeHeaderValues: boolean): string;
+    static marshall(params: {
+        command: string;
+        headers?: StompHeaders;
+        body: any;
+        escapeHeaderValues?: boolean;
+        skipContentLengthHeader?: boolean;
+    }): string;
     /**
      *  Escape header values
      */

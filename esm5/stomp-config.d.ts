@@ -1,5 +1,5 @@
 import { StompHeaders } from "./stomp-headers";
-import { frameCallbackType, messageCallbackType } from "./types";
+import { frameCallbackType, messageCallbackType, closeEventCallbackType, debugFnType } from "./types";
 /**
  * Configuration options for STOMP Client, each key corresponds to
  * field by the same name in {@link Client}. This can be passed to
@@ -47,7 +47,11 @@ export interface StompConfig {
     /**
      * STOMP brokers can be requested to notify when an operation is actually completed.
      */
-    onReceipt?: frameCallbackType;
+    onUnhandledReceipt?: frameCallbackType;
+    /**
+     * If we receive an unknown frame type from the STOMP Broker.
+     */
+    onUnhandledFrame?: frameCallbackType;
     /**
      * Callback
      */
@@ -59,11 +63,11 @@ export interface StompConfig {
     /**
      * Callback
      */
-    onStompError?: any;
+    onStompError?: frameCallbackType;
     /**
      * Callback
      */
-    onWebSocketClose?: any;
+    onWebSocketClose?: closeEventCallbackType;
     /**
      * By default, debug messages are discarded. To log to `console` following can be used:
      *
@@ -76,5 +80,5 @@ export interface StompConfig {
      * This method is called for every actual transmission of the STOMP frames over the
      * WebSocket.
      */
-    debug?: (...message: any[]) => void;
+    debug?: debugFnType;
 }

@@ -7,6 +7,6 @@ __export(require("./client"));
 __export(require("./frame"));
 __export(require("./versions"));
 // Compatibility code
-__export(require("./compatibility/stomp"));
 __export(require("./compatibility/compat-client"));
+__export(require("./compatibility/stomp"));
 //# sourceMappingURL=index.js.map

@@ -9,8 +9,19 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import { Client } from "../client";
+/**
+ * Available for backward compatibility, please shift to using {@link Client}.
+ *
+ * **Deprecated**
+ */
 var CompatClient = /** @class */ (function (_super) {
     __extends(CompatClient, _super);
+    /**
+     * Available for backward compatibility, please shift to using {@link Client}
+     * and [Client#webSocketFactory]{@link Client#webSocketFactory}.
+     *
+     * **Deprecated**
+     */
     function CompatClient(webSocketFactory) {
         var _this = _super.call(this) || this;
         _this._heartbeatInfo = new HeartbeatInfo(_this);
@@ -51,44 +62,43 @@ var CompatClient = /** @class */ (function (_super) {
         return [headers, connectCallback, errorCallback, closeEventCallback];
     };
     /**
+     * Available for backward compatibility, please shift to using [Client#activate]{@link Client#activate}.
+     *
+     * **Deprecated**
+     *
      * The `connect` method accepts different number of arguments and types. See the Overloads list. Use the
      * version with headers to pass your broker specific options.
      *
-     * @overload connect(headers, connectCallback)
+     * overloads:
+     * - connect(headers, connectCallback)
+     * - connect(headers, connectCallback, errorCallback)
+     * - connect(login, passcode, connectCallback)
+     * - connect(login, passcode, connectCallback, errorCallback)
+     * - connect(login, passcode, connectCallback, errorCallback, closeEventCallback)
+     * - connect(login, passcode, connectCallback, errorCallback, closeEventCallback, host)
      *
-     * @overload connect(headers, connectCallback, errorCallback)
+     * params:
+     * - headers, see [Client#connectHeaders]{@link Client#connectHeaders}
+     * - connectCallback, see [Client#onConnect]{@link Client#onConnect}
+     * - errorCallback, see [Client#onStompError]{@link Client#onStompError}
+     * - closeEventCallback, see [Client#onWebSocketClose]{@link Client#onWebSocketClose}
+     * - login [String]
+     * - passcode [String]
+     * - host [String] Optional, virtual host to connect to. STOMP 1.2 makes it mandatory,
+     *                 however the broker may not mandate it
      *
-     * @overload connect(login, passcode, connectCallback)
-     *
-     * @overload connect(login, passcode, connectCallback, errorCallback)
-     *
-     * @overload connect(login, passcode, connectCallback, errorCallback, closeEventCallback)
-     *
-     * @overload connect(login, passcode, connectCallback, errorCallback, closeEventCallback, host)
-     *
-     * @param headers [Object]
-     * @option headers [String] login
-     * @option headers [String] passcode
-     * @option headers [String] host virtual host to connect to. STOMP 1.2 makes it mandatory, however the broker may not mandate it
-     * @param connectCallback [function(Frame)] Called upon a successful connect or reconnect
-     * @param errorCallback [function(any)] Optional, called upon an error. The passed paramer may be a {Frame} or a message
-     * @param closeEventCallback [function(CloseEvent)] Optional, called when the websocket is closed.
-     *
-     * @param login [String]
-     * @param passcode [String]
-     * @param host [String] Optional, virtual host to connect to. STOMP 1.2 makes it mandatory, however the broker may not mandate it
-     *
-     * @example
+     * ```javascript
      *        client.connect('guest, 'guest', function(frame) {
      *          client.debug("connected to Stomp");
      *          client.subscribe(destination, function(message) {
      *            $("#messages").append("<p>" + message.body + "</p>\n");
      *          });
      *        });
+     * ```
      *
-     * @note When auto reconnect is active, `connectCallback` and `errorCallback` will be called on each connect or error
+     * Note: When auto reconnect is active, `connectCallback` and `errorCallback` will be called on each connect or error
      *
-     * @see http:*stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame CONNECT Frame
+     * See also: [CONNECT Frame]{@link http://stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame}
      */
     CompatClient.prototype.connect = function () {
         var args = [];
@@ -96,18 +106,77 @@ var CompatClient = /** @class */ (function (_super) {
             args[_i] = arguments[_i];
         }
         var out = this._parseConnect.apply(this, args);
-        this.connectHeaders = out[0], this.onConnect = out[1], this.onStompError = out[2], this.onWebSocketClose = out[3];
-        _super.prototype.connect.call(this);
+        if (out[0]) {
+            this.connectHeaders = out[0];
+        }
+        if (out[1]) {
+            this.onConnect = out[1];
+        }
+        if (out[2]) {
+            this.onStompError = out[2];
+        }
+        if (out[3]) {
+            this.onWebSocketClose = out[3];
+        }
+        _super.prototype.activate.call(this);
     };
+    /**
+     * Available for backward compatibility, please shift to using [Client#activate]{@link Client#activate}.
+     *
+     * **Deprecated**
+     *
+     * See:
+     * [Client#onDisconnect]{@link Client#onDisconnect}, and
+     * [Client#disconnectHeaders]{@link Client#disconnectHeaders}
+     */
     CompatClient.prototype.disconnect = function (disconnectCallback, headers) {
         if (headers === void 0) { headers = {}; }
         if (disconnectCallback) {
             this.onDisconnect = disconnectCallback;
         }
         this.disconnectHeaders = headers;
-        _super.prototype.disconnect.call(this);
+        _super.prototype.deactivate.call(this);
+    };
+    /**
+     * Available for backward compatibility, use [Client#publish]{@link Client#publish}.
+     *
+     * Send a message to a named destination. Refer to your STOMP broker documentation for types
+     * and naming of destinations. The headers will, typically, be available to the subscriber.
+     * However, there may be special purpose headers corresponding to your STOMP broker.
+     *
+     *  **Deprecated**, use [Client#publish]{@link Client#publish}
+     *
+     * Note: Body must be String. You will need to covert the payload to string in case it is not string (e.g. JSON)
+     *
+     * ```javascript
+     *        client.send("/queue/test", {priority: 9}, "Hello, STOMP");
+     *
+     *        // If you want to send a message with a body, you must also pass the headers argument.
+     *        client.send("/queue/test", {}, "Hello, STOMP");
+     * ```
+     *
+     * See: http://stomp.github.com/stomp-specification-1.2.html#SEND SEND Frame
+     */
+    CompatClient.prototype.send = function (destination, headers, body) {
+        if (headers === void 0) { headers = {}; }
+        if (body === void 0) { body = ''; }
+        var skipContentLengthHeader = (headers['content-length'] === false);
+        if (skipContentLengthHeader) {
+            delete headers['content-length'];
+        }
+        this.publish({
+            destination: destination,
+            headers: headers,
+            body: body,
+            skipContentLengthHeader: skipContentLengthHeader
+        });
     };
     Object.defineProperty(CompatClient.prototype, "reconnect_delay", {
+        /**
+         * Available for backward compatibility, renamed to [Client#reconnectDelay]{@link Client#reconnectDelay}.
+         *
+         * **Deprecated**
+         */
         set: function (value) {
             this.reconnectDelay = value;
         },
@@ -115,6 +184,11 @@ var CompatClient = /** @class */ (function (_super) {
         configurable: true
     });
     Object.defineProperty(CompatClient.prototype, "ws", {
+        /**
+         * Available for backward compatibility, renamed to [Client#webSocket]{@link Client#webSocket}.
+         *
+         * **Deprecated**
+         */
         get: function () {
             return this._webSocket;
         },
@@ -122,9 +196,19 @@ var CompatClient = /** @class */ (function (_super) {
         configurable: true
     });
     Object.defineProperty(CompatClient.prototype, "onreceive", {
+        /**
+         * Available for backward compatibility, renamed to [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
+         *
+         * **Deprecated**
+         */
         get: function () {
             return this.onUnhandledMessage;
         },
+        /**
+         * Available for backward compatibility, renamed to [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
+         *
+         * **Deprecated**
+         */
         set: function (value) {
             this.onUnhandledMessage = value;
         },
@@ -132,19 +216,42 @@ var CompatClient = /** @class */ (function (_super) {
         configurable: true
     });
     Object.defineProperty(CompatClient.prototype, "onreceipt", {
+        /**
+         * Available for backward compatibility, renamed to [Client#onUnhandledReceipt]{@link Client#onUnhandledReceipt}.
+         * Prefer using [Client#watchForReceipt]{@link Client#watchForReceipt}.
+         *
+         * **Deprecated**
+         */
         get: function () {
-            return this.onReceipt;
+            return this.onUnhandledReceipt;
         },
+        /**
+         * Available for backward compatibility, renamed to [Client#onUnhandledReceipt]{@link Client#onUnhandledReceipt}.
+         *
+         * **Deprecated**
+         */
         set: function (value) {
-            this.onReceipt = value;
+            this.onUnhandledReceipt = value;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(CompatClient.prototype, "heartbeat", {
+        /**
+         * Available for backward compatibility, renamed to [Client#heartbeatIncoming]{@link Client#heartbeatIncoming}
+         * [Client#heartbeatOutgoing]{@link Client#heartbeatOutgoing}.
+         *
+         * **Deprecated**
+         */
         get: function () {
             return this._heartbeatInfo;
         },
+        /**
+         * Available for backward compatibility, renamed to [Client#heartbeatIncoming]{@link Client#heartbeatIncoming}
+         * [Client#heartbeatOutgoing]{@link Client#heartbeatOutgoing}.
+         *
+         * **Deprecated**
+         */
         set: function (value) {
             this.heartbeatIncoming = value.incoming;
             this.heartbeatOutgoing = value.outgoing;
