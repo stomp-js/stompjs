@@ -278,7 +278,7 @@ export class StompHandler {
         });
         this._transmit({command: "DISCONNECT", headers: this.disconnectHeaders});
       } catch (error) {
-        this.debug('Ignoring error during disconnect', error);
+        this.debug(`Ignoring error during disconnect ${error}`);
       }
     } else {
       if (this._webSocket.readyState === WebSocket.CONNECTING || this._webSocket.readyState === WebSocket.OPEN) {

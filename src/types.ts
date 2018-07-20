@@ -2,7 +2,7 @@ import {Message} from "./message";
 import {Frame} from "./frame";
 import {StompHeaders} from "./stomp-headers";
 
-export type debugFnType = (...message: any[]) => void;
+export type debugFnType = (msg: string) => void;
 
 export type messageCallbackType = (message: Message) => void;
 export type frameCallbackType = (receipt: Frame) => void;
