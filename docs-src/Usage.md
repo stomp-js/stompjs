@@ -65,7 +65,7 @@ if you need to support older browsers, please see [SockJS Support](sockjs.md.htm
 
 Once a STOMP client is created, it must call its `connect()` method to 
 effectively connect and authenticate to the STOMP server. Usually the STOMP
- borker needs
+ broker needs
  two arguments, `login` and `passcode` corresponding to the user
   credentials. As per STOMP 1.2 `host` is mandatory, however many
   STOMP brokers do not insist on this.
