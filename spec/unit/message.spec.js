@@ -41,4 +41,27 @@ describe("Stomp Message", function () {
     };
     client.activate();
   });
+
+  it("Should allow skipping content length header", function (done) {
+    const body = 'Hello, world';
+
+    client.onConnect = function () {
+      client.subscribe(TEST.destination, function (message) {
+        expect(message.body).toEqual(body);
+        client.deactivate();
+
+        done();
+      });
+
+      const spy = spyOn(StompJs.Frame, 'marshall').and.callThrough();
+
+      client.publish({destination: TEST.destination, body: body, skipContentLengthHeader: true});
+
+      const params = spy.calls.first().args[0];
+      expect(params.skipContentLengthHeader).toBe(true);
+      // content-length header must not be there
+      expect(params.headers).toEqual({destination: TEST.destination});
+    };
+    client.activate();
+  });
 });
