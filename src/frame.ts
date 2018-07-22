@@ -1,6 +1,9 @@
 import {StompHeaders} from "./stomp-headers";
 import {Byte} from "./byte";
 
+/**
+ * @internal
+ */
 type unmarshallResults = { frames: Frame[]; partial: string };
 
 /**
@@ -8,8 +11,6 @@ type unmarshallResults = { frames: Frame[]; partial: string };
  * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
  *
  * {@link Message} is an extended Frame.
- *
- * See: http://stomp.github.com/stomp-specification-1.2.html#STOMP_Frames STOMP Frame
  */
 export class Frame {
   /**

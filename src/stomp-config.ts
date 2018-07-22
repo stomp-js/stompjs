@@ -8,92 +8,77 @@ import {frameCallbackType, messageCallbackType, closeEventCallbackType, debugFnT
  */
 export interface StompConfig {
   /**
-   * This function should return a WebSocket or a similar (e.g. SockJS) object.
+   * See [Client#webSocketFactory]{@link Client#webSocketFactory}.
    */
   webSocketFactory?: () => any;
 
   /**
-   *  automatically reconnect with delay in milliseconds, set to 0 to disable
+   * See [Client#reconnectDelay]{@link Client#reconnectDelay}.
    */
   reconnectDelay?: number;
 
   /**
-   * Incoming heartbeat interval in milliseconds. Set to 0 to disable
+   * See [Client#heartbeatIncoming]{@link Client#heartbeatIncoming}.
    */
   heartbeatIncoming?: number;
 
   /**
-   * Outgoing heartbeat interval in milliseconds. Set to 0 to disable
+   * See [Client#heartbeatOutgoing]{@link Client#heartbeatOutgoing}.
    */
   heartbeatOutgoing?: number;
 
   /**
-   * Maximum WebSocket frame size sent by the client. If the STOMP frame
-   * is bigger than this value, the STOMP frame will be sent using multiple
-   * WebSocket frames (default is 16KiB)
+   * See [Client#maxWebSocketFrameSize]{@link Client#maxWebSocketFrameSize}.
    */
   maxWebSocketFrameSize?: number;
 
   /**
-   * Connection headers, important keys - `login`, `passcode`, `host`
+   * See [Client#connectHeaders]{@link Client#connectHeaders}.
    */
   connectHeaders?: StompHeaders;
 
   /**
-   * Disconnection headers
+   * See [Client#disconnectHeaders]{@link Client#disconnectHeaders}.
    */
   disconnectHeaders?: StompHeaders;
 
   /**
-   * This function will be called for any unhandled messages. It is useful to receive messages sent to
-   * temporary queues (for example RabbitMQ supports such queues).
-   *
-   * It can also be called for stray messages while the server is processing a request to unsubcribe
-   * from an endpoint.
+   * See [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
    */
   onUnhandledMessage?: messageCallbackType;
 
   /**
-   * STOMP brokers can be requested to notify when an operation is actually completed.
+   * See [Client#onUnhandledReceipt]{@link Client#onUnhandledReceipt}.
    */
   onUnhandledReceipt?: frameCallbackType;
 
   /**
-   * If we receive an unknown frame type from the STOMP Broker.
+   * See [Client#onUnhandledFrame]{@link Client#onUnhandledFrame}.
    */
   onUnhandledFrame?: frameCallbackType;
 
   /**
-   * Callback
+   * See [Client#onConnect]{@link Client#onConnect}.
    */
   onConnect?: frameCallbackType;
 
   /**
-   * Callback
+   * See [Client#onDisconnect]{@link Client#onDisconnect}.
    */
   onDisconnect?: frameCallbackType;
 
   /**
-   * Callback
+   * See [Client#onStompError]{@link Client#onStompError}.
    */
   onStompError?: frameCallbackType;
 
   /**
-   * Callback
+   * See [Client#onWebSocketClose]{@link Client#onWebSocketClose}.
    */
   onWebSocketClose?: closeEventCallbackType;
 
   /**
-   * By default, debug messages are discarded. To log to `console` following can be used:
-   *
-   * ```javascript
-   *        client.debug = function(str) {
-   *          console.log(str);
-   *        };
-   * ```
-   *
-   * This method is called for every actual transmission of the STOMP frames over the
-   * WebSocket.
+   * See [Client#debug]{@link Client#debug}.
    */
   debug?: debugFnType;
 }

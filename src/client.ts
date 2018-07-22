@@ -64,8 +64,8 @@ export class Client {
    * This function will be called for any unhandled messages.
    * It is useful for receiving messages sent to RabbitMQ temporary queues.
    *
-   * It can also be called for stray messages while the server is processing
-   * a request to [Client#unsubscribe]{@link Client#unsubscribe}.
+   * It can also get invoked with stray messages while the server is processing
+   * a request to [Client#unsubscribe]{@link Client#unsubscribe}
    * from an endpoint.
    *
    * The actual {@link Message} will be passed as parameter to the callback.
