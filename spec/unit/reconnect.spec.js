@@ -33,7 +33,7 @@ describe("Stomp Reconnect", function () {
 
     setTimeout(function () {
       // in 200 ms the client should be disconnected
-      expect(client.connected).toBe(false);
+      expect(client.connected).toBeFalsy();
     }, 200);
 
     setTimeout(function () {
@@ -100,14 +100,14 @@ describe("Stomp Reconnect", function () {
 
     setTimeout(function () {
       // in 200 ms the client should be disconnected
-      expect(client.connected).toBe(false);
+      expect(client.connected).toBeFalsy();
       client.deactivate();
     }, 200);
 
     // wait longer before declaring the test complete, in this interval
     // it should not have reconnected
     setTimeout(function () {
-      expect(client.connected).toBe(false);
+      expect(client.connected).toBeFalsy();
       done();
     }, 450);
 
