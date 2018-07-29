@@ -46,7 +46,7 @@ describe("Stomp Reconnect", function () {
 
   });
 
-  it("Should allow disconnecting", function (done) {
+  it("Should allow disconnecting when auto reconnection is on", function (done) {
     const num_try = 1;
 
     let disconnectCallbackCalled = false;
