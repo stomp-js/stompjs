@@ -120,7 +120,7 @@ export class Frame {
     const start = divider + 2;
     if (headers['content-length']) {
       const len = parseInt(headers['content-length']);
-      body = (`${data}`).substring(start, start + len);
+      body = data.substring(start, start + len);
     } else {
       let chr = null;
       for (let i = start, end = data.length, asc = start <= end; asc ? i < end : i > end; asc ? i++ : i--) {
