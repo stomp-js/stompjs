@@ -1,7 +1,8 @@
-import { RawFrameType } from './types';
+import {RawFrameType} from './types';
 
 const NULL = 0;
 const LF = 10;
+const CR = 13;
 const COLON = 58;
 
 export class Parser {
@@ -36,7 +37,9 @@ export class Parser {
     if (byte === NULL) { // Ignore
       return;
     }
-
+    if (byte === CR) { // Ignore CR
+      return;
+    }
     if (byte === LF) { // Incoming Ping
       this.onIncomingPing();
       return;
@@ -47,6 +50,9 @@ export class Parser {
   }
 
   private _collectCommand(byte: number): void {
+    if (byte === CR) { // Ignore CR
+      return;
+    }
     if (byte === LF) {
       this._results.command = this._consumeTokenAsUTF8();
       this._onByte = this._collectHeaders;
@@ -57,6 +63,9 @@ export class Parser {
   }
 
   private _collectHeaders(byte: number): void {
+    if (byte === CR) { // Ignore CR
+      return;
+    }
     if (byte === LF) {
       this._onByte = this._collectBody;
       return;
@@ -79,6 +88,9 @@ export class Parser {
   }
 
   private _collectHeaderValue(byte: number): void {
+    if (byte === CR) { // Ignore CR
+      return;
+    }
     if (byte === LF) {
       this._results.headers.push([this._headerKey, this._consumeTokenAsUTF8()]);
       this._headerKey = undefined;

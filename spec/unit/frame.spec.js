@@ -173,6 +173,18 @@
       });
     });
 
+    it("Should ignore cr parse a Frame with body", function () {
+      const msg = "MESSAGE\r\ndestination:bar\r\nmessage-id:203\r\n\r\nHello World\0";
+
+      parser.parseChunk(msg);
+
+      expect(onFrame).toHaveBeenCalledWith({
+        command: 'MESSAGE',
+        headers: [ [ 'destination', 'bar' ], [ 'message-id', '203' ] ],
+        body: 'Hello World'
+      });
+    });
+
     it("Should parse a Frame without headers", function () {
       const msg = "MESSAGE\n\nHello World\0";
 
@@ -261,6 +273,19 @@
 
       parser.parseChunk("\n");
       parser.parseChunk("\n");
+
+      expect(onIncomingPing.calls.count()).toBe(3);
+    });
+
+    it("Should ignore CR while recognizing incoming pings", function () {
+      const msg = "\r\nMESSAGE\r\ndestination:foo\r\nmessage-id:456\r\n\r\n\0";
+      parser.parseChunk(msg);
+
+      expect(onIncomingPing).toHaveBeenCalled();
+      expect(onFrame).toHaveBeenCalled();
+
+      parser.parseChunk("\r\n");
+      parser.parseChunk("\r\n");
 
       expect(onIncomingPing.calls.count()).toBe(3);
     })
