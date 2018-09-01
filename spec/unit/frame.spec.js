@@ -137,6 +137,30 @@
       });
     });
 
+    it("Should parse a header value with :", function () {
+      const msg = "MESSAGE\ndestination:foo:bar:baz\nmessage-id:456\n\n\0";
+
+      parser.parseChunk(msg);
+
+      expect(onFrame).toHaveBeenCalledWith({
+        command: 'MESSAGE',
+        headers: [['destination', 'foo:bar:baz'], ['message-id', '456']],
+        body: ''
+      });
+    });
+
+    it("Should parse a Frame with empty header value", function () {
+      const msg = "MESSAGE\ndestination:foo\nhdr:\nmessage-id:456\n\n\0";
+
+      parser.parseChunk(msg);
+
+      expect(onFrame).toHaveBeenCalledWith({
+        command: 'MESSAGE',
+        headers: [['destination', 'foo'], [ 'hdr', '' ], ['message-id', '456']],
+        body: ''
+      });
+    });
+
     it("Should parse a Frame with body", function () {
       const msg = "MESSAGE\ndestination:bar\nmessage-id:203\n\nHello World\0";
 
@@ -227,6 +251,19 @@
         body: 'Hello World'
       });
     });
+
+    it("Should recognize incoming pings", function () {
+      const msg = "\nMESSAGE\ndestination:foo\nmessage-id:456\n\n\0";
+      parser.parseChunk(msg);
+
+      expect(onIncomingPing).toHaveBeenCalled();
+      expect(onFrame).toHaveBeenCalled();
+
+      parser.parseChunk("\n");
+      parser.parseChunk("\n");
+
+      expect(onIncomingPing.calls.count()).toBe(3);
+    })
 
   });
 
