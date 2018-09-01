@@ -1,5 +1,9 @@
 import { RawFrameType } from './types';
 
+const NULL = 0;
+const LF = 10;
+const COLON = 58;
+
 export class Parser {
   private readonly _encoder = new TextEncoder();
   private readonly _decoder = new TextDecoder();
@@ -29,11 +33,11 @@ export class Parser {
   // The grammar is simple and just one byte tells what should be the next state
 
   private _collectFrame(byte: number): void {
-    if (byte === 0) { // Ignore
+    if (byte === NULL) { // Ignore
       return;
     }
 
-    if (byte === 10) { // Incoming Ping
+    if (byte === LF) { // Incoming Ping
       this.onIncomingPing();
       return;
     }
@@ -43,7 +47,7 @@ export class Parser {
   }
 
   private _collectCommand(byte: number): void {
-    if (byte === 10) {
+    if (byte === LF) {
       this._results.command = this._consumeTokenAsUTF8();
       this._onByte = this._collectHeaders;
       return;
@@ -53,7 +57,7 @@ export class Parser {
   }
 
   private _collectHeaders(byte: number): void {
-    if (byte === 10) {
+    if (byte === LF) {
       this._onByte = this._collectBody;
       return;
     }
@@ -66,7 +70,7 @@ export class Parser {
   }
 
   private _collectHeaderKey(byte: number): void {
-    if (byte === 58) {
+    if (byte === COLON) {
       this._headerKey = this._consumeTokenAsUTF8();
       this._onByte = this._collectHeaderValue;
       return;
@@ -75,7 +79,7 @@ export class Parser {
   }
 
   private _collectHeaderValue(byte: number): void {
-    if (byte === 10) {
+    if (byte === LF) {
       this._results.headers.push([this._headerKey, this._consumeTokenAsUTF8()]);
       this._headerKey = undefined;
       this._onByte = this._collectHeaders;
@@ -85,7 +89,7 @@ export class Parser {
   }
 
   private _collectBody(byte: number): void {
-    if (byte === 0) {
+    if (byte === NULL) {
       this._results.body = this._consumeTokenAsUTF8();
 
       this.onFrame(this._results);
