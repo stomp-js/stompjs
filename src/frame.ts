@@ -78,8 +78,7 @@ export class Frame {
    */
   private static sizeOfUTF8(s: string): number {
     if (s) {
-      const matches = encodeURI(s).match(/%..|./g) || [];
-      return matches.length;
+      return new TextEncoder().encode(s).length;
     } else {
       return 0;
     }
