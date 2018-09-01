@@ -44,3 +44,8 @@ export interface publishParams {
    */
   skipContentLengthHeader?: boolean
 }
+
+/**
+ * The parser yield frames in this structure
+ */
+export type RawFrameType = { command: string; headers: string[][]; body: string; };
