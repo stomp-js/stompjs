@@ -48,4 +48,4 @@ export interface publishParams {
 /**
  * The parser yield frames in this structure
  */
-export type RawFrameType = { command: string; headers: string[][]; body: string; };
+export type RawFrameType = { command: string; headers: string[][]; body: Uint8Array; };

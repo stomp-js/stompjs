@@ -1,3 +1,7 @@
+function toUint8Array(str) {
+  return new TextEncoder().encode(str);
+}
+
 describe("Neo Parser", function () {
   let onFrame, onIncomingPing, parser;
 
@@ -15,7 +19,7 @@ describe("Neo Parser", function () {
     expect(onFrame).toHaveBeenCalledWith({
       command: 'MESSAGE',
       headers: [['destination', 'foo'], ['message-id', '456']],
-      body: ''
+      body: toUint8Array('')
     });
   });
 
@@ -27,7 +31,7 @@ describe("Neo Parser", function () {
     expect(onFrame).toHaveBeenCalledWith({
       command: 'MESSAGE',
       headers: [['destination', 'foo:bar:baz'], ['message-id', '456']],
-      body: ''
+      body: toUint8Array('')
     });
   });
 
@@ -39,7 +43,7 @@ describe("Neo Parser", function () {
     expect(onFrame).toHaveBeenCalledWith({
       command: 'MESSAGE',
       headers: [['destination', 'foo'], [ 'hdr', '' ], ['message-id', '456']],
-      body: ''
+      body: toUint8Array('')
     });
   });
 
@@ -51,7 +55,7 @@ describe("Neo Parser", function () {
     expect(onFrame).toHaveBeenCalledWith({
       command: 'MESSAGE',
       headers: [ [ 'destination', 'bar' ], [ 'message-id', '203' ] ],
-      body: 'Hello World'
+      body: toUint8Array('Hello World')
     });
   });
 
@@ -63,7 +67,7 @@ describe("Neo Parser", function () {
     expect(onFrame).toHaveBeenCalledWith({
       command: 'MESSAGE',
       headers: [ [ 'destination', 'bar' ], [ 'message-id', '203' ] ],
-      body: 'Hello World'
+      body: toUint8Array('Hello World')
     });
   });
 
@@ -75,7 +79,7 @@ describe("Neo Parser", function () {
     expect(onFrame).toHaveBeenCalledWith({
       command: 'MESSAGE',
       headers: [ ],
-      body: 'Hello World'
+      body: toUint8Array('Hello World')
     });
   });
 
@@ -87,7 +91,7 @@ describe("Neo Parser", function () {
     expect(onFrame).toHaveBeenCalledWith({
       command: 'MESSAGE',
       headers: [ ],
-      body: ''
+      body: toUint8Array('')
     });
   });
 
@@ -101,7 +105,7 @@ describe("Neo Parser", function () {
     expect(onFrame).toHaveBeenCalledWith({
       command: 'MESSAGE',
       headers: [['destination', 'foo'], ['message-id', '456']],
-      body: ''
+      body: toUint8Array('')
     });
   });
 
@@ -113,7 +117,7 @@ describe("Neo Parser", function () {
     expect(onFrame).toHaveBeenCalledWith({
       command: 'MESSAGE',
       headers: [['destination', 'foo'], ['message-id', '456']],
-      body: ''
+      body: toUint8Array('')
     });
 
     const msg2 = "MESSAGE\ndestination:bar\nmessage-id:203\n\nHello World\0";
@@ -123,7 +127,7 @@ describe("Neo Parser", function () {
     expect(onFrame.calls.mostRecent().args[0]).toEqual({
       command: 'MESSAGE',
       headers: [['destination', 'bar'], ['message-id', '203']],
-      body: 'Hello World'
+      body: toUint8Array('Hello World')
     });
   });
 
@@ -136,13 +140,13 @@ describe("Neo Parser", function () {
     expect(onFrame.calls.first().args[0]).toEqual({
       command: 'MESSAGE',
       headers: [['destination', 'foo'], ['message-id', '456']],
-      body: ''
+      body: toUint8Array('')
     });
 
     expect(onFrame.calls.mostRecent().args[0]).toEqual({
       command: 'MESSAGE',
       headers: [['destination', 'bar'], ['message-id', '203']],
-      body: 'Hello World'
+      body: toUint8Array('Hello World')
     });
   });
 

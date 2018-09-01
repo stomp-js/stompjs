@@ -102,7 +102,7 @@ export class Parser {
 
   private _collectBody(byte: number): void {
     if (byte === NULL) {
-      this._results.body = this._consumeTokenAsUTF8();
+      this._results.body = this._consumeTokenAsRaw();
 
       this.onFrame(this._results);
 
@@ -119,9 +119,13 @@ export class Parser {
   }
 
   private _consumeTokenAsUTF8() {
-    const result = this._decoder.decode(new Uint8Array(this._token));
+    return this._decoder.decode(this._consumeTokenAsRaw());
+  }
+
+  private _consumeTokenAsRaw() {
+    const rawResult = new Uint8Array(this._token);
     this._token = [];
-    return result;
+    return rawResult;
   }
 
   private _initState() {
