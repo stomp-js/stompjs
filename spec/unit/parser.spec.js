@@ -144,10 +144,10 @@ describe("Neo Parser", function () {
 
   describe("Incoming Ping", function () {
     it("recognizes incoming pings", function () {
-      const msg = "\nMESSAGE\ndestination:foo\nmessage-id:456\n\n\0";
-      parser.parseChunk(msg);
-
+      parser.parseChunk("\n");
       expect(onIncomingPing).toHaveBeenCalled();
+
+      parser.parseChunk("MESSAGE\ndestination:foo\nmessage-id:456\n\n\0");
       expect(onFrame).toHaveBeenCalled();
 
       parser.parseChunk("\n");
@@ -209,7 +209,15 @@ describe("Neo Parser", function () {
   });
 
   describe("Binary body", function () {
-    it("handles non binary octets in body", function () {
+    let unit8Body, commandAndHeaders, rawChunk;
+
+    let vefiyRawFrame = function (rawFrame) {
+      expect(rawFrame.command).toEqual("SEND");
+      expect(rawFrame.headers).toEqual([['destination', 'foo'], ['message-id', '456'], ['content-length', '1024']]);
+      expect(rawFrame.body.toString()).toEqual(unit8Body.toString());
+    };
+
+    beforeEach(function () {
       // construct body with octets 0 to 255 repeated 4 times
       let body = [];
       for (let i = 0; i < 4; i++) {
@@ -217,22 +225,75 @@ describe("Neo Parser", function () {
           body.push(j);
         }
       }
-      const unit8Body = new Uint8Array(body);
-      const commandAndHeaders = "SEND\n"
+      unit8Body = new Uint8Array(body);
+      commandAndHeaders = "SEND\n"
         + "destination:foo\n"
         + "message-id:456\n"
         + "content-length:1024\n"
         + "\n";
-      const rawChunk = toArrayBuffer(commandAndHeaders, unit8Body);
+      rawChunk = toArrayBuffer(commandAndHeaders, unit8Body);
+    });
 
+    it("handles binary octets in body", function () {
       parser.parseChunk(rawChunk);
 
       const rawFrame = onFrame.calls.first().args[0];
+      vefiyRawFrame(rawFrame);
+    });
 
-      expect(rawFrame.command).toEqual("SEND");
-      expect(rawFrame.headers).toEqual([['destination', 'foo'], ['message-id', '456'], ['content-length', '1024']]);
-      expect(rawFrame.body.toString()).toEqual(unit8Body.toString());
+    it("handles multiple binary frames", function () {
+      parser.parseChunk(rawChunk);
+      parser.parseChunk(rawChunk);
+      parser.parseChunk(rawChunk);
+
+      expect(onFrame.calls.count()).toEqual(3);
+      const rawFrame = onFrame.calls.mostRecent().args[0];
+
+      vefiyRawFrame(rawFrame);
+    });
+
+    it("handles binary frame is split chunks", function () {
+      parser.parseChunk(rawChunk.slice(0, 200));
+      parser.parseChunk(rawChunk.slice(200, 500));
+      parser.parseChunk(rawChunk.slice(500, rawChunk.byteLength));
+
+      const rawFrame = onFrame.calls.first().args[0];
+
+      vefiyRawFrame(rawFrame);
+    });
+
+    it("handles mixed text and binary chunks", function () {
+      parser.parseChunk(commandAndHeaders); // Text chunk
+      parser.parseChunk(unit8Body.buffer); // Array buffer chunk, binary octets
+      parser.parseChunk("\0"); // Text chunk
+
+      const rawFrame = onFrame.calls.first().args[0];
+
+      vefiyRawFrame(rawFrame);
+    });
+
+    it("waits for trailing NULL before yielding frame", function () {
+      parser.parseChunk(rawChunk.slice(0, rawChunk.byteLength-1)); // Excluding the terminating NULL
+
+      expect(onFrame).not.toHaveBeenCalled();
+
+      parser.parseChunk(new Uint8Array([0]).buffer); // terminating NULL
+
+      expect(onFrame).toHaveBeenCalled();
+    });
+
+    it("handles text and binary frames with incoming pings", function () {
+      parser.parseChunk("MESSAGE\ndestination:foo\nmessage-id:456\n\n\0");
+      parser.parseChunk("\n");
+      parser.parseChunk("\n");
+      parser.parseChunk(rawChunk);
+      parser.parseChunk("\n");
+
+      expect(onFrame.calls.count()).toEqual(2);
+      expect(onIncomingPing.calls.count()).toEqual(3);
+
+      const rawFrame = onFrame.calls.mostRecent().args[0];
+      vefiyRawFrame(rawFrame);
     });
   });
 });
-
