@@ -127,7 +127,7 @@ export class Parser {
   }
 
   private _collectBodyFixedSize(byte: number): void {
-    // It is post decrement, so that we discard the trailing NULL Octate
+    // It is post decrement, so that we discard the trailing NULL octet
     if (this._bodyBytesRemaining-- === 0) {
       this._retrievedBody();
       return;

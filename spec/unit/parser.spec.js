@@ -209,8 +209,8 @@ describe("Neo Parser", function () {
   });
 
   describe("Binary body", function () {
-    it("handles non binary octates in body", function () {
-      // construct body with octates 0 to 255 repeated 4 times
+    it("handles non binary octets in body", function () {
+      // construct body with octets 0 to 255 repeated 4 times
       let body = [];
       for (let i = 0; i < 4; i++) {
         for (let j = 0; j < 256; j++) {
