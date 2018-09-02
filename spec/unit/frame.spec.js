@@ -1,13 +1,27 @@
 ﻿describe("Stomp Frame", function () {
 
+  // un-marshall a data chunk, for ease of matching body is converted to string
+  const unmarshall = function(data, escapeHeaderValues) {
+    const onFrame = jasmine.createSpy('onFrame');
+    const onIncomingPing = jasmine.createSpy('onIncomingPing');
+    const parser = new StompJs.Parser(onFrame, onIncomingPing);
+
+    parser.parseChunk(data);
+
+    const rawFrame = onFrame.calls.first().args[0];
+    const frame = StompJs.Frame.fromRawFrame(rawFrame, escapeHeaderValues);
+    frame.body = new TextDecoder().decode(frame.body);
+    return frame;
+  };
+
   it("escape header value", function () {
-    const out = StompJs.Frame.frEscape("anything\\a\nb\nc\rd\re:f:\\anything\\a\nb\nc\rd\re:f:\\");
+    const out = StompJs.Frame.hdrValueEscape("anything\\a\nb\nc\rd\re:f:\\anything\\a\nb\nc\rd\re:f:\\");
     expect(out).toEqual("anything\\\\a\\nb\\nc\\rd\\re\\cf\\c\\\\anything\\\\a\\nb\\nc\\rd\\re\\cf\\c\\\\");
   });
 
   it("escapes and then unescapes header value to give original string", function () {
     const orig = "anything\\a\nb\nc\rd\re:f:\\anything\\a\nb\nc\rd\re:f:\\";
-    const out = StompJs.Frame.frUnEscape(StompJs.Frame.frEscape(orig));
+    const out = StompJs.Frame.hdrValueUnEscape(StompJs.Frame.hdrValueEscape(orig));
     expect(out).toEqual(orig);
   });
 
@@ -33,7 +47,7 @@
 
   it("unmarshall a CONNECTED frame", function () {
     const data = "CONNECTED\nsession-id: 1234\n\n\0";
-    const frame = StompJs.Frame.unmarshall(data).frames[0];
+    const frame = unmarshall(data);
     expect(frame.command).toEqual("CONNECTED");
     expect(frame.headers).toEqual({'session-id': "1234"});
     expect(frame.body).toEqual('');
@@ -41,7 +55,7 @@
 
   it("unmarshall a RECEIVE frame", function () {
     const data = "RECEIVE\nfoo: abc\nbar: 1234\n\nhello, world!\0";
-    const frame = StompJs.Frame.unmarshall(data).frames[0];
+    const frame = unmarshall(data);
     expect(frame.command).toEqual("RECEIVE");
     expect(frame.headers).toEqual({foo: 'abc', bar: "1234"});
     expect(frame.body).toEqual("hello, world!");
@@ -52,29 +66,29 @@
       body2 = 'And the newline\n',
       msg = "MESSAGE\ndestination: /queue/test\nmessage-id: 123\n\n";
 
-    expect(StompJs.Frame.unmarshall(msg + body1 + '\0').frames[0].body).toEqual(body1);
-    expect(StompJs.Frame.unmarshall(msg + body2 + '\0').frames[0].body).toEqual(body2);
+    expect(unmarshall(msg + body1 + '\0').body).toEqual(body1);
+    expect(unmarshall(msg + body2 + '\0').body).toEqual(body2);
   });
 
   it("unmarshall should support colons (:) in header values", function () {
     const dest = 'foo:bar:baz',
       msg = "MESSAGE\ndestination: " + dest + "\nmessage-id: 456\n\n\0";
 
-    expect(StompJs.Frame.unmarshall(msg).frames[0].headers.destination).toEqual(dest);
+    expect(unmarshall(msg).headers.destination).toEqual(dest);
   });
 
   it("unmarshall should support colons (:) in header values with escaping", function () {
     const dest = 'foo:bar:baz',
       msg = "MESSAGE\ndestination: " + 'foo\\cbar\\cbaz' + "\nmessage-id: 456\n\n\0";
 
-    expect(StompJs.Frame.unmarshall(msg, true).frames[0].headers.destination).toEqual(dest);
+    expect(unmarshall(msg, true).headers.destination).toEqual(dest);
   });
 
   it("unmarshall should support \\, \\n and \\r in header values with escaping", function () {
     const dest = 'f:o:o\nbar\rbaz\\foo\nbar\rbaz\\',
       msg = "MESSAGE\ndestination: " + 'f\\co\\co\\nbar\\rbaz\\\\foo\\nbar\\rbaz\\\\' + "\nmessage-id: 456\n\n\0";
 
-    expect(StompJs.Frame.unmarshall(msg, true).frames[0].headers.destination).toEqual(dest);
+    expect(unmarshall(msg, true).headers.destination).toEqual(dest);
   });
 
   it("marshall should support \\, \\n and \\r in header values with escaping", function () {
@@ -96,7 +110,7 @@
     const body = "";
 
     const msg = StompJs.Frame.marshall({command: command, headers: headers, body: body, escapeHeaderValues: true});
-    const frame = StompJs.Frame.unmarshall(msg, true).frames[0];
+    const frame = unmarshall(msg, true);
 
     expect(frame.headers).toEqual(headers);
   });
@@ -104,7 +118,7 @@
   it("only the 1st value of repeated headers is used", function () {
     const msg = "MESSAGE\ndestination: /queue/test\nfoo:World\nfoo:Hello\n\n\0";
 
-    expect(StompJs.Frame.unmarshall(msg).frames[0].headers['foo']).toEqual('World');
+    expect(unmarshall(msg).headers['foo']).toEqual('World');
   });
 
   it("Content length of UTF-8 strings", function () {
