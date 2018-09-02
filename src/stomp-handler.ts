@@ -8,6 +8,7 @@ import {closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackT
 import {StompSubscription} from "./stomp-subscription";
 import {Transaction} from "./transaction";
 import {StompConfig} from "./stomp-config";
+import {Parser} from "./parser";
 
 /**
  * The STOMP protocol handler
@@ -86,47 +87,29 @@ export class StompHandler {
   }
 
   public start(): void {
+    const parser = new Parser(
+      // On Frame
+      (rawFrame) => {
+        const frame = Frame.fromRawFrame(rawFrame, this._escapeHeaderValues);
+
+        frame.body = new TextDecoder().decode(frame.body);
+
+        this.debug(`<<< ${frame}`);
+
+        const serverFrameHandler = this._serverFrameHandlers[frame.command] || this.onUnhandledFrame;
+        serverFrameHandler(frame);
+      },
+      // On Incoming Ping
+      () => {
+        this.debug("<<< PONG");
+      }
+    );
+
     this._webSocket.onmessage = (evt: any) => {
       this.debug('Received data');
-      const data = (() => {
-        if ((typeof(ArrayBuffer) !== 'undefined') && evt.data instanceof ArrayBuffer) {
-          // the data is stored inside an ArrayBuffer, we decode it to get the
-          // data as a String
-          const arr = new Uint8Array(evt.data);
-          this.debug(`--- got data length: ${arr.length}`);
-          // Return a string formed by all the char codes stored in the Uint8array
-          let j, len1, results;
-          results = [];
-          for (j = 0, len1 = arr.length; j < len1; j++) {
-            const c = arr[j];
-            results.push(String.fromCharCode(c));
-          }
-
-          return results.join('');
-        } else {
-          // take the data directly from the WebSocket `data` field
-          return evt.data;
-        }
-      })();
-
       this._lastServerActivityTS = Date.now();
 
-      if (data === Byte.LF) { // heartbeat
-        this.debug("<<< PONG");
-        return;
-      }
-
-      this.debug(`<<< ${data}`);
-      // Handle STOMP frames received from the server
-      // The unmarshall function returns the frames parsed and any remaining
-      // data from partial frames.
-      const unmarshalledData = Frame.unmarshall(this._partialData + data, this._escapeHeaderValues);
-      this._partialData = unmarshalledData.partial;
-      for (let frame of unmarshalledData.frames) {
-        const serverFrameHandler= this._serverFrameHandlers[frame.command] || this.onUnhandledFrame;
-
-        serverFrameHandler(frame);
-      }
+      parser.parseChunk(evt.data);
     };
 
     this._webSocket.onclose = (closeEvent: any): void => {

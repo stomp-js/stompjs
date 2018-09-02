@@ -1,5 +1,6 @@
 import {StompHeaders} from "./stomp-headers";
 import {Byte} from "./byte";
+import {RawFrameType} from "./types";
 
 /**
  * @internal
@@ -60,7 +61,7 @@ export class Frame {
     for (let name of Object.keys(this.headers || {})) {
       const value = this.headers[name];
       if (this.escapeHeaderValues && (this.command !== 'CONNECT') && (this.command !== 'CONNECTED')) {
-        lines.push(`${name}:${Frame.frEscape(`${value}`)}`);
+        lines.push(`${name}:${Frame.hdrValueEscape(`${value}`)}`);
       } else {
         lines.push(`${name}:${value}`);
       }
@@ -89,85 +90,30 @@ export class Frame {
    *
    * @internal
    */
-  public static unmarshallSingle(data: any, escapeHeaderValues: boolean): Frame {
-    // search for 2 consecutives LF byte to split the command
-    // and headers from the body
-    const divider = data.search(new RegExp(`${Byte.LF}${Byte.LF}`));
-    const headerLines: string[] = data.substring(0, divider).split(Byte.LF);
-    const command = headerLines.shift();
+  public static fromRawFrame(rawFrame: RawFrameType, escapeHeaderValues: boolean): Frame {
     const headers: StompHeaders = {};
-    // utility function to trim any whitespace before and after a string
     const trim = (str: string): string => str.replace(/^\s+|\s+$/g, '');
-    // Parse headers in reverse order so that for repeated headers, the 1st
-    // value is used
-    for (let line of headerLines.reverse()) {
-      const idx = line.indexOf(':');
 
-      const key = trim(line.substring(0, idx));
-      let value = trim(line.substring(idx + 1));
+    // In case of repeated headers, as per standards, first value need to be used
+    for (let header of rawFrame.headers.reverse()) {
+      const idx = header.indexOf(':');
 
-      if (escapeHeaderValues && (command !== 'CONNECT') && (command !== 'CONNECTED')) {
-        value = Frame.frUnEscape(value);
+      const key = trim(header[0]);
+      let value = trim(header[1]);
+
+      if (escapeHeaderValues && (rawFrame.command !== 'CONNECT') && (rawFrame.command !== 'CONNECTED')) {
+        value = Frame.hdrValueUnEscape(value);
       }
 
       headers[key] = value;
     }
-    // Parse body
-    // check for content-length or  topping at the first NULL byte found.
-    let body = '';
-    // skip the 2 LF bytes that divides the headers from the body
-    const start = divider + 2;
-    if (headers['content-length']) {
-      const len = parseInt(headers['content-length']);
-      body = data.substring(start, start + len);
-    } else {
-      let chr = null;
-      for (let i = start, end = data.length, asc = start <= end; asc ? i < end : i > end; asc ? i++ : i--) {
-        chr = data.charAt(i);
-        if (chr === Byte.NULL) {
-          break;
-        }
-        body += chr;
-      }
-    }
-    return new Frame({command: command, headers: headers, body: body, escapeHeaderValues: escapeHeaderValues});
-  }
 
-  /**
-   * Split the data before unmarshalling every single STOMP frame.
-   * Web socket servers can send multiple frames in a single websocket message.
-   * If the message size exceeds the websocket message size, then a single
-   * frame can be fragmented across multiple messages.
-   *
-   * @internal
-   */
-  public static unmarshall(datas: any, escapeHeaderValues: boolean): unmarshallResults {
-    // Ugly list comprehension to split and unmarshall *multiple STOMP frames*
-    // contained in a *single WebSocket frame*.
-    // The data is split when a NULL byte (followed by zero or many LF bytes) is
-    // found
-    if (escapeHeaderValues == null) {
-      escapeHeaderValues = false;
-    }
-    const frames = datas.split(new RegExp(`${Byte.NULL}${Byte.LF}*`));
-
-    const r: unmarshallResults = {
-      frames: [],
-      partial: ''
-    };
-    r.frames = (frames.slice(0, -1).map((frame: Frame) => Frame.unmarshallSingle(frame, escapeHeaderValues)));
-
-    // If this contains a final full message or just a acknowledgement of a PING
-    // without any other content, process this frame, otherwise return the
-    // contents of the buffer to the caller.
-    const last_frame = frames.slice(-1)[0];
-
-    if ((last_frame === Byte.LF) || ((last_frame.search(new RegExp(`${Byte.NULL}${Byte.LF}*$`))) !== -1)) {
-      r.frames.push(Frame.unmarshallSingle(last_frame, escapeHeaderValues));
-    } else {
-      r.partial = last_frame;
-    }
-    return r;
+    return new Frame({
+      command: rawFrame.command,
+      headers: headers,
+      body: rawFrame.body,
+      escapeHeaderValues: escapeHeaderValues
+    });
   }
 
   /**
@@ -186,14 +132,14 @@ export class Frame {
   /**
    *  Escape header values
    */
-  private static frEscape(str: string): string {
+  private static hdrValueEscape(str: string): string {
     return str.replace(/\\/g, "\\\\").replace(/\r/g, "\\r").replace(/\n/g, "\\n").replace(/:/g, "\\c");
   }
 
   /**
    * UnEscape header values
    */
-  private static frUnEscape(str: string): string {
+  private static hdrValueUnEscape(str: string): string {
     return str.replace(/\\r/g, "\r").replace(/\\n/g, "\n").replace(/\\c/g, ":").replace(/\\\\/g, "\\");
   }
 }
