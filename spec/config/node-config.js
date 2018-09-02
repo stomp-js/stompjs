@@ -10,3 +10,9 @@ TEST = {
 WebSocket = require('websocket').w3cwebsocket;
 StompJs = require('../../esm5/');
 Stomp = StompJs.Stomp;
+
+if (typeof TextEncoder !== 'function') {
+  const TextEncodingPolyfill = require('text-encoding');
+  TextEncoder = TextEncodingPolyfill.TextEncoder;
+  TextDecoder = TextEncodingPolyfill.TextDecoder;
+}
