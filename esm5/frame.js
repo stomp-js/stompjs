@@ -6,8 +6,6 @@ var byte_1 = require("./byte");
  * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
  *
  * {@link Message} is an extended Frame.
- *
- * See: http://stomp.github.com/stomp-specification-1.2.html#STOMP_Frames STOMP Frame
  */
 var Frame = /** @class */ (function () {
     /**
@@ -35,7 +33,7 @@ var Frame = /** @class */ (function () {
             var name_1 = _a[_i];
             var value = this.headers[name_1];
             if (this.escapeHeaderValues && (this.command !== 'CONNECT') && (this.command !== 'CONNECTED')) {
-                lines.push(name_1 + ":" + Frame.frEscape("" + value));
+                lines.push(name_1 + ":" + Frame.hdrValueEscape("" + value));
             }
             else {
                 lines.push(name_1 + ":" + value);
@@ -53,8 +51,7 @@ var Frame = /** @class */ (function () {
      */
     Frame.sizeOfUTF8 = function (s) {
         if (s) {
-            var matches = encodeURI(s).match(/%..|./g) || [];
-            return matches.length;
+            return new TextEncoder().encode(s).length;
         }
         else {
             return 0;
@@ -65,81 +62,26 @@ var Frame = /** @class */ (function () {
      *
      * @internal
      */
-    Frame.unmarshallSingle = function (data, escapeHeaderValues) {
-        // search for 2 consecutives LF byte to split the command
-        // and headers from the body
-        var divider = data.search(new RegExp("" + byte_1.Byte.LF + byte_1.Byte.LF));
-        var headerLines = data.substring(0, divider).split(byte_1.Byte.LF);
-        var command = headerLines.shift();
+    Frame.fromRawFrame = function (rawFrame, escapeHeaderValues) {
         var headers = {};
-        // utility function to trim any whitespace before and after a string
         var trim = function (str) { return str.replace(/^\s+|\s+$/g, ''); };
-        // Parse headers in reverse order so that for repeated headers, the 1st
-        // value is used
-        for (var _i = 0, _a = headerLines.reverse(); _i < _a.length; _i++) {
-            var line = _a[_i];
-            var idx = line.indexOf(':');
-            var key = trim(line.substring(0, idx));
-            var value = trim(line.substring(idx + 1));
-            if (escapeHeaderValues && (command !== 'CONNECT') && (command !== 'CONNECTED')) {
-                value = Frame.frUnEscape(value);
+        // In case of repeated headers, as per standards, first value need to be used
+        for (var _i = 0, _a = rawFrame.headers.reverse(); _i < _a.length; _i++) {
+            var header = _a[_i];
+            var idx = header.indexOf(':');
+            var key = trim(header[0]);
+            var value = trim(header[1]);
+            if (escapeHeaderValues && (rawFrame.command !== 'CONNECT') && (rawFrame.command !== 'CONNECTED')) {
+                value = Frame.hdrValueUnEscape(value);
             }
             headers[key] = value;
         }
-        // Parse body
-        // check for content-length or  topping at the first NULL byte found.
-        var body = '';
-        // skip the 2 LF bytes that divides the headers from the body
-        var start = divider + 2;
-        if (headers['content-length']) {
-            var len = parseInt(headers['content-length']);
-            body = ("" + data).substring(start, start + len);
-        }
-        else {
-            var chr = null;
-            for (var i = start, end = data.length, asc = start <= end; asc ? i < end : i > end; asc ? i++ : i--) {
-                chr = data.charAt(i);
-                if (chr === byte_1.Byte.NULL) {
-                    break;
-                }
-                body += chr;
-            }
-        }
-        return new Frame({ command: command, headers: headers, body: body, escapeHeaderValues: escapeHeaderValues });
-    };
-    /**
-     * Split the data before unmarshalling every single STOMP frame.
-     * Web socket servers can send multiple frames in a single websocket message.
-     * If the message size exceeds the websocket message size, then a single
-     * frame can be fragmented across multiple messages.
-     *
-     * @internal
-     */
-    Frame.unmarshall = function (datas, escapeHeaderValues) {
-        // Ugly list comprehension to split and unmarshall *multiple STOMP frames*
-        // contained in a *single WebSocket frame*.
-        // The data is split when a NULL byte (followed by zero or many LF bytes) is
-        // found
-        if (escapeHeaderValues == null) {
-            escapeHeaderValues = false;
-        }
-        var frames = datas.split(new RegExp("" + byte_1.Byte.NULL + byte_1.Byte.LF + "*"));
-        var r = {
-            frames: [],
-            partial: ''
-        };
-        r.frames = (frames.slice(0, -1).map(function (frame) { return Frame.unmarshallSingle(frame, escapeHeaderValues); }));
-        // If this contains a final full message or just a acknowledgement of a PING
-        // without any other content, process this frame, otherwise return the
-        // contents of the buffer to the caller.
-        var last_frame = frames.slice(-1)[0];
-        if ((last_frame === byte_1.Byte.LF) || ((last_frame.search(new RegExp("" + byte_1.Byte.NULL + byte_1.Byte.LF + "*$"))) !== -1)) {
-            r.frames.push(Frame.unmarshallSingle(last_frame, escapeHeaderValues));
-        }
-        else {
-            r.partial = last_frame;
-        }
-        return r;
+        return new Frame({
+            command: rawFrame.command,
+            headers: headers,
+            body: rawFrame.body,
+            escapeHeaderValues: escapeHeaderValues
+        });
     };
     /**
      * Serialize a STOMP frame as per STOMP standards, suitable to be sent to the STOMP broker.
@@ -153,13 +95,13 @@ var Frame = /** @class */ (function () {
     /**
      *  Escape header values
      */
-    Frame.frEscape = function (str) {
+    Frame.hdrValueEscape = function (str) {
         return str.replace(/\\/g, "\\\\").replace(/\r/g, "\\r").replace(/\n/g, "\\n").replace(/:/g, "\\c");
     };
     /**
      * UnEscape header values
      */
-    Frame.frUnEscape = function (str) {
+    Frame.hdrValueUnEscape = function (str) {
         return str.replace(/\\r/g, "\r").replace(/\\n/g, "\n").replace(/\\c/g, ":").replace(/\\\\/g, "\\");
     };
     return Frame;

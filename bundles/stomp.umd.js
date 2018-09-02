@@ -142,22 +142,21 @@ var Client = /** @class */ (function () {
     function Client(conf) {
         if (conf === void 0) { conf = {}; }
         /**
-         *  automatically reconnect with delay in milliseconds, set to 0 to disable
+         *  automatically reconnect with delay in milliseconds, set to 0 to disable.
          */
         this.reconnectDelay = 5000;
         /**
-         * Incoming heartbeat interval in milliseconds. Set to 0 to disable
+         * Incoming heartbeat interval in milliseconds. Set to 0 to disable.
          */
         this.heartbeatIncoming = 10000;
         /**
-         * Outgoing heartbeat interval in milliseconds. Set to 0 to disable
+         * Outgoing heartbeat interval in milliseconds. Set to 0 to disable.
          */
         this.heartbeatOutgoing = 10000;
-        // public heartbeat: { outgoing: number; incoming: number };
         /**
-         * Maximum WebSocket frame size sent by the client. If the STOMP frame
+         * Maximum WebSocket frame size sent by the client. If a STOMP frame
          * is bigger than this value, the STOMP frame will be sent using multiple
-         * WebSocket frames (default is 16KiB)
+         * WebSocket frames (default is 16KiB).
          */
         this.maxWebSocketFrameSize = 16 * 1024;
         this._active = false;
@@ -180,7 +179,7 @@ var Client = /** @class */ (function () {
     }
     Object.defineProperty(Client.prototype, "webSocket", {
         /**
-         * Underlying WebSocket instance, READONLY
+         * Underlying WebSocket instance, READONLY.
          */
         get: function () {
             return this._webSocket;
@@ -209,19 +208,20 @@ var Client = /** @class */ (function () {
         configurable: true
     });
     /**
-     * Update configuration. See {@link StompConfig} for details of configuration options.
+     * Update configuration.
      */
     Client.prototype.configure = function (conf) {
         // bulk assign all properties to this
         Object.assign(this, conf);
     };
     /**
-     * Initiate the connection. If the connection breaks it will keep trying to reconnect.
+     * Initiate the connection with the broker.
+     * If the connection breaks, as per [Client#reconnectDelay]{@link Client#reconnectDelay},
+     * it will keep trying to reconnect.
      *
      * Call [Client#deactivate]{@link Client#deactivate} to disconnect and stop reconnection attempts.
      */
     Client.prototype.activate = function () {
-        // Indicate that this connection is active (it will keep trying to connect)
         this._active = true;
         this._connect();
     };
@@ -236,7 +236,7 @@ var Client = /** @class */ (function () {
             return;
         }
         this.debug("Opening Web Socket...");
-        // Get the actual Websocket (or a similar object)
+        // Get the actual WebSocket (or a similar object)
         this._webSocket = this._createWebSocket();
         this._stompHandler = new stomp_handler_1.StompHandler(this, this._webSocket, {
             debug: this.debug,
@@ -261,6 +261,8 @@ var Client = /** @class */ (function () {
             },
             onWebSocketClose: function (evt) {
                 _this.onWebSocketClose(evt);
+                // The callback is called before attempting to reconnect, this would allow the client
+                // to be `deactivated` in the callback.
                 if (_this._active) {
                     _this._schedule_reconnect();
                 }
@@ -294,9 +296,7 @@ var Client = /** @class */ (function () {
     /**
      * Disconnect and stop auto reconnect loop.
      *
-     * Appropriate callbacks will be invoked if underlying STOMP connection is connected.
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#DISCONNECT
+     * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
      */
     Client.prototype.deactivate = function () {
         // indicate that auto reconnect loop should terminate
@@ -316,32 +316,42 @@ var Client = /** @class */ (function () {
     };
     /**
      * Send a message to a named destination. Refer to your STOMP broker documentation for types
-     * and naming of destinations. The headers will, typically, be available to the subscriber.
-     * However, there may be special purpose headers corresponding to your STOMP broker.
+     * and naming of destinations.
+     *
+     * STOMP protocol specifies and suggests some headers and also allows broker specific headers.
      *
      * Note: Body must be String. You will need to covert the payload to string in case it is not string (e.g. JSON)
      *
      * ```javascript
-     *        client.send({destination: "/queue/test", headers: {priority: 9}, body: "Hello, STOMP"});
+     *        client.publish({destination: "/queue/test", headers: {priority: 9}, body: "Hello, STOMP"});
      *
      *        // Only destination is mandatory parameter
-     *        client.send({destination: "/queue/test", body: "Hello, STOMP"});
-     * ```
+     *        client.publish({destination: "/queue/test", body: "Hello, STOMP"});
      *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#SEND SEND Frame
+     *        // Skip content-length header in the frame to the broker
+     *        client.publish({"/queue/test", body: "Hello, STOMP", skipContentLengthHeader: true});
+     * ```
      */
     Client.prototype.publish = function (params) {
         this._stompHandler.publish(params);
     };
     /**
-     * Watch for a receipt, callback will receive the STOMP frame as parameter.
+     * STOMP brokers may carry out operation asynchronously and allow requesting for acknowledgement.
+     * To request an acknowledgement, a `receipt` header needs to be sent with the actual request.
+     * The value (say receipt-id) for this header needs to be unique for each use. Typically a sequence, a UUID, a
+     * random number or a combination may be used.
      *
-     * The receipt id needs to be unique for each use. Typically a sequence, a UUID, a
-     * random number or a combination would be used.
+     * A complaint broker will send a RECEIPT frame when an operation has actually been completed.
+     * The operation needs to be matched based in the value of the receipt-id.
+     *
+     * This method allow watching for a receipt and invoke the callback
+     * when corresponding receipt has been received.
+     *
+     * The actual {@link Frame} will be passed as parameter to the callback.
      *
      * Example:
      * ```javascript
-     *        // Receipt for Subscription
+     *        // Subscribing with acknowledgement
      *        let receiptId = randomText();
      *
      *        client.watchForReceipt(receiptId, function() {
@@ -350,13 +360,14 @@ var Client = /** @class */ (function () {
      *
      *        client.subscribe(TEST.destination, onMessage, {receipt: receiptId});
      *
-     *        // Receipt for message send
+     *
+     *        // Publishing with acknowledgement
      *        receiptId = randomText();
      *
      *        client.watchForReceipt(receiptId, function() {
      *          // Will be called after server acknowledges
      *        });
-     *        client.send(TEST.destination, {receipt: receiptId}, msg);
+     *        client.publish({destination: TEST.destination, headers: {receipt: receiptId}, body: msg});
      * ```
      */
     Client.prototype.watchForReceipt = function (receiptId, callback) {
@@ -385,8 +396,6 @@ var Client = /** @class */ (function () {
      *        var mySubId = 'my-subscription-id-001';
      *        var subscription = client.subscribe(destination, callback, { id: mySubId });
      * ```
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#SUBSCRIBE SUBSCRIBE Frame
      */
     Client.prototype.subscribe = function (destination, callback, headers) {
         if (headers === void 0) { headers = {}; }
@@ -412,13 +421,14 @@ var Client = /** @class */ (function () {
      * Start a transaction, the returned {@link Transaction} has methods - [commit]{@link Transaction#commit}
      * and [abort]{@link Transaction#abort}.
      *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#BEGIN BEGIN Frame
+     * `transactionId` is optional, if not passed the library will generate it internally.
      */
     Client.prototype.begin = function (transactionId) {
         return this._stompHandler.begin(transactionId);
     };
     /**
      * Commit a transaction.
+     *
      * It is preferable to commit a transaction by calling [commit]{@link Transaction#commit} directly on
      * {@link Transaction} returned by [client.begin]{@link Client#begin}.
      *
@@ -427,8 +437,6 @@ var Client = /** @class */ (function () {
      *        //...
      *        tx.commit();
      * ```
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#COMMIT COMMIT Frame
      */
     Client.prototype.commit = function (transactionId) {
         this._stompHandler.commit(transactionId);
@@ -443,8 +451,6 @@ var Client = /** @class */ (function () {
      *        //...
      *        tx.abort();
      * ```
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#ABORT ABORT Frame
      */
     Client.prototype.abort = function (transactionId) {
         this._stompHandler.abort(transactionId);
@@ -461,8 +467,6 @@ var Client = /** @class */ (function () {
      *        };
      *        client.subscribe(destination, callback, {'ack': 'client'});
      * ```
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#ACK ACK Frame
      */
     Client.prototype.ack = function (messageId, subscriptionId, headers) {
         if (headers === void 0) { headers = {}; }
@@ -480,8 +484,6 @@ var Client = /** @class */ (function () {
      *        };
      *        client.subscribe(destination, callback, {'ack': 'client'});
      * ```
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#NACK NACK Frame
      */
     Client.prototype.nack = function (messageId, subscriptionId, headers) {
         if (headers === void 0) { headers = {}; }
@@ -904,8 +906,6 @@ var byte_1 = __webpack_require__(/*! ./byte */ "./src/byte.ts");
  * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
  *
  * {@link Message} is an extended Frame.
- *
- * See: http://stomp.github.com/stomp-specification-1.2.html#STOMP_Frames STOMP Frame
  */
 var Frame = /** @class */ (function () {
     /**
@@ -933,7 +933,7 @@ var Frame = /** @class */ (function () {
             var name_1 = _a[_i];
             var value = this.headers[name_1];
             if (this.escapeHeaderValues && (this.command !== 'CONNECT') && (this.command !== 'CONNECTED')) {
-                lines.push(name_1 + ":" + Frame.frEscape("" + value));
+                lines.push(name_1 + ":" + Frame.hdrValueEscape("" + value));
             }
             else {
                 lines.push(name_1 + ":" + value);
@@ -951,8 +951,7 @@ var Frame = /** @class */ (function () {
      */
     Frame.sizeOfUTF8 = function (s) {
         if (s) {
-            var matches = encodeURI(s).match(/%..|./g) || [];
-            return matches.length;
+            return new TextEncoder().encode(s).length;
         }
         else {
             return 0;
@@ -963,81 +962,26 @@ var Frame = /** @class */ (function () {
      *
      * @internal
      */
-    Frame.unmarshallSingle = function (data, escapeHeaderValues) {
-        // search for 2 consecutives LF byte to split the command
-        // and headers from the body
-        var divider = data.search(new RegExp("" + byte_1.Byte.LF + byte_1.Byte.LF));
-        var headerLines = data.substring(0, divider).split(byte_1.Byte.LF);
-        var command = headerLines.shift();
+    Frame.fromRawFrame = function (rawFrame, escapeHeaderValues) {
         var headers = {};
-        // utility function to trim any whitespace before and after a string
         var trim = function (str) { return str.replace(/^\s+|\s+$/g, ''); };
-        // Parse headers in reverse order so that for repeated headers, the 1st
-        // value is used
-        for (var _i = 0, _a = headerLines.reverse(); _i < _a.length; _i++) {
-            var line = _a[_i];
-            var idx = line.indexOf(':');
-            var key = trim(line.substring(0, idx));
-            var value = trim(line.substring(idx + 1));
-            if (escapeHeaderValues && (command !== 'CONNECT') && (command !== 'CONNECTED')) {
-                value = Frame.frUnEscape(value);
+        // In case of repeated headers, as per standards, first value need to be used
+        for (var _i = 0, _a = rawFrame.headers.reverse(); _i < _a.length; _i++) {
+            var header = _a[_i];
+            var idx = header.indexOf(':');
+            var key = trim(header[0]);
+            var value = trim(header[1]);
+            if (escapeHeaderValues && (rawFrame.command !== 'CONNECT') && (rawFrame.command !== 'CONNECTED')) {
+                value = Frame.hdrValueUnEscape(value);
             }
             headers[key] = value;
         }
-        // Parse body
-        // check for content-length or  topping at the first NULL byte found.
-        var body = '';
-        // skip the 2 LF bytes that divides the headers from the body
-        var start = divider + 2;
-        if (headers['content-length']) {
-            var len = parseInt(headers['content-length']);
-            body = ("" + data).substring(start, start + len);
-        }
-        else {
-            var chr = null;
-            for (var i = start, end = data.length, asc = start <= end; asc ? i < end : i > end; asc ? i++ : i--) {
-                chr = data.charAt(i);
-                if (chr === byte_1.Byte.NULL) {
-                    break;
-                }
-                body += chr;
-            }
-        }
-        return new Frame({ command: command, headers: headers, body: body, escapeHeaderValues: escapeHeaderValues });
-    };
-    /**
-     * Split the data before unmarshalling every single STOMP frame.
-     * Web socket servers can send multiple frames in a single websocket message.
-     * If the message size exceeds the websocket message size, then a single
-     * frame can be fragmented across multiple messages.
-     *
-     * @internal
-     */
-    Frame.unmarshall = function (datas, escapeHeaderValues) {
-        // Ugly list comprehension to split and unmarshall *multiple STOMP frames*
-        // contained in a *single WebSocket frame*.
-        // The data is split when a NULL byte (followed by zero or many LF bytes) is
-        // found
-        if (escapeHeaderValues == null) {
-            escapeHeaderValues = false;
-        }
-        var frames = datas.split(new RegExp("" + byte_1.Byte.NULL + byte_1.Byte.LF + "*"));
-        var r = {
-            frames: [],
-            partial: ''
-        };
-        r.frames = (frames.slice(0, -1).map(function (frame) { return Frame.unmarshallSingle(frame, escapeHeaderValues); }));
-        // If this contains a final full message or just a acknowledgement of a PING
-        // without any other content, process this frame, otherwise return the
-        // contents of the buffer to the caller.
-        var last_frame = frames.slice(-1)[0];
-        if ((last_frame === byte_1.Byte.LF) || ((last_frame.search(new RegExp("" + byte_1.Byte.NULL + byte_1.Byte.LF + "*$"))) !== -1)) {
-            r.frames.push(Frame.unmarshallSingle(last_frame, escapeHeaderValues));
-        }
-        else {
-            r.partial = last_frame;
-        }
-        return r;
+        return new Frame({
+            command: rawFrame.command,
+            headers: headers,
+            body: rawFrame.body,
+            escapeHeaderValues: escapeHeaderValues
+        });
     };
     /**
      * Serialize a STOMP frame as per STOMP standards, suitable to be sent to the STOMP broker.
@@ -1051,13 +995,13 @@ var Frame = /** @class */ (function () {
     /**
      *  Escape header values
      */
-    Frame.frEscape = function (str) {
+    Frame.hdrValueEscape = function (str) {
         return str.replace(/\\/g, "\\\\").replace(/\r/g, "\\r").replace(/\n/g, "\\n").replace(/:/g, "\\c");
     };
     /**
      * UnEscape header values
      */
-    Frame.frUnEscape = function (str) {
+    Frame.hdrValueUnEscape = function (str) {
         return str.replace(/\\r/g, "\r").replace(/\\n/g, "\n").replace(/\\c/g, ":").replace(/\\\\/g, "\\");
     };
     return Frame;
@@ -1082,10 +1026,169 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(__webpack_require__(/*! ./client */ "./src/client.ts"));
 __export(__webpack_require__(/*! ./frame */ "./src/frame.ts"));
+__export(__webpack_require__(/*! ./parser */ "./src/parser.ts"));
 __export(__webpack_require__(/*! ./versions */ "./src/versions.ts"));
 // Compatibility code
 __export(__webpack_require__(/*! ./compatibility/compat-client */ "./src/compatibility/compat-client.ts"));
 __export(__webpack_require__(/*! ./compatibility/stomp */ "./src/compatibility/stomp.ts"));
+
+
+/***/ }),
+
+/***/ "./src/parser.ts":
+/*!***********************!*\
+  !*** ./src/parser.ts ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var NULL = 0;
+var LF = 10;
+var CR = 13;
+var COLON = 58;
+var Parser = /** @class */ (function () {
+    function Parser(onFrame, onIncomingPing) {
+        this.onFrame = onFrame;
+        this.onIncomingPing = onIncomingPing;
+        this._encoder = new TextEncoder();
+        this._decoder = new TextDecoder();
+        this._token = [];
+        this._initState();
+    }
+    Parser.prototype.parseChunk = function (segment) {
+        var _this = this;
+        var chunk;
+        if ((segment instanceof ArrayBuffer)) {
+            chunk = new Uint8Array(segment);
+        }
+        else {
+            chunk = this._encoder.encode(segment);
+        }
+        chunk.forEach(function (byte) {
+            _this._onByte(byte);
+        });
+    };
+    // The following implements a simple Rec Descent Parser.
+    // The grammar is simple and just one byte tells what should be the next state
+    Parser.prototype._collectFrame = function (byte) {
+        if (byte === NULL) { // Ignore
+            return;
+        }
+        if (byte === CR) { // Ignore CR
+            return;
+        }
+        if (byte === LF) { // Incoming Ping
+            this.onIncomingPing();
+            return;
+        }
+        this._onByte = this._collectCommand;
+        this._reinjectByte(byte);
+    };
+    Parser.prototype._collectCommand = function (byte) {
+        if (byte === CR) { // Ignore CR
+            return;
+        }
+        if (byte === LF) {
+            this._results.command = this._consumeTokenAsUTF8();
+            this._onByte = this._collectHeaders;
+            return;
+        }
+        this._consumeByte(byte);
+    };
+    Parser.prototype._collectHeaders = function (byte) {
+        if (byte === CR) { // Ignore CR
+            return;
+        }
+        if (byte === LF) {
+            this._setupCollectBody();
+            return;
+        }
+        this._onByte = this._collectHeaderKey;
+        this._reinjectByte(byte);
+    };
+    Parser.prototype._reinjectByte = function (byte) {
+        this._onByte(byte);
+    };
+    Parser.prototype._collectHeaderKey = function (byte) {
+        if (byte === COLON) {
+            this._headerKey = this._consumeTokenAsUTF8();
+            this._onByte = this._collectHeaderValue;
+            return;
+        }
+        this._consumeByte(byte);
+    };
+    Parser.prototype._collectHeaderValue = function (byte) {
+        if (byte === CR) { // Ignore CR
+            return;
+        }
+        if (byte === LF) {
+            this._results.headers.push([this._headerKey, this._consumeTokenAsUTF8()]);
+            this._headerKey = undefined;
+            this._onByte = this._collectHeaders;
+            return;
+        }
+        this._consumeByte(byte);
+    };
+    Parser.prototype._setupCollectBody = function () {
+        var contentLengthHeader = this._results.headers.filter(function (header) {
+            return header[0] === "content-length";
+        })[0];
+        if (contentLengthHeader) {
+            this._bodyBytesRemaining = parseInt(contentLengthHeader[1]);
+            this._onByte = this._collectBodyFixedSize;
+        }
+        else {
+            this._onByte = this._collectBodyNullTerminated;
+        }
+    };
+    Parser.prototype._collectBodyNullTerminated = function (byte) {
+        if (byte === NULL) {
+            this._retrievedBody();
+            return;
+        }
+        this._consumeByte(byte);
+    };
+    Parser.prototype._collectBodyFixedSize = function (byte) {
+        // It is post decrement, so that we discard the trailing NULL octet
+        if (this._bodyBytesRemaining-- === 0) {
+            this._retrievedBody();
+            return;
+        }
+        this._consumeByte(byte);
+    };
+    Parser.prototype._retrievedBody = function () {
+        this._results.body = this._consumeTokenAsRaw();
+        this.onFrame(this._results);
+        this._initState();
+    };
+    // Rec Descent Parser helpers
+    Parser.prototype._consumeByte = function (byte) {
+        this._token.push(byte);
+    };
+    Parser.prototype._consumeTokenAsUTF8 = function () {
+        return this._decoder.decode(this._consumeTokenAsRaw());
+    };
+    Parser.prototype._consumeTokenAsRaw = function () {
+        var rawResult = new Uint8Array(this._token);
+        this._token = [];
+        return rawResult;
+    };
+    Parser.prototype._initState = function () {
+        this._results = {
+            command: undefined,
+            headers: [],
+            body: undefined,
+        };
+        this._token = [];
+        this._headerKey = undefined;
+        this._onByte = this._collectFrame;
+    };
+    return Parser;
+}());
+exports.Parser = Parser;
 
 
 /***/ }),
@@ -1103,6 +1206,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var byte_1 = __webpack_require__(/*! ./byte */ "./src/byte.ts");
 var versions_1 = __webpack_require__(/*! ./versions */ "./src/versions.ts");
 var frame_1 = __webpack_require__(/*! ./frame */ "./src/frame.ts");
+var parser_1 = __webpack_require__(/*! ./parser */ "./src/parser.ts");
 /**
  * The STOMP protocol handler
  *
@@ -1208,44 +1312,23 @@ var StompHandler = /** @class */ (function () {
     };
     StompHandler.prototype.start = function () {
         var _this = this;
+        var parser = new parser_1.Parser(
+        // On Frame
+        function (rawFrame) {
+            var frame = frame_1.Frame.fromRawFrame(rawFrame, _this._escapeHeaderValues);
+            frame.body = new TextDecoder().decode(frame.body);
+            _this.debug("<<< " + frame);
+            var serverFrameHandler = _this._serverFrameHandlers[frame.command] || _this.onUnhandledFrame;
+            serverFrameHandler(frame);
+        }, 
+        // On Incoming Ping
+        function () {
+            _this.debug("<<< PONG");
+        });
         this._webSocket.onmessage = function (evt) {
             _this.debug('Received data');
-            var data = (function () {
-                if ((typeof (ArrayBuffer) !== 'undefined') && evt.data instanceof ArrayBuffer) {
-                    // the data is stored inside an ArrayBuffer, we decode it to get the
-                    // data as a String
-                    var arr = new Uint8Array(evt.data);
-                    _this.debug("--- got data length: " + arr.length);
-                    // Return a string formed by all the char codes stored in the Uint8array
-                    var j = void 0, len1 = void 0, results = void 0;
-                    results = [];
-                    for (j = 0, len1 = arr.length; j < len1; j++) {
-                        var c = arr[j];
-                        results.push(String.fromCharCode(c));
-                    }
-                    return results.join('');
-                }
-                else {
-                    // take the data directly from the WebSocket `data` field
-                    return evt.data;
-                }
-            })();
             _this._lastServerActivityTS = Date.now();
-            if (data === byte_1.Byte.LF) { // heartbeat
-                _this.debug("<<< PONG");
-                return;
-            }
-            _this.debug("<<< " + data);
-            // Handle STOMP frames received from the server
-            // The unmarshall function returns the frames parsed and any remaining
-            // data from partial frames.
-            var unmarshalledData = frame_1.Frame.unmarshall(_this._partialData + data, _this._escapeHeaderValues);
-            _this._partialData = unmarshalledData.partial;
-            for (var _i = 0, _a = unmarshalledData.frames; _i < _a.length; _i++) {
-                var frame = _a[_i];
-                var serverFrameHandler = _this._serverFrameHandlers[frame.command] || _this.onUnhandledFrame;
-                serverFrameHandler(frame);
-            }
+            parser.parseChunk(evt.data);
         };
         this._webSocket.onclose = function (closeEvent) {
             _this.debug("Connection closed to " + _this._webSocket.url);
@@ -1328,7 +1411,7 @@ var StompHandler = /** @class */ (function () {
                 this._transmit({ command: "DISCONNECT", headers: this.disconnectHeaders });
             }
             catch (error) {
-                this.debug('Ignoring error during disconnect', error);
+                this.debug("Ignoring error during disconnect " + error);
             }
         }
         else {

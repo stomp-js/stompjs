@@ -382,7 +382,7 @@
 </nav>
                </div>
                <!-- START CONTENT -->
-               <div class="content additional-page">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -393,65 +393,489 @@
 
 
 
+<ol class="breadcrumb">
+  <li>Classes</li>
+  <li>Parser</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/parser.ts</code>
+        </p>
+
+
+
+
+
+            <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#onFrame">onFrame</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#onIncomingPing">onIncomingPing</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#parseChunk">parseChunk</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                                <span class="modifier">Public</span>
+                        <code>constructor(onFrame: (rawFrame: <a href="../classes/Frame.html">RawFrameType</a>) => void, onIncomingPing: () => void)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/parser.ts:18</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>onFrame</td>
+                                                  
+                                                        <td>
+                                                                    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/function" target="_blank" >function</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            no
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>onIncomingPing</td>
+                                                  
+                                                        <td>
+                                                                    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/function" target="_blank" >function</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            no
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section>
+    
+        <h3 id="inputs">
+            Properties
+        </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="onFrame"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            onFrame
+                            </b>
+                            <a href="#onFrame"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <span class="modifier-icon fa fa-reset"></span><code>onFrame:     <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/function" target="_blank" >function</a></code>
+</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/function" target="_blank" >function</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/parser.ts:20</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="onIncomingPing"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            onIncomingPing
+                            </b>
+                            <a href="#onIncomingPing"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <span class="modifier-icon fa fa-reset"></span><code>onIncomingPing:     <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/function" target="_blank" >function</a></code>
+</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/function" target="_blank" >function</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/parser.ts:20</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+</section>
+
+            <section>
+    
+        <h3 id="methods">
+            Methods
+        </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="parseChunk"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            parseChunk
+                            </b>
+                            <a href="#parseChunk"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                            <span class="modifier-icon fa fa-reset"></span>
+                        <code>parseChunk(segment: string | ArrayBuffer)</code>
+                    </td>
+                </tr>
+
+
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/parser.ts:24</a></div>
+                            </td>
+                        </tr>
+
+
+                <tr>
+                    <td class="col-md-4">
+
+                            <div class="io-description">
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>segment</td>
+                                                        <td>
+                                                                    <code>string | ArrayBuffer</code>
+                                                        </td>
+                                                    
+                                                    <td>
+                                                            no
+                                                    </td>
+                                                    
+
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                            <div>
+                            </div>
+                            <div class="io-description">
+                                <b>Returns : </b>    <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                            </div>
+                                <div class="io-description">
+                                    
+                                </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
 
 
 
 
 
-<h1 id="broker-requirements">Broker Requirements</h1>
-<p><strong>Information on this page is outdated, please refer to your broker documentation
-for up to date information.</strong></p>
-<p>This library is not a <em>pure</em> STOMP client. It is aimed to run on the 
-WebSockets protocol which is not TCP. Basically, the WebSocket protocol 
-requires a <em>handshake</em> between the browser&#39;s client and the server to 
-ensure the browser&#39;s &quot;same-origin&quot; security model remains in effect.</p>
-<p>This means that this library can not connect to regular STOMP brokers 
-since they would not understand the handshake initiated by the WebSocket 
-which is not part of the STOMP protocol and would likely reject the 
-connection.</p>
-<p>There are ongoing works to add WebSocket support to STOMP broker so 
-that they will accept STOMP connections over the WebSocket protocol.</p>
-<h2 id="hornetq">HornetQ</h2>
-<p><a href="http://jboss.org/hornetq">HornetQ</a> is the Open Source messaging system 
-developed by Red Hat and JBoss.</p>
-<p>To start HornetQ with support for STOMP Over WebSocket, 
-<a href="http://www.jboss.org/hornetq/downloads.html">download the latest version</a> 
-and run the following steps:</p>
-<div><pre class="line-numbers"><code class="language-bash">  $ cd hornetq-x.y.z/examples/jms/stomp-websockets
-  $ mvn clean install
-  ...
-  INFO: HQ221020: Started Netty Acceptor version 3.6.2.Final-c0d783c localhost:61614 for STOMP_WS protocol
-  Apr 15, 2013 1:15:33 PM org.hornetq.core.server.impl.HornetQServerImpl$SharedStoreLiveActivation run
-  INFO: HQ221007: Server is now live
-  Apr 15, 2013 1:15:33 PM org.hornetq.core.server.impl.HornetQServerImpl start
-  INFO: HQ221001: HornetQ Server version 2.3.0.CR2 (black&#39;n&#39;yellow2, 123) [c9e29e45-a5bd-11e2-976a-b3fef7ceb5df]</code></pre></div><p>HornetQ is now started and listens to STOMP over WebSocket on the port <code>61614</code>.<br>It accepts <em>WebSocket connections</em> from the URL <code>ws://localhost:61614/stomp</code></p>
-<p>To configure and run HornetQ with STOMP Over WebSocket enabled, follow the 
-<a href="http://docs.jboss.org/hornetq/2.3.0.CR2/docs/user-manual/html/interoperability.html#stomp.websockets">instructions</a>.</p>
-<h2 id="activemq">ActiveMQ</h2>
-<p><a href="http://activemq.apache.org">ActiveMQ</a> is the Open Source messaging system 
-developed by Apache. Starting with 5.4 snapshots, ActiveMQ supports STOMP 
-Over WebSocket.</p>
-<p>To configure and run ActiveMQ with STOMP Over WebSocket enabled, follow 
-the <a href="http://activemq.apache.org/websockets.html">instructions</a>.</p>
-<h2 id="activemq-apollo">ActiveMQ Apollo</h2>
-<p><a href="http://activemq.apache.org/apollo/">ActiveMQ Apollo</a> is the next generation 
-of ActiveMQ broker. From the start, Apollo supports STOMP Over WebSocket.</p>
-<p>To configure and run Apollo with STOMP Over WebSocket enabled, follow the 
-<a href="http://activemq.apache.org/apollo/documentation/user-manual.html#WebSocket_Transports">instructions</a>.</p>
-<h2 id="rabbitmq">RabbitMQ</h2>
-<p><a href="http://www.rabbitmq.com/">RabbitMQ</a> is Open Source messaging system sponsored 
-by Pivotal.</p>
-<p>To configure and run RabbitMQ with STOMP Over WebSocket enabled, follow the 
-instructions to install the 
-<a href="http://www.rabbitmq.com/web-stomp.html">Web-Stomp plugin</a>.</p>
-<h2 id="stilts-torquebox">Stilts &amp; Torquebox</h2>
-<p><a href="http://stilts.projectodd.org/">Stilts</a> is a STOMP-native messaging framework 
-which aims to address treating STOMP as primary contract for messaging, and 
-integrating around it, instead of simply applying STOMP shims to existing 
-services.</p>
-<p><a href="http://torquebox.org/">TorqueBox</a> uses the Stilts project to provide its 
-<a href="http://torquebox.org/documentation/2.1.2/stomp.html">WebSockets and STOMP stack</a>.</p>
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {RawFrameType} from &#x27;./types&#x27;;
+
+const NULL &#x3D; 0;
+const LF &#x3D; 10;
+const CR &#x3D; 13;
+const COLON &#x3D; 58;
+
+export class Parser {
+  private readonly _encoder &#x3D; new TextEncoder();
+  private readonly _decoder &#x3D; new TextDecoder();
+
+  private _results: RawFrameType;
+
+  private _token: number[] &#x3D; [];
+  private _headerKey: string;
+  private _bodyBytesRemaining:number;
+
+  private _onByte: (byte: number) &#x3D;&gt; void;
+
+  public constructor(public onFrame: (rawFrame: RawFrameType) &#x3D;&gt; void, public onIncomingPing: () &#x3D;&gt; void) {
+    this._initState();
+  }
+
+  public parseChunk(segment: string|ArrayBuffer) {
+    let chunk: Uint8Array;
+
+    if ((segment instanceof ArrayBuffer)) {
+      chunk &#x3D; new Uint8Array(segment);
+    } else {
+      chunk &#x3D; this._encoder.encode(segment);
+    }
+
+    chunk.forEach((byte) &#x3D;&gt; {
+      this._onByte(byte);
+    });
+  }
+
+  // The following implements a simple Rec Descent Parser.
+  // The grammar is simple and just one byte tells what should be the next state
+
+  private _collectFrame(byte: number): void {
+    if (byte &#x3D;&#x3D;&#x3D; NULL) { // Ignore
+      return;
+    }
+    if (byte &#x3D;&#x3D;&#x3D; CR) { // Ignore CR
+      return;
+    }
+    if (byte &#x3D;&#x3D;&#x3D; LF) { // Incoming Ping
+      this.onIncomingPing();
+      return;
+    }
+
+    this._onByte &#x3D; this._collectCommand;
+    this._reinjectByte(byte);
+  }
+
+  private _collectCommand(byte: number): void {
+    if (byte &#x3D;&#x3D;&#x3D; CR) { // Ignore CR
+      return;
+    }
+    if (byte &#x3D;&#x3D;&#x3D; LF) {
+      this._results.command &#x3D; this._consumeTokenAsUTF8();
+      this._onByte &#x3D; this._collectHeaders;
+      return;
+    }
+
+    this._consumeByte(byte);
+  }
+
+  private _collectHeaders(byte: number): void {
+    if (byte &#x3D;&#x3D;&#x3D; CR) { // Ignore CR
+      return;
+    }
+    if (byte &#x3D;&#x3D;&#x3D; LF) {
+      this._setupCollectBody();
+      return;
+    }
+    this._onByte &#x3D; this._collectHeaderKey;
+    this._reinjectByte(byte);
+  }
+
+  private _reinjectByte(byte: number) {
+    this._onByte(byte);
+  }
+
+  private _collectHeaderKey(byte: number): void {
+    if (byte &#x3D;&#x3D;&#x3D; COLON) {
+      this._headerKey &#x3D; this._consumeTokenAsUTF8();
+      this._onByte &#x3D; this._collectHeaderValue;
+      return;
+    }
+    this._consumeByte(byte);
+  }
+
+  private _collectHeaderValue(byte: number): void {
+    if (byte &#x3D;&#x3D;&#x3D; CR) { // Ignore CR
+      return;
+    }
+    if (byte &#x3D;&#x3D;&#x3D; LF) {
+      this._results.headers.push([this._headerKey, this._consumeTokenAsUTF8()]);
+      this._headerKey &#x3D; undefined;
+      this._onByte &#x3D; this._collectHeaders;
+      return;
+    }
+    this._consumeByte(byte);
+  }
+
+  private _setupCollectBody() {
+    const contentLengthHeader &#x3D; this._results.headers.filter(function (header: [string, string]) {
+      return header[0] &#x3D;&#x3D;&#x3D; &quot;content-length&quot;;
+    })[0];
+
+    if(contentLengthHeader) {
+      this._bodyBytesRemaining &#x3D; parseInt(contentLengthHeader[1]);
+      this._onByte &#x3D; this._collectBodyFixedSize;
+    } else {
+      this._onByte &#x3D; this._collectBodyNullTerminated;
+    }
+  }
+
+  private _collectBodyNullTerminated(byte: number): void {
+    if (byte &#x3D;&#x3D;&#x3D; NULL) {
+      this._retrievedBody();
+      return;
+    }
+    this._consumeByte(byte);
+  }
+
+  private _collectBodyFixedSize(byte: number): void {
+    // It is post decrement, so that we discard the trailing NULL octet
+    if (this._bodyBytesRemaining-- &#x3D;&#x3D;&#x3D; 0) {
+      this._retrievedBody();
+      return;
+    }
+    this._consumeByte(byte);
+  }
+
+  private _retrievedBody() {
+    this._results.body &#x3D; this._consumeTokenAsRaw();
+
+    this.onFrame(this._results);
+
+    this._initState();
+  }
+
+  // Rec Descent Parser helpers
+
+  private _consumeByte(byte: number) {
+    this._token.push(byte);
+  }
+
+  private _consumeTokenAsUTF8() {
+    return this._decoder.decode(this._consumeTokenAsRaw());
+  }
+
+  private _consumeTokenAsRaw() {
+    const rawResult &#x3D; new Uint8Array(this._token);
+    this._token &#x3D; [];
+    return rawResult;
+  }
+
+  private _initState() {
+    this._results &#x3D; {
+      command: undefined,
+      headers: [],
+      body: undefined,
+    };
+
+    this._token &#x3D; [];
+    this._headerKey &#x3D; undefined;
+
+    this._onByte &#x3D; this._collectFrame;
+  }
+
+}</code></pre>
+    </div>
+</div>
+
+
+
+
+
 
                    </div><div class="search-results">
     <div class="has-results">
@@ -478,8 +902,8 @@ services.</p>
 
         <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'additional-page';
-            var COMPODOC_CURRENT_PAGE_URL = 'stomp-brokers.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'Parser.html';
         </script>
 
        <script src="../js/search/search.js"></script>

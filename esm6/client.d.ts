@@ -10,27 +10,27 @@ export declare class Client {
     /**
      * This function should return a WebSocket or a similar (e.g. SockJS) object.
      */
-    webSocketFactory: () => any;
+    webSocketFactory: () => WebSocket;
     /**
-     *  automatically reconnect with delay in milliseconds, set to 0 to disable
+     *  automatically reconnect with delay in milliseconds, set to 0 to disable.
      */
     reconnectDelay: number;
     /**
-     * Incoming heartbeat interval in milliseconds. Set to 0 to disable
+     * Incoming heartbeat interval in milliseconds. Set to 0 to disable.
      */
     heartbeatIncoming: number;
     /**
-     * Outgoing heartbeat interval in milliseconds. Set to 0 to disable
+     * Outgoing heartbeat interval in milliseconds. Set to 0 to disable.
      */
     heartbeatOutgoing: number;
     /**
-     * Maximum WebSocket frame size sent by the client. If the STOMP frame
+     * Maximum WebSocket frame size sent by the client. If a STOMP frame
      * is bigger than this value, the STOMP frame will be sent using multiple
-     * WebSocket frames (default is 16KiB)
+     * WebSocket frames (default is 16KiB).
      */
     maxWebSocketFrameSize: number;
     /**
-     * Underlying WebSocket instance, READONLY
+     * Underlying WebSocket instance, READONLY.
      */
     readonly webSocket: WebSocket;
     /**
@@ -39,29 +39,38 @@ export declare class Client {
      */
     protected _webSocket: WebSocket;
     /**
-     * Connection headers, important keys - `login`, `passcode`, `host`
+     * Connection headers, important keys - `login`, `passcode`, `host`.
+     * Though STOMP 1.2 standard marks these keys to be present, check your broker documentation for
+     * details specific to your broker.
      */
     connectHeaders: StompHeaders;
     /**
-     * Disconnection headers
+     * Disconnection headers.
      */
     disconnectHeaders: StompHeaders;
     /**
-     * This function will be called for any unhandled messages. It is useful to receive messages sent to
-     * temporary queues (for example RabbitMQ supports such queues).
+     * This function will be called for any unhandled messages.
+     * It is useful for receiving messages sent to RabbitMQ temporary queues.
      *
-     * It can also be called for stray messages while the server is processing a request to unsubcribe
+     * It can also get invoked with stray messages while the server is processing
+     * a request to [Client#unsubscribe]{@link Client#unsubscribe}
      * from an endpoint.
+     *
+     * The actual {@link Message} will be passed as parameter to the callback.
      */
     onUnhandledMessage: messageCallbackType;
     /**
      * STOMP brokers can be requested to notify when an operation is actually completed.
      * Prefer using [Client#watchForReceipt]{@link Client#watchForReceipt}. See
      * [Client#watchForReceipt]{@link Client#watchForReceipt} for examples.
+     *
+     * The actual {@link Frame} will be passed as parameter to the callback.
      */
     onUnhandledReceipt: frameCallbackType;
     /**
-     * Will be invoked if we receive an unknown frame type from the STOMP broker
+     * Will be invoked if {@link Frame} of unknown type is received from the STOMP broker.
+     *
+     * The actual {@link Frame} will be passed as parameter to the callback.
      */
     onUnhandledFrame: frameCallbackType;
     /**
@@ -71,33 +80,35 @@ export declare class Client {
     /**
      * Callback, invoked on every successful connection to the STOMP broker.
      *
-     * The actual frame is passed as parameter to the callback.
+     * The actual {@link Frame} will be passed as parameter to the callback.
+     * Sometimes clients will like to use headers from this frame.
      */
     onConnect: frameCallbackType;
     /**
      * Callback, invoked on every successful disconnection from the STOMP broker. It will not be invoked if
      * the STOMP broker disconnected due to an error.
      *
-     * The actual frame is passed as parameter to the callback.
+     * The actual Receipt {@link Frame} acknowledging the DISCONNECT will be passed as parameter to the callback.
      *
      * The way STOMP protocol is designed, the connection may close/terminate without the client
-     * receiving the DISCONNECT frame.
-     * You might find [Client#onWebSocketClose]{@link Client#onWebSocketClose} more appropriate.
+     * receiving the Receipt {@link Frame} acknowledging the DISCONNECT.
+     * You might find [Client#onWebSocketClose]{@link Client#onWebSocketClose} more appropriate to watch
+     * STOMP broker disconnects.
      */
     onDisconnect: frameCallbackType;
     /**
      * Callback, invoked on an ERROR frame received from the STOMP Broker.
      * A compliant STOMP Broker will close the connection after this type of frame.
+     * Please check broker specific documentation for exact behavior.
      *
-     * The actual frame is passed as parameter to the callback.
-     *
-     * See https://stomp.github.io/stomp-specification-1.2.html#ERROR.
+     * The actual {@link Frame} will be passed as parameter to the callback.
      */
     onStompError: frameCallbackType;
     /**
      * Callback, invoked when underlying WebSocket is closed.
      *
-     * Actual `event` is passed as parameter to the callback.
+     * Actual [CloseEvent]{@link https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent}
+     * is passed as parameter to the callback.
      */
     onWebSocketClose: closeEventCallbackType;
     /**
@@ -109,8 +120,8 @@ export declare class Client {
      *        };
      * ```
      *
-     * This method is called for every actual transmission of the STOMP frames over the
-     * WebSocket.
+     * Currently this method does not support levels of log. Be aware that the output can be quite verbose
+     * and may contain sensitive information (like passwords, tokens etc.).
      */
     debug: debugFnType;
     /**
@@ -125,11 +136,13 @@ export declare class Client {
      */
     constructor(conf?: StompConfig);
     /**
-     * Update configuration. See {@link StompConfig} for details of configuration options.
+     * Update configuration.
      */
     configure(conf: StompConfig): void;
     /**
-     * Initiate the connection. If the connection breaks it will keep trying to reconnect.
+     * Initiate the connection with the broker.
+     * If the connection breaks, as per [Client#reconnectDelay]{@link Client#reconnectDelay},
+     * it will keep trying to reconnect.
      *
      * Call [Client#deactivate]{@link Client#deactivate} to disconnect and stop reconnection attempts.
      */
@@ -140,38 +153,46 @@ export declare class Client {
     /**
      * Disconnect and stop auto reconnect loop.
      *
-     * Appropriate callbacks will be invoked if underlying STOMP connection is connected.
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#DISCONNECT
+     * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
      */
     deactivate(): void;
     private _disposeStompHandler;
     /**
      * Send a message to a named destination. Refer to your STOMP broker documentation for types
-     * and naming of destinations. The headers will, typically, be available to the subscriber.
-     * However, there may be special purpose headers corresponding to your STOMP broker.
+     * and naming of destinations.
+     *
+     * STOMP protocol specifies and suggests some headers and also allows broker specific headers.
      *
      * Note: Body must be String. You will need to covert the payload to string in case it is not string (e.g. JSON)
      *
      * ```javascript
-     *        client.send({destination: "/queue/test", headers: {priority: 9}, body: "Hello, STOMP"});
+     *        client.publish({destination: "/queue/test", headers: {priority: 9}, body: "Hello, STOMP"});
      *
      *        // Only destination is mandatory parameter
-     *        client.send({destination: "/queue/test", body: "Hello, STOMP"});
-     * ```
+     *        client.publish({destination: "/queue/test", body: "Hello, STOMP"});
      *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#SEND SEND Frame
+     *        // Skip content-length header in the frame to the broker
+     *        client.publish({"/queue/test", body: "Hello, STOMP", skipContentLengthHeader: true});
+     * ```
      */
     publish(params: publishParams): void;
     /**
-     * Watch for a receipt, callback will receive the STOMP frame as parameter.
+     * STOMP brokers may carry out operation asynchronously and allow requesting for acknowledgement.
+     * To request an acknowledgement, a `receipt` header needs to be sent with the actual request.
+     * The value (say receipt-id) for this header needs to be unique for each use. Typically a sequence, a UUID, a
+     * random number or a combination may be used.
      *
-     * The receipt id needs to be unique for each use. Typically a sequence, a UUID, a
-     * random number or a combination would be used.
+     * A complaint broker will send a RECEIPT frame when an operation has actually been completed.
+     * The operation needs to be matched based in the value of the receipt-id.
+     *
+     * This method allow watching for a receipt and invoke the callback
+     * when corresponding receipt has been received.
+     *
+     * The actual {@link Frame} will be passed as parameter to the callback.
      *
      * Example:
      * ```javascript
-     *        // Receipt for Subscription
+     *        // Subscribing with acknowledgement
      *        let receiptId = randomText();
      *
      *        client.watchForReceipt(receiptId, function() {
@@ -180,13 +201,14 @@ export declare class Client {
      *
      *        client.subscribe(TEST.destination, onMessage, {receipt: receiptId});
      *
-     *        // Receipt for message send
+     *
+     *        // Publishing with acknowledgement
      *        receiptId = randomText();
      *
      *        client.watchForReceipt(receiptId, function() {
      *          // Will be called after server acknowledges
      *        });
-     *        client.send(TEST.destination, {receipt: receiptId}, msg);
+     *        client.publish({destination: TEST.destination, headers: {receipt: receiptId}, body: msg});
      * ```
      */
     watchForReceipt(receiptId: string, callback: frameCallbackType): void;
@@ -213,8 +235,6 @@ export declare class Client {
      *        var mySubId = 'my-subscription-id-001';
      *        var subscription = client.subscribe(destination, callback, { id: mySubId });
      * ```
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#SUBSCRIBE SUBSCRIBE Frame
      */
     subscribe(destination: string, callback: messageCallbackType, headers?: StompHeaders): StompSubscription;
     /**
@@ -234,11 +254,12 @@ export declare class Client {
      * Start a transaction, the returned {@link Transaction} has methods - [commit]{@link Transaction#commit}
      * and [abort]{@link Transaction#abort}.
      *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#BEGIN BEGIN Frame
+     * `transactionId` is optional, if not passed the library will generate it internally.
      */
-    begin(transactionId: string): Transaction;
+    begin(transactionId?: string): Transaction;
     /**
      * Commit a transaction.
+     *
      * It is preferable to commit a transaction by calling [commit]{@link Transaction#commit} directly on
      * {@link Transaction} returned by [client.begin]{@link Client#begin}.
      *
@@ -247,8 +268,6 @@ export declare class Client {
      *        //...
      *        tx.commit();
      * ```
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#COMMIT COMMIT Frame
      */
     commit(transactionId: string): void;
     /**
@@ -261,8 +280,6 @@ export declare class Client {
      *        //...
      *        tx.abort();
      * ```
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#ABORT ABORT Frame
      */
     abort(transactionId: string): void;
     /**
@@ -277,8 +294,6 @@ export declare class Client {
      *        };
      *        client.subscribe(destination, callback, {'ack': 'client'});
      * ```
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#ACK ACK Frame
      */
     ack(messageId: string, subscriptionId: string, headers?: StompHeaders): void;
     /**
@@ -293,8 +308,6 @@ export declare class Client {
      *        };
      *        client.subscribe(destination, callback, {'ack': 'client'});
      * ```
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#NACK NACK Frame
      */
     nack(messageId: string, subscriptionId: string, headers?: StompHeaders): void;
 }

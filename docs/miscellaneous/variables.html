@@ -382,7 +382,7 @@
 </nav>
                </div>
                <!-- START CONTENT -->
-               <div class="content additional-page">
+               <div class="content miscellaneous-variables">
                    <div class="content-data">
 
 
@@ -397,61 +397,177 @@
 
 
 
+<ol class="breadcrumb">
+  <li>Miscellaneous</li>
+  <li>Variables</li>
+</ol>
+
+<section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <ul class="index-list">
+                        <li>
+                            <a href="#COLON" title="src/parser.ts"><b>COLON</b>&nbsp;&nbsp;&nbsp;(src/.../parser.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#CR" title="src/parser.ts"><b>CR</b>&nbsp;&nbsp;&nbsp;(src/.../parser.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#LF" title="src/parser.ts"><b>LF</b>&nbsp;&nbsp;&nbsp;(src/.../parser.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#NULL" title="src/parser.ts"><b>NULL</b>&nbsp;&nbsp;&nbsp;(src/.../parser.ts)</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    <h3>src/parser.ts</h3>
+    <section>
+    <h3></h3>        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="COLON"></a>
+                        <span class="name">
+                            <b>
+                            COLON
+                            </b>
+                            <a href="#COLON"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <code>COLON:     <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>58</code>
+                        </td>
+                    </tr>
 
 
-<h1 id="broker-requirements">Broker Requirements</h1>
-<p><strong>Information on this page is outdated, please refer to your broker documentation
-for up to date information.</strong></p>
-<p>This library is not a <em>pure</em> STOMP client. It is aimed to run on the 
-WebSockets protocol which is not TCP. Basically, the WebSocket protocol 
-requires a <em>handshake</em> between the browser&#39;s client and the server to 
-ensure the browser&#39;s &quot;same-origin&quot; security model remains in effect.</p>
-<p>This means that this library can not connect to regular STOMP brokers 
-since they would not understand the handshake initiated by the WebSocket 
-which is not part of the STOMP protocol and would likely reject the 
-connection.</p>
-<p>There are ongoing works to add WebSocket support to STOMP broker so 
-that they will accept STOMP connections over the WebSocket protocol.</p>
-<h2 id="hornetq">HornetQ</h2>
-<p><a href="http://jboss.org/hornetq">HornetQ</a> is the Open Source messaging system 
-developed by Red Hat and JBoss.</p>
-<p>To start HornetQ with support for STOMP Over WebSocket, 
-<a href="http://www.jboss.org/hornetq/downloads.html">download the latest version</a> 
-and run the following steps:</p>
-<div><pre class="line-numbers"><code class="language-bash">  $ cd hornetq-x.y.z/examples/jms/stomp-websockets
-  $ mvn clean install
-  ...
-  INFO: HQ221020: Started Netty Acceptor version 3.6.2.Final-c0d783c localhost:61614 for STOMP_WS protocol
-  Apr 15, 2013 1:15:33 PM org.hornetq.core.server.impl.HornetQServerImpl$SharedStoreLiveActivation run
-  INFO: HQ221007: Server is now live
-  Apr 15, 2013 1:15:33 PM org.hornetq.core.server.impl.HornetQServerImpl start
-  INFO: HQ221001: HornetQ Server version 2.3.0.CR2 (black&#39;n&#39;yellow2, 123) [c9e29e45-a5bd-11e2-976a-b3fef7ceb5df]</code></pre></div><p>HornetQ is now started and listens to STOMP over WebSocket on the port <code>61614</code>.<br>It accepts <em>WebSocket connections</em> from the URL <code>ws://localhost:61614/stomp</code></p>
-<p>To configure and run HornetQ with STOMP Over WebSocket enabled, follow the 
-<a href="http://docs.jboss.org/hornetq/2.3.0.CR2/docs/user-manual/html/interoperability.html#stomp.websockets">instructions</a>.</p>
-<h2 id="activemq">ActiveMQ</h2>
-<p><a href="http://activemq.apache.org">ActiveMQ</a> is the Open Source messaging system 
-developed by Apache. Starting with 5.4 snapshots, ActiveMQ supports STOMP 
-Over WebSocket.</p>
-<p>To configure and run ActiveMQ with STOMP Over WebSocket enabled, follow 
-the <a href="http://activemq.apache.org/websockets.html">instructions</a>.</p>
-<h2 id="activemq-apollo">ActiveMQ Apollo</h2>
-<p><a href="http://activemq.apache.org/apollo/">ActiveMQ Apollo</a> is the next generation 
-of ActiveMQ broker. From the start, Apollo supports STOMP Over WebSocket.</p>
-<p>To configure and run Apollo with STOMP Over WebSocket enabled, follow the 
-<a href="http://activemq.apache.org/apollo/documentation/user-manual.html#WebSocket_Transports">instructions</a>.</p>
-<h2 id="rabbitmq">RabbitMQ</h2>
-<p><a href="http://www.rabbitmq.com/">RabbitMQ</a> is Open Source messaging system sponsored 
-by Pivotal.</p>
-<p>To configure and run RabbitMQ with STOMP Over WebSocket enabled, follow the 
-instructions to install the 
-<a href="http://www.rabbitmq.com/web-stomp.html">Web-Stomp plugin</a>.</p>
-<h2 id="stilts-torquebox">Stilts &amp; Torquebox</h2>
-<p><a href="http://stilts.projectodd.org/">Stilts</a> is a STOMP-native messaging framework 
-which aims to address treating STOMP as primary contract for messaging, and 
-integrating around it, instead of simply applying STOMP shims to existing 
-services.</p>
-<p><a href="http://torquebox.org/">TorqueBox</a> uses the Stilts project to provide its 
-<a href="http://torquebox.org/documentation/2.1.2/stomp.html">WebSockets and STOMP stack</a>.</p>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="CR"></a>
+                        <span class="name">
+                            <b>
+                            CR
+                            </b>
+                            <a href="#CR"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <code>CR:     <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>13</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="LF"></a>
+                        <span class="name">
+                            <b>
+                            LF
+                            </b>
+                            <a href="#LF"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <code>LF:     <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>10</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="NULL"></a>
+                        <span class="name">
+                            <b>
+                            NULL
+                            </b>
+                            <a href="#NULL"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <code>NULL:     <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>0</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+</section>
+
 
                    </div><div class="search-results">
     <div class="has-results">
@@ -478,8 +594,8 @@ services.</p>
 
         <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'additional-page';
-            var COMPODOC_CURRENT_PAGE_URL = 'stomp-brokers.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'miscellaneous-variables';
+            var COMPODOC_CURRENT_PAGE_URL = 'variables.html';
         </script>
 
        <script src="../js/search/search.js"></script>

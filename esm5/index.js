@@ -5,6 +5,7 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./client"));
 __export(require("./frame"));
+__export(require("./parser"));
 __export(require("./versions"));
 // Compatibility code
 __export(require("./compatibility/compat-client"));

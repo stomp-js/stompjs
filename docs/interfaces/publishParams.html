@@ -382,7 +382,7 @@
 </nav>
                </div>
                <!-- START CONTENT -->
-               <div class="content additional-page">
+               <div class="content interface">
                    <div class="content-data">
 
 
@@ -394,64 +394,296 @@
 
 
 
+<ol class="breadcrumb">
+  <li>Interfaces</li>
+  <li>publishParams</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/types.ts</code>
+        </p>
+
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>Parameters for <a href="../classes/Client.html#publish">Client#publish</a></p>
+
+            </p>
+
+
+        <section>
+            <h3 id="index">Index</h3>
+            <table class="table table-sm table-bordered index-table">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Properties</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                            <span class="modifier">Optional</span>
+                                        <a href="#body">body</a>
+                                </li>
+                                <li>
+                                        <a href="#destination">destination</a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
+                                        <a href="#headers">headers</a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
+                                        <a href="#skipContentLengthHeader">skipContentLengthHeader</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+
+
+            <section>
+                <h3 id="inputs">Properties</h3>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="body"></a>
+                                        <span class="name"><b>body</b><a href="#body"><span class="fa fa-link"></span></a></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>body:     <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-description"><p>body (optional)</p>
+</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="destination"></a>
+                                        <span class="name"><b>destination</b><a href="#destination"><span class="fa fa-link"></span></a></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>destination:     <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                                        </td>
+                                    </tr>
 
 
 
 
 
-<h1 id="broker-requirements">Broker Requirements</h1>
-<p><strong>Information on this page is outdated, please refer to your broker documentation
-for up to date information.</strong></p>
-<p>This library is not a <em>pure</em> STOMP client. It is aimed to run on the 
-WebSockets protocol which is not TCP. Basically, the WebSocket protocol 
-requires a <em>handshake</em> between the browser&#39;s client and the server to 
-ensure the browser&#39;s &quot;same-origin&quot; security model remains in effect.</p>
-<p>This means that this library can not connect to regular STOMP brokers 
-since they would not understand the handshake initiated by the WebSocket 
-which is not part of the STOMP protocol and would likely reject the 
-connection.</p>
-<p>There are ongoing works to add WebSocket support to STOMP broker so 
-that they will accept STOMP connections over the WebSocket protocol.</p>
-<h2 id="hornetq">HornetQ</h2>
-<p><a href="http://jboss.org/hornetq">HornetQ</a> is the Open Source messaging system 
-developed by Red Hat and JBoss.</p>
-<p>To start HornetQ with support for STOMP Over WebSocket, 
-<a href="http://www.jboss.org/hornetq/downloads.html">download the latest version</a> 
-and run the following steps:</p>
-<div><pre class="line-numbers"><code class="language-bash">  $ cd hornetq-x.y.z/examples/jms/stomp-websockets
-  $ mvn clean install
-  ...
-  INFO: HQ221020: Started Netty Acceptor version 3.6.2.Final-c0d783c localhost:61614 for STOMP_WS protocol
-  Apr 15, 2013 1:15:33 PM org.hornetq.core.server.impl.HornetQServerImpl$SharedStoreLiveActivation run
-  INFO: HQ221007: Server is now live
-  Apr 15, 2013 1:15:33 PM org.hornetq.core.server.impl.HornetQServerImpl start
-  INFO: HQ221001: HornetQ Server version 2.3.0.CR2 (black&#39;n&#39;yellow2, 123) [c9e29e45-a5bd-11e2-976a-b3fef7ceb5df]</code></pre></div><p>HornetQ is now started and listens to STOMP over WebSocket on the port <code>61614</code>.<br>It accepts <em>WebSocket connections</em> from the URL <code>ws://localhost:61614/stomp</code></p>
-<p>To configure and run HornetQ with STOMP Over WebSocket enabled, follow the 
-<a href="http://docs.jboss.org/hornetq/2.3.0.CR2/docs/user-manual/html/interoperability.html#stomp.websockets">instructions</a>.</p>
-<h2 id="activemq">ActiveMQ</h2>
-<p><a href="http://activemq.apache.org">ActiveMQ</a> is the Open Source messaging system 
-developed by Apache. Starting with 5.4 snapshots, ActiveMQ supports STOMP 
-Over WebSocket.</p>
-<p>To configure and run ActiveMQ with STOMP Over WebSocket enabled, follow 
-the <a href="http://activemq.apache.org/websockets.html">instructions</a>.</p>
-<h2 id="activemq-apollo">ActiveMQ Apollo</h2>
-<p><a href="http://activemq.apache.org/apollo/">ActiveMQ Apollo</a> is the next generation 
-of ActiveMQ broker. From the start, Apollo supports STOMP Over WebSocket.</p>
-<p>To configure and run Apollo with STOMP Over WebSocket enabled, follow the 
-<a href="http://activemq.apache.org/apollo/documentation/user-manual.html#WebSocket_Transports">instructions</a>.</p>
-<h2 id="rabbitmq">RabbitMQ</h2>
-<p><a href="http://www.rabbitmq.com/">RabbitMQ</a> is Open Source messaging system sponsored 
-by Pivotal.</p>
-<p>To configure and run RabbitMQ with STOMP Over WebSocket enabled, follow the 
-instructions to install the 
-<a href="http://www.rabbitmq.com/web-stomp.html">Web-Stomp plugin</a>.</p>
-<h2 id="stilts-torquebox">Stilts &amp; Torquebox</h2>
-<p><a href="http://stilts.projectodd.org/">Stilts</a> is a STOMP-native messaging framework 
-which aims to address treating STOMP as primary contract for messaging, and 
-integrating around it, instead of simply applying STOMP shims to existing 
-services.</p>
-<p><a href="http://torquebox.org/">TorqueBox</a> uses the Stilts project to provide its 
-<a href="http://torquebox.org/documentation/2.1.2/stomp.html">WebSockets and STOMP stack</a>.</p>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-description"><p>destination end point</p>
+</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="headers"></a>
+                                        <span class="name"><b>headers</b><a href="#headers"><span class="fa fa-link"></span></a></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>headers:     <code><a href="../interfaces/StompHeaders.html" target="_self" >StompHeaders</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>    <code><a href="../interfaces/StompHeaders.html" target="_self" >StompHeaders</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-description"><p>headers (optional)</p>
+</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="skipContentLengthHeader"></a>
+                                        <span class="name"><b>skipContentLengthHeader</b><a href="#skipContentLengthHeader"><span class="fa fa-link"></span></a></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>skipContentLengthHeader:     <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-description"><p>By default a <code>content-length</code> header will be added in the Frame to the broker.
+Set it to <code>true</code> for the header to be skipped.</p>
+</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+            </section>
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {Message} from &quot;./message&quot;;
+import {Frame} from &quot;./frame&quot;;
+import {StompHeaders} from &quot;./stomp-headers&quot;;
+
+/**
+ * This callback will receive a &#x60;string&#x60; as parameter.
+ */
+export type debugFnType &#x3D; (msg: string) &#x3D;&gt; void;
+
+/**
+ * This callback will receive a {@link Message} as parameter.
+ */
+export type messageCallbackType &#x3D; (message: Message) &#x3D;&gt; void;
+
+/**
+ * This callback will receive a {@link Frame} as parameter.
+ */
+export type frameCallbackType &#x3D; (receipt: Frame) &#x3D;&gt; void;
+
+/**
+ * This callback will receive a [CloseEvent]{@link https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent} as parameter.
+ */
+export type closeEventCallbackType &#x3D; (evt: CloseEvent) &#x3D;&gt; void;
+
+/**
+ * Parameters for [Client#publish]{@link Client#publish}
+ */
+export interface publishParams {
+  /**
+   * destination end point
+   */
+  destination: string,
+  /**
+   * headers (optional)
+   */
+  headers?: StompHeaders,
+  /**
+   * body (optional)
+   */
+  body?: string,
+  /**
+   * By default a &#x60;content-length&#x60; header will be added in the Frame to the broker.
+   * Set it to &#x60;true&#x60; for the header to be skipped.
+   */
+  skipContentLengthHeader?: boolean
+}
+
+/**
+ * The parser yield frames in this structure
+ */
+export type RawHeaderType &#x3D; [string, string];
+export type RawFrameType &#x3D; { command: string; headers: RawHeaderType[]; body: Uint8Array; };
+</code></pre>
+    </div>
+</div>
+
+
+
+
 
                    </div><div class="search-results">
     <div class="has-results">
@@ -478,8 +710,8 @@ services.</p>
 
         <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'additional-page';
-            var COMPODOC_CURRENT_PAGE_URL = 'stomp-brokers.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'publishParams.html';
         </script>
 
        <script src="../js/search/search.js"></script>

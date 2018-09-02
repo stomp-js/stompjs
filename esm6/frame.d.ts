@@ -1,15 +1,10 @@
 import { StompHeaders } from "./stomp-headers";
-declare type unmarshallResults = {
-    frames: Frame[];
-    partial: string;
-};
+import { RawFrameType } from "./types";
 /**
  * Frame class represents a STOMP frame. Many of the callbacks pass the Frame received from
  * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
  *
  * {@link Message} is an extended Frame.
- *
- * See: http://stomp.github.com/stomp-specification-1.2.html#STOMP_Frames STOMP Frame
  */
 export declare class Frame {
     /**
@@ -52,16 +47,7 @@ export declare class Frame {
      *
      * @internal
      */
-    static unmarshallSingle(data: any, escapeHeaderValues: boolean): Frame;
-    /**
-     * Split the data before unmarshalling every single STOMP frame.
-     * Web socket servers can send multiple frames in a single websocket message.
-     * If the message size exceeds the websocket message size, then a single
-     * frame can be fragmented across multiple messages.
-     *
-     * @internal
-     */
-    static unmarshall(datas: any, escapeHeaderValues: boolean): unmarshallResults;
+    static fromRawFrame(rawFrame: RawFrameType, escapeHeaderValues: boolean): Frame;
     /**
      * Serialize a STOMP frame as per STOMP standards, suitable to be sent to the STOMP broker.
      *
@@ -77,10 +63,9 @@ export declare class Frame {
     /**
      *  Escape header values
      */
-    private static frEscape;
+    private static hdrValueEscape;
     /**
      * UnEscape header values
      */
-    private static frUnEscape;
+    private static hdrValueUnEscape;
 }
-export {};
