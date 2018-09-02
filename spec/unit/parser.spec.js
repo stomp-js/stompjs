@@ -69,7 +69,7 @@ describe("Neo Parser", function () {
 
       expect(onFrame).toHaveBeenCalledWith({
         command: 'MESSAGE',
-        headers: [['destination', 'foo'], [ 'hdr', '' ], ['message-id', '456']],
+        headers: [['destination', 'foo'], ['hdr', ''], ['message-id', '456']],
         body: toUint8Array('')
       });
     });
@@ -81,7 +81,7 @@ describe("Neo Parser", function () {
 
       expect(onFrame).toHaveBeenCalledWith({
         command: 'MESSAGE',
-        headers: [ ],
+        headers: [],
         body: toUint8Array('')
       });
     });
@@ -178,7 +178,7 @@ describe("Neo Parser", function () {
 
       expect(onFrame).toHaveBeenCalledWith({
         command: 'MESSAGE',
-        headers: [ [ 'destination', 'bar' ], [ 'message-id', '203' ] ],
+        headers: [['destination', 'bar'], ['message-id', '203']],
         body: toUint8Array('Hello World')
       });
     });
@@ -190,7 +190,7 @@ describe("Neo Parser", function () {
 
       expect(onFrame).toHaveBeenCalledWith({
         command: 'MESSAGE',
-        headers: [ [ 'destination', 'bar' ], [ 'message-id', '203' ] ],
+        headers: [['destination', 'bar'], ['message-id', '203']],
         body: toUint8Array('Hello World')
       });
     });
@@ -202,7 +202,7 @@ describe("Neo Parser", function () {
 
       expect(onFrame).toHaveBeenCalledWith({
         command: 'MESSAGE',
-        headers: [ ],
+        headers: [],
         body: toUint8Array('Hello World')
       });
     });
@@ -273,7 +273,7 @@ describe("Neo Parser", function () {
     });
 
     it("waits for trailing NULL before yielding frame", function () {
-      parser.parseChunk(rawChunk.slice(0, rawChunk.byteLength-1)); // Excluding the terminating NULL
+      parser.parseChunk(rawChunk.slice(0, rawChunk.byteLength - 1)); // Excluding the terminating NULL
 
       expect(onFrame).not.toHaveBeenCalled();
 
