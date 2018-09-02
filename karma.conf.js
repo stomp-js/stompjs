@@ -17,6 +17,7 @@ module.exports = function(config) {
     files: [
       'bundles/stomp.umd.js',
       'spec/config/browser-config.js',
+      'node_modules/text-encoding/lib/encoding.js',
       'spec/helpers/**/*.js',
       'spec/unit/**/*.js'
     ],

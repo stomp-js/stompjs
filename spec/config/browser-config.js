@@ -8,3 +8,5 @@ TEST = {
 };
 
 Stomp = StompJs.Stomp;
+
+window.TextEncoder = window.TextDecoder = null;

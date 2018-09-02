@@ -49,5 +49,7 @@
   "main": "bundles/stomp.umd.js",
   "typings": "index.d.ts",
   "sideEffects": false,
-  "dependencies": {}
+  "dependencies": {
+    "text-encoding": "^0.6.4"
+  }
 }
