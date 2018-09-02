@@ -13,6 +13,7 @@ export class Parser {
 
   private _token: number[] = [];
   private _headerKey: string;
+  private _bodyBytesRemaining:number;
 
   private _onByte: (byte: number) => void;
 
@@ -71,7 +72,7 @@ export class Parser {
       return;
     }
     if (byte === LF) {
-      this._onByte = this._collectBody;
+      this._setupCollectBody();
       return;
     }
     this._onByte = this._collectHeaderKey;
@@ -104,16 +105,42 @@ export class Parser {
     this._consumeByte(byte);
   }
 
-  private _collectBody(byte: number): void {
+  private _setupCollectBody() {
+    const contentLengthHeader = this._results.headers.filter(function (header: [string, string]) {
+      return header[0] === "content-length";
+    })[0];
+
+    if(contentLengthHeader) {
+      this._bodyBytesRemaining = parseInt(contentLengthHeader[1]);
+      this._onByte = this._collectBodyFixedSize;
+    } else {
+      this._onByte = this._collectBodyNullTerminated;
+    }
+  }
+
+  private _collectBodyNullTerminated(byte: number): void {
     if (byte === NULL) {
-      this._results.body = this._consumeTokenAsRaw();
-
-      this.onFrame(this._results);
-
-      this._initState();
+      this._retrievedBody();
       return;
     }
     this._consumeByte(byte);
+  }
+
+  private _collectBodyFixedSize(byte: number): void {
+    // It is post decrement, so that we discard the trailing NULL Octate
+    if (this._bodyBytesRemaining-- === 0) {
+      this._retrievedBody();
+      return;
+    }
+    this._consumeByte(byte);
+  }
+
+  private _retrievedBody() {
+    this._results.body = this._consumeTokenAsRaw();
+
+    this.onFrame(this._results);
+
+    this._initState();
   }
 
   // Rec Descent Parser helpers
