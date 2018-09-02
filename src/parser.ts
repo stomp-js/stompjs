@@ -20,12 +20,16 @@ export class Parser {
     this._initState();
   }
 
-  public parseChunk(segment: string | Uint8Array) {
-    if (!(segment instanceof Uint8Array)) {
-      segment = this._encoder.encode(segment);
+  public parseChunk(segment: string|ArrayBuffer) {
+    let chunk: Uint8Array;
+
+    if ((segment instanceof ArrayBuffer)) {
+      chunk = new Uint8Array(segment);
+    } else {
+      chunk = this._encoder.encode(segment);
     }
 
-    segment.forEach((byte) => {
+    chunk.forEach((byte) => {
       this._onByte(byte);
     });
   }
