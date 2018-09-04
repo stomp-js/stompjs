@@ -101,7 +101,15 @@ export class StompHandler {
       (rawFrame) => {
         const frame = Frame.fromRawFrame(rawFrame, this._escapeHeaderValues);
 
-        // frame.body = new TextDecoder().decode(<Uint8Array>frame.body);
+        // Unless we have to treat message body as binary, convert it to `string`
+        if(!this.treatMessageAsBinary(frame) ||
+                  (frame.command === 'ERROR' && frame.headers['content-type'].match(/^text\//)) ) {
+          try {
+            frame.body = new TextDecoder().decode(<Uint8Array>frame.body);
+          } catch (e) {
+            // ignore
+          }
+        }
 
         this.debug(`<<< ${frame}`);
 
@@ -153,10 +161,10 @@ export class StompHandler {
 
     // [MESSAGE Frame](http://stomp.github.com/stomp-specification-1.2.html#MESSAGE)
     "MESSAGE": (frame) => {
-      // the `onReceive` callback is registered when the client calls
+      // the callback is registered when the client calls
       // `subscribe()`.
-      // If there is registered subscription for the received message,
-      // we used the default `onReceive` method that the client can set.
+      // If there is no registered subscription for the received message,
+      // the default `onUnhandledMessage` callback is used that the client can set.
       // This is useful for subscriptions that are automatically created
       // on the browser side (e.g. [RabbitMQ's temporary
       // queues](http://www.rabbitmq.com/stomp.html)).
@@ -164,14 +172,6 @@ export class StompHandler {
       const onReceive = this._subscriptions[subscription] || this.onUnhandledMessage;
       // bless the frame to be a Message
       const message = <Message>frame;
-      // Unless we have to treat message body as binary, convert it to `string`
-      if(!this.treatMessageAsBinary(message)) {
-        try {
-          message.body = new TextDecoder().decode(<Uint8Array>message.body);
-        } catch (e) {
-          // ignore
-        }
-      }
       let messageId: string;
       const client = this;
       if (this._version === Versions.V1_2) {
@@ -204,13 +204,6 @@ export class StompHandler {
 
     // [ERROR Frame](http://stomp.github.com/stomp-specification-1.2.html#ERROR)
     'ERROR': (frame) => {
-      try {
-        if (frame.headers['content-type'].match(/^text\//)) {
-          frame.body = new TextDecoder().decode(<Uint8Array>frame.body);
-        }
-      } catch (e) {
-        // ignore
-      }
       this.onStompError(frame);
     }
   };

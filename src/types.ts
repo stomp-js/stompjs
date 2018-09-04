@@ -16,7 +16,7 @@ export type messageCallbackType = (message: Message) => void;
  * This callback will receive a {@link Message} as parameter.
  * The callback will need to return a boolean value.
  */
-export type messageCheckCallbackType = (msgFrame: Message) => boolean;
+export type messageCheckCallbackType = (frame: Frame) => boolean;
 
 /**
  * This callback will receive a {@link Frame} as parameter.
