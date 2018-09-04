@@ -166,7 +166,11 @@ export class StompHandler {
       const message = <Message>frame;
       // Unless we have to treat message body as binary, convert it to `string`
       if(!this.treatMessageAsBinary(message)) {
-        message.body = new TextDecoder().decode(<Uint8Array>message.body);
+        try {
+          message.body = new TextDecoder().decode(<Uint8Array>message.body);
+        } catch (e) {
+          // ignore
+        }
       }
       let messageId: string;
       const client = this;
@@ -200,6 +204,13 @@ export class StompHandler {
 
     // [ERROR Frame](http://stomp.github.com/stomp-specification-1.2.html#ERROR)
     'ERROR': (frame) => {
+      try {
+        if (frame.headers['content-type'].match(/^text\//)) {
+          frame.body = new TextDecoder().decode(<Uint8Array>frame.body);
+        }
+      } catch (e) {
+        // ignore
+      }
       this.onStompError(frame);
     }
   };
