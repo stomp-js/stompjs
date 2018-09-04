@@ -9,7 +9,7 @@ before_script:
   - docker build -t rabbitmq:official-alpine-with-webstomp rabbitmq/
   - docker run -d --hostname rabbitmq --name rabbitmq -p 15674:15674 rabbitmq:official-alpine-with-webstomp
   - sleep 10
-  - docker exec rabbitmq.service rabbitmqctl status
+  - docker exec rabbitmq rabbitmqctl status
   - npm run build
 
 script:
