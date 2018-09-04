@@ -64,7 +64,7 @@ describe("Compat Stomp Message", function () {
       });
   });
 
-  xit("Should allow skipping content length header", function(done) {
+  it("Should allow skipping content length header", function(done) {
     const body = 'Hello, world';
 
     client.connect(TEST.login, TEST.password,
@@ -76,14 +76,12 @@ describe("Compat Stomp Message", function () {
           done();
         });
 
-        const spy= spyOn(StompJs.Frame, 'marshall').and.callThrough();
+        const spy= spyOn(client._webSocket, 'send').and.callThrough();
 
         client.send(TEST.destination, {'content-length': false}, body);
 
-        const params = spy.calls.first().args[0];
-        expect(params.skipContentLengthHeader).toBe(true);
-        // content-length header must not be there
-        expect(params.headers).toEqual({destination: TEST.destination});
+        const rawChunk = spy.calls.first().args[0];
+        expect(rawChunk).not.toMatch('content-length');
       });
   });
 });

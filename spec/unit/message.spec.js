@@ -42,7 +42,7 @@ describe("Stomp Message", function () {
     client.activate();
   });
 
-  xit("Should allow skipping content length header", function (done) {
+  it("Should allow skipping content length header", function (done) {
     const body = 'Hello, world';
 
     client.onConnect = function () {
@@ -53,14 +53,12 @@ describe("Stomp Message", function () {
         done();
       });
 
-      const spy = spyOn(StompJs.Frame, 'marshall').and.callThrough();
+      const spy= spyOn(client._webSocket, 'send').and.callThrough();
 
       client.publish({destination: TEST.destination, body: body, skipContentLengthHeader: true});
 
-      const params = spy.calls.first().args[0];
-      expect(params.skipContentLengthHeader).toBe(true);
-      // content-length header must not be there
-      expect(params.headers).toEqual({destination: TEST.destination});
+      const rawChunk = spy.calls.first().args[0];
+      expect(rawChunk).not.toMatch('content-length');
     };
     client.activate();
   });
