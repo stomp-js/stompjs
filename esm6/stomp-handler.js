@@ -39,6 +39,10 @@ var StompHandler = /** @class */ (function () {
                 var onReceive = _this._subscriptions[subscription] || _this.onUnhandledMessage;
                 // bless the frame to be a Message
                 var message = frame;
+                // Unless we have to treat message body as binary, convert it to `string`
+                if (!_this.treatMessageAsBinary(message)) {
+                    message.body = new TextDecoder().decode(message.body);
+                }
                 var messageId;
                 var client = _this;
                 if (_this._version === Versions.V1_2) {
@@ -111,7 +115,7 @@ var StompHandler = /** @class */ (function () {
         // On Frame
         function (rawFrame) {
             var frame = Frame.fromRawFrame(rawFrame, _this._escapeHeaderValues);
-            frame.body = new TextDecoder().decode(frame.body);
+            // frame.body = new TextDecoder().decode(<Uint8Array>frame.body);
             _this.debug("<<< " + frame);
             var serverFrameHandler = _this._serverFrameHandlers[frame.command] || _this.onUnhandledFrame;
             serverFrameHandler(frame);
@@ -169,27 +173,29 @@ var StompHandler = /** @class */ (function () {
     };
     StompHandler.prototype._transmit = function (params) {
         var command = params.command, headers = params.headers, body = params.body, skipContentLengthHeader = params.skipContentLengthHeader;
-        var out = Frame.marshall({
+        var frame = new Frame({
             command: command,
             headers: headers,
             body: body,
             escapeHeaderValues: this._escapeHeaderValues,
             skipContentLengthHeader: skipContentLengthHeader
         });
-        this.debug(">>> " + out);
+        this.debug(">>> " + frame);
         // if necessary, split the *STOMP* frame to send it on many smaller
         // *WebSocket* frames
-        while (true) {
-            if (out.length > this.maxWebSocketFrameSize) {
+        this._webSocket.send(frame.serialize());
+        /* Do we need this?
+            while (true) {
+              if (out.length > this.maxWebSocketFrameSize) {
                 this._webSocket.send(out.substring(0, this.maxWebSocketFrameSize));
                 out = out.substring(this.maxWebSocketFrameSize);
-                this.debug("remaining = " + out.length);
-            }
-            else {
+                this.debug(`remaining = ${out.length}`);
+              } else {
                 this._webSocket.send(out);
                 return;
+              }
             }
-        }
+        */
     };
     StompHandler.prototype.dispose = function () {
         var _this = this;

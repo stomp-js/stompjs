@@ -18,7 +18,7 @@ export declare class Frame {
     /**
      * It is serialized string
      */
-    body: any;
+    body: string | Uint8Array;
     private escapeHeaderValues;
     private skipContentLengthHeader;
     /**
@@ -34,20 +34,31 @@ export declare class Frame {
         skipContentLengthHeader?: boolean;
     });
     /**
-     * @internal
-     */
-    toString(): string;
-    /**
-     * Compute the size of a UTF-8 string by counting its number of bytes
-     * (and not the number of characters composing the string)
-     */
-    private static sizeOfUTF8;
-    /**
      * deserialize a STOMP Frame from raw data.
      *
      * @internal
      */
     static fromRawFrame(rawFrame: RawFrameType, escapeHeaderValues: boolean): Frame;
+    /**
+     * @internal
+     */
+    toString(): string;
+    /**
+     * serialize this Frame in a format suitable to be passed to WebSocket.
+     * If the body is string the output will be string.
+     * If the body is binary (i.e. of type Unit8Array) it will be serialized to ArrayBuffer.
+     */
+    serialize(): string | ArrayBuffer;
+    private serializeCmdAndHeaders;
+    private isBinaryBody;
+    private isBodyEmpty;
+    private bodyLength;
+    /**
+     * Compute the size of a UTF-8 string by counting its number of bytes
+     * (and not the number of characters composing the string)
+     */
+    private static sizeOfUTF8;
+    private static toUnit8Array;
     /**
      * Serialize a STOMP frame as per STOMP standards, suitable to be sent to the STOMP broker.
      *
@@ -56,10 +67,10 @@ export declare class Frame {
     static marshall(params: {
         command: string;
         headers?: StompHeaders;
-        body: any;
+        body: string | Uint8Array;
         escapeHeaderValues?: boolean;
         skipContentLengthHeader?: boolean;
-    }): string;
+    }): string | ArrayBuffer;
     /**
      *  Escape header values
      */

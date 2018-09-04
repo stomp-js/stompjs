@@ -165,6 +165,10 @@ var Client = /** @class */ (function () {
         this.debug = noOp;
         this.onConnect = noOp;
         this.onDisconnect = noOp;
+        // Treat messages as text by default
+        this.treatMessageAsBinary = function (message) {
+            return false;
+        };
         this.onUnhandledMessage = noOp;
         this.onUnhandledReceipt = noOp;
         this.onUnhandledFrame = noOp;
@@ -245,6 +249,7 @@ var Client = /** @class */ (function () {
             heartbeatIncoming: this.heartbeatIncoming,
             heartbeatOutgoing: this.heartbeatOutgoing,
             maxWebSocketFrameSize: this.maxWebSocketFrameSize,
+            treatMessageAsBinary: this.treatMessageAsBinary,
             onConnect: function (frame) {
                 if (!_this._active) {
                     _this.debug('STOMP got connected while deactivate was issued, will disconnect now');
@@ -320,7 +325,15 @@ var Client = /** @class */ (function () {
      *
      * STOMP protocol specifies and suggests some headers and also allows broker specific headers.
      *
-     * Note: Body must be String. You will need to covert the payload to string in case it is not string (e.g. JSON)
+     * Note: Body must be String or
+     * [Unit8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}.
+     * If the body is
+     * [Unit8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}
+     * the frame will be sent as binary.
+     * Sometimes brokers may not support binary frames out of the box.
+     * Please check your broker documentation.
+     *
+     * You will need to covert the payload to string in case it is not string (e.g. JSON)
      *
      * ```javascript
      *        client.publish({destination: "/queue/test", headers: {priority: 9}, body: "Hello, STOMP"});
@@ -922,42 +935,6 @@ var Frame = /** @class */ (function () {
         this.skipContentLengthHeader = skipContentLengthHeader || false;
     }
     /**
-     * @internal
-     */
-    Frame.prototype.toString = function () {
-        var lines = [this.command];
-        if (this.skipContentLengthHeader) {
-            delete this.headers['content-length'];
-        }
-        for (var _i = 0, _a = Object.keys(this.headers || {}); _i < _a.length; _i++) {
-            var name_1 = _a[_i];
-            var value = this.headers[name_1];
-            if (this.escapeHeaderValues && (this.command !== 'CONNECT') && (this.command !== 'CONNECTED')) {
-                lines.push(name_1 + ":" + Frame.hdrValueEscape("" + value));
-            }
-            else {
-                lines.push(name_1 + ":" + value);
-            }
-        }
-        if (this.body && !this.skipContentLengthHeader) {
-            lines.push("content-length:" + Frame.sizeOfUTF8(this.body));
-        }
-        lines.push(byte_1.Byte.LF + this.body);
-        return lines.join(byte_1.Byte.LF);
-    };
-    /**
-     * Compute the size of a UTF-8 string by counting its number of bytes
-     * (and not the number of characters composing the string)
-     */
-    Frame.sizeOfUTF8 = function (s) {
-        if (s) {
-            return new TextEncoder().encode(s).length;
-        }
-        else {
-            return 0;
-        }
-    };
-    /**
      * deserialize a STOMP Frame from raw data.
      *
      * @internal
@@ -984,13 +961,80 @@ var Frame = /** @class */ (function () {
         });
     };
     /**
+     * @internal
+     */
+    Frame.prototype.toString = function () {
+        var cmdAndHeaders = this.serializeCmdAndHeaders();
+        var bodyText = this.isBinaryBody() ? "<<binary data>>" : this.body;
+        return cmdAndHeaders + bodyText;
+    };
+    /**
+     * serialize this Frame in a format suitable to be passed to WebSocket.
+     * If the body is string the output will be string.
+     * If the body is binary (i.e. of type Unit8Array) it will be serialized to ArrayBuffer.
+     */
+    Frame.prototype.serialize = function () {
+        var cmdAndHeaders = this.serializeCmdAndHeaders();
+        if (this.isBinaryBody()) {
+            return Frame.toUnit8Array(cmdAndHeaders, this.body).buffer;
+        }
+        else {
+            return cmdAndHeaders + this.body + byte_1.Byte.NULL;
+        }
+    };
+    Frame.prototype.serializeCmdAndHeaders = function () {
+        var lines = [this.command];
+        if (this.skipContentLengthHeader) {
+            delete this.headers['content-length'];
+        }
+        for (var _i = 0, _a = Object.keys(this.headers || {}); _i < _a.length; _i++) {
+            var name_1 = _a[_i];
+            var value = this.headers[name_1];
+            if (this.escapeHeaderValues && (this.command !== 'CONNECT') && (this.command !== 'CONNECTED')) {
+                lines.push(name_1 + ":" + Frame.hdrValueEscape("" + value));
+            }
+            else {
+                lines.push(name_1 + ":" + value);
+            }
+        }
+        if (this.body && !this.skipContentLengthHeader) {
+            lines.push("content-length:" + this.bodyLength());
+        }
+        return lines.join(byte_1.Byte.LF) + byte_1.Byte.LF + byte_1.Byte.LF;
+    };
+    Frame.prototype.isBinaryBody = function () {
+        return (typeof this.body !== "string") && this.body.length > 0;
+    };
+    Frame.prototype.isBodyEmpty = function () {
+        return this.body.length === 0;
+    };
+    Frame.prototype.bodyLength = function () {
+        return this.isBinaryBody() ? this.body.length : Frame.sizeOfUTF8(this.body);
+    };
+    /**
+     * Compute the size of a UTF-8 string by counting its number of bytes
+     * (and not the number of characters composing the string)
+     */
+    Frame.sizeOfUTF8 = function (s) {
+        return s ? new TextEncoder().encode(s).length : 0;
+    };
+    Frame.toUnit8Array = function (cmdAndHeaders, body) {
+        var uint8CmdAndHeaders = new TextEncoder().encode(cmdAndHeaders);
+        var nullTerminator = new Uint8Array([0]);
+        var uint8Frame = new Uint8Array(uint8CmdAndHeaders.length + body.length + nullTerminator.length);
+        uint8Frame.set(uint8CmdAndHeaders);
+        uint8Frame.set(body, uint8CmdAndHeaders.length);
+        uint8Frame.set(nullTerminator, uint8CmdAndHeaders.length + body.length);
+        return uint8Frame;
+    };
+    /**
      * Serialize a STOMP frame as per STOMP standards, suitable to be sent to the STOMP broker.
      *
      * @internal
      */
     Frame.marshall = function (params) {
         var frame = new Frame(params);
-        return frame.toString() + byte_1.Byte.NULL;
+        return frame.serialize();
     };
     /**
      *  Escape header values
@@ -1244,6 +1288,10 @@ var StompHandler = /** @class */ (function () {
                 var onReceive = _this._subscriptions[subscription] || _this.onUnhandledMessage;
                 // bless the frame to be a Message
                 var message = frame;
+                // Unless we have to treat message body as binary, convert it to `string`
+                if (!_this.treatMessageAsBinary(message)) {
+                    message.body = new TextDecoder().decode(message.body);
+                }
                 var messageId;
                 var client = _this;
                 if (_this._version === versions_1.Versions.V1_2) {
@@ -1316,7 +1364,7 @@ var StompHandler = /** @class */ (function () {
         // On Frame
         function (rawFrame) {
             var frame = frame_1.Frame.fromRawFrame(rawFrame, _this._escapeHeaderValues);
-            frame.body = new TextDecoder().decode(frame.body);
+            // frame.body = new TextDecoder().decode(<Uint8Array>frame.body);
             _this.debug("<<< " + frame);
             var serverFrameHandler = _this._serverFrameHandlers[frame.command] || _this.onUnhandledFrame;
             serverFrameHandler(frame);
@@ -1374,27 +1422,29 @@ var StompHandler = /** @class */ (function () {
     };
     StompHandler.prototype._transmit = function (params) {
         var command = params.command, headers = params.headers, body = params.body, skipContentLengthHeader = params.skipContentLengthHeader;
-        var out = frame_1.Frame.marshall({
+        var frame = new frame_1.Frame({
             command: command,
             headers: headers,
             body: body,
             escapeHeaderValues: this._escapeHeaderValues,
             skipContentLengthHeader: skipContentLengthHeader
         });
-        this.debug(">>> " + out);
+        this.debug(">>> " + frame);
         // if necessary, split the *STOMP* frame to send it on many smaller
         // *WebSocket* frames
-        while (true) {
-            if (out.length > this.maxWebSocketFrameSize) {
+        this._webSocket.send(frame.serialize());
+        /* Do we need this?
+            while (true) {
+              if (out.length > this.maxWebSocketFrameSize) {
                 this._webSocket.send(out.substring(0, this.maxWebSocketFrameSize));
                 out = out.substring(this.maxWebSocketFrameSize);
-                this.debug("remaining = " + out.length);
-            }
-            else {
+                this.debug(`remaining = ${out.length}`);
+              } else {
                 this._webSocket.send(out);
                 return;
+              }
             }
-        }
+        */
     };
     StompHandler.prototype.dispose = function () {
         var _this = this;

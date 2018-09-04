@@ -10,6 +10,11 @@ export declare type debugFnType = (msg: string) => void;
  */
 export declare type messageCallbackType = (message: Message) => void;
 /**
+ * This callback will receive a {@link Message} as parameter.
+ * The callback will need to return a boolean value.
+ */
+export declare type messageCheckCallbackType = (msgFrame: Message) => boolean;
+/**
  * This callback will receive a {@link Frame} as parameter.
  */
 export declare type frameCallbackType = (receipt: Frame) => void;
@@ -32,7 +37,7 @@ export interface publishParams {
     /**
      * body (optional)
      */
-    body?: string;
+    body?: string | Uint8Array;
     /**
      * By default a `content-length` header will be added in the Frame to the broker.
      * Set it to `true` for the header to be skipped.

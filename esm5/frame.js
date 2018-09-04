@@ -22,42 +22,6 @@ var Frame = /** @class */ (function () {
         this.skipContentLengthHeader = skipContentLengthHeader || false;
     }
     /**
-     * @internal
-     */
-    Frame.prototype.toString = function () {
-        var lines = [this.command];
-        if (this.skipContentLengthHeader) {
-            delete this.headers['content-length'];
-        }
-        for (var _i = 0, _a = Object.keys(this.headers || {}); _i < _a.length; _i++) {
-            var name_1 = _a[_i];
-            var value = this.headers[name_1];
-            if (this.escapeHeaderValues && (this.command !== 'CONNECT') && (this.command !== 'CONNECTED')) {
-                lines.push(name_1 + ":" + Frame.hdrValueEscape("" + value));
-            }
-            else {
-                lines.push(name_1 + ":" + value);
-            }
-        }
-        if (this.body && !this.skipContentLengthHeader) {
-            lines.push("content-length:" + Frame.sizeOfUTF8(this.body));
-        }
-        lines.push(byte_1.Byte.LF + this.body);
-        return lines.join(byte_1.Byte.LF);
-    };
-    /**
-     * Compute the size of a UTF-8 string by counting its number of bytes
-     * (and not the number of characters composing the string)
-     */
-    Frame.sizeOfUTF8 = function (s) {
-        if (s) {
-            return new TextEncoder().encode(s).length;
-        }
-        else {
-            return 0;
-        }
-    };
-    /**
      * deserialize a STOMP Frame from raw data.
      *
      * @internal
@@ -84,13 +48,80 @@ var Frame = /** @class */ (function () {
         });
     };
     /**
+     * @internal
+     */
+    Frame.prototype.toString = function () {
+        var cmdAndHeaders = this.serializeCmdAndHeaders();
+        var bodyText = this.isBinaryBody() ? "<<binary data>>" : this.body;
+        return cmdAndHeaders + bodyText;
+    };
+    /**
+     * serialize this Frame in a format suitable to be passed to WebSocket.
+     * If the body is string the output will be string.
+     * If the body is binary (i.e. of type Unit8Array) it will be serialized to ArrayBuffer.
+     */
+    Frame.prototype.serialize = function () {
+        var cmdAndHeaders = this.serializeCmdAndHeaders();
+        if (this.isBinaryBody()) {
+            return Frame.toUnit8Array(cmdAndHeaders, this.body).buffer;
+        }
+        else {
+            return cmdAndHeaders + this.body + byte_1.Byte.NULL;
+        }
+    };
+    Frame.prototype.serializeCmdAndHeaders = function () {
+        var lines = [this.command];
+        if (this.skipContentLengthHeader) {
+            delete this.headers['content-length'];
+        }
+        for (var _i = 0, _a = Object.keys(this.headers || {}); _i < _a.length; _i++) {
+            var name_1 = _a[_i];
+            var value = this.headers[name_1];
+            if (this.escapeHeaderValues && (this.command !== 'CONNECT') && (this.command !== 'CONNECTED')) {
+                lines.push(name_1 + ":" + Frame.hdrValueEscape("" + value));
+            }
+            else {
+                lines.push(name_1 + ":" + value);
+            }
+        }
+        if (this.body && !this.skipContentLengthHeader) {
+            lines.push("content-length:" + this.bodyLength());
+        }
+        return lines.join(byte_1.Byte.LF) + byte_1.Byte.LF + byte_1.Byte.LF;
+    };
+    Frame.prototype.isBinaryBody = function () {
+        return (typeof this.body !== "string") && this.body.length > 0;
+    };
+    Frame.prototype.isBodyEmpty = function () {
+        return this.body.length === 0;
+    };
+    Frame.prototype.bodyLength = function () {
+        return this.isBinaryBody() ? this.body.length : Frame.sizeOfUTF8(this.body);
+    };
+    /**
+     * Compute the size of a UTF-8 string by counting its number of bytes
+     * (and not the number of characters composing the string)
+     */
+    Frame.sizeOfUTF8 = function (s) {
+        return s ? new TextEncoder().encode(s).length : 0;
+    };
+    Frame.toUnit8Array = function (cmdAndHeaders, body) {
+        var uint8CmdAndHeaders = new TextEncoder().encode(cmdAndHeaders);
+        var nullTerminator = new Uint8Array([0]);
+        var uint8Frame = new Uint8Array(uint8CmdAndHeaders.length + body.length + nullTerminator.length);
+        uint8Frame.set(uint8CmdAndHeaders);
+        uint8Frame.set(body, uint8CmdAndHeaders.length);
+        uint8Frame.set(nullTerminator, uint8CmdAndHeaders.length + body.length);
+        return uint8Frame;
+    };
+    /**
      * Serialize a STOMP frame as per STOMP standards, suitable to be sent to the STOMP broker.
      *
      * @internal
      */
     Frame.marshall = function (params) {
         var frame = new Frame(params);
-        return frame.toString() + byte_1.Byte.NULL;
+        return frame.serialize();
     };
     /**
      *  Escape header values

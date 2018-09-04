@@ -504,6 +504,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
+                                <a href="#treatMessageAsBinary">treatMessageAsBinary</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#webSocketFactory">webSocketFactory</a>
                             </li>
                         </ul>
@@ -682,7 +686,7 @@ and <a href="../classes/Client.html#webSocketFactory">Client#webSocketFactory</a
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:56</div>
+                                    <div class="io-line">Defined in Client:63</div>
                             </td>
                         </tr>
 
@@ -731,7 +735,7 @@ details specific to your broker.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:148</div>
+                                    <div class="io-line">Defined in Client:181</div>
                             </td>
                         </tr>
 
@@ -782,7 +786,7 @@ and may contain sensitive information (like passwords, tokens etc.).</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:61</div>
+                                    <div class="io-line">Defined in Client:68</div>
                             </td>
                         </tr>
 
@@ -834,7 +838,7 @@ and may contain sensitive information (like passwords, tokens etc.).</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:25</div>
+                                    <div class="io-line">Defined in Client:32</div>
                             </td>
                         </tr>
 
@@ -886,7 +890,7 @@ and may contain sensitive information (like passwords, tokens etc.).</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:30</div>
+                                    <div class="io-line">Defined in Client:37</div>
                             </td>
                         </tr>
 
@@ -938,7 +942,7 @@ and may contain sensitive information (like passwords, tokens etc.).</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:37</div>
+                                    <div class="io-line">Defined in Client:44</div>
                             </td>
                         </tr>
 
@@ -987,7 +991,7 @@ WebSocket frames (default is 16KiB).</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:104</div>
+                                    <div class="io-line">Defined in Client:137</div>
                             </td>
                         </tr>
 
@@ -1036,7 +1040,7 @@ Sometimes clients will like to use headers from this frame.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:117</div>
+                                    <div class="io-line">Defined in Client:150</div>
                             </td>
                         </tr>
 
@@ -1089,7 +1093,7 @@ STOMP broker disconnects.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:126</div>
+                                    <div class="io-line">Defined in Client:159</div>
                             </td>
                         </tr>
 
@@ -1139,7 +1143,7 @@ Please check broker specific documentation for exact behavior.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:89</div>
+                                    <div class="io-line">Defined in Client:122</div>
                             </td>
                         </tr>
 
@@ -1187,7 +1191,7 @@ Please check broker specific documentation for exact behavior.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:73</div>
+                                    <div class="io-line">Defined in Client:106</div>
                             </td>
                         </tr>
 
@@ -1239,7 +1243,7 @@ from an endpoint.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:82</div>
+                                    <div class="io-line">Defined in Client:115</div>
                             </td>
                         </tr>
 
@@ -1289,7 +1293,7 @@ Prefer using <a href="../classes/Client.html#watchForReceipt">Client#watchForRec
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:134</div>
+                                    <div class="io-line">Defined in Client:167</div>
                             </td>
                         </tr>
 
@@ -1343,7 +1347,7 @@ is passed as parameter to the callback.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:20</div>
+                                    <div class="io-line">Defined in Client:27</div>
                             </td>
                         </tr>
 
@@ -1351,6 +1355,68 @@ is passed as parameter to the callback.</p>
                     <td class="col-md-4">
                         <div class="io-description"><p>automatically reconnect with delay in milliseconds, set to 0 to disable.</p>
 </div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="treatMessageAsBinary"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            treatMessageAsBinary
+                            </b>
+                            <a href="#treatMessageAsBinary"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <span class="modifier-icon fa fa-reset"></span><code>treatMessageAsBinary:     <code><a href="../miscellaneous/typealiases.html#messageCheckCallbackType" target="_self" >messageCheckCallbackType</a></code>
+</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code><a href="../miscellaneous/typealiases.html#messageCheckCallbackType" target="_self" >messageCheckCallbackType</a></code>
+
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Inherited from     <code><a href="../classes/Client.html" target="_self" >Client</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in Client:94</div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>This callback will be called with the incoming message frame <a href="../interfaces/Message.html">Message</a>.
+If this function returns <code>true</code>, the <a href="../classes/Frame.html#body">Frame#body</a> will not be converted
+to <code>string</code> and be returned as
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Uint8Array</a>.
+If this returns <code>false</code>, the body will be assumed to UTF8 string and will be converted at <code>string</code>.</p>
+<p>By default this callback returns <code>false</code>, i.e., all messages are treated as text.</p>
+<p>Examples:</p>
+<div><pre class="line-numbers"><code class="language-javascript">        // Treat all messages a binary
+        client.treatMessageAsBinary = function(message) {
+          return true;
+        };
+
+        // Treat a message as binary based on content-type
+        // This header is not a standard header, while publishing messages it needs to be explicitly set.
+        client.treatMessageAsBinary = function(message) {
+          return message.headers[&#39;content-type&#39;] === &#39;application/octet-stream&#39;;
+        };</code></pre></div></div>
                     </td>
                 </tr>
 
@@ -1390,7 +1456,7 @@ is passed as parameter to the callback.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:15</div>
+                                    <div class="io-line">Defined in Client:22</div>
                             </td>
                         </tr>
 
@@ -1752,7 +1818,7 @@ However, there may be special purpose headers corresponding to your STOMP broker
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:448</div>
+                                    <div class="io-line">Defined in Client:494</div>
                             </td>
                         </tr>
 
@@ -1835,7 +1901,7 @@ It is preferable to abort a transaction by calling <a href="../interfaces/Transa
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:465</div>
+                                    <div class="io-line">Defined in Client:511</div>
                             </td>
                         </tr>
 
@@ -1952,7 +2018,7 @@ on the <a href="../interfaces/Message.html">Message</a> handled by a subscriptio
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:201</div>
+                                    <div class="io-line">Defined in Client:238</div>
                             </td>
                         </tr>
 
@@ -2003,7 +2069,7 @@ it will keep trying to reconnect.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:417</div>
+                                    <div class="io-line">Defined in Client:463</div>
                             </td>
                         </tr>
 
@@ -2084,7 +2150,7 @@ and <a href="../interfaces/Transaction.html#abort">abort</a>.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:433</div>
+                                    <div class="io-line">Defined in Client:479</div>
                             </td>
                         </tr>
 
@@ -2167,7 +2233,7 @@ and <a href="../interfaces/Transaction.html#abort">abort</a>.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:189</div>
+                                    <div class="io-line">Defined in Client:226</div>
                             </td>
                         </tr>
 
@@ -2246,7 +2312,7 @@ and <a href="../interfaces/Transaction.html#abort">abort</a>.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:287</div>
+                                    <div class="io-line">Defined in Client:325</div>
                             </td>
                         </tr>
 
@@ -2295,7 +2361,7 @@ and <a href="../interfaces/Transaction.html#abort">abort</a>.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:482</div>
+                                    <div class="io-line">Defined in Client:528</div>
                             </td>
                         </tr>
 
@@ -2412,7 +2478,7 @@ on the <a href="../interfaces/Message.html">Message</a> handled by a subscriptio
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:324</div>
+                                    <div class="io-line">Defined in Client:370</div>
                             </td>
                         </tr>
 
@@ -2422,7 +2488,14 @@ on the <a href="../interfaces/Message.html">Message</a> handled by a subscriptio
                             <div class="io-description"><p>Send a message to a named destination. Refer to your STOMP broker documentation for types
 and naming of destinations.</p>
 <p>STOMP protocol specifies and suggests some headers and also allows broker specific headers.</p>
-<p>Note: Body must be String. You will need to covert the payload to string in case it is not string (e.g. JSON)</p>
+<p>Note: Body must be String or
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Unit8Array</a>.
+If the body is
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Unit8Array</a>
+the frame will be sent as binary.
+Sometimes brokers may not support binary frames out of the box.
+Please check your broker documentation.</p>
+<p>You will need to covert the payload to string in case it is not string (e.g. JSON)</p>
 <div><pre class="line-numbers"><code class="language-javascript">        client.publish({destination: &quot;/queue/test&quot;, headers: {priority: 9}, body: &quot;Hello, STOMP&quot;});
 
         // Only destination is mandatory parameter
@@ -2500,7 +2573,7 @@ and naming of destinations.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:391</div>
+                                    <div class="io-line">Defined in Client:437</div>
                             </td>
                         </tr>
 
@@ -2627,7 +2700,7 @@ the <a href="../interfaces/Message.html">Message</a> as argument.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:407</div>
+                                    <div class="io-line">Defined in Client:453</div>
                             </td>
                         </tr>
 
@@ -2728,7 +2801,7 @@ the <a href="../interfaces/Message.html">Message</a> as argument.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:363</div>
+                                    <div class="io-line">Defined in Client:409</div>
                             </td>
                         </tr>
 

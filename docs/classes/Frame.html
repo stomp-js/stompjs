@@ -457,6 +457,21 @@ the STOMP broker. For advanced usage you might need to access <a href="../classe
                     </td>
                 </tr>
 
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#serialize">serialize</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
 
 
@@ -488,13 +503,13 @@ the STOMP broker. For advanced usage you might need to access <a href="../classe
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <span class="modifier-icon fa fa-reset"></span><code>body:     <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                        <span class="modifier-icon fa fa-reset"></span><code>body:     <code>string | Uint8Array</code>
 </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>    <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                            <i>Type : </i>    <code>string | Uint8Array</code>
 
                         </td>
                     </tr>
@@ -597,6 +612,56 @@ the STOMP broker. For advanced usage you might need to access <a href="../classe
         </table>
 </section>
 
+            <section>
+    
+        <h3 id="methods">
+            Methods
+        </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="serialize"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            serialize
+                            </b>
+                            <a href="#serialize"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                            <span class="modifier-icon fa fa-reset"></span>
+                        <code>serialize()</code>
+                    </td>
+                </tr>
+
+
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="97" class="link-to-prism">src/frame.ts:97</a></div>
+                            </td>
+                        </tr>
+
+
+                <tr>
+                    <td class="col-md-4">
+                            <div class="io-description"><p>serialize this Frame in a format suitable to be passed to WebSocket.
+If the body is string the output will be string.
+If the body is binary (i.e. of type Unit8Array) it will be serialized to ArrayBuffer.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Returns : </b>    <code>string | ArrayBuffer</code>
+
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
 
 
@@ -636,7 +701,7 @@ export class Frame {
   /**
    * It is serialized string
    */
-  public body: any;
+  public body: string | Uint8Array;
 
   private escapeHeaderValues: boolean;
   private skipContentLengthHeader: boolean;
@@ -655,43 +720,7 @@ export class Frame {
     this.headers &#x3D; headers || {};
     this.body &#x3D; body || &#x27;&#x27;;
     this.escapeHeaderValues &#x3D; escapeHeaderValues || false;
-    this.skipContentLengthHeader &#x3D;  skipContentLengthHeader || false;
-  }
-
-  /**
-   * @internal
-   */
-  public toString(): string {
-    const lines &#x3D; [this.command];
-    if (this.skipContentLengthHeader) {
-      delete this.headers[&#x27;content-length&#x27;];
-    }
-
-    for (let name of Object.keys(this.headers || {})) {
-      const value &#x3D; this.headers[name];
-      if (this.escapeHeaderValues &amp;&amp; (this.command !&#x3D;&#x3D; &#x27;CONNECT&#x27;) &amp;&amp; (this.command !&#x3D;&#x3D; &#x27;CONNECTED&#x27;)) {
-        lines.push(&#x60;${name}:${Frame.hdrValueEscape(&#x60;${value}&#x60;)}&#x60;);
-      } else {
-        lines.push(&#x60;${name}:${value}&#x60;);
-      }
-    }
-    if (this.body &amp;&amp; !this.skipContentLengthHeader) {
-      lines.push(&#x60;content-length:${Frame.sizeOfUTF8(this.body)}&#x60;);
-    }
-    lines.push(Byte.LF + this.body);
-    return lines.join(Byte.LF);
-  }
-
-  /**
-   * Compute the size of a UTF-8 string by counting its number of bytes
-   * (and not the number of characters composing the string)
-   */
-  private static sizeOfUTF8(s: string): number {
-    if (s) {
-      return new TextEncoder().encode(s).length;
-    } else {
-      return 0;
-    }
+    this.skipContentLengthHeader &#x3D; skipContentLengthHeader || false;
   }
 
   /**
@@ -726,16 +755,91 @@ export class Frame {
   }
 
   /**
+   * @internal
+   */
+  public toString(): string {
+    const cmdAndHeaders &#x3D; this.serializeCmdAndHeaders();
+    const bodyText &#x3D; this.isBinaryBody() ? &quot;&lt;&lt;binary data&gt;&gt;&quot; : this.body;
+    return cmdAndHeaders + bodyText;
+  }
+
+  /**
+   * serialize this Frame in a format suitable to be passed to WebSocket.
+   * If the body is string the output will be string.
+   * If the body is binary (i.e. of type Unit8Array) it will be serialized to ArrayBuffer.
+   */
+  public serialize(): string|ArrayBuffer {
+    const cmdAndHeaders &#x3D; this.serializeCmdAndHeaders();
+
+    if(this.isBinaryBody()) {
+      return Frame.toUnit8Array(cmdAndHeaders, &lt;Uint8Array&gt;this.body).buffer;
+    } else {
+      return cmdAndHeaders + this.body + Byte.NULL;
+    }
+  }
+
+  private serializeCmdAndHeaders(): string {
+    const lines &#x3D; [this.command];
+    if (this.skipContentLengthHeader) {
+      delete this.headers[&#x27;content-length&#x27;];
+    }
+
+    for (let name of Object.keys(this.headers || {})) {
+      const value &#x3D; this.headers[name];
+      if (this.escapeHeaderValues &amp;&amp; (this.command !&#x3D;&#x3D; &#x27;CONNECT&#x27;) &amp;&amp; (this.command !&#x3D;&#x3D; &#x27;CONNECTED&#x27;)) {
+        lines.push(&#x60;${name}:${Frame.hdrValueEscape(&#x60;${value}&#x60;)}&#x60;);
+      } else {
+        lines.push(&#x60;${name}:${value}&#x60;);
+      }
+    }
+    if (this.body &amp;&amp; !this.skipContentLengthHeader) {
+      lines.push(&#x60;content-length:${this.bodyLength()}&#x60;);
+    }
+    return lines.join(Byte.LF) + Byte.LF + Byte.LF;
+  }
+
+  private isBinaryBody(): boolean {
+    return (typeof this.body !&#x3D;&#x3D; &quot;string&quot;) &amp;&amp; this.body.length &gt; 0
+  }
+
+  private isBodyEmpty(): boolean {
+    return this.body.length &#x3D;&#x3D;&#x3D; 0;
+  }
+
+  private bodyLength(): number {
+    return this.isBinaryBody() ? this.body.length : Frame.sizeOfUTF8(&lt;string&gt;this.body)
+  }
+
+  /**
+   * Compute the size of a UTF-8 string by counting its number of bytes
+   * (and not the number of characters composing the string)
+   */
+  private static sizeOfUTF8(s: string): number {
+    return s ? new TextEncoder().encode(s).length : 0;
+  }
+
+  private static toUnit8Array(cmdAndHeaders: string, body: Uint8Array): Uint8Array {
+    const uint8CmdAndHeaders &#x3D; new TextEncoder().encode(cmdAndHeaders);
+    const nullTerminator &#x3D; new Uint8Array([0]);
+    const uint8Frame &#x3D; new Uint8Array(uint8CmdAndHeaders.length + body.length + nullTerminator.length);
+
+    uint8Frame.set(uint8CmdAndHeaders);
+    uint8Frame.set(body, uint8CmdAndHeaders.length);
+    uint8Frame.set(nullTerminator, uint8CmdAndHeaders.length + body.length);
+
+    return uint8Frame;
+  }
+  /**
    * Serialize a STOMP frame as per STOMP standards, suitable to be sent to the STOMP broker.
    *
    * @internal
    */
   public static marshall(params: {
-    command: string, headers?: StompHeaders, body: any,
+    command: string, headers?: StompHeaders, body: string|Uint8Array,
     escapeHeaderValues?: boolean, skipContentLengthHeader?: boolean
   }) {
     const frame &#x3D; new Frame(params);
-    return frame.toString() + Byte.NULL;
+    return frame.serialize();
   }
 
   /**

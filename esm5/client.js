@@ -34,6 +34,10 @@ var Client = /** @class */ (function () {
         this.debug = noOp;
         this.onConnect = noOp;
         this.onDisconnect = noOp;
+        // Treat messages as text by default
+        this.treatMessageAsBinary = function (message) {
+            return false;
+        };
         this.onUnhandledMessage = noOp;
         this.onUnhandledReceipt = noOp;
         this.onUnhandledFrame = noOp;
@@ -114,6 +118,7 @@ var Client = /** @class */ (function () {
             heartbeatIncoming: this.heartbeatIncoming,
             heartbeatOutgoing: this.heartbeatOutgoing,
             maxWebSocketFrameSize: this.maxWebSocketFrameSize,
+            treatMessageAsBinary: this.treatMessageAsBinary,
             onConnect: function (frame) {
                 if (!_this._active) {
                     _this.debug('STOMP got connected while deactivate was issued, will disconnect now');
@@ -189,7 +194,15 @@ var Client = /** @class */ (function () {
      *
      * STOMP protocol specifies and suggests some headers and also allows broker specific headers.
      *
-     * Note: Body must be String. You will need to covert the payload to string in case it is not string (e.g. JSON)
+     * Note: Body must be String or
+     * [Unit8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}.
+     * If the body is
+     * [Unit8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}
+     * the frame will be sent as binary.
+     * Sometimes brokers may not support binary frames out of the box.
+     * Please check your broker documentation.
+     *
+     * You will need to covert the payload to string in case it is not string (e.g. JSON)
      *
      * ```javascript
      *        client.publish({destination: "/queue/test", headers: {priority: 9}, body: "Hello, STOMP"});

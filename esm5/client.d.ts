@@ -1,7 +1,7 @@
 import { StompHeaders } from "./stomp-headers";
 import { StompSubscription } from "./stomp-subscription";
 import { Transaction } from "./transaction";
-import { closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, publishParams } from "./types";
+import { closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, messageCheckCallbackType, publishParams } from "./types";
 import { StompConfig } from './stomp-config';
 /**
  * STOMP Client Class.
@@ -48,6 +48,31 @@ export declare class Client {
      * Disconnection headers.
      */
     disconnectHeaders: StompHeaders;
+    /**
+     * This callback will be called with the incoming message frame {@link Message}.
+     * If this function returns `true`, the [Frame#body]{@link Frame#body} will not be converted
+     * to `string` and be returned as
+     * [Uint8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}.
+     * If this returns `false`, the body will be assumed to UTF8 string and will be converted at `string`.
+     *
+     * By default this callback returns `false`, i.e., all messages are treated as text.
+     *
+     * Examples:
+     * ```javascript
+     *        // Treat all messages a binary
+     *        client.treatMessageAsBinary = function(message) {
+     *          return true;
+     *        };
+  
+     *        // Treat a message as binary based on content-type
+     *        // This header is not a standard header, while publishing messages it needs to be explicitly set.
+     *        client.treatMessageAsBinary = function(message) {
+     *          return message.headers['content-type'] === 'application/octet-stream';
+     *        };
+     * ```
+     *
+     */
+    treatMessageAsBinary: messageCheckCallbackType;
     /**
      * This function will be called for any unhandled messages.
      * It is useful for receiving messages sent to RabbitMQ temporary queues.
@@ -163,7 +188,15 @@ export declare class Client {
      *
      * STOMP protocol specifies and suggests some headers and also allows broker specific headers.
      *
-     * Note: Body must be String. You will need to covert the payload to string in case it is not string (e.g. JSON)
+     * Note: Body must be String or
+     * [Unit8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}.
+     * If the body is
+     * [Unit8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}
+     * the frame will be sent as binary.
+     * Sometimes brokers may not support binary frames out of the box.
+     * Please check your broker documentation.
+     *
+     * You will need to covert the payload to string in case it is not string (e.g. JSON)
      *
      * ```javascript
      *        client.publish({destination: "/queue/test", headers: {priority: 9}, body: "Hello, STOMP"});
