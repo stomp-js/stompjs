@@ -1,5 +1,11 @@
 import {StompHeaders} from "./stomp-headers";
-import {frameCallbackType, messageCallbackType, closeEventCallbackType, debugFnType} from "./types";
+import {
+  frameCallbackType,
+  messageCallbackType,
+  closeEventCallbackType,
+  debugFnType,
+  messageCheckCallbackType
+} from "./types";
 
 /**
  * Configuration options for STOMP Client, each key corresponds to
@@ -31,6 +37,11 @@ export interface StompConfig {
    * See [Client#maxWebSocketFrameSize]{@link Client#maxWebSocketFrameSize}.
    */
   maxWebSocketFrameSize?: number;
+
+  /**
+   * See [Client#treatMessageAsBinary]{@link Client#treatMessageAsBinary}.
+   */
+  treatMessageAsBinary?: messageCheckCallbackType;
 
   /**
    * See [Client#connectHeaders]{@link Client#connectHeaders}.

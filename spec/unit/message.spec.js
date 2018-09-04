@@ -42,7 +42,7 @@ describe("Stomp Message", function () {
     client.activate();
   });
 
-  it("Should allow skipping content length header", function (done) {
+  xit("Should allow skipping content length header", function (done) {
     const body = 'Hello, world';
 
     client.onConnect = function () {

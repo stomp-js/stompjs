@@ -27,7 +27,7 @@ export class Frame {
   /**
    * It is serialized string
    */
-  public body: any;
+  public body: string | Uint8Array;
 
   private escapeHeaderValues: boolean;
   private skipContentLengthHeader: boolean;
@@ -46,43 +46,7 @@ export class Frame {
     this.headers = headers || {};
     this.body = body || '';
     this.escapeHeaderValues = escapeHeaderValues || false;
-    this.skipContentLengthHeader =  skipContentLengthHeader || false;
-  }
-
-  /**
-   * @internal
-   */
-  public toString(): string {
-    const lines = [this.command];
-    if (this.skipContentLengthHeader) {
-      delete this.headers['content-length'];
-    }
-
-    for (let name of Object.keys(this.headers || {})) {
-      const value = this.headers[name];
-      if (this.escapeHeaderValues && (this.command !== 'CONNECT') && (this.command !== 'CONNECTED')) {
-        lines.push(`${name}:${Frame.hdrValueEscape(`${value}`)}`);
-      } else {
-        lines.push(`${name}:${value}`);
-      }
-    }
-    if (this.body && !this.skipContentLengthHeader) {
-      lines.push(`content-length:${Frame.sizeOfUTF8(this.body)}`);
-    }
-    lines.push(Byte.LF + this.body);
-    return lines.join(Byte.LF);
-  }
-
-  /**
-   * Compute the size of a UTF-8 string by counting its number of bytes
-   * (and not the number of characters composing the string)
-   */
-  private static sizeOfUTF8(s: string): number {
-    if (s) {
-      return new TextEncoder().encode(s).length;
-    } else {
-      return 0;
-    }
+    this.skipContentLengthHeader = skipContentLengthHeader || false;
   }
 
   /**
@@ -117,16 +81,91 @@ export class Frame {
   }
 
   /**
+   * @internal
+   */
+  public toString(): string {
+    const cmdAndHeaders = this.serializeCmdAndHeaders();
+    const bodyText = this.isBinaryBody() ? "<<binary data>>" : this.body;
+    return cmdAndHeaders + bodyText;
+  }
+
+  /**
+   * serialize this Frame in a format suitable to be passed to WebSocket.
+   * If the body is string the output will be string.
+   * If the body is binary (i.e. of type Unit8Array) it will be serialized to ArrayBuffer.
+   */
+  public serialize(): string|ArrayBuffer {
+    const cmdAndHeaders = this.serializeCmdAndHeaders();
+
+    if(this.isBinaryBody()) {
+      return Frame.toUnit8Array(cmdAndHeaders, <Uint8Array>this.body).buffer;
+    } else {
+      return cmdAndHeaders + this.body + Byte.NULL;
+    }
+  }
+
+  private serializeCmdAndHeaders(): string {
+    const lines = [this.command];
+    if (this.skipContentLengthHeader) {
+      delete this.headers['content-length'];
+    }
+
+    for (let name of Object.keys(this.headers || {})) {
+      const value = this.headers[name];
+      if (this.escapeHeaderValues && (this.command !== 'CONNECT') && (this.command !== 'CONNECTED')) {
+        lines.push(`${name}:${Frame.hdrValueEscape(`${value}`)}`);
+      } else {
+        lines.push(`${name}:${value}`);
+      }
+    }
+    if (this.body && !this.skipContentLengthHeader) {
+      lines.push(`content-length:${this.bodyLength()}`);
+    }
+    return lines.join(Byte.LF) + Byte.LF + Byte.LF;
+  }
+
+  private isBinaryBody(): boolean {
+    return (typeof this.body !== "string") && this.body.length > 0
+  }
+
+  private isBodyEmpty(): boolean {
+    return this.body.length === 0;
+  }
+
+  private bodyLength(): number {
+    return this.isBinaryBody() ? this.body.length : Frame.sizeOfUTF8(<string>this.body)
+  }
+
+  /**
+   * Compute the size of a UTF-8 string by counting its number of bytes
+   * (and not the number of characters composing the string)
+   */
+  private static sizeOfUTF8(s: string): number {
+    return s ? new TextEncoder().encode(s).length : 0;
+  }
+
+  private static toUnit8Array(cmdAndHeaders: string, body: Uint8Array): Uint8Array {
+    const uint8CmdAndHeaders = new TextEncoder().encode(cmdAndHeaders);
+    const nullTerminator = new Uint8Array([0]);
+    const uint8Frame = new Uint8Array(uint8CmdAndHeaders.length + body.length + nullTerminator.length);
+
+    uint8Frame.set(uint8CmdAndHeaders);
+    uint8Frame.set(body, uint8CmdAndHeaders.length);
+    uint8Frame.set(nullTerminator, uint8CmdAndHeaders.length + body.length);
+
+    return uint8Frame;
+  }
+  /**
    * Serialize a STOMP frame as per STOMP standards, suitable to be sent to the STOMP broker.
    *
    * @internal
    */
   public static marshall(params: {
-    command: string, headers?: StompHeaders, body: any,
+    command: string, headers?: StompHeaders, body: string|Uint8Array,
     escapeHeaderValues?: boolean, skipContentLengthHeader?: boolean
   }) {
     const frame = new Frame(params);
-    return frame.toString() + Byte.NULL;
+    return frame.serialize();
   }
 
   /**
