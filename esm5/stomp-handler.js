@@ -30,10 +30,10 @@ var StompHandler = /** @class */ (function () {
             },
             // [MESSAGE Frame](http://stomp.github.com/stomp-specification-1.2.html#MESSAGE)
             "MESSAGE": function (frame) {
-                // the `onReceive` callback is registered when the client calls
+                // the callback is registered when the client calls
                 // `subscribe()`.
-                // If there is registered subscription for the received message,
-                // we used the default `onReceive` method that the client can set.
+                // If there is no registered subscription for the received message,
+                // the default `onUnhandledMessage` callback is used that the client can set.
                 // This is useful for subscriptions that are automatically created
                 // on the browser side (e.g. [RabbitMQ's temporary
                 // queues](http://www.rabbitmq.com/stomp.html)).
@@ -41,10 +41,6 @@ var StompHandler = /** @class */ (function () {
                 var onReceive = _this._subscriptions[subscription] || _this.onUnhandledMessage;
                 // bless the frame to be a Message
                 var message = frame;
-                // Unless we have to treat message body as binary, convert it to `string`
-                if (!_this.treatMessageAsBinary(message)) {
-                    message.body = new TextDecoder().decode(message.body);
-                }
                 var messageId;
                 var client = _this;
                 if (_this._version === versions_1.Versions.V1_2) {
@@ -117,7 +113,16 @@ var StompHandler = /** @class */ (function () {
         // On Frame
         function (rawFrame) {
             var frame = frame_1.Frame.fromRawFrame(rawFrame, _this._escapeHeaderValues);
-            // frame.body = new TextDecoder().decode(<Uint8Array>frame.body);
+            // Unless we have to treat message body as binary, convert it to `string`
+            if (!_this.treatMessageAsBinary(frame) ||
+                (frame.command === 'ERROR' && frame.headers['content-type'].match(/^text\//))) {
+                try {
+                    frame.body = new TextDecoder().decode(frame.body);
+                }
+                catch (e) {
+                    // ignore
+                }
+            }
             _this.debug("<<< " + frame);
             var serverFrameHandler = _this._serverFrameHandlers[frame.command] || _this.onUnhandledFrame;
             serverFrameHandler(frame);
