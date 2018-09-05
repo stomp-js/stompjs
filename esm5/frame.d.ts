@@ -1,15 +1,10 @@
 import { StompHeaders } from "./stomp-headers";
-declare type unmarshallResults = {
-    frames: Frame[];
-    partial: string;
-};
+import { RawFrameType } from "./types";
 /**
  * Frame class represents a STOMP frame. Many of the callbacks pass the Frame received from
  * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
  *
  * {@link Message} is an extended Frame.
- *
- * See: http://stomp.github.com/stomp-specification-1.2.html#STOMP_Frames STOMP Frame
  */
 export declare class Frame {
     /**
@@ -23,7 +18,7 @@ export declare class Frame {
     /**
      * It is serialized string
      */
-    body: any;
+    body: string | Uint8Array;
     private escapeHeaderValues;
     private skipContentLengthHeader;
     /**
@@ -39,29 +34,31 @@ export declare class Frame {
         skipContentLengthHeader?: boolean;
     });
     /**
+     * deserialize a STOMP Frame from raw data.
+     *
+     * @internal
+     */
+    static fromRawFrame(rawFrame: RawFrameType, escapeHeaderValues: boolean): Frame;
+    /**
      * @internal
      */
     toString(): string;
+    /**
+     * serialize this Frame in a format suitable to be passed to WebSocket.
+     * If the body is string the output will be string.
+     * If the body is binary (i.e. of type Unit8Array) it will be serialized to ArrayBuffer.
+     */
+    serialize(): string | ArrayBuffer;
+    private serializeCmdAndHeaders;
+    private isBinaryBody;
+    private isBodyEmpty;
+    private bodyLength;
     /**
      * Compute the size of a UTF-8 string by counting its number of bytes
      * (and not the number of characters composing the string)
      */
     private static sizeOfUTF8;
-    /**
-     * deserialize a STOMP Frame from raw data.
-     *
-     * @internal
-     */
-    static unmarshallSingle(data: any, escapeHeaderValues: boolean): Frame;
-    /**
-     * Split the data before unmarshalling every single STOMP frame.
-     * Web socket servers can send multiple frames in a single websocket message.
-     * If the message size exceeds the websocket message size, then a single
-     * frame can be fragmented across multiple messages.
-     *
-     * @internal
-     */
-    static unmarshall(datas: any, escapeHeaderValues: boolean): unmarshallResults;
+    private static toUnit8Array;
     /**
      * Serialize a STOMP frame as per STOMP standards, suitable to be sent to the STOMP broker.
      *
@@ -70,17 +67,16 @@ export declare class Frame {
     static marshall(params: {
         command: string;
         headers?: StompHeaders;
-        body: any;
+        body: string | Uint8Array;
         escapeHeaderValues?: boolean;
         skipContentLengthHeader?: boolean;
-    }): string;
+    }): string | ArrayBuffer;
     /**
      *  Escape header values
      */
-    private static frEscape;
+    private static hdrValueEscape;
     /**
      * UnEscape header values
      */
-    private static frUnEscape;
+    private static hdrValueUnEscape;
 }
-export {};

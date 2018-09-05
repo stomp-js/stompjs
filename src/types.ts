@@ -13,6 +13,12 @@ export type debugFnType = (msg: string) => void;
 export type messageCallbackType = (message: Message) => void;
 
 /**
+ * This callback will receive a {@link Message} as parameter.
+ * The callback will need to return a boolean value.
+ */
+export type messageCheckCallbackType = (frame: Frame) => boolean;
+
+/**
  * This callback will receive a {@link Frame} as parameter.
  */
 export type frameCallbackType = (receipt: Frame) => void;
@@ -37,10 +43,16 @@ export interface publishParams {
   /**
    * body (optional)
    */
-  body?: string,
+  body?: string|Uint8Array,
   /**
    * By default a `content-length` header will be added in the Frame to the broker.
    * Set it to `true` for the header to be skipped.
    */
   skipContentLengthHeader?: boolean
 }
+
+/**
+ * The parser yield frames in this structure
+ */
+export type RawHeaderType = [string, string];
+export type RawFrameType = { command: string; headers: RawHeaderType[]; body: Uint8Array; };

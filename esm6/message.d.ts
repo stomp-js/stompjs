@@ -2,7 +2,7 @@ import { Frame } from "./frame";
 import { StompHeaders } from "./stomp-headers";
 /**
  * Instance of Message will be passed to [subscription callback]{@link Client#subscribe}
- * and [onreceive]{@link Client#onreceive}.
+ * and [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
  * Since it is an extended {@link Frame}, you can access [headers]{@link Frame#headers}
  * and [body]{@link Frame#body} as properties.
  *

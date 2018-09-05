@@ -1,5 +1,5 @@
 /**
- * A Tranasction is created by calling [Client#begin]{@link Client#begin}
+ * A Transaction is created by calling [Client#begin]{@link Client#begin}
  *
  * TODO: Example and caveat
  */

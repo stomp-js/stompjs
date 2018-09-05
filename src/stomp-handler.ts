@@ -4,10 +4,18 @@ import {Versions} from "./versions";
 import {Message} from "./message";
 import {Frame} from "./frame";
 import {StompHeaders} from "./stomp-headers";
-import {closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, publishParams} from "./types";
+import {
+  closeEventCallbackType,
+  debugFnType,
+  frameCallbackType,
+  messageCallbackType,
+  messageCheckCallbackType,
+  publishParams
+} from "./types";
 import {StompSubscription} from "./stomp-subscription";
 import {Transaction} from "./transaction";
 import {StompConfig} from "./stomp-config";
+import {Parser} from "./parser";
 
 /**
  * The STOMP protocol handler
@@ -20,6 +28,8 @@ export class StompHandler {
   public connectHeaders: StompHeaders;
 
   public disconnectHeaders: StompHeaders;
+
+  public treatMessageAsBinary: messageCheckCallbackType;
 
   public heartbeatIncoming: number;
 
@@ -86,47 +96,37 @@ export class StompHandler {
   }
 
   public start(): void {
+    const parser = new Parser(
+      // On Frame
+      (rawFrame) => {
+        const frame = Frame.fromRawFrame(rawFrame, this._escapeHeaderValues);
+
+        // Unless we have to treat message body as binary, convert it to `string`
+        if(!this.treatMessageAsBinary(frame) ||
+                  (frame.command === 'ERROR' && frame.headers['content-type'].match(/^text\//)) ) {
+          try {
+            frame.body = new TextDecoder().decode(<Uint8Array>frame.body);
+          } catch (e) {
+            // ignore
+          }
+        }
+
+        this.debug(`<<< ${frame}`);
+
+        const serverFrameHandler = this._serverFrameHandlers[frame.command] || this.onUnhandledFrame;
+        serverFrameHandler(frame);
+      },
+      // On Incoming Ping
+      () => {
+        this.debug("<<< PONG");
+      }
+    );
+
     this._webSocket.onmessage = (evt: any) => {
       this.debug('Received data');
-      const data = (() => {
-        if ((typeof(ArrayBuffer) !== 'undefined') && evt.data instanceof ArrayBuffer) {
-          // the data is stored inside an ArrayBuffer, we decode it to get the
-          // data as a String
-          const arr = new Uint8Array(evt.data);
-          this.debug(`--- got data length: ${arr.length}`);
-          // Return a string formed by all the char codes stored in the Uint8array
-          let j, len1, results;
-          results = [];
-          for (j = 0, len1 = arr.length; j < len1; j++) {
-            const c = arr[j];
-            results.push(String.fromCharCode(c));
-          }
-
-          return results.join('');
-        } else {
-          // take the data directly from the WebSocket `data` field
-          return evt.data;
-        }
-      })();
-
       this._lastServerActivityTS = Date.now();
 
-      if (data === Byte.LF) { // heartbeat
-        this.debug("<<< PONG");
-        return;
-      }
-
-      this.debug(`<<< ${data}`);
-      // Handle STOMP frames received from the server
-      // The unmarshall function returns the frames parsed and any remaining
-      // data from partial frames.
-      const unmarshalledData = Frame.unmarshall(this._partialData + data, this._escapeHeaderValues);
-      this._partialData = unmarshalledData.partial;
-      for (let frame of unmarshalledData.frames) {
-        const serverFrameHandler= this._serverFrameHandlers[frame.command] || this.onUnhandledFrame;
-
-        serverFrameHandler(frame);
-      }
+      parser.parseChunk(evt.data);
     };
 
     this._webSocket.onclose = (closeEvent: any): void => {
@@ -161,24 +161,22 @@ export class StompHandler {
 
     // [MESSAGE Frame](http://stomp.github.com/stomp-specification-1.2.html#MESSAGE)
     "MESSAGE": (frame) => {
-      // the `onReceive` callback is registered when the client calls
+      // the callback is registered when the client calls
       // `subscribe()`.
-      // If there is registered subscription for the received message,
-      // we used the default `onReceive` method that the client can set.
+      // If there is no registered subscription for the received message,
+      // the default `onUnhandledMessage` callback is used that the client can set.
       // This is useful for subscriptions that are automatically created
       // on the browser side (e.g. [RabbitMQ's temporary
       // queues](http://www.rabbitmq.com/stomp.html)).
       const subscription = frame.headers.subscription;
       const onReceive = this._subscriptions[subscription] || this.onUnhandledMessage;
+
       // bless the frame to be a Message
       const message = <Message>frame;
-      let messageId: string;
+
       const client = this;
-      if (this._version === Versions.V1_2) {
-        messageId = message.headers["ack"];
-      } else {
-        messageId = message.headers["message-id"];
-      }
+      const messageId = this._version === Versions.V1_2 ? message.headers["ack"] : message.headers["message-id"];
+
       // add `ack()` and `nack()` methods directly to the returned frame
       // so that a simple call to `message.ack()` can acknowledge the message.
       message.ack = (headers: StompHeaders = {}): void => {
@@ -241,18 +239,21 @@ export class StompHandler {
     }
   }
 
-  private _transmit(params: { command: string, headers?: StompHeaders, body?: string, skipContentLengthHeader?: boolean }): void {
+  private _transmit(params: { command: string, headers?: StompHeaders,
+                              body?: string | Uint8Array, skipContentLengthHeader?: boolean }): void {
     let {command, headers, body, skipContentLengthHeader} = params;
-    let out = Frame.marshall({
+    let frame = new Frame({
       command: command,
       headers: headers,
       body: body,
       escapeHeaderValues: this._escapeHeaderValues,
       skipContentLengthHeader: skipContentLengthHeader
     });
-    this.debug(`>>> ${out}`);
+    this.debug(`>>> ${frame}`);
     // if necessary, split the *STOMP* frame to send it on many smaller
     // *WebSocket* frames
+    this._webSocket.send(frame.serialize());
+/* Do we need this?
     while (true) {
       if (out.length > this.maxWebSocketFrameSize) {
         this._webSocket.send(out.substring(0, this.maxWebSocketFrameSize));
@@ -263,6 +264,7 @@ export class StompHandler {
         return;
       }
     }
+*/
   }
 
   public dispose(): void {

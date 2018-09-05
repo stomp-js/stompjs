@@ -2,7 +2,7 @@ describe("Compat Stomp Message", function () {
   let client;
 
   beforeEach(function () {
-    client = StompJs.Stomp.client(TEST.url);;
+    client = StompJs.Stomp.client(TEST.url);
   });
 
   afterEach(function () {
@@ -22,6 +22,26 @@ describe("Compat Stomp Message", function () {
         });
 
         client.send(TEST.destination, {}, body);
+      });
+  });
+
+  it("Send and receive a binary message", function (done) {
+    const body = new Uint8Array([65,66,245]);
+
+    client.treatMessageAsBinary = function (message) {
+      return message.headers['content-type'] === 'application/octet-stream';
+    };
+
+    client.connect(TEST.login, TEST.password,
+      function () {
+        client.subscribe(TEST.destination, function (message) {
+          expect(message.body.toString()).toEqual(body.toString());
+          client.disconnect();
+
+          done();
+        });
+
+        client.send(TEST.destination, {'content-type': 'application/octet-stream'}, body);
       });
   });
 
@@ -56,14 +76,12 @@ describe("Compat Stomp Message", function () {
           done();
         });
 
-        const spy= spyOn(StompJs.Frame, 'marshall').and.callThrough();
+        const spy= spyOn(client._webSocket, 'send').and.callThrough();
 
         client.send(TEST.destination, {'content-length': false}, body);
 
-        const params = spy.calls.first().args[0];
-        expect(params.skipContentLengthHeader).toBe(true);
-        // content-length header must not be there
-        expect(params.headers).toEqual({destination: TEST.destination});
+        const rawChunk = spy.calls.first().args[0];
+        expect(rawChunk).not.toMatch('content-length');
       });
   });
 });

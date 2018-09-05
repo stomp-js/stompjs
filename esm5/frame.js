@@ -6,8 +6,6 @@ var byte_1 = require("./byte");
  * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
  *
  * {@link Message} is an extended Frame.
- *
- * See: http://stomp.github.com/stomp-specification-1.2.html#STOMP_Frames STOMP Frame
  */
 var Frame = /** @class */ (function () {
     /**
@@ -24,9 +22,54 @@ var Frame = /** @class */ (function () {
         this.skipContentLengthHeader = skipContentLengthHeader || false;
     }
     /**
+     * deserialize a STOMP Frame from raw data.
+     *
+     * @internal
+     */
+    Frame.fromRawFrame = function (rawFrame, escapeHeaderValues) {
+        var headers = {};
+        var trim = function (str) { return str.replace(/^\s+|\s+$/g, ''); };
+        // In case of repeated headers, as per standards, first value need to be used
+        for (var _i = 0, _a = rawFrame.headers.reverse(); _i < _a.length; _i++) {
+            var header = _a[_i];
+            var idx = header.indexOf(':');
+            var key = trim(header[0]);
+            var value = trim(header[1]);
+            if (escapeHeaderValues && (rawFrame.command !== 'CONNECT') && (rawFrame.command !== 'CONNECTED')) {
+                value = Frame.hdrValueUnEscape(value);
+            }
+            headers[key] = value;
+        }
+        return new Frame({
+            command: rawFrame.command,
+            headers: headers,
+            body: rawFrame.body,
+            escapeHeaderValues: escapeHeaderValues
+        });
+    };
+    /**
      * @internal
      */
     Frame.prototype.toString = function () {
+        var cmdAndHeaders = this.serializeCmdAndHeaders();
+        var bodyText = this.isBinaryBody() ? "<<binary data>>" : this.body;
+        return cmdAndHeaders + bodyText;
+    };
+    /**
+     * serialize this Frame in a format suitable to be passed to WebSocket.
+     * If the body is string the output will be string.
+     * If the body is binary (i.e. of type Unit8Array) it will be serialized to ArrayBuffer.
+     */
+    Frame.prototype.serialize = function () {
+        var cmdAndHeaders = this.serializeCmdAndHeaders();
+        if (this.isBinaryBody()) {
+            return Frame.toUnit8Array(cmdAndHeaders, this.body).buffer;
+        }
+        else {
+            return cmdAndHeaders + this.body + byte_1.Byte.NULL;
+        }
+    };
+    Frame.prototype.serializeCmdAndHeaders = function () {
         var lines = [this.command];
         if (this.skipContentLengthHeader) {
             delete this.headers['content-length'];
@@ -35,111 +78,41 @@ var Frame = /** @class */ (function () {
             var name_1 = _a[_i];
             var value = this.headers[name_1];
             if (this.escapeHeaderValues && (this.command !== 'CONNECT') && (this.command !== 'CONNECTED')) {
-                lines.push(name_1 + ":" + Frame.frEscape("" + value));
+                lines.push(name_1 + ":" + Frame.hdrValueEscape("" + value));
             }
             else {
                 lines.push(name_1 + ":" + value);
             }
         }
         if (this.body && !this.skipContentLengthHeader) {
-            lines.push("content-length:" + Frame.sizeOfUTF8(this.body));
+            lines.push("content-length:" + this.bodyLength());
         }
-        lines.push(byte_1.Byte.LF + this.body);
-        return lines.join(byte_1.Byte.LF);
+        return lines.join(byte_1.Byte.LF) + byte_1.Byte.LF + byte_1.Byte.LF;
+    };
+    Frame.prototype.isBinaryBody = function () {
+        return (typeof this.body !== "string") && this.body.length > 0;
+    };
+    Frame.prototype.isBodyEmpty = function () {
+        return this.body.length === 0;
+    };
+    Frame.prototype.bodyLength = function () {
+        return this.isBinaryBody() ? this.body.length : Frame.sizeOfUTF8(this.body);
     };
     /**
      * Compute the size of a UTF-8 string by counting its number of bytes
      * (and not the number of characters composing the string)
      */
     Frame.sizeOfUTF8 = function (s) {
-        if (s) {
-            var matches = encodeURI(s).match(/%..|./g) || [];
-            return matches.length;
-        }
-        else {
-            return 0;
-        }
+        return s ? new TextEncoder().encode(s).length : 0;
     };
-    /**
-     * deserialize a STOMP Frame from raw data.
-     *
-     * @internal
-     */
-    Frame.unmarshallSingle = function (data, escapeHeaderValues) {
-        // search for 2 consecutives LF byte to split the command
-        // and headers from the body
-        var divider = data.search(new RegExp("" + byte_1.Byte.LF + byte_1.Byte.LF));
-        var headerLines = data.substring(0, divider).split(byte_1.Byte.LF);
-        var command = headerLines.shift();
-        var headers = {};
-        // utility function to trim any whitespace before and after a string
-        var trim = function (str) { return str.replace(/^\s+|\s+$/g, ''); };
-        // Parse headers in reverse order so that for repeated headers, the 1st
-        // value is used
-        for (var _i = 0, _a = headerLines.reverse(); _i < _a.length; _i++) {
-            var line = _a[_i];
-            var idx = line.indexOf(':');
-            var key = trim(line.substring(0, idx));
-            var value = trim(line.substring(idx + 1));
-            if (escapeHeaderValues && (command !== 'CONNECT') && (command !== 'CONNECTED')) {
-                value = Frame.frUnEscape(value);
-            }
-            headers[key] = value;
-        }
-        // Parse body
-        // check for content-length or  topping at the first NULL byte found.
-        var body = '';
-        // skip the 2 LF bytes that divides the headers from the body
-        var start = divider + 2;
-        if (headers['content-length']) {
-            var len = parseInt(headers['content-length']);
-            body = ("" + data).substring(start, start + len);
-        }
-        else {
-            var chr = null;
-            for (var i = start, end = data.length, asc = start <= end; asc ? i < end : i > end; asc ? i++ : i--) {
-                chr = data.charAt(i);
-                if (chr === byte_1.Byte.NULL) {
-                    break;
-                }
-                body += chr;
-            }
-        }
-        return new Frame({ command: command, headers: headers, body: body, escapeHeaderValues: escapeHeaderValues });
-    };
-    /**
-     * Split the data before unmarshalling every single STOMP frame.
-     * Web socket servers can send multiple frames in a single websocket message.
-     * If the message size exceeds the websocket message size, then a single
-     * frame can be fragmented across multiple messages.
-     *
-     * @internal
-     */
-    Frame.unmarshall = function (datas, escapeHeaderValues) {
-        // Ugly list comprehension to split and unmarshall *multiple STOMP frames*
-        // contained in a *single WebSocket frame*.
-        // The data is split when a NULL byte (followed by zero or many LF bytes) is
-        // found
-        if (escapeHeaderValues == null) {
-            escapeHeaderValues = false;
-        }
-        var frames = datas.split(new RegExp("" + byte_1.Byte.NULL + byte_1.Byte.LF + "*"));
-        var r = {
-            frames: [],
-            partial: ''
-        };
-        r.frames = (frames.slice(0, -1).map(function (frame) { return Frame.unmarshallSingle(frame, escapeHeaderValues); }));
-        // If this contains a final full message or just a acknowledgement of a PING
-        // without any other content, process this frame, otherwise return the
-        // contents of the buffer to the caller.
-        var last_frame = frames.slice(-1)[0];
-        if ((last_frame === byte_1.Byte.LF) || ((last_frame.search(new RegExp("" + byte_1.Byte.NULL + byte_1.Byte.LF + "*$"))) !== -1)) {
-            r.frames.push(Frame.unmarshallSingle(last_frame, escapeHeaderValues));
-        }
-        else {
-            r.partial = last_frame;
-        }
-        return r;
+    Frame.toUnit8Array = function (cmdAndHeaders, body) {
+        var uint8CmdAndHeaders = new TextEncoder().encode(cmdAndHeaders);
+        var nullTerminator = new Uint8Array([0]);
+        var uint8Frame = new Uint8Array(uint8CmdAndHeaders.length + body.length + nullTerminator.length);
+        uint8Frame.set(uint8CmdAndHeaders);
+        uint8Frame.set(body, uint8CmdAndHeaders.length);
+        uint8Frame.set(nullTerminator, uint8CmdAndHeaders.length + body.length);
+        return uint8Frame;
     };
     /**
      * Serialize a STOMP frame as per STOMP standards, suitable to be sent to the STOMP broker.
@@ -148,18 +121,18 @@ var Frame = /** @class */ (function () {
      */
     Frame.marshall = function (params) {
         var frame = new Frame(params);
-        return frame.toString() + byte_1.Byte.NULL;
+        return frame.serialize();
     };
     /**
      *  Escape header values
      */
-    Frame.frEscape = function (str) {
+    Frame.hdrValueEscape = function (str) {
         return str.replace(/\\/g, "\\\\").replace(/\r/g, "\\r").replace(/\n/g, "\\n").replace(/:/g, "\\c");
     };
     /**
      * UnEscape header values
      */
-    Frame.frUnEscape = function (str) {
+    Frame.hdrValueUnEscape = function (str) {
         return str.replace(/\\r/g, "\r").replace(/\\n/g, "\n").replace(/\\c/g, ":").replace(/\\\\/g, "\\");
     };
     return Frame;

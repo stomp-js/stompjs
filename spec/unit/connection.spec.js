@@ -34,6 +34,7 @@ describe("Stomp Connection", function () {
         done();
       },
       onStompError: function (frame) {
+        expect(typeof frame.body).toEqual('string');
         done();
       }
     });

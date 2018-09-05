@@ -11,22 +11,21 @@ var Client = /** @class */ (function () {
     function Client(conf) {
         if (conf === void 0) { conf = {}; }
         /**
-         *  automatically reconnect with delay in milliseconds, set to 0 to disable
+         *  automatically reconnect with delay in milliseconds, set to 0 to disable.
          */
         this.reconnectDelay = 5000;
         /**
-         * Incoming heartbeat interval in milliseconds. Set to 0 to disable
+         * Incoming heartbeat interval in milliseconds. Set to 0 to disable.
          */
         this.heartbeatIncoming = 10000;
         /**
-         * Outgoing heartbeat interval in milliseconds. Set to 0 to disable
+         * Outgoing heartbeat interval in milliseconds. Set to 0 to disable.
          */
         this.heartbeatOutgoing = 10000;
-        // public heartbeat: { outgoing: number; incoming: number };
         /**
-         * Maximum WebSocket frame size sent by the client. If the STOMP frame
+         * Maximum WebSocket frame size sent by the client. If a STOMP frame
          * is bigger than this value, the STOMP frame will be sent using multiple
-         * WebSocket frames (default is 16KiB)
+         * WebSocket frames (default is 16KiB).
          */
         this.maxWebSocketFrameSize = 16 * 1024;
         this._active = false;
@@ -35,6 +34,10 @@ var Client = /** @class */ (function () {
         this.debug = noOp;
         this.onConnect = noOp;
         this.onDisconnect = noOp;
+        // Treat messages as text by default
+        this.treatMessageAsBinary = function (message) {
+            return false;
+        };
         this.onUnhandledMessage = noOp;
         this.onUnhandledReceipt = noOp;
         this.onUnhandledFrame = noOp;
@@ -49,7 +52,7 @@ var Client = /** @class */ (function () {
     }
     Object.defineProperty(Client.prototype, "webSocket", {
         /**
-         * Underlying WebSocket instance, READONLY
+         * Underlying WebSocket instance, READONLY.
          */
         get: function () {
             return this._webSocket;
@@ -78,19 +81,20 @@ var Client = /** @class */ (function () {
         configurable: true
     });
     /**
-     * Update configuration. See {@link StompConfig} for details of configuration options.
+     * Update configuration.
      */
     Client.prototype.configure = function (conf) {
         // bulk assign all properties to this
         Object.assign(this, conf);
     };
     /**
-     * Initiate the connection. If the connection breaks it will keep trying to reconnect.
+     * Initiate the connection with the broker.
+     * If the connection breaks, as per [Client#reconnectDelay]{@link Client#reconnectDelay},
+     * it will keep trying to reconnect.
      *
      * Call [Client#deactivate]{@link Client#deactivate} to disconnect and stop reconnection attempts.
      */
     Client.prototype.activate = function () {
-        // Indicate that this connection is active (it will keep trying to connect)
         this._active = true;
         this._connect();
     };
@@ -105,7 +109,7 @@ var Client = /** @class */ (function () {
             return;
         }
         this.debug("Opening Web Socket...");
-        // Get the actual Websocket (or a similar object)
+        // Get the actual WebSocket (or a similar object)
         this._webSocket = this._createWebSocket();
         this._stompHandler = new stomp_handler_1.StompHandler(this, this._webSocket, {
             debug: this.debug,
@@ -114,6 +118,7 @@ var Client = /** @class */ (function () {
             heartbeatIncoming: this.heartbeatIncoming,
             heartbeatOutgoing: this.heartbeatOutgoing,
             maxWebSocketFrameSize: this.maxWebSocketFrameSize,
+            treatMessageAsBinary: this.treatMessageAsBinary,
             onConnect: function (frame) {
                 if (!_this._active) {
                     _this.debug('STOMP got connected while deactivate was issued, will disconnect now');
@@ -130,6 +135,8 @@ var Client = /** @class */ (function () {
             },
             onWebSocketClose: function (evt) {
                 _this.onWebSocketClose(evt);
+                // The callback is called before attempting to reconnect, this would allow the client
+                // to be `deactivated` in the callback.
                 if (_this._active) {
                     _this._schedule_reconnect();
                 }
@@ -163,9 +170,7 @@ var Client = /** @class */ (function () {
     /**
      * Disconnect and stop auto reconnect loop.
      *
-     * Appropriate callbacks will be invoked if underlying STOMP connection is connected.
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#DISCONNECT
+     * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
      */
     Client.prototype.deactivate = function () {
         // indicate that auto reconnect loop should terminate
@@ -185,32 +190,50 @@ var Client = /** @class */ (function () {
     };
     /**
      * Send a message to a named destination. Refer to your STOMP broker documentation for types
-     * and naming of destinations. The headers will, typically, be available to the subscriber.
-     * However, there may be special purpose headers corresponding to your STOMP broker.
+     * and naming of destinations.
      *
-     * Note: Body must be String. You will need to covert the payload to string in case it is not string (e.g. JSON)
+     * STOMP protocol specifies and suggests some headers and also allows broker specific headers.
+     *
+     * Note: Body must be String or
+     * [Unit8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}.
+     * If the body is
+     * [Unit8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}
+     * the frame will be sent as binary.
+     * Sometimes brokers may not support binary frames out of the box.
+     * Please check your broker documentation.
+     *
+     * You will need to covert the payload to string in case it is not string (e.g. JSON)
      *
      * ```javascript
-     *        client.send({destination: "/queue/test", headers: {priority: 9}, body: "Hello, STOMP"});
+     *        client.publish({destination: "/queue/test", headers: {priority: 9}, body: "Hello, STOMP"});
      *
      *        // Only destination is mandatory parameter
-     *        client.send({destination: "/queue/test", body: "Hello, STOMP"});
-     * ```
+     *        client.publish({destination: "/queue/test", body: "Hello, STOMP"});
      *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#SEND SEND Frame
+     *        // Skip content-length header in the frame to the broker
+     *        client.publish({"/queue/test", body: "Hello, STOMP", skipContentLengthHeader: true});
+     * ```
      */
     Client.prototype.publish = function (params) {
         this._stompHandler.publish(params);
     };
     /**
-     * Watch for a receipt, callback will receive the STOMP frame as parameter.
+     * STOMP brokers may carry out operation asynchronously and allow requesting for acknowledgement.
+     * To request an acknowledgement, a `receipt` header needs to be sent with the actual request.
+     * The value (say receipt-id) for this header needs to be unique for each use. Typically a sequence, a UUID, a
+     * random number or a combination may be used.
      *
-     * The receipt id needs to be unique for each use. Typically a sequence, a UUID, a
-     * random number or a combination would be used.
+     * A complaint broker will send a RECEIPT frame when an operation has actually been completed.
+     * The operation needs to be matched based in the value of the receipt-id.
+     *
+     * This method allow watching for a receipt and invoke the callback
+     * when corresponding receipt has been received.
+     *
+     * The actual {@link Frame} will be passed as parameter to the callback.
      *
      * Example:
      * ```javascript
-     *        // Receipt for Subscription
+     *        // Subscribing with acknowledgement
      *        let receiptId = randomText();
      *
      *        client.watchForReceipt(receiptId, function() {
@@ -219,13 +242,14 @@ var Client = /** @class */ (function () {
      *
      *        client.subscribe(TEST.destination, onMessage, {receipt: receiptId});
      *
-     *        // Receipt for message send
+     *
+     *        // Publishing with acknowledgement
      *        receiptId = randomText();
      *
      *        client.watchForReceipt(receiptId, function() {
      *          // Will be called after server acknowledges
      *        });
-     *        client.send(TEST.destination, {receipt: receiptId}, msg);
+     *        client.publish({destination: TEST.destination, headers: {receipt: receiptId}, body: msg});
      * ```
      */
     Client.prototype.watchForReceipt = function (receiptId, callback) {
@@ -254,8 +278,6 @@ var Client = /** @class */ (function () {
      *        var mySubId = 'my-subscription-id-001';
      *        var subscription = client.subscribe(destination, callback, { id: mySubId });
      * ```
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#SUBSCRIBE SUBSCRIBE Frame
      */
     Client.prototype.subscribe = function (destination, callback, headers) {
         if (headers === void 0) { headers = {}; }
@@ -281,13 +303,14 @@ var Client = /** @class */ (function () {
      * Start a transaction, the returned {@link Transaction} has methods - [commit]{@link Transaction#commit}
      * and [abort]{@link Transaction#abort}.
      *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#BEGIN BEGIN Frame
+     * `transactionId` is optional, if not passed the library will generate it internally.
      */
     Client.prototype.begin = function (transactionId) {
         return this._stompHandler.begin(transactionId);
     };
     /**
      * Commit a transaction.
+     *
      * It is preferable to commit a transaction by calling [commit]{@link Transaction#commit} directly on
      * {@link Transaction} returned by [client.begin]{@link Client#begin}.
      *
@@ -296,8 +319,6 @@ var Client = /** @class */ (function () {
      *        //...
      *        tx.commit();
      * ```
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#COMMIT COMMIT Frame
      */
     Client.prototype.commit = function (transactionId) {
         this._stompHandler.commit(transactionId);
@@ -312,8 +333,6 @@ var Client = /** @class */ (function () {
      *        //...
      *        tx.abort();
      * ```
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#ABORT ABORT Frame
      */
     Client.prototype.abort = function (transactionId) {
         this._stompHandler.abort(transactionId);
@@ -330,8 +349,6 @@ var Client = /** @class */ (function () {
      *        };
      *        client.subscribe(destination, callback, {'ack': 'client'});
      * ```
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#ACK ACK Frame
      */
     Client.prototype.ack = function (messageId, subscriptionId, headers) {
         if (headers === void 0) { headers = {}; }
@@ -349,8 +366,6 @@ var Client = /** @class */ (function () {
      *        };
      *        client.subscribe(destination, callback, {'ack': 'client'});
      * ```
-     *
-     * See: http://stomp.github.com/stomp-specification-1.2.html#NACK NACK Frame
      */
     Client.prototype.nack = function (messageId, subscriptionId, headers) {
         if (headers === void 0) { headers = {}; }
