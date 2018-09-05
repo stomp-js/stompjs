@@ -1288,14 +1288,8 @@ var StompHandler = /** @class */ (function () {
                 var onReceive = _this._subscriptions[subscription] || _this.onUnhandledMessage;
                 // bless the frame to be a Message
                 var message = frame;
-                var messageId;
                 var client = _this;
-                if (_this._version === versions_1.Versions.V1_2) {
-                    messageId = message.headers["ack"];
-                }
-                else {
-                    messageId = message.headers["message-id"];
-                }
+                var messageId = _this._version === versions_1.Versions.V1_2 ? message.headers["ack"] : message.headers["message-id"];
                 // add `ack()` and `nack()` methods directly to the returned frame
                 // so that a simple call to `message.ack()` can acknowledge the message.
                 message.ack = function (headers) {
