@@ -170,15 +170,13 @@ export class StompHandler {
       // queues](http://www.rabbitmq.com/stomp.html)).
       const subscription = frame.headers.subscription;
       const onReceive = this._subscriptions[subscription] || this.onUnhandledMessage;
+
       // bless the frame to be a Message
       const message = <Message>frame;
-      let messageId: string;
+
       const client = this;
-      if (this._version === Versions.V1_2) {
-        messageId = message.headers["ack"];
-      } else {
-        messageId = message.headers["message-id"];
-      }
+      const messageId = this._version === Versions.V1_2 ? message.headers["ack"] : message.headers["message-id"];
+
       // add `ack()` and `nack()` methods directly to the returned frame
       // so that a simple call to `message.ack()` can acknowledge the message.
       message.ack = (headers: StompHeaders = {}): void => {
