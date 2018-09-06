@@ -218,14 +218,8 @@ describe("Neo Parser", function () {
     };
 
     beforeEach(function () {
-      // construct body with octets 0 to 255 repeated 4 times
-      let body = [];
-      for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 256; j++) {
-          body.push(j);
-        }
-      }
-      unit8Body = new Uint8Array(body);
+      // construct body with octets 0 to 255 repeated 4 times (1 Kilo Bytes)
+      unit8Body = generateBinaryData(1);
       commandAndHeaders = "SEND\n"
         + "destination:foo\n"
         + "message-id:456\n"
