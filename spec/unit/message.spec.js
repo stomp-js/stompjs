@@ -135,8 +135,8 @@ describe("Stomp Message", function () {
   });
 
   describe("Large data", function () {
-    it("Large text message (1MB)", function (done) {
-      const body = generateTextData(1024); // 1MB
+    it("Large text message (~1MB)", function (done) {
+      const body = generateTextData(1023); // 1MB
       client.debug = function () {}; // disable for this test
       client.onConnect = function () {
         client.subscribe(TEST.destination, function (message) {
@@ -151,8 +151,8 @@ describe("Stomp Message", function () {
       client.activate();
     });
 
-    it("Large binary message (1MB)", function (done) {
-      const body = generateBinaryData(1024); // 1 MB
+    it("Large binary message (~1MB)", function (done) {
+      const body = generateBinaryData(1023); // 1 MB
       client.treatMessageAsBinary = function (message) {
         return true;
       };

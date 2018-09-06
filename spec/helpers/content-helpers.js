@@ -1,9 +1,9 @@
-let randomText = function () {
+randomText = function () {
   return '' + Math.random();
 };
 
 // Generate k Kilo Bytes of binary data
-let generateBinaryData = function (k) {
+generateBinaryData = function (k) {
   let chunk = [];
   for (let i = 0; i < 4 * k; i++) {
     for (let j = 0; j < 256; j++) {
@@ -14,7 +14,7 @@ let generateBinaryData = function (k) {
 };
 
 // Generate k Kilo Bytes of text; data
-let generateTextData = function (k) {
+generateTextData = function (k) {
   let chunk = // 256 Bytes
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed uta' +
     ' ornare arcu. Aenean vehicula, magna in viverra pulvinar, enimr ' +
