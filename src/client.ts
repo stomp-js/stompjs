@@ -17,7 +17,32 @@ import {StompHandler} from "./stomp-handler";
  */
 export class Client {
   /**
+   * The URL for the STOMP broker to connect to.
+   * Typically like `"ws://broker.329broker.com:15674/ws"` or `"wss://broker.329broker.com:15674/ws"`.
+   *
+   * Only one of this or [Client#webSocketFactory]{@link Client#webSocketFactory} need to be set.
+   * If both are set, [Client#webSocketFactory]{@link Client#webSocketFactory} will be used.
+   */
+  public brokerURL: string;
+
+  /**
    * This function should return a WebSocket or a similar (e.g. SockJS) object.
+   * If your STOMP Broker supports WebSockets, prefer setting [Client#brokerURL]{@link Client#brokerURL}.
+   *
+   * If both this and [Client#brokerURL]{@link Client#brokerURL} are set, this will be used.
+   *
+   * Example:
+   * ```javascript
+   *        // use a WebSocket
+   *        client.webSocketFactory= function () {
+   *          return new WebSocket("wss://broker.329broker.com:15674/ws");
+   *        };
+   *
+   *        // Typical usage with SockJS
+   *        client.webSocketFactory= function () {
+   *          return new SockJS("http://broker.329broker.com/stomp");
+   *        };
+   * ```
    */
   public webSocketFactory: () => WebSocket;
 
@@ -214,7 +239,6 @@ export class Client {
     // These parameters would typically get proper values before connect is called
     this.connectHeaders = {};
     this.disconnectHeaders = {};
-    this.webSocketFactory = () => null;
 
     // Apply configuration
     this.configure(conf);
@@ -302,7 +326,7 @@ export class Client {
   }
 
   private _createWebSocket() {
-    const webSocket = this.webSocketFactory();
+    const webSocket = this.webSocketFactory ? this.webSocketFactory() : new WebSocket(this.brokerURL);
     webSocket.binaryType = "arraybuffer";
     return webSocket;
   }

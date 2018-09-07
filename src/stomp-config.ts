@@ -14,6 +14,11 @@ import {
  */
 export interface StompConfig {
   /**
+   * See [Client#brokerURL]{@link Client#brokerURL}.
+   */
+  brokerURL?: string;
+
+  /**
    * See [Client#webSocketFactory]{@link Client#webSocketFactory}.
    */
   webSocketFactory?: () => any;

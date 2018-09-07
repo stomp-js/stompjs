@@ -8,9 +8,7 @@ stompClient = function () {
       login: TEST.login,
       passcode: TEST.password
     },
-    webSocketFactory: function () {
-      return new WebSocket(TEST.url);
-    },
+    brokerURL: TEST.url,
     debug: function (str) {
       console.log('CLIENT ' + myId + ': ' + str);
     },
@@ -22,6 +20,7 @@ stompClient = function () {
 
 badStompClient = function () {
   const client = stompClient();
+  // brokerURL is also provided, in this case webSocketFactory should get used
   client.webSocketFactory = function () {
     return new WebSocket(TEST.badUrl);
   };
