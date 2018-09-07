@@ -14,8 +14,7 @@ stompClient = function () {
     },
     reconnectDelay: 0
   };
-  const client = new StompJs.Client(stompConfig);
-  return client;
+  return new StompJs.Client(stompConfig);
 };
 
 badStompClient = function () {
