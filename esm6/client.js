@@ -44,7 +44,6 @@ var Client = /** @class */ (function () {
         // These parameters would typically get proper values before connect is called
         this.connectHeaders = {};
         this.disconnectHeaders = {};
-        this.webSocketFactory = function () { return null; };
         // Apply configuration
         this.configure(conf);
     }
@@ -152,7 +151,7 @@ var Client = /** @class */ (function () {
         this._stompHandler.start();
     };
     Client.prototype._createWebSocket = function () {
-        var webSocket = this.webSocketFactory();
+        var webSocket = this.webSocketFactory ? this.webSocketFactory() : new WebSocket(this.brokerURL);
         webSocket.binaryType = "arraybuffer";
         return webSocket;
     };

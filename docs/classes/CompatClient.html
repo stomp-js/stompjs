@@ -448,6 +448,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Public</span>
+                                <a href="#brokerURL">brokerURL</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#connectHeaders">connectHeaders</a>
                             </li>
                             <li>
@@ -656,6 +660,56 @@ and <a href="../classes/Client.html#webSocketFactory">Client#webSocketFactory</a
             <tbody>
                 <tr>
                     <td class="col-md-4">
+                        <a name="brokerURL"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            brokerURL
+                            </b>
+                            <a href="#brokerURL"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <span class="modifier-icon fa fa-reset"></span><code>brokerURL:     <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Inherited from     <code><a href="../classes/Client.html" target="_self" >Client</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in Client:26</div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>The URL for the STOMP broker to connect to.
+Typically like <code>&quot;ws://broker.329broker.com:15674/ws&quot;</code> or <code>&quot;wss://broker.329broker.com:15674/ws&quot;</code>.</p>
+<p>Only one of this or <a href="../classes/Client.html#webSocketFactory">Client#webSocketFactory</a> need to be set.
+If both are set, <a href="../classes/Client.html#webSocketFactory">Client#webSocketFactory</a> will be used.</p>
+</div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
                         <a name="connectHeaders"></a>
                         <span class="name">
                             <b>
@@ -686,7 +740,7 @@ and <a href="../classes/Client.html#webSocketFactory">Client#webSocketFactory</a
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:63</div>
+                                    <div class="io-line">Defined in Client:88</div>
                             </td>
                         </tr>
 
@@ -735,7 +789,7 @@ details specific to your broker.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:181</div>
+                                    <div class="io-line">Defined in Client:206</div>
                             </td>
                         </tr>
 
@@ -786,7 +840,7 @@ and may contain sensitive information (like passwords, tokens etc.).</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:68</div>
+                                    <div class="io-line">Defined in Client:93</div>
                             </td>
                         </tr>
 
@@ -838,7 +892,7 @@ and may contain sensitive information (like passwords, tokens etc.).</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:32</div>
+                                    <div class="io-line">Defined in Client:57</div>
                             </td>
                         </tr>
 
@@ -890,7 +944,7 @@ and may contain sensitive information (like passwords, tokens etc.).</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:37</div>
+                                    <div class="io-line">Defined in Client:62</div>
                             </td>
                         </tr>
 
@@ -942,7 +996,7 @@ and may contain sensitive information (like passwords, tokens etc.).</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:44</div>
+                                    <div class="io-line">Defined in Client:69</div>
                             </td>
                         </tr>
 
@@ -991,7 +1045,7 @@ WebSocket frames (default is 16KiB).</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:137</div>
+                                    <div class="io-line">Defined in Client:162</div>
                             </td>
                         </tr>
 
@@ -1040,7 +1094,7 @@ Sometimes clients will like to use headers from this frame.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:150</div>
+                                    <div class="io-line">Defined in Client:175</div>
                             </td>
                         </tr>
 
@@ -1093,7 +1147,7 @@ STOMP broker disconnects.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:159</div>
+                                    <div class="io-line">Defined in Client:184</div>
                             </td>
                         </tr>
 
@@ -1143,7 +1197,7 @@ Please check broker specific documentation for exact behavior.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:122</div>
+                                    <div class="io-line">Defined in Client:147</div>
                             </td>
                         </tr>
 
@@ -1191,7 +1245,7 @@ Please check broker specific documentation for exact behavior.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:106</div>
+                                    <div class="io-line">Defined in Client:131</div>
                             </td>
                         </tr>
 
@@ -1243,7 +1297,7 @@ from an endpoint.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:115</div>
+                                    <div class="io-line">Defined in Client:140</div>
                             </td>
                         </tr>
 
@@ -1293,7 +1347,7 @@ Prefer using <a href="../classes/Client.html#watchForReceipt">Client#watchForRec
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:167</div>
+                                    <div class="io-line">Defined in Client:192</div>
                             </td>
                         </tr>
 
@@ -1347,7 +1401,7 @@ is passed as parameter to the callback.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:27</div>
+                                    <div class="io-line">Defined in Client:52</div>
                             </td>
                         </tr>
 
@@ -1394,7 +1448,7 @@ is passed as parameter to the callback.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:94</div>
+                                    <div class="io-line">Defined in Client:119</div>
                             </td>
                         </tr>
 
@@ -1456,14 +1510,25 @@ If this returns <code>false</code>, the body will be assumed to UTF8 string and 
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:22</div>
+                                    <div class="io-line">Defined in Client:47</div>
                             </td>
                         </tr>
 
                 <tr>
                     <td class="col-md-4">
-                        <div class="io-description"><p>This function should return a WebSocket or a similar (e.g. SockJS) object.</p>
-</div>
+                        <div class="io-description"><p>This function should return a WebSocket or a similar (e.g. SockJS) object.
+If your STOMP Broker supports WebSockets, prefer setting <a href="../classes/Client.html#brokerURL">Client#brokerURL</a>.</p>
+<p>If both this and <a href="../classes/Client.html#brokerURL">Client#brokerURL</a> are set, this will be used.</p>
+<p>Example:</p>
+<div><pre class="line-numbers"><code class="language-javascript">        // use a WebSocket
+        client.webSocketFactory= function () {
+          return new WebSocket(&quot;wss://broker.329broker.com:15674/ws&quot;);
+        };
+
+        // Typical usage with SockJS
+        client.webSocketFactory= function () {
+          return new SockJS(&quot;http://broker.329broker.com/stomp&quot;);
+        };</code></pre></div></div>
                     </td>
                 </tr>
 
@@ -1818,7 +1883,7 @@ However, there may be special purpose headers corresponding to your STOMP broker
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:494</div>
+                                    <div class="io-line">Defined in Client:518</div>
                             </td>
                         </tr>
 
@@ -1901,7 +1966,7 @@ It is preferable to abort a transaction by calling <a href="../interfaces/Transa
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:511</div>
+                                    <div class="io-line">Defined in Client:535</div>
                             </td>
                         </tr>
 
@@ -2018,7 +2083,7 @@ on the <a href="../interfaces/Message.html">Message</a> handled by a subscriptio
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:238</div>
+                                    <div class="io-line">Defined in Client:262</div>
                             </td>
                         </tr>
 
@@ -2069,7 +2134,7 @@ it will keep trying to reconnect.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:463</div>
+                                    <div class="io-line">Defined in Client:487</div>
                             </td>
                         </tr>
 
@@ -2150,7 +2215,7 @@ and <a href="../interfaces/Transaction.html#abort">abort</a>.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:479</div>
+                                    <div class="io-line">Defined in Client:503</div>
                             </td>
                         </tr>
 
@@ -2233,7 +2298,7 @@ and <a href="../interfaces/Transaction.html#abort">abort</a>.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:226</div>
+                                    <div class="io-line">Defined in Client:250</div>
                             </td>
                         </tr>
 
@@ -2312,7 +2377,7 @@ and <a href="../interfaces/Transaction.html#abort">abort</a>.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:325</div>
+                                    <div class="io-line">Defined in Client:349</div>
                             </td>
                         </tr>
 
@@ -2361,7 +2426,7 @@ and <a href="../interfaces/Transaction.html#abort">abort</a>.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:528</div>
+                                    <div class="io-line">Defined in Client:552</div>
                             </td>
                         </tr>
 
@@ -2478,7 +2543,7 @@ on the <a href="../interfaces/Message.html">Message</a> handled by a subscriptio
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:370</div>
+                                    <div class="io-line">Defined in Client:394</div>
                             </td>
                         </tr>
 
@@ -2573,7 +2638,7 @@ Please check your broker documentation.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:437</div>
+                                    <div class="io-line">Defined in Client:461</div>
                             </td>
                         </tr>
 
@@ -2700,7 +2765,7 @@ the <a href="../interfaces/Message.html">Message</a> as argument.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:453</div>
+                                    <div class="io-line">Defined in Client:477</div>
                             </td>
                         </tr>
 
@@ -2801,7 +2866,7 @@ the <a href="../interfaces/Message.html">Message</a> as argument.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:409</div>
+                                    <div class="io-line">Defined in Client:433</div>
                             </td>
                         </tr>
 
