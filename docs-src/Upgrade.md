@@ -1,134 +1,239 @@
 # Upgrade (Work in Progress)
 
-## Auto Reconnect
+## Upgrading from version 3/4
+
+This version uses newer Javascript features. Few these can be pollyfilled in older
+browsers.
+However https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
+is critically needed and not possible to be efficiently pollyfilled.
+If you need to support any browser that does not have native support for Uint8Array
+please continue using version 4 of this library.
+
+### Basic changes
+
+#### Browser users
+- The name/path of the library has changed:
+    - lib/stomp.js --> bundles/stomp.umd.js
+    - lib/stomp.min.js --> bundles/stomp.umd.min.js
+- The project uses UMD now. Only one variable `StompJs` is exposed.
+- You should set one of the following:
+```javascript
+    // To use compatibility mode
+    var Stomp = StompJs.Stomp;
+
+    // Or, to use new API
+    var Client = StompJs.Client;
+```
+
+#### NodeJS users
+
+The library is also distributed as `esm5` modules. It is preferred to use that from NodeJS.
+
+```bash
+# You need to add `websocket` as your dependency:
+$ npm i websocket
+```
+
+```javascript
+    // This is simplest way to get going
+    WebSocket = require('websocket').w3cwebsocket;
+
+    StompJs = require('@stomp/stompjs/esm5/');
+
+    // To use compatibility mode
+    var Stomp = StompJs.Stomp;
+
+    // Or, to use new API
+    var Client = StompJs.Client;
+```
+
+#### Pollyfills
+
+*Instructions for browsers*
+
+- [Object.assign](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign).
+  It is not supported by IE (supported by Edge).
+  It will need to be polyfilled from `npm` package `es6-object-assign`. A simple approach:
+```html
+<script src="https://cdn.jsdelivr.net/npm/es6-object-assign@1.1.0/dist/object-assign-auto.min.js"></script>
+```
+- [TextEncoder](https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder)
+  and
+  [TextDecoder](https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder).
+  These are not supported by any of the MicroSoft browsers as of 2018.
+  These will need to be polyfilled from `npm` package `text-encoding`. A simple approach:
+```html
+<script src="https://cdn.jsdelivr.net/npm/text-encoding@0.6.4/lib/encoding.min.js"></script>
+```
+
+*Instructions for NodeJS*
+
+```bash
+$ npm i text-encoding
+```
+
+```javascript
+// There is a proposal to add these by default in NodeJS, so good idea is to check first
+if (typeof TextEncoder !== 'function') {
+  const TextEncodingPolyfill = require('text-encoding');
+  TextEncoder = TextEncodingPolyfill.TextEncoder;
+  TextDecoder = TextEncodingPolyfill.TextDecoder;
+}
+```
+
+### For the lazy: use the compatibility mode
+
+With the changes above, your code should now work. If you face issues please
+raise an issue at https://github.com/stomp-js/stompjs/issues
+
+*Note: no new features will be added to the compatibility mode.
+Attempt would be made so that code working in version 3/4 continue
+to work. The compatibility mode will be maintained for a year.*
+
+
+### Take control: proper upgrade
+
+This section covers rationale of new features and 
+changes needed to take full advantage.
+
+#### Creating a client and connecting
+
+In version 3/4 typically a client instance is created and one of the
+variants of connect is called.
+Over the years connect has gotten many variants with different
+combination of parameters.
+
+The new version makes all options settable on client instance.
+These options can be passed during creation of a client or while
+calling [client.activate](https://stomp-js.github.io/stompjs/classes/Client.html#activate).
+
+**Old**
+
+```javascript
+    const client = Stomp.client("ws://localhost:15674/ws");
+    
+    client.debug =  function (str) {
+      console.log(str);
+    };
+    
+    client.heartbeat.incoming = 4000;
+    client.heartbeat.outgoing = 4000;
+    
+    client.reconnect_delay = 5000;
+    
+    client.connect("user", "password",
+      function () {
+        // Do something
+      });
+```
+
+**Updated**
+
+```javascript
+    const client = new Client({
+      brokerURL: "ws://localhost:15674/ws",
+      connectHeaders: {
+        login: "user",
+        passcode: "password"
+      },
+      debug: function (str) {
+        console.log(str);
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000
+    });
+    
+    client.onConnect = function(frame) {
+    // Do something
+    };
+    
+    client.activate();
+```
+
+Please see [StompConfig](../interfaces/StompConfig.html) for all possible options.
+These options can be set onto [client](../classes/Client.html).
+Alternatively these can be passed
+as options to the [Client constructor](../classes/Client.html#constructor) constructor,
+the [Client#activate](../classes/Client.html#activate)
+or the [Client#deactivate](../classes/Client.html#deactivate) calls.
+If you want to set options in bulk you can use [Client#configure](../classes/Client.html#configure).
+
+#### Publishing messages
+
+**Old**
+
+```javascript
+    client.send('/topic/general', {}, 'Hello world');
+
+    // Skip content length header
+    client.send('/topic/general', {'content-length': false}, 'Hello world');
+ 
+    // Additional headers
+    client.send('/topic/general', {'priority': '9'}, 'Hello world');
+```
+
+**Updated**
+
+```javascript
+    client.publish({destination: '/topic/general', body: 'Hello world'});
+
+    // There is an option to skip content length header
+    client.publish({destination: '/topic/general', body: 'Hello world', skipContentLengthHeader: true});
+    
+    // Additional headers
+    client.publish({destination: '/topic/general', body: 'Hello world', headers: {'priority': '9'}});
+```
+
+#### Semantic changes
+
+- [Stomp.client](../classes/Stomp.html#client) --> [Client constructor](../classes/Client.html#constructor)
+  and [Client#brokerURL](../classes/Client.html#brokerURL)
+- [Stomp.over](../classes/Stomp.html#over) --> [Client constructor](../classes/Client.html#constructor)
+  and [Client#webSocketFactory](../classes/Client.html#webSocketFactory)
+- [connect](../classes/CompatClient.html#connect) --> [Client#activate](../classes/Client.html#activate)
+    - login, passcode, host --> [Client#connectHeaders](../classes/Client.html#connectHeaders)
+    - connectCallback --> [Client#onConnect](../classes/Client.html#onConnect) 
+    - errorCallback --> [Client#onStompError](../classes/Client.html#onStompError)
+    - closeEventCallback --> [Client#onWebSocketClose](../classes/Client.html#onWebSocketClose) 
+- [disconnect](../classes/CompatClient.html#disconnect) --> [Client#deactivate](../classes/Client.html#deactivate)
+    - disconnectCallback --> [Client#onDisconnect](../classes/Client.html#onDisconnect)
+- [send](../classes/CompatClient.html#send) --> [Client#publish](../classes/Client.html#publish)
+
+#### Name changes
+
+These changes have been carried out in order to make a consistent naming convention (lowerCamelCase)
+and to make meaning of the option clearer.
+
+- [reconnect_delay](../classes/CompatClient.html#reconnect_delay) --> [Client#reconnectDelay](../classes/Client.html#reconnectDelay)
+- [ws](../classes/CompatClient.html#ws) --> [Client#webSocket](../classes/Client.html#webSocket)
+- [onreceive](../classes/CompatClient.html#onreceive) --> [Client#onUnhandledMessage](../classes/Client.html#onUnhandledMessage)
+- [onreceipt](../classes/CompatClient.html#onreceipt) --> [Client#onUnhandledReceipt](../classes/Client.html#onUnhandledReceipt)
+- [heartbeat](../classes/CompatClient.html#heartbeat).incoming --> [Client#heartbeatIncoming](../classes/Client.html#heartbeatIncoming)
+- [heartbeat](../classes/CompatClient.html#heartbeat).outgoing --> [Client#heartbeatOutgoing](../classes/Client.html#heartbeatOutgoing)
+
+
+## Migrating from Version 2
+
+You will need to follow the instructions above with few additional considerations.
 
 Please note:
 
-* After each connect (i.e., initial connect as well each reconnection) the connectCallback
+* Auto reconnect is switched on by default.
+  Set [Client#reconnectDelay](../classes/Client.html#reconnectDelay) to `0` to disable.
+* After each connect (i.e., initial connect as well each reconnection) the 
+  [Client#onConnect](../classes/Client.html#onConnect) (connectCallback in earlier versions)
   will be called.
 * After reconnecting, it will not automatically subscribe to queues that were subscribed.
-  So, if all subscriptions are part of the connectCallback (which it would in most of the cases),
+  So, if all subscriptions are part of the 
+  [Client#onConnect](../classes/Client.html#onConnect) (which it would in most of the cases),
   you will not need to do any additional handling.
 
-### Stomp.client, Stomp.overTCP, or, Stomp.overWS
+Additional notes:
 
-Just add `client.reconnect_delay = 5000;`. The delay is in milli seconds. A value
-of `0` indicates auto reconnect is disabled.
-
-```javascript
-    var url = "ws://localhost:61614/stomp";
-    var client = Stomp.client(url);
-    
-    // Add the following if you need automatic reconnect (delay is in milli seconds)
-    client.reconnect_delay = 5000;
-```
-
-See also:
-
-* [Auto Reconnect](Usage.md.html#toc_7)
-
-### Stomp.over
-
-If you were using Stomp.over like:
-
-```javascript
-    <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
-    <script>
-        // use SockJS implementation instead of the browser's native implementation
-        var ws = new SockJS(url);
-        var client = Stomp.over(ws);
-        // ...
-    </script>
-```
-
-Change it to:
-
-```javascript
-    <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
-    <script>
-        // use SockJS implementation instead of the browser's native implementation
-        var client = Stomp.over(function(){
-                                   return new SockJS(url);
-                                });
-    
-        // Add the following if you need automatic reconnect (delay is in milli seconds)
-        client.reconnect_delay = 5000;
-        // ...
-    </script>
-```
-
-See also:
-
-* [Stomp.over](../../mixin/Stomp.html#over-)
-
-## NodeJS
-
-NodeJS now supports same semantics as the browser, so you might need to make changes
-if you were using NodeJS specific syntax.
-
-### Stomp.overWS -> Stomp.client
-
-Just change the method name:
-
-```javascript
-    var client = Stomp.overWS("ws://localhost:61614/stomp");
-```
- to
- 
-```javascript
-    var client = Stomp.client("ws://localhost:61614/stomp");
-```
-
-* [Stomp.client](../../mixin/Stomp.html#client-)
-
-
-### Stomp.overTCP -> Stomp.client
-
-The older code to handle STOMP over TCP was not properly maintained. So, this library
-drops support for using STOMP over raw TCP. If you need that functionality you may
-need to use the original version of this library from:
-https://github.com/jmesnil/stomp-websocket
-
-To upgrade:
-
-* Ensure that your STOMP broker is configured to communicate STOMP over
-  WebSocket.
-* Get the WebSocket endpoint URL - typically like `ws://localhost:61614/stomp`
-
-```javascript
-    var client = Stomp.overTCP("localhost", 61613);
-```
- to
- 
-```javascript
-    var client = Stomp.client("ws://localhost:61614/stomp");
-```
-
-Do test your application.
-
-See also:
-
-* [Stomp.client](../../mixin/Stomp.html#client-)
-
-## SockJS -> WebSocket
-
-Summary of steps:
-
-* Ensure that your STOMP broker is configured to communicate STOMP over
-  WebSocket.
-* SockJS and WebSocket use different handshake mechanism, so, their end points
-  are likely to be different.
-* Get the WebSocket endpoint URL - typically like `ws://localhost:61614/stomp`
-* Replace your code to create `Client` similar to:
-
-```javascript
-    var client = Stomp.client("ws://localhost:61614/stomp");
-```
-
-See also:
-
-* [SockJS Limitations](sockjs.md.html)
-* [Stomp.over](../../mixin/Stomp.html#over-)
-* [Stomp.client](../../mixin/Stomp.html#client-)
-
-
+- `Stomp.overWS` is same as `Stomp.client`. Follow the instructions for `Stomp.client` above.
+- `NodeJS` is supported at same level as browser. Test suits are executed for both NodJS and browser.
+  Follow the instructions as above.
+- `Stomp.overTCP` is no longer supported. If your brokers supports WebStomp (STOMP over WebSocket),
+  you may switch to that.
+- If you are using `SockJS` please also see [SockJS support](../sockjs.html)

@@ -6,6 +6,8 @@ import {frameCallbackType, messageCallbackType} from "../types";
  * Available for backward compatibility, please shift to using {@link Client}.
  *
  * **Deprecated**
+ *
+ * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
  */
 export class CompatClient extends Client {
 
@@ -14,6 +16,8 @@ export class CompatClient extends Client {
    * and [Client#webSocketFactory]{@link Client#webSocketFactory}.
    *
    * **Deprecated**
+   *
+   * @internal
    */
   constructor(webSocketFactory: () => any) {
     super();
@@ -67,23 +71,11 @@ export class CompatClient extends Client {
    * - connectCallback, see [Client#onConnect]{@link Client#onConnect}
    * - errorCallback, see [Client#onStompError]{@link Client#onStompError}
    * - closeEventCallback, see [Client#onWebSocketClose]{@link Client#onWebSocketClose}
-   * - login [String]
-   * - passcode [String]
-   * - host [String] Optional, virtual host to connect to. STOMP 1.2 makes it mandatory,
-   *                 however the broker may not mandate it
+   * - login [String], see [Client#connectHeaders](../classes/Client.html#connectHeaders)
+   * - passcode [String], [Client#connectHeaders](../classes/Client.html#connectHeaders)
+   * - host [String], see [Client#connectHeaders](../classes/Client.html#connectHeaders)
    *
-   * ```javascript
-   *        client.connect('guest, 'guest', function(frame) {
-   *          client.debug("connected to Stomp");
-   *          client.subscribe(destination, function(message) {
-   *            $("#messages").append("<p>" + message.body + "</p>\n");
-   *          });
-   *        });
-   * ```
-   *
-   * Note: When auto reconnect is active, `connectCallback` and `errorCallback` will be called on each connect or error
-   *
-   * See also: [CONNECT Frame]{@link http://stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame}
+   * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
    */
   public connect(...args: any[]): void {
     const out = this._parseConnect(...args);
@@ -97,13 +89,15 @@ export class CompatClient extends Client {
   }
 
   /**
-   * Available for backward compatibility, please shift to using [Client#activate]{@link Client#activate}.
+   * Available for backward compatibility, please shift to using [Client#deactivate]{@link Client#deactivate}.
    *
    * **Deprecated**
    *
    * See:
    * [Client#onDisconnect]{@link Client#onDisconnect}, and
    * [Client#disconnectHeaders]{@link Client#disconnectHeaders}
+   *
+   * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
    */
   public disconnect(disconnectCallback?: any, headers: StompHeaders = {}): void {
     if (disconnectCallback) {
@@ -132,7 +126,7 @@ export class CompatClient extends Client {
    *        client.send("/queue/test", {}, "Hello, STOMP");
    * ```
    *
-   * See: http://stomp.github.com/stomp-specification-1.2.html#SEND SEND Frame
+   * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
    */
   public send(destination: string, headers: {[key:string]: any} = {}, body: string = ''): void {
     const skipContentLengthHeader = (headers['content-length'] === false);
