@@ -54,12 +54,6 @@
                             <span class="fa fa-fw fa-file-text-o"></span>LICENSE
                         </a>
                     </li>
-                    <li class="link">
-                        <a href="dependencies.html"
-                            data-type="chapter-link">
-                            <span class="fa fa-fw fa-list"></span>Dependencies
-                        </a>
-                    </li>
             </ul>
         </li>
 
@@ -235,12 +229,6 @@
                             <a href="license.html"
                         data-type="chapter-link">
                             <span class="fa fa-fw fa-file-text-o"></span>LICENSE
-                        </a>
-                    </li>
-                    <li class="link">
-                        <a href="dependencies.html"
-                            data-type="chapter-link">
-                            <span class="fa fa-fw fa-list"></span>Dependencies
                         </a>
                     </li>
             </ul>
@@ -422,6 +410,7 @@
             <p class="comment">
                 <p>Available for backward compatibility, please shift to using <a href="../classes/Client.html">Client</a>.</p>
 <p><strong>Deprecated</strong></p>
+<p>To upgrade, please follow the <a href="../additional-documentation/upgrading.html">Upgrade Guide</a></p>
 
             </p>
 
@@ -598,58 +587,6 @@
     </table>
 </section>
 
-            <section>
-    <h3 id="constructor">Constructor</h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-<code>constructor(webSocketFactory: () => void)</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/compatibility/compat-client.ts:10</a></div>
-                            </td>
-                        </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                            <div class="io-description"><p>Available for backward compatibility, please shift to using <a href="../classes/Client.html">Client</a>
-and <a href="../classes/Client.html#webSocketFactory">Client#webSocketFactory</a>.</p>
-<p><strong>Deprecated</strong></p>
-</div>
-                            <div>
-                                    <b>Parameters :</b>
-                                    <table class="params">
-                                        <thead>
-                                            <tr>
-                                                <td>Name</td>
-                                                    <td>Type</td>
-                                                <td>Optional</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr>
-                                                        <td>webSocketFactory</td>
-                                                  
-                                                        <td>
-                                                                    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/function" target="_blank" >function</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            no
-                                                    </td>
-                                                    
-                                                </tr>
-                                        </tbody>
-                                    </table>
-                            </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-</section>
 
             <section>
     
@@ -1565,7 +1502,7 @@ If your STOMP Broker supports WebSockets, prefer setting <a href="../classes/Cli
 
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="88" class="link-to-prism">src/compatibility/compat-client.ts:88</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="80" class="link-to-prism">src/compatibility/compat-client.ts:80</a></div>
                             </td>
                         </tr>
 
@@ -1591,17 +1528,11 @@ version with headers to pass your broker specific options.</p>
 <li>connectCallback, see <a href="../classes/Client.html#onConnect">Client#onConnect</a></li>
 <li>errorCallback, see <a href="../classes/Client.html#onStompError">Client#onStompError</a></li>
 <li>closeEventCallback, see <a href="../classes/Client.html#onWebSocketClose">Client#onWebSocketClose</a></li>
-<li>login [String]</li>
-<li>passcode [String]</li>
-<li>host [String] Optional, virtual host to connect to. STOMP 1.2 makes it mandatory,<div><pre class="line-numbers"><code class="language-none">           however the broker may not mandate it</code></pre></div></li>
+<li>login [String], see <a href="../classes/Client.html#connectHeaders">Client#connectHeaders</a></li>
+<li>passcode [String], <a href="../classes/Client.html#connectHeaders">Client#connectHeaders</a></li>
+<li>host [String], see <a href="../classes/Client.html#connectHeaders">Client#connectHeaders</a></li>
 </ul>
-<div><pre class="line-numbers"><code class="language-javascript">        client.connect(&#39;guest, &#39;guest&#39;, function(frame) {
-          client.debug(&quot;connected to Stomp&quot;);
-          client.subscribe(destination, function(message) {
-            $(&quot;#messages&quot;).append(&quot;&lt;p&gt;&quot; + message.body + &quot;&lt;/p&gt;\n&quot;);
-          });
-        });</code></pre></div><p>Note: When auto reconnect is active, <code>connectCallback</code> and <code>errorCallback</code> will be called on each connect or error</p>
-<p>See also: <a href="http://stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame">CONNECT Frame</a></p>
+<p>To upgrade, please follow the <a href="../additional-documentation/upgrading.html">Upgrade Guide</a></p>
 </div>
 
                             <div class="io-description">
@@ -1667,18 +1598,19 @@ version with headers to pass your broker specific options.</p>
 
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="108" class="link-to-prism">src/compatibility/compat-client.ts:108</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="102" class="link-to-prism">src/compatibility/compat-client.ts:102</a></div>
                             </td>
                         </tr>
 
 
                 <tr>
                     <td class="col-md-4">
-                            <div class="io-description"><p>Available for backward compatibility, please shift to using <a href="../classes/Client.html#activate">Client#activate</a>.</p>
+                            <div class="io-description"><p>Available for backward compatibility, please shift to using <a href="../classes/Client.html#deactivate">Client#deactivate</a>.</p>
 <p><strong>Deprecated</strong></p>
 <p>See:
 <a href="../classes/Client.html#onDisconnect">Client#onDisconnect</a>, and
 <a href="../classes/Client.html#disconnectHeaders">Client#disconnectHeaders</a></p>
+<p>To upgrade, please follow the <a href="../additional-documentation/upgrading.html">Upgrade Guide</a></p>
 </div>
 
                             <div class="io-description">
@@ -1762,7 +1694,7 @@ version with headers to pass your broker specific options.</p>
 
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="137" class="link-to-prism">src/compatibility/compat-client.ts:137</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="131" class="link-to-prism">src/compatibility/compat-client.ts:131</a></div>
                             </td>
                         </tr>
 
@@ -1778,7 +1710,7 @@ However, there may be special purpose headers corresponding to your STOMP broker
 <div><pre class="line-numbers"><code class="language-javascript">        client.send(&quot;/queue/test&quot;, {priority: 9}, &quot;Hello, STOMP&quot;);
 
         // If you want to send a message with a body, you must also pass the headers argument.
-        client.send(&quot;/queue/test&quot;, {}, &quot;Hello, STOMP&quot;);</code></pre></div><p>See: <a href="http://stomp.github.com/stomp-specification-1.2.html#SEND">http://stomp.github.com/stomp-specification-1.2.html#SEND</a> SEND Frame</p>
+        client.send(&quot;/queue/test&quot;, {}, &quot;Hello, STOMP&quot;);</code></pre></div><p>To upgrade, please follow the <a href="../additional-documentation/upgrading.html">Upgrade Guide</a></p>
 </div>
 
                             <div class="io-description">
@@ -2980,7 +2912,7 @@ when corresponding receipt has been received.</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="155" class="link-to-prism">src/compatibility/compat-client.ts:155</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="149" class="link-to-prism">src/compatibility/compat-client.ts:149</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3041,7 +2973,7 @@ when corresponding receipt has been received.</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="164" class="link-to-prism">src/compatibility/compat-client.ts:164</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="158" class="link-to-prism">src/compatibility/compat-client.ts:158</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3075,7 +3007,7 @@ when corresponding receipt has been received.</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="173" class="link-to-prism">src/compatibility/compat-client.ts:173</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="167" class="link-to-prism">src/compatibility/compat-client.ts:167</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3098,7 +3030,7 @@ when corresponding receipt has been received.</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="182" class="link-to-prism">src/compatibility/compat-client.ts:182</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="176" class="link-to-prism">src/compatibility/compat-client.ts:176</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3155,7 +3087,7 @@ when corresponding receipt has been received.</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="192" class="link-to-prism">src/compatibility/compat-client.ts:192</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="186" class="link-to-prism">src/compatibility/compat-client.ts:186</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3179,7 +3111,7 @@ Prefer using <a href="../classes/Client.html#watchForReceipt">Client#watchForRec
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="201" class="link-to-prism">src/compatibility/compat-client.ts:201</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="195" class="link-to-prism">src/compatibility/compat-client.ts:195</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3236,7 +3168,7 @@ Prefer using <a href="../classes/Client.html#watchForReceipt">Client#watchForRec
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="213" class="link-to-prism">src/compatibility/compat-client.ts:213</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="207" class="link-to-prism">src/compatibility/compat-client.ts:207</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3256,7 +3188,7 @@ Prefer using <a href="../classes/Client.html#watchForReceipt">Client#watchForRec
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="223" class="link-to-prism">src/compatibility/compat-client.ts:223</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="217" class="link-to-prism">src/compatibility/compat-client.ts:217</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3315,6 +3247,8 @@ import {frameCallbackType, messageCallbackType} from &quot;../types&quot;;
  * Available for backward compatibility, please shift to using {@link Client}.
  *
  * **Deprecated**
+ *
+ * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
  */
 export class CompatClient extends Client {
 
@@ -3323,6 +3257,8 @@ export class CompatClient extends Client {
    * and [Client#webSocketFactory]{@link Client#webSocketFactory}.
    *
    * **Deprecated**
+   *
+   * @internal
    */
   constructor(webSocketFactory: () &#x3D;&gt; any) {
     super();
@@ -3376,23 +3312,11 @@ export class CompatClient extends Client {
    * - connectCallback, see [Client#onConnect]{@link Client#onConnect}
    * - errorCallback, see [Client#onStompError]{@link Client#onStompError}
    * - closeEventCallback, see [Client#onWebSocketClose]{@link Client#onWebSocketClose}
-   * - login [String]
-   * - passcode [String]
-   * - host [String] Optional, virtual host to connect to. STOMP 1.2 makes it mandatory,
-   *                 however the broker may not mandate it
+   * - login [String], see [Client#connectHeaders](../classes/Client.html#connectHeaders)
+   * - passcode [String], [Client#connectHeaders](../classes/Client.html#connectHeaders)
+   * - host [String], see [Client#connectHeaders](../classes/Client.html#connectHeaders)
    *
-   * &#x60;&#x60;&#x60;javascript
-   *        client.connect(&#x27;guest, &#x27;guest&#x27;, function(frame) {
-   *          client.debug(&quot;connected to Stomp&quot;);
-   *          client.subscribe(destination, function(message) {
-   *            $(&quot;#messages&quot;).append(&quot;&lt;p&gt;&quot; + message.body + &quot;&lt;/p&gt;\n&quot;);
-   *          });
-   *        });
-   * &#x60;&#x60;&#x60;
-   *
-   * Note: When auto reconnect is active, &#x60;connectCallback&#x60; and &#x60;errorCallback&#x60; will be called on each connect or error
-   *
-   * See also: [CONNECT Frame]{@link http://stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame}
+   * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
    */
   public connect(...args: any[]): void {
     const out &#x3D; this._parseConnect(...args);
@@ -3406,13 +3330,15 @@ export class CompatClient extends Client {
   }
 
   /**
-   * Available for backward compatibility, please shift to using [Client#activate]{@link Client#activate}.
+   * Available for backward compatibility, please shift to using [Client#deactivate]{@link Client#deactivate}.
    *
    * **Deprecated**
    *
    * See:
    * [Client#onDisconnect]{@link Client#onDisconnect}, and
    * [Client#disconnectHeaders]{@link Client#disconnectHeaders}
+   *
+   * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
    */
   public disconnect(disconnectCallback?: any, headers: StompHeaders &#x3D; {}): void {
     if (disconnectCallback) {
@@ -3441,7 +3367,7 @@ export class CompatClient extends Client {
    *        client.send(&quot;/queue/test&quot;, {}, &quot;Hello, STOMP&quot;);
    * &#x60;&#x60;&#x60;
    *
-   * See: http://stomp.github.com/stomp-specification-1.2.html#SEND SEND Frame
+   * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
    */
   public send(destination: string, headers: {[key:string]: any} &#x3D; {}, body: string &#x3D; &#x27;&#x27;): void {
     const skipContentLengthHeader &#x3D; (headers[&#x27;content-length&#x27;] &#x3D;&#x3D;&#x3D; false);

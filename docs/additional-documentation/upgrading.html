@@ -54,12 +54,6 @@
                             <span class="fa fa-fw fa-file-text-o"></span>LICENSE
                         </a>
                     </li>
-                    <li class="link">
-                        <a href="dependencies.html"
-                            data-type="chapter-link">
-                            <span class="fa fa-fw fa-list"></span>Dependencies
-                        </a>
-                    </li>
             </ul>
         </li>
 
@@ -237,12 +231,6 @@
                             <span class="fa fa-fw fa-file-text-o"></span>LICENSE
                         </a>
                     </li>
-                    <li class="link">
-                        <a href="dependencies.html"
-                            data-type="chapter-link">
-                            <span class="fa fa-fw fa-list"></span>Dependencies
-                        </a>
-                    </li>
             </ul>
         </li>
 
@@ -400,90 +388,149 @@
 
 
 <h1 id="upgrade-work-in-progress-">Upgrade (Work in Progress)</h1>
-<h2 id="auto-reconnect">Auto Reconnect</h2>
+<h2 id="upgrading-from-version-3-4">Upgrading from version 3/4</h2>
+<p>This version uses newer Javascript features. Few these can be pollyfilled in older
+browsers.
+However <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Uint8Array</a>
+is critically needed and not possible to be efficiently pollyfilled  (notably in IE9 or lower).
+If you need to support any browser that does not have native support for Uint8Array
+please continue using version 4 of this library.</p>
+<h3 id="basic-changes">Basic changes</h3>
+<p>Please follow section <a href="usage.html#include-stomp-js">Include STOMP.js</a> to add latest version
+and to include necessary polyfills.</p>
+<p>The following is for convenience - to keep the code change to the minimum.</p>
+<div><pre class="line-numbers"><code class="language-javascript">    // Depending on your JS version you may have to use var instead of const 
+
+    // To use compatibility mode
+    const Stomp = StompJs.Stomp;</code></pre></div><h3 id="for-the-lazy-use-the-compatibility-mode">For the lazy: use the compatibility mode</h3>
+<p>With the changes above, your code should now work. If you face issues please
+raise an issue at <a href="https://github.com/stomp-js/stompjs/issues">https://github.com/stomp-js/stompjs/issues</a></p>
+<p><em>Note: no new features will be added to the compatibility mode.
+Attempt would be made so that code working in version 3/4 continue
+to work. The compatibility mode will be maintained for a year.</em></p>
+<h3 id="take-control-proper-upgrade">Take control: proper upgrade</h3>
+<p>This section covers rationale of new features and 
+changes needed to take full advantage.</p>
+<h4 id="creating-a-client-and-connecting">Creating a client and connecting</h4>
+<p>In version 3/4 typically a client instance is created and one of the
+variants of connect is called.
+Over the years connect has gotten many variants with different
+combination of parameters.</p>
+<p>The new version makes all options settable on client instance.
+These options can be passed during creation of a client or while
+calling <a href="https://stomp-js.github.io/stompjs/classes/Client.html#activate">client.activate</a>.</p>
+<p><strong>Old</strong></p>
+<div><pre class="line-numbers"><code class="language-javascript">    const client = Stomp.client(&quot;ws://localhost:15674/ws&quot;);
+
+    client.debug =  function (str) {
+      console.log(str);
+    };
+
+    client.heartbeat.incoming = 4000;
+    client.heartbeat.outgoing = 4000;
+
+    client.reconnect_delay = 5000;
+
+    client.connect(&quot;user&quot;, &quot;password&quot;,
+      function () {
+        // Do something
+      });</code></pre></div><p><strong>Updated</strong></p>
+<div><pre class="line-numbers"><code class="language-javascript">    const client = new StompJs.Client({
+      brokerURL: &quot;ws://localhost:15674/ws&quot;,
+      connectHeaders: {
+        login: &quot;user&quot;,
+        passcode: &quot;password&quot;
+      },
+      debug: function (str) {
+        console.log(str);
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000
+    });
+
+    client.onConnect = function(frame) {
+    // Do something
+    };
+
+    client.activate();</code></pre></div><p>Please see <a href="../interfaces/StompConfig.html">StompConfig</a> for all possible options.
+These options can be set onto <a href="../classes/Client.html">client</a>.
+Alternatively these can be passed
+as options to the <a href="../classes/Client.html#constructor">Client constructor</a> constructor,
+the <a href="../classes/Client.html#activate">Client#activate</a>
+or the <a href="../classes/Client.html#deactivate">Client#deactivate</a> calls.
+If you want to set options in bulk you can use <a href="../classes/Client.html#configure">Client#configure</a>.</p>
+<h4 id="publishing-messages">Publishing messages</h4>
+<p><strong>Old</strong></p>
+<div><pre class="line-numbers"><code class="language-javascript">    client.send(&#39;/topic/general&#39;, {}, &#39;Hello world&#39;);
+
+    // Skip content length header
+    client.send(&#39;/topic/general&#39;, {&#39;content-length&#39;: false}, &#39;Hello world&#39;);
+
+    // Additional headers
+    client.send(&#39;/topic/general&#39;, {&#39;priority&#39;: &#39;9&#39;}, &#39;Hello world&#39;);</code></pre></div><p><strong>Updated</strong></p>
+<div><pre class="line-numbers"><code class="language-javascript">    client.publish({destination: &#39;/topic/general&#39;, body: &#39;Hello world&#39;});
+
+    // There is an option to skip content length header
+    client.publish({destination: &#39;/topic/general&#39;, body: &#39;Hello world&#39;, skipContentLengthHeader: true});
+
+    // Additional headers
+    client.publish({destination: &#39;/topic/general&#39;, body: &#39;Hello world&#39;, headers: {&#39;priority&#39;: &#39;9&#39;}});</code></pre></div><h4 id="semantic-changes">Semantic changes</h4>
+<ul>
+<li><a href="../classes/Stomp.html#client">Stomp.client</a> --&gt; <a href="../classes/Client.html#constructor">Client constructor</a>
+and <a href="../classes/Client.html#brokerURL">Client#brokerURL</a></li>
+<li><a href="../classes/Stomp.html#over">Stomp.over</a> --&gt; <a href="../classes/Client.html#constructor">Client constructor</a>
+and <a href="../classes/Client.html#webSocketFactory">Client#webSocketFactory</a></li>
+<li><a href="../classes/CompatClient.html#connect">connect</a> --&gt; <a href="../classes/Client.html#activate">Client#activate</a><ul>
+<li>login, passcode, host --&gt; <a href="../classes/Client.html#connectHeaders">Client#connectHeaders</a></li>
+<li>connectCallback --&gt; <a href="../classes/Client.html#onConnect">Client#onConnect</a> </li>
+<li>errorCallback --&gt; <a href="../classes/Client.html#onStompError">Client#onStompError</a></li>
+<li>closeEventCallback --&gt; <a href="../classes/Client.html#onWebSocketClose">Client#onWebSocketClose</a> </li>
+</ul>
+</li>
+<li><a href="../classes/CompatClient.html#disconnect">disconnect</a> --&gt; <a href="../classes/Client.html#deactivate">Client#deactivate</a><ul>
+<li>disconnectCallback --&gt; <a href="../classes/Client.html#onDisconnect">Client#onDisconnect</a></li>
+</ul>
+</li>
+<li><a href="../classes/CompatClient.html#send">send</a> --&gt; <a href="../classes/Client.html#publish">Client#publish</a></li>
+</ul>
+<h4 id="name-changes">Name changes</h4>
+<p>These changes have been carried out in order to make a consistent naming convention (lowerCamelCase)
+and to make meaning of the option clearer.</p>
+<ul>
+<li><a href="../classes/CompatClient.html#reconnect_delay">reconnect_delay</a> --&gt; <a href="../classes/Client.html#reconnectDelay">Client#reconnectDelay</a></li>
+<li><a href="../classes/CompatClient.html#ws">ws</a> --&gt; <a href="../classes/Client.html#webSocket">Client#webSocket</a></li>
+<li><a href="../classes/CompatClient.html#onreceive">onreceive</a> --&gt; <a href="../classes/Client.html#onUnhandledMessage">Client#onUnhandledMessage</a></li>
+<li><a href="../classes/CompatClient.html#onreceipt">onreceipt</a> --&gt; <a href="../classes/Client.html#onUnhandledReceipt">Client#onUnhandledReceipt</a></li>
+<li><a href="../classes/CompatClient.html#heartbeat">heartbeat</a>.incoming --&gt; <a href="../classes/Client.html#heartbeatIncoming">Client#heartbeatIncoming</a></li>
+<li><a href="../classes/CompatClient.html#heartbeat">heartbeat</a>.outgoing --&gt; <a href="../classes/Client.html#heartbeatOutgoing">Client#heartbeatOutgoing</a></li>
+</ul>
+<h4 id="dropped-apis">Dropped APIs</h4>
+<ul>
+<li>Client.html#maxWebSocketFrameSize [TODO]</li>
+</ul>
+<h2 id="migrating-from-version-2">Migrating from Version 2</h2>
+<p>You will need to follow the instructions above with few additional considerations.</p>
 <p>Please note:</p>
 <ul>
-<li>After each connect (i.e., initial connect as well each reconnection) the connectCallback
+<li>Auto reconnect is switched on by default.
+Set <a href="../classes/Client.html#reconnectDelay">Client#reconnectDelay</a> to <code>0</code> to disable.</li>
+<li>After each connect (i.e., initial connect as well each reconnection) the 
+<a href="../classes/Client.html#onConnect">Client#onConnect</a> (connectCallback in earlier versions)
 will be called.</li>
 <li>After reconnecting, it will not automatically subscribe to queues that were subscribed.
-So, if all subscriptions are part of the connectCallback (which it would in most of the cases),
+So, if all subscriptions are part of the 
+<a href="../classes/Client.html#onConnect">Client#onConnect</a> (which it would in most of the cases),
 you will not need to do any additional handling.</li>
 </ul>
-<h3 id="stomp-client-stomp-overtcp-or-stomp-overws">Stomp.client, Stomp.overTCP, or, Stomp.overWS</h3>
-<p>Just add <code>client.reconnect_delay = 5000;</code>. The delay is in milli seconds. A value
-of <code>0</code> indicates auto reconnect is disabled.</p>
-<div><pre class="line-numbers"><code class="language-javascript">    var url = &quot;ws://localhost:61614/stomp&quot;;
-    var client = Stomp.client(url);
-
-    // Add the following if you need automatic reconnect (delay is in milli seconds)
-    client.reconnect_delay = 5000;</code></pre></div><p>See also:</p>
+<p>Additional notes:</p>
 <ul>
-<li><a href="Usage.md.html#toc_7">Auto Reconnect</a></li>
-</ul>
-<h3 id="stomp-over">Stomp.over</h3>
-<p>If you were using Stomp.over like:</p>
-<div><pre class="line-numbers"><code class="language-javascript">    &lt;script src=&quot;http://cdn.sockjs.org/sockjs-0.3.min.js&quot;&gt;&lt;/script&gt;
-    &lt;script&gt;
-        // use SockJS implementation instead of the browser&#39;s native implementation
-        var ws = new SockJS(url);
-        var client = Stomp.over(ws);
-        // ...
-    &lt;/script&gt;</code></pre></div><p>Change it to:</p>
-<div><pre class="line-numbers"><code class="language-javascript">    &lt;script src=&quot;http://cdn.sockjs.org/sockjs-0.3.min.js&quot;&gt;&lt;/script&gt;
-    &lt;script&gt;
-        // use SockJS implementation instead of the browser&#39;s native implementation
-        var client = Stomp.over(function(){
-                                   return new SockJS(url);
-                                });
-
-        // Add the following if you need automatic reconnect (delay is in milli seconds)
-        client.reconnect_delay = 5000;
-        // ...
-    &lt;/script&gt;</code></pre></div><p>See also:</p>
-<ul>
-<li><a href="../../mixin/Stomp.html#over-">Stomp.over</a></li>
-</ul>
-<h2 id="nodejs">NodeJS</h2>
-<p>NodeJS now supports same semantics as the browser, so you might need to make changes
-if you were using NodeJS specific syntax.</p>
-<h3 id="stomp-overws-stomp-client">Stomp.overWS -&gt; Stomp.client</h3>
-<p>Just change the method name:</p>
-<div><pre class="line-numbers"><code class="language-javascript">    var client = Stomp.overWS(&quot;ws://localhost:61614/stomp&quot;);</code></pre></div><p> to</p>
-<div><pre class="line-numbers"><code class="language-javascript">    var client = Stomp.client(&quot;ws://localhost:61614/stomp&quot;);</code></pre></div><ul>
-<li><a href="../../mixin/Stomp.html#client-">Stomp.client</a></li>
-</ul>
-<h3 id="stomp-overtcp-stomp-client">Stomp.overTCP -&gt; Stomp.client</h3>
-<p>The older code to handle STOMP over TCP was not properly maintained. So, this library
-drops support for using STOMP over raw TCP. If you need that functionality you may
-need to use the original version of this library from:
-<a href="https://github.com/jmesnil/stomp-websocket">https://github.com/jmesnil/stomp-websocket</a></p>
-<p>To upgrade:</p>
-<ul>
-<li>Ensure that your STOMP broker is configured to communicate STOMP over
-WebSocket.</li>
-<li>Get the WebSocket endpoint URL - typically like <code>ws://localhost:61614/stomp</code></li>
-</ul>
-<div><pre class="line-numbers"><code class="language-javascript">    var client = Stomp.overTCP(&quot;localhost&quot;, 61613);</code></pre></div><p> to</p>
-<div><pre class="line-numbers"><code class="language-javascript">    var client = Stomp.client(&quot;ws://localhost:61614/stomp&quot;);</code></pre></div><p>Do test your application.</p>
-<p>See also:</p>
-<ul>
-<li><a href="../../mixin/Stomp.html#client-">Stomp.client</a></li>
-</ul>
-<h2 id="sockjs-websocket">SockJS -&gt; WebSocket</h2>
-<p>Summary of steps:</p>
-<ul>
-<li>Ensure that your STOMP broker is configured to communicate STOMP over
-WebSocket.</li>
-<li>SockJS and WebSocket use different handshake mechanism, so, their end points
-are likely to be different.</li>
-<li>Get the WebSocket endpoint URL - typically like <code>ws://localhost:61614/stomp</code></li>
-<li>Replace your code to create <code>Client</code> similar to:</li>
-</ul>
-<div><pre class="line-numbers"><code class="language-javascript">    var client = Stomp.client(&quot;ws://localhost:61614/stomp&quot;);</code></pre></div><p>See also:</p>
-<ul>
-<li><a href="sockjs.md.html">SockJS Limitations</a></li>
-<li><a href="../../mixin/Stomp.html#over-">Stomp.over</a></li>
-<li><a href="../../mixin/Stomp.html#client-">Stomp.client</a></li>
+<li><code>Stomp.overWS</code> is same as <code>Stomp.client</code>. Follow the instructions for <code>Stomp.client</code> above.</li>
+<li><code>NodeJS</code> is supported at same level as browser. Test suits are executed for both NodJS and browser.
+Follow the instructions as above.</li>
+<li><code>Stomp.overTCP</code> is no longer supported. If your brokers supports WebStomp (STOMP over WebSocket),
+you may switch to that.</li>
+<li>If you are using <code>SockJS</code> please also see <a href="../sockjs.html">SockJS support</a></li>
 </ul>
 
                    </div><div class="search-results">

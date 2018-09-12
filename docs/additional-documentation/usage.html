@@ -54,12 +54,6 @@
                             <span class="fa fa-fw fa-file-text-o"></span>LICENSE
                         </a>
                     </li>
-                    <li class="link">
-                        <a href="dependencies.html"
-                            data-type="chapter-link">
-                            <span class="fa fa-fw fa-list"></span>Dependencies
-                        </a>
-                    </li>
             </ul>
         </li>
 
@@ -237,12 +231,6 @@
                             <span class="fa fa-fw fa-file-text-o"></span>LICENSE
                         </a>
                     </li>
-                    <li class="link">
-                        <a href="dependencies.html"
-                            data-type="chapter-link">
-                            <span class="fa fa-fw fa-list"></span>Dependencies
-                        </a>
-                    </li>
             </ul>
         </li>
 
@@ -408,137 +396,104 @@ authoritative list.</p>
 <h2 id="include-stomp-js">Include STOMP.js</h2>
 <h3 id="in-web-browser">In Web Browser</h3>
 <ul>
-<li>Download <a href="https://raw.githubusercontent.com/stomp-js/stomp-websocket/master/lib/stomp.js">stomp.js</a>
-or <a href="https://raw.githubusercontent.com/stomp-js/stomp-websocket/master/lib/stomp.min.js">stomp.min.js</a></li>
-<li>Include in your web page.</li>
-<li><code>Stomp</code> object will now be available. Read along to learn how to use it.</li>
+<li>Download or directly include one of [CDN links] or from <code>bundles/</code> folder.</li>
+<li><code>StompJs</code> object will now be available. Read along to learn how to use it.</li>
+</ul>
+<h4 id="pollyfills">Pollyfills</h4>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign">Object.assign</a>.
+It is not supported by IE (supported by Edge).
+It will need to be polyfilled from <code>npm</code> package <code>es6-object-assign</code>. A simple approach:<div><pre class="line-numbers"><code class="language-html">  &lt;script src=&quot;https://cdn.jsdelivr.net/npm/es6-object-assign&#64;1.1.0/dist/object-assign-auto.min.js&quot;&gt;&lt;/script&gt;</code></pre></div></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder">TextEncoder</a>
+and
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder">TextDecoder</a>.
+These are not supported by any of the MicroSoft browsers as of 2018.
+These will need to be polyfilled from <code>npm</code> package <code>text-encoding</code>. A simple approach:<div><pre class="line-numbers"><code class="language-html">  &lt;script src=&quot;https://cdn.jsdelivr.net/npm/text-encoding&#64;0.6.4/lib/encoding.min.js&quot;&gt;&lt;/script&gt;</code></pre></div></li>
 </ul>
 <h3 id="in-nodejs">In NodeJS</h3>
 <ul>
-<li><p>Add npm modules <code>@stomp/stompjs</code> and <code>websocket</code> to your project.</p>
-<ul>
-<li>using <code>npm</code><div><pre class="line-numbers"><code class="language-bash">$ npm install &#64;stomp/stompjs websocket --save</code></pre></div></li>
-<li>using <code>yarn</code><div><pre class="line-numbers"><code class="language-bash">$ yarn add &#64;stomp/stompjs websocket</code></pre></div></li>
-</ul>
-</li>
+<li><p>Add npm modules <code>@stomp/stompjs</code>, <code>websocket</code> and <code>text-encoding</code> to your project.</p>
+<div><pre class="line-numbers"><code class="language-bash">  $ npm install &#64;stomp/stompjs websocket text-encoding</code></pre></div></li>
 <li><p>Require the module</p>
-<div><pre class="line-numbers"><code class="language-javascript">  var Stomp = require(&#39;&#64;stomp/stompjs&#39;);</code></pre></div></li>
-<li>Read along to learn how to use the <code>Stomp</code> object.</li>
+<div><pre class="line-numbers"><code class="language-javascript">      // This is simplest way to get going
+      WebSocket = require(&#39;websocket&#39;).w3cwebsocket;
+
+      // There is a proposal to add these by default in NodeJS, so good idea is to check first
+      if (typeof TextEncoder !== &#39;function&#39;) {
+        const TextEncodingPolyfill = require(&#39;text-encoding&#39;);
+        TextEncoder = TextEncodingPolyfill.TextEncoder;
+        TextDecoder = TextEncodingPolyfill.TextDecoder;
+      }
+
+      StompJs = require(&#39;&#64;stomp/stompjs/esm5/&#39;);  </code></pre></div></li>
+<li>Read along to learn how to use the <code>StompJs</code> object.</li>
 </ul>
+<h2 id="setting-getting-options">Setting/getting options</h2>
+<p>All options can be set/get by directly operating on the client instance:</p>
+<div><pre class="line-numbers"><code class="language-javascript">    const client = new StompJs.Client();
+    client.brokerURL = &quot;ws://localhost:15674/ws&quot;;
+
+    console.log(client.brokerURL);</code></pre></div><p>These can also be set passing key/value pairs to <a href="../classes/Client.html#constructor">Client constructor</a>
+or to <a href="../classes/Client.html#configure">Client#configure</a>.</p>
 <h2 id="create-a-stomp-client">Create a STOMP client</h2>
-<p>STOMP JavaScript clients will communicate to a STOMP server using a <code>ws://</code> URL.</p>
-<p>To create a STOMP client JavaScript object, you need to call <code>Stomp.client(url)</code>
- with the URL corresponding to the server&#39;s WebSocket endpoint:</p>
-<div><pre class="line-numbers"><code class="language-javascript">  var url = &quot;ws://localhost:15674/ws&quot;;
-  var client = Stomp.client(url);</code></pre></div><p>The Stomp.client(url, protocols) can also be used to override the 
-default subprotocols provided by the library: 
-[&#39;v10.stomp&#39;, &#39;v11.stomp&#39;, &#39;v12.stomp&#39;] (for STOMP 1.0, 1.1, &amp; 1.2 
-specifications). This second argument can either be a single string
- or an array of strings to specify multiple subprotocols.</p>
-<p><strong>Notes:</strong> </p>
-<ul>
-<li>In older versions of this library creating the client NodeJS was different.
-If you need the old behavior please use version 3.x.x of the library.</li>
-<li>Recent versions of all web browsers and nodejs support WebSocket. However
-if you need to support older browsers, please see <a href="sockjs.md.html">SockJS Support</a>.</li>
-</ul>
-<h2 id="connection-to-the-server">Connection to the server</h2>
-<p>Once a STOMP client is created, it must call its <code>connect()</code> method to 
-effectively connect and authenticate to the STOMP server. Usually the STOMP
- broker needs
- two arguments, <code>login</code> and <code>passcode</code> corresponding to the user
-  credentials. As per STOMP 1.2 <code>host</code> is mandatory, however many
-  STOMP brokers do not insist on this.</p>
-<p>Behind the scene, the client will open a connection using a WebSocket and send a
- <a href="http://stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame">CONNECT</a>
-frame.</p>
-<p>The connection is done asynchronously: you have no guarantee to be effectively
-connected when the call to <code>connect</code> returns. To be notified of the connection, 
-you need to pass a <code>connect_callback</code> function to the <code>connect()</code> method:</p>
-<div><pre class="line-numbers"><code class="language-javascript">  var connect_callback = function() {
-    // called back after the client is connected and authenticated to the STOMP server
-  };</code></pre></div><p>But what happens if the connection fails? the <code>connect()</code> method accepts an
-  optional <code>error_callback</code> argument which will be called if the client is not able
-  to connect to the server.
-  The callback will be called with a single argument, an error object 
-  corresponding to STOMP
-  <a href="http://stomp.github.com/stomp-specification-1.2.html#ERROR">ERROR</a> frame:</p>
-<div><pre class="line-numbers"><code class="language-javascript">  var error_callback = function(error) {
-    // display the error&#39;s message header:
-    alert(error.headers.message);
-  };</code></pre></div><p>The <code>connect()</code> method accepts different number of arguments to provide a simple 
-API to use in most cases:</p>
-<div><pre class="line-numbers"><code class="language-javascript">  client.connect(login, passcode, connectCallback);
-  client.connect(login, passcode, connectCallback, errorCallback);
-  client.connect(login, passcode, connectCallback, errorCallback, closeEventCallback);
-  client.connect(login, passcode, connectCallback, errorCallback, closeEventCallback, host);</code></pre></div><p>where <code>login</code>, <code>passcode</code> and <code>host</code> are strings. <code>connectCallback</code> and
-<code>errorCallback</code> is a function which will receive a <code>Frame</code> as argument and 
-<code>closeEventCallback</code> is a function which will receive a <a href="https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent">CloseEvent</a></p>
-<p>The <code>connect()</code> method also accepts two other variants if you need
- to pass additional headers:</p>
-<div><pre class="line-numbers"><code class="language-javascript">  client.connect(headers, connectCallback);
-  client.connect(headers, connectCallback, errorCallback);
-  client.connect(headers, connectCallback, errorCallback, closeEventCallback);</code></pre></div><p>where <code>header</code> is a <code>map</code>. <code>connectCallback</code> and
-<code>errorCallback</code> is a function which will receive a <code>Frame</code> as argument and 
-<code>closeEventCallback</code> is a function which will receive a <a href="https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent">CloseEvent</a></p>
-<p>Please note that if you use these forms, you will typically add <code>login</code>,
- <code>passcode</code> (and <code>host</code>) headers yourself:</p>
-<div><pre class="line-numbers"><code class="language-javascript">    var headers = {
-      login: &#39;mylogin&#39;,
-      passcode: &#39;mypasscode&#39;,
-      // additional header
-      &#39;client-id&#39;: &#39;my-client-id&#39;
+<p>STOMP JavaScript clients will communicate to a STOMP server using a <code>ws://</code> or <code>wss://</code> URL.</p>
+<div><pre class="line-numbers"><code class="language-javascript">    const client = new StompJs.Client({
+      brokerURL: &quot;ws://localhost:15674/ws&quot;,
+      connectHeaders: {
+        login: &quot;user&quot;,
+        passcode: &quot;password&quot;
+      },
+      debug: function (str) {
+        console.log(str);
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000
+    });
+
+    client.onConnect = function(frame) {
+      // Do something, all subscribes must be done is this callback
+      // This is needed because this will be executed after a (re)connect
     };
-    client.connect(headers, connectCallback);</code></pre></div><p>To disconnect a client from the server, you can call its <code>disconnect()</code>
- method. The disconnection is asynchronous: to be notified when 
- the disconnection is effective, the <code>disconnect</code> method takes an 
- optional <code>callback</code> argument.</p>
-<div><pre class="line-numbers"><code class="language-javascript">  client.disconnect(function() {
-    alert(&quot;See you next time!&quot;);
-  });</code></pre></div><p>When a client is disconnected, it can no longer send or receive messages.</p>
-<h2 id="heart-beating">Heart-beating</h2>
-<p>If the STOMP broker accepts STOMP 1.1 or higher frames, 
-heart-beating is enabled by default.</p>
-<p>The <code>client</code> object has a <code>heartbeat</code> field which can be used to configure 
-heart-beating by changing its incoming and outgoing integer fields 
-(default value for both is 10,000ms). These can be disabled by setting to 0.</p>
-<div><pre class="line-numbers"><code class="language-javascript">    client.heartbeat.outgoing = 20000; // client will send heartbeats every 20000ms
-    client.heartbeat.incoming = 0;     // client does not want to receive heartbeats
-                                       // from the server</code></pre></div><h2 id="auto-reconnect">Auto Reconnect</h2>
-<p>The <code>client</code> supports automatic reconnecting in case of a connection failure. It is
-controlled by a field <code>reconnect_delay</code>. Default value is 0, which indicates auto
-reconnect is disabled.</p>
-<div><pre class="line-numbers"><code class="language-javascript">  // Add the following if you need automatic reconnect (delay is in milli seconds)
-  client.reconnect_delay = 5000;</code></pre></div><h2 id="send-messages">Send messages</h2>
+
+    client.onStompError = function (frame) {
+      // Will be invoked in case of error encountered at Broker
+      // Bad login/passcode typically will cause an error
+      // Complaint brokers will set `message` header with a brief message. Body may contain details.
+      // Compliant brokers will terminate the connection after any error
+      console.log(&#39;Broker reported error: &#39; + frame.headers[&#39;message&#39;]);
+      console.log(&#39;Additional details: &#39; + frame.body);
+    };
+
+    client.activate();</code></pre></div><p>To deactivate a client call <a href="../classes/Client.html#deactivate">Client#deactivate</a>.
+It will stop sttempting to reconnect and disconnect if there is an active connection.</p>
+<div><pre class="line-numbers"><code class="language-javascript">    client.deactivate();</code></pre></div><h2 id="send-messages">Send messages</h2>
 <p>When the client is connected to the server, it can send STOMP messages using
-  the <code>send()</code> method. The method takes a mandatory <code>destination</code>
-  argument corresponding to the STOMP destination. It also takes two optional
-  arguments: <code>headers</code>, a JavaScript object containing additional
-  message headers and <code>body</code>, a String.</p>
-<div><pre class="line-numbers"><code class="language-javascript">  client.send(&quot;/queue/test&quot;, {priority: 9}, &quot;Hello, STOMP&quot;);</code></pre></div><p>The client will send a STOMP 
-<a href="http://stomp.github.com/stomp-specification-1.2.html#SEND">SEND</a>
-frame to <code>/queue/test</code> destination with a header <code>priority</code> set to <code>9</code> and
- a body <code>Hello, STOMP</code>.</p>
-<p>If you want to send a message with a <code>body</code>, you must also pass the <code>headers</code>
- argument. If you have no <code>headers</code> to pass, use an empty JavaScript literal <code>{}</code>:</p>
-<div><pre class="line-numbers"><code class="language-javascript">  client.send(destination, {}, body);</code></pre></div><h2 id="subscribe-and-receive-messages">Subscribe and receive messages</h2>
+the <a href="../classes/Client.html#publish">Client#publish</a> method.</p>
+<div><pre class="line-numbers"><code class="language-javascript">    client.publish({destination: &#39;/topic/general&#39;, body: &#39;Hello world&#39;});
+
+    // There is an option to skip content length header
+    client.publish({destination: &#39;/topic/general&#39;, body: &#39;Hello world&#39;, skipContentLengthHeader: true});
+
+    // Additional headers
+    client.publish({destination: &#39;/topic/general&#39;, body: &#39;Hello world&#39;, headers: {&#39;priority&#39;: &#39;9&#39;}});</code></pre></div><p>Starting version 5, sending binary messages is supported.
+If the body is of type 
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Uint8Array</a>,
+the data will be treated as binary.</p>
+<div><pre class="line-numbers"><code class="language-javascript">    var binaryData = generateBinaryData(); // This need to be of type Uint8Array
+    client.publish({destination: &#39;/topic/special&#39;, body: binaryData});</code></pre></div><h2 id="subscribe-and-receive-messages">Subscribe and receive messages</h2>
 <p>To receive messages in the browser, the STOMP client must first subscribe to 
 a destination.</p>
-<p>You can use the <code>subscribe()</code> method to subscribe to a destination. The method
+<p>You can use the <a href="../classes/Client.html#subscribe">Client#subscribe</a> method to subscribe to a destination. The method
 takes 2 mandatory arguments: <code>destination</code>, a String corresponding to the 
 destination and <code>callback</code>, a function with one message argument and an optional
 argument <code>headers</code>, a JavaScript object for additional headers.</p>
 <div><pre class="line-numbers"><code class="language-javascript">  var subscription = client.subscribe(&quot;/queue/test&quot;, callback);</code></pre></div><p>The subscribe() methods returns a JavaScript object with one attribute, <code>id</code>, 
 that correspond to the client subscription ID and one method <code>unsubscribe()</code> 
 that can be used later on to unsubscribe the client from this destination.</p>
-<p>By default, the library will generate an unique ID if there is none provided
-in the headers. To use your own ID, pass it using the headers argument:</p>
-<div><pre class="line-numbers"><code class="language-javascript">  var mysubid = &#39;my-subscription-id-001&#39;;
-  var subscription = client.subscribe(destination, callback, { id: mysubid });</code></pre></div><p>The client will send a STOMP 
-<a href="http://stomp.github.com/stomp-specification-1.2.html#SUBSCRIBE">SUBSCRIBE</a> 
-frame to the server and register the callback. Every time the server sends 
-a message to the client, the client will in turn call the callback with a 
-STOMP <code>Frame</code> object corresponding to the message:</p>
+<p>Every time the server sends 
+a message to the client, the client will in turn invoke the callback with a 
+<a href="../classes/Message.html">Message</a> object.</p>
 <div><pre class="line-numbers"><code class="language-javascript">  callback = function(message) {
     // called when the client receives a STOMP message from the server
     if (message.body) {
@@ -548,23 +503,42 @@ STOMP <code>Frame</code> object corresponding to the message:</p>
     }
   };</code></pre></div><p>The <code>subscribe()</code> method takes an optional headers argument to specify 
 additional <code>headers</code> when subscribing to a destination:</p>
-<div><pre class="line-numbers"><code class="language-javascript">  var headers = {ack: &#39;client&#39;, &#39;selector&#39;: &quot;location = &#39;Europe&#39;&quot;};
-  client.subscribe(&quot;/queue/test&quot;, message_callback, headers);</code></pre></div><p>The client specifies that it will handle the message acknowledgement and 
-is interested to receive only messages matching the selector location = &#39;Europe&#39;.</p>
-<p>If you want to subscribe the client to multiple destinations, you can use
-the same callback to receive all the messages:</p>
-<div><pre class="line-numbers"><code class="language-javascript">  onmessage = function(message) {
-    // called every time the client receives a message
-  };
-
-  var sub1 = client.subscribe(&quot;queue/test&quot;, onmessage);
-  var sub2 = client.subscribe(&quot;queue/another&quot;, onmessage);</code></pre></div><p>To stop receiving messages, the client can use the <code>unsubscribe()</code> method on 
-the object returned by the <code>subscribe()</code> method.</p>
+<div><pre class="line-numbers"><code class="language-javascript">  var headers = {ack: &#39;client&#39;};
+  client.subscribe(&quot;/queue/test&quot;, message_callback, headers);</code></pre></div><p>The client specifies that it will handle the message acknowledgement.</p>
+<p>To stop receiving messages, the client can use the 
+<a href="../interfaces/StompSubscription.html#unsubscribe">unsubscribe</a> method on 
+the object returned by the <a href="../classes/Client.html#subscribe">Client#subscribe</a> method.</p>
 <div><pre class="line-numbers"><code class="language-javascript">  var subscription = client.subscribe(&quot;queue/test&quot;, onmessage);
 
   // ... use the subscription ...
 
-  subscription.unsubscribe();</code></pre></div><p>JSON support</p>
+  subscription.unsubscribe();</code></pre></div><h2 id="binary-messages">Binary messages</h2>
+<h3 id="prep-your-broker">Prep your broker</h3>
+<p>Not every broker will support binary messages out of the box.
+For example RabbitMQ (see: <a href="https://www.rabbitmq.com/web-stomp.html">https://www.rabbitmq.com/web-stomp.html</a>)
+will need following to be added to the server configuration:</p>
+<div><pre class="line-numbers"><code class="language-none">web_stomp.ws_frame = binary</code></pre></div><h3 id="publishing-binary-messages">Publishing binary messages</h3>
+<p><a href="../classes/Client.html#publish">Client#publish</a> will treat a message as binary if <code>body</code> is
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Uint8Array</a>.</p>
+<h3 id="receiving-binary-messages">Receiving binary messages</h3>
+<p>There is a callback <a href="../classes/Client.html#treatMessageAsBinary">Client#treatMessageAsBinary</a>
+which by default returns <code>false</code> indicating all incoming messages are considered to be text and decoded as UTF8.
+If you are receiving binary messages you will need to provide an implementation of this callback.
+When this callback returns <code>true</code> the body will be returned as a
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Uint8Array</a>.</p>
+<div><pre class="line-numbers"><code class="language-javascript">    // When `true` octet data from teh body is returned as is.
+    // When `false` body of incoming message is converted to `string` assuming to be UTF8.
+
+    // Treat all messages a binary
+    client.treatMessageAsBinary = function(message) {
+      return true;
+    };
+
+    // Treat a message as binary based on content-type
+    // This header is not a standard header, while publishing messages it needs to be explicitly set.
+    client.treatMessageAsBinary = function(message) {
+      return message.headers[&#39;content-type&#39;] === &#39;application/octet-stream&#39;;
+    };</code></pre></div><h2 id="json-support">JSON support</h2>
 <p>The body of a STOMP message must be a String. If you want to send and receive
 <a href="http://json.org/">JSON</a> objects, you can use <code>JSON.stringify()</code> and 
 <code>JSON.parse()</code> to transform the JSON object to a String and vice versa.</p>
@@ -578,13 +552,11 @@ the object returned by the <code>subscribe()</code> method.</p>
 <p>By default, STOMP messages will be automatically acknowledged by the server
 before the message is delivered to the client.</p>
 <p>The client can choose instead to handle message 
-<a href="http://stomp.github.com/stomp-specification-1.2.html#SUBSCRIBE_ack_Header">acknowledgement</a> by subscribing 
+acknowledgement by subscribing 
 to a destination and specify a <code>ack</code> header set to <code>client</code> or 
 <code>client-individual</code>.</p>
-<p>In that case, the client must use the <code>message.ack()</code> method to inform the 
-server that it has acknowledge the message. This method sends an 
-<a href="http://stomp.github.io/stomp-specification-1.2.html#ACK">ACK</a> Frame to the
-broker.</p>
+<p>In that case, the client must use the <a href="../classes/Message.html#ack">Message#ack</a> method to inform the 
+server that it has processed the message.</p>
 <div><pre class="line-numbers"><code class="language-javascript">  var subscription = client.subscribe(&quot;/queue/test&quot;,
     function(message) {
       // do something with the message
@@ -593,55 +565,111 @@ broker.</p>
       message.ack();
     },
     {ack: &#39;client&#39;}
-  );</code></pre></div><p>The <code>ack()</code> method accepts a <code>headers</code> argument for additional headers to 
-acknowledge the message. For example, it is possible to acknowledge a 
-message as part of a transaction and ask for a receipt when the <code>ACK</code> STOMP 
-frame has effectively be processed by the broker:</p>
+  );</code></pre></div><p>The <a href="../classes/Message.html#ack">Message#ack</a> method accepts <code>headers</code> argument for additional headers.
+For example, it is possible to acknowledge a 
+message as part of a transaction and ask for a receipt when the <code>ACK</code> has effectively been processed by the broker:</p>
 <div><pre class="line-numbers"><code class="language-javascript">  var tx = client.begin();
   message.ack({ transaction: tx.id, receipt: &#39;my-receipt&#39; });
-  tx.commit();</code></pre></div><p>The <code>message.nack()</code> method can also be used to inform STOMP 1.1 or higher
-brokers that the client did not consume the message using a
-<a href="http://stomp.github.io/stomp-specification-1.2.html#NACK">NACK</a> Frame. It 
-takes the same arguments than the <code>ack()</code> method.</p>
+  tx.commit();</code></pre></div><p>The <a href="../classes/Message.html#nack">Message#nack</a> method can also be used to inform STOMP 1.1 or higher
+brokers that the client did not consume the message. It 
+takes the same arguments than the <a href="../classes/Message.html#ack">Message#ack</a> method.</p>
 <h2 id="transactions">Transactions</h2>
 <p>Messages can be sent and acknowledged <em>in a transaction</em>.</p>
-<p>A transaction is started by the client using its <code>begin()</code> method which 
-takes an optional <code>transaction_id</code>, a String which uniquely identifies the 
-transaction. If no <code>transaction_id</code> is passed, the library will generate 
-one automatically.</p>
+<p>A transaction is started by the client using its <a href="../classes/Client.html#begin">Client#begin</a> method which 
+takes an optional <code>transaction_id</code>.</p>
 <p>This methods returns a JavaScript object with an <code>id</code> attribute corresponding
 to the transaction ID and two methods:</p>
 <ul>
-<li><code>commit()</code> to commit the transaction</li>
-<li><code>abort()</code> to abort the transaction</li>
+<li><a href="../classes/Client.html#commit">Client#commit</a> to commit the transaction</li>
+<li><a href="../classes/Client.html#abort">Client#abort</a> to abort the transaction</li>
 </ul>
 <p>The client can then send and/or acknowledge messages in the transaction
 by specifying a <code>transaction</code> set with the transaction <code>id</code>.</p>
 <div><pre class="line-numbers"><code class="language-javascript">  // start the transaction
   var tx = client.begin();
   // send the message in a transaction
-  client.send(&quot;/queue/test&quot;, {transaction: tx.id}, &quot;message in a transaction&quot;);
+  client.publish({destination: &quot;/queue/test&quot;, headers: {transaction: tx.id}, body: &quot;message in a transaction&quot;});
   // commit the transaction to effectively send the message
-  tx.commit();</code></pre></div><p><em>If you forget to add the <code>transaction</code> header when calling <code>send()</code> the message
+  tx.commit();</code></pre></div><p><em>If you forget to add the <code>transaction</code> header when calling <a href="../classes/Client.html#publish">Client#publish</a> the message
 will not be part of the transaction and will be sent directly without waiting
 for the completion of the transaction.</em></p>
-<div><pre class="line-numbers"><code class="language-javascript">  var txid = &quot;unique_transaction_identifier&quot;;
-  // start the transaction
+<div><pre class="line-numbers"><code class="language-javascript">  // start the transaction
   var tx = client.begin();
   // oops! send the message outside the transaction
-  client.send(&quot;/queue/test&quot;, {}, &quot;I thought I was in a transaction!&quot;);
-  tx.abort(); // Too late! the message has been sent</code></pre></div><h2 id="debug">Debug</h2>
-<p>There are few tests in the code and it is helpful to see what is sent and 
-received from the library to debug application.</p>
-<p>The client can set its <code>debug</code> property to a function with takes a <code>String</code> 
+  client.publish({destination: &quot;/queue/test&quot;, body: &quot;message in a transaction&quot;});
+  tx.abort(); // Too late! the message has been sent</code></pre></div><h2 id="heart-beating">Heart-beating</h2>
+<p>If the STOMP broker accepts STOMP 1.1 or higher frames, 
+heart-beating is enabled by default.
+Options <a href="../classes/Client.html#heartbeatIncoming">Client#heartbeatIncoming</a>
+and <a href="../classes/Client.html#heartbeatOutgoing">Client#heartbeatOutgoing</a>
+can be used to control heart-beating
+(default value for both is 10,000ms). These can be disabled by setting to 0.</p>
+<div><pre class="line-numbers"><code class="language-javascript">    client.heartbeatOutgoing = 20000; // client will send heartbeats every 20000ms
+    client.heartbeatIncoming = 0;     // client does not want to receive heartbeats
+                                       // from the server</code></pre></div><h2 id="auto-reconnect">Auto Reconnect</h2>
+<p>The <code>client</code> supports automatic reconnecting in case of a connection failure. It is
+controlled by a option <a href="../classes/Client.html#reconnectDelay">Client#reconnectDelay</a>.
+Default value is 5000ms, which indicates that
+a attempt to connect will be made after 5000ms of a connection drop.</p>
+<div><pre class="line-numbers"><code class="language-javascript">  // Add the following if you need automatic reconnect (delay is in milli seconds)
+  client.reconnectDelay = 300;</code></pre></div><p>This can be set quite small.</p>
+<h2 id="debug">Debug</h2>
+<p>The client can set its <a href="../classes/Client.html#debug">Client#debug</a> property to a function with takes a <code>String</code> 
 argument to see all the debug statements of the library:</p>
 <div><pre class="line-numbers"><code class="language-javascript">  client.debug = function(str) {
-    // append the debug log to a #debug div somewhere in the page using JQuery:
-    $(&quot;#debug&quot;).append(str + &quot;\n&quot;);
-  };</code></pre></div><p>By default, the debug messages are logged in the browser window&#39;s console.</p>
-<p>On a busy system the logs can be overwhelming, to disable logging, set it to
-an empty function:</p>
-<div><pre class="line-numbers"><code class="language-javascript">  client.debug = function(str) {};</code></pre></div>
+    console.log(str);
+  };</code></pre></div><p>By default, the debug messages are ignored.
+On a busy system the logs can be overwhelming.</p>
+<h2 id="callbacks">Callbacks</h2>
+<h3 id="lifecycle-callbacks">Lifecycle callbacks</h3>
+<ul>
+<li><a href="../classes/Client.html#onConnect">Client#onConnect</a> - invoked for each time STOMP broker connects and
+STOMP handshake is complete</li>
+<li><a href="../classes/Client.html#onDisconnect">Client#onDisconnect</a> - invoked after each graceful disconnection.
+If the connection breaks because of an error or network failure, it will no tbe called.</li>
+<li><a href="../classes/Client.html#onStompError">Client#onStompError</a> - invoked when the broker reports an Error</li>
+<li><a href="../classes/Client.html#onWebSocketClose">Client#onWebSocketClose</a>  - when the WebSocket closes.
+It is most reliable way of knowing that the connection has terminated.</li>
+</ul>
+<h3 id="frame-callbacks">Frame callbacks</h3>
+<ul>
+<li><a href="../classes/Client.html#onUnhandledMessage">Client#onUnhandledMessage</a> - typically brokers will send messages
+corresponding to subscriptions. 
+However, brokers may support concepts that are beyond standard definition of STOMP -
+for example RabbitMQ support concepts of temporary queues.
+If any message is received that is not linked to a subscription, this callback will be invoked.</li>
+<li><a href="../classes/Client.html#onUnhandledReceipt">Client#onUnhandledReceipt</a> - you should prefer
+<a href="../classes/Client.html#watchForReceipt">Client#watchForReceipt</a>. If there is any incoming receipt for
+which there is no active watcher, this callback will be invoked.</li>
+<li><a href="../classes/Client.html#treatMessageAsBinary">Client#treatMessageAsBinary</a> - invoked for each incoming
+message, depending on the outcome, the body is returned as string or Uint8Array. The default implementation
+always returns <code>false</code>.</li>
+<li><a href="../classes/Client.html#onUnhandledFrame">Client#onUnhandledFrame</a> - it will be invoked if broker sends a
+non standard STOMP command.</li>
+</ul>
+<h2 id="advanced-notes">Advanced notes</h2>
+<p>The version 5 of this library has taken significant variation from previous syntax. This version allows
+all of the options and callbacks to be altered.
+New values will take effect as soon as possible. For example:</p>
+<ul>
+<li>Altered values of <a href="../classes/Client.html#onUnhandledMessage">Client#onUnhandledMessage</a> 
+or <a href="../classes/Client.html#onDisconnect">Client#onDisconnect</a> will be effective immediately.</li>
+<li>New values of <a href="../classes/Client.html#heartbeatIncoming">Client#heartbeatIncoming</a>
+and <a href="../classes/Client.html#heartbeatOutgoing">Client#heartbeatOutgoing</a> will be used next time STOMP connects.</li>
+</ul>
+<p>The callback sequences are arranged in a way that most expected operations should work.
+For example it is possible to call <a href="../classes/Client.html#deactivate">Client#deactivate</a>
+within <a href="../classes/Client.html#onStompError">Client#onStompError</a>
+or <a href="../classes/Client.html#onWebSocketClose">Client#onWebSocketClose</a>.
+This is useful if we determine that we have incorrect credentials and no point keep on trying to connect.</p>
+<p>The above also allows readjusting <a href="../classes/Client.html#reconnectDelay">Client#reconnectDelay</a>
+in <a href="../classes/Client.html#onWebSocketClose">Client#onWebSocketClose</a>.
+This can be used to implement exponential back-off before each successive reconnect attempt.</p>
+<p>Even <a href="../classes/Client.html#brokerURL">Client#brokerURL</a>
+or <a href="../classes/Client.html#connectHeaders">Client#connectHeaders</a>
+can be altered which would get used in a subsequent reconnect.
+However, I will suggest creating a new instance of the STOMP client in this scenario.</p>
+
                    </div><div class="search-results">
     <div class="has-results">
         <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>

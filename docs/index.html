@@ -54,12 +54,6 @@
                             <span class="fa fa-fw fa-file-text-o"></span>LICENSE
                         </a>
                     </li>
-                    <li class="link">
-                        <a href="dependencies.html"
-                            data-type="chapter-link">
-                            <span class="fa fa-fw fa-list"></span>Dependencies
-                        </a>
-                    </li>
             </ul>
         </li>
 
@@ -237,12 +231,6 @@
                             <span class="fa fa-fw fa-file-text-o"></span>LICENSE
                         </a>
                     </li>
-                    <li class="link">
-                        <a href="dependencies.html"
-                            data-type="chapter-link">
-                            <span class="fa fa-fw fa-list"></span>Dependencies
-                        </a>
-                    </li>
             </ul>
         </li>
 
@@ -387,47 +375,46 @@
 
 <h1 id="stomp-js">STOMP.js</h1>
 <p><a href="https://travis-ci.org/stomp-js/stompjs"><img src="https://travis-ci.org/stomp-js/stompjs.svg?branch=master" alt="Build Status" class="img-responsive"></a></p>
-<p>This library provides a WebSocket over STOMP client for Web browser or node.js 
+<p>This library provides a STOMP over WebSocket client for Web browser or node.js.
 applications.</p>
 <h1 id="introduction">Introduction</h1>
+<p>This repository is for version 5 and above of this library.
+For version 3/4 of this library is maintained at <a href="https://github.com/stomp-js/stomp-websocket">https://github.com/stomp-js/stomp-websocket</a>.</p>
 <p>This library allows you to connect to a STOMP broker over WebSocket. This library
 supports full STOMP specifications and all current protocol variants. Most
 popular messaging brokers support STOMP and STOMP over WebSockets either natively
 or using plugins.</p>
 <p>In general JavaScript engines in browsers are not friendly to binary protocols,
-so using STOMP is a better option because it is a text oriented protocol.</p>
-<p>This library was originally developed by <a href="http://jmesnil.net/">Jeff Mesnil</a>.</p>
+so using STOMP is a good option because it is a text oriented protocol.</p>
+<p>This library has its roots in a version released by <a href="http://jmesnil.net/">Jeff Mesnil</a>.</p>
 <h2 id="current-status">Current Status</h2>
+<p>Version 5 of this library has been bottom up rewritten using TypeScript (versions 3/4
+use CoffeeScript). The code has substantially changed, so, while there is a compatibility
+mode, you might need to update your code.</p>
 <p>This library is feature complete and has been used in production for many years. It
 is actively maintained. You are welcome to file issues and submit pull requests.</p>
+<h2 id="upgrading">Upgrading</h2>
+<p>if you were using an older version of this library, you would need to make changes
+to your code. Head to
+<a href="https://stomp-js.github.io/stompjs/additional-documentation/upgrading.html">Upgrading</a></p>
 <h2 id="getting-started">Getting started</h2>
 <p>The documentation is hosted as GitHub pages.
-You may head straight to the 
-<a href="https://stomp-js.github.io/stomp-websocket/codo/extra/docs-src/Introduction.md.html">entry point</a>.
-(or <a href="https://stomp-js.github.io/stomp-websocket/codo/">with frames</a>)</p>
+You may head straight to the <a href="https://stomp-js.github.io/stompjs/">https://stomp-js.github.io/stompjs/</a></p>
 <p>This library comes with detailed usage instructions. Please find it at 
-<a href="https://stomp-js.github.io/stomp-websocket/codo/extra/docs-src/Usage.md.html">Usage instructions</a>. </p>
-<p>If you were using older versions and wish to benefit from newer features, head to
-<a href="https://stomp-js.github.io/stomp-websocket/codo/extra/docs-src/Upgrade.md.html">Upgrading</a>. </p>
-<p>If you are an existing user and will like to deep dive - API references for important entities:</p>
-<ul>
-<li><a href="https://stomp-js.github.io/stomp-websocket/codo/mixin/Stomp.html">Stomp</a></li>
-<li><a href="https://stomp-js.github.io/stomp-websocket/codo/class/Client.html">Client</a></li>
-</ul>
-<h2 id="nodejs">NodeJS</h2>
-<p>If you are using this library in NodeJS you might need to make changes, please check
-<a href="https://stomp-js.github.io/stomp-websocket/codo/extra/docs-src/Upgrade.md.html">Upgrading</a>. </p>
+<a href="https://stomp-js.github.io/stompjs/additional-documentation/usage.html">Usage instructions</a>. </p>
+<p>There are quite detailed API documentation,
+you should start at <a href="https://stomp-js.github.io/stompjs/classes/Client.html">https://stomp-js.github.io/stompjs/classes/Client.html</a>.</p>
 <h2 id="usage-with-angular2-4-5">Usage with Angular2/4/5</h2>
 <p><a href="https://github.com/stomp-js/ng2-stompjs">https://github.com/stomp-js/ng2-stompjs</a> is based on this library and exposes the entire functionality
 offered by this library as Angular Services and rxjs Observables. Both these libraries are maintained
 by a similar set of contributors.</p>
 <h2 id="typescript-definitions">TypeScript definitions</h2>
-<p>The npm package includes <a href="https://github.com/stomp-js/stomp-websocket/blob/master/index.d.ts">TypeScript definitions</a>, so there is no need no install it separately.</p>
+<p>The npm package includes TypeScript definitions, so there is no need no install it separately.</p>
 <h2 id="change-log">Change log</h2>
-<p>Please visit <a href="https://stomp-js.github.io/stomp-websocket/codo/extra/docs-src/Change-log.md.html">Change Log</a>.</p>
+<p>Please visit <a href="https://stomp-js.github.io/stompjs/additional-documentation/change-log.html">Change Log</a>.</p>
 <h2 id="contributing">Contributing</h2>
 <p>If you want to understand the code, develop, or contribute. Please visit
-<a href="https://stomp-js.github.io/stomp-websocket/codo/extra/docs-src/Contribute.md.html">How to contribute</a>. </p>
+<a href="https://stomp-js.github.io/stompjs/additional-documentation/how-to-contribute.html">How to contribute</a>. </p>
 <h2 id="authors">Authors</h2>
 <ul>
 <li><a href="http://jmesnil.net/">Jeff Mesnil</a></li>
@@ -440,7 +427,7 @@ by a similar set of contributors.</p>
 <li><a href="https://github.com/rulonder">Raul</a></li>
 </ul>
 <h2 id="license">License</h2>
-<p><a href="https://stomp-js.github.io/stomp-websocket/codo/extra/LICENSE.txt.html">License</a> - Apache v2 License</p>
+<p><a href="https://stomp-js.github.io/stompjs/license.html">License</a> - Apache v2 License</p>
 
 
 
