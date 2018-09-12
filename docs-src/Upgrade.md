@@ -4,81 +4,23 @@
 
 This version uses newer Javascript features. Few these can be pollyfilled in older
 browsers.
-However https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
-is critically needed and not possible to be efficiently pollyfilled.
+However [Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)
+is critically needed and not possible to be efficiently pollyfilled  (notably in IE9 or lower).
 If you need to support any browser that does not have native support for Uint8Array
 please continue using version 4 of this library.
 
 ### Basic changes
 
-#### Browser users
-- The name/path of the library has changed:
-    - lib/stomp.js --> bundles/stomp.umd.js
-    - lib/stomp.min.js --> bundles/stomp.umd.min.js
-- The project uses UMD now. Only one variable `StompJs` is exposed.
-- You should set one of the following:
+Please follow section [Include STOMP.js](usage.html#include-stomp-js) to add latest version
+and to include necessary polyfills.
+
+The following is for convenience - to keep the code change to the minimum.
+
 ```javascript
+    // Depending on your JS version you may have to use var instead of const 
+     
     // To use compatibility mode
-    var Stomp = StompJs.Stomp;
-
-    // Or, to use new API
-    var Client = StompJs.Client;
-```
-
-#### NodeJS users
-
-The library is also distributed as `esm5` modules. It is preferred to use that from NodeJS.
-
-```bash
-# You need to add `websocket` as your dependency:
-$ npm i websocket
-```
-
-```javascript
-    // This is simplest way to get going
-    WebSocket = require('websocket').w3cwebsocket;
-
-    StompJs = require('@stomp/stompjs/esm5/');
-
-    // To use compatibility mode
-    var Stomp = StompJs.Stomp;
-
-    // Or, to use new API
-    var Client = StompJs.Client;
-```
-
-#### Pollyfills
-
-*Instructions for browsers*
-
-- [Object.assign](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign).
-  It is not supported by IE (supported by Edge).
-  It will need to be polyfilled from `npm` package `es6-object-assign`. A simple approach:
-```html
-<script src="https://cdn.jsdelivr.net/npm/es6-object-assign@1.1.0/dist/object-assign-auto.min.js"></script>
-```
-- [TextEncoder](https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder)
-  and
-  [TextDecoder](https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder).
-  These are not supported by any of the MicroSoft browsers as of 2018.
-  These will need to be polyfilled from `npm` package `text-encoding`. A simple approach:
-```html
-<script src="https://cdn.jsdelivr.net/npm/text-encoding@0.6.4/lib/encoding.min.js"></script>
-```
-
-*Instructions for NodeJS*
-
-```bash
-$ npm i text-encoding
-```
-
-```javascript
-// There is a proposal to add these by default in NodeJS, so good idea is to check first
-if (typeof TextEncoder !== 'function') {
-  const TextEncodingPolyfill = require('text-encoding');
-  TextEncoder = TextEncodingPolyfill.TextEncoder;
-  TextDecoder = TextEncodingPolyfill.TextDecoder;
-}
+    const Stomp = StompJs.Stomp;
 ```
 
 ### For the lazy: use the compatibility mode
@@ -130,7 +72,7 @@ calling [client.activate](https://stomp-js.github.io/stompjs/classes/Client.html
 **Updated**
 
 ```javascript
-    const client = new Client({
+    const client = new StompJs.Client({
       brokerURL: "ws://localhost:15674/ws",
       connectHeaders: {
         login: "user",
@@ -212,6 +154,9 @@ and to make meaning of the option clearer.
 - [heartbeat](../classes/CompatClient.html#heartbeat).incoming --> [Client#heartbeatIncoming](../classes/Client.html#heartbeatIncoming)
 - [heartbeat](../classes/CompatClient.html#heartbeat).outgoing --> [Client#heartbeatOutgoing](../classes/Client.html#heartbeatOutgoing)
 
+#### Dropped APIs
+
+- Client.html#maxWebSocketFrameSize [TODO]
 
 ## Migrating from Version 2
 

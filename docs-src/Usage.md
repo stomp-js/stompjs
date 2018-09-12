@@ -11,195 +11,129 @@ authoritative list.
 
 ### In Web Browser
 
-* Download [stomp.js](https://raw.githubusercontent.com/stomp-js/stomp-websocket/master/lib/stomp.js)
-or [stomp.min.js](https://raw.githubusercontent.com/stomp-js/stomp-websocket/master/lib/stomp.min.js)
-* Include in your web page.
-* `Stomp` object will now be available. Read along to learn how to use it.
+* Download or directly include one of [CDN links] or from `bundles/` folder.
+* `StompJs` object will now be available. Read along to learn how to use it.
+
+#### Pollyfills
+
+- [Object.assign](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign).
+  It is not supported by IE (supported by Edge).
+  It will need to be polyfilled from `npm` package `es6-object-assign`. A simple approach:
+    ```html
+    <script src="https://cdn.jsdelivr.net/npm/es6-object-assign@1.1.0/dist/object-assign-auto.min.js"></script>
+    ```
+- [TextEncoder](https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder)
+  and
+  [TextDecoder](https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder).
+  These are not supported by any of the MicroSoft browsers as of 2018.
+  These will need to be polyfilled from `npm` package `text-encoding`. A simple approach:
+    ```html
+    <script src="https://cdn.jsdelivr.net/npm/text-encoding@0.6.4/lib/encoding.min.js"></script>
+    ```
 
 ### In NodeJS
 
-* Add npm modules `@stomp/stompjs` and `websocket` to your project.
-  * using `npm`
+* Add npm modules `@stomp/stompjs`, `websocket` and `text-encoding` to your project.
     ```bash
-    $ npm install @stomp/stompjs websocket --save
-    ```
-  * using `yarn`
-    ```bash
-    $ yarn add @stomp/stompjs websocket
+    $ npm install @stomp/stompjs websocket text-encoding
     ```
 
 * Require the module
-
     ```javascript
-    var Stomp = require('@stomp/stompjs');
+        // This is simplest way to get going
+        WebSocket = require('websocket').w3cwebsocket;
+    
+        // There is a proposal to add these by default in NodeJS, so good idea is to check first
+        if (typeof TextEncoder !== 'function') {
+          const TextEncodingPolyfill = require('text-encoding');
+          TextEncoder = TextEncodingPolyfill.TextEncoder;
+          TextDecoder = TextEncodingPolyfill.TextDecoder;
+        }
+      
+        StompJs = require('@stomp/stompjs/esm5/');  
     ```
-* Read along to learn how to use the `Stomp` object.
+* Read along to learn how to use the `StompJs` object.
 
+## Setting/getting options
+
+All options can be set/get by directly operating on the client instance:
+
+```javascript
+    const client = new StompJs.Client();
+    client.brokerURL = "ws://localhost:15674/ws";
+    
+    console.log(client.brokerURL);
+```
+
+These can also be set passing key/value pairs to [Client constructor](../classes/Client.html#constructor)
+or to [Client#configure](../classes/Client.html#configure).
 
 ## Create a STOMP client
 
-STOMP JavaScript clients will communicate to a STOMP server using a `ws://` URL.
-
-To create a STOMP client JavaScript object, you need to call `Stomp.client(url)`
- with the URL corresponding to the server's WebSocket endpoint:
+STOMP JavaScript clients will communicate to a STOMP server using a `ws://` or `wss://` URL.
 
 ```javascript
-  var url = "ws://localhost:15674/ws";
-  var client = Stomp.client(url);
-```
-  
-The Stomp.client(url, protocols) can also be used to override the 
-default subprotocols provided by the library: 
-['v10.stomp', 'v11.stomp', 'v12.stomp'] (for STOMP 1.0, 1.1, & 1.2 
-specifications). This second argument can either be a single string
- or an array of strings to specify multiple subprotocols.
- 
-**Notes:** 
-
-* In older versions of this library creating the client NodeJS was different.
-If you need the old behavior please use version 3.x.x of the library.
-* Recent versions of all web browsers and nodejs support WebSocket. However
-if you need to support older browsers, please see [SockJS Support](sockjs.md.html).
-
-## Connection to the server
-
-Once a STOMP client is created, it must call its `connect()` method to 
-effectively connect and authenticate to the STOMP server. Usually the STOMP
- broker needs
- two arguments, `login` and `passcode` corresponding to the user
-  credentials. As per STOMP 1.2 `host` is mandatory, however many
-  STOMP brokers do not insist on this.
-  
-Behind the scene, the client will open a connection using a WebSocket and send a
- [CONNECT](http://stomp.github.com/stomp-specification-1.2.html#CONNECT_or_STOMP_Frame)
-frame.
-
-The connection is done asynchronously: you have no guarantee to be effectively
-connected when the call to `connect` returns. To be notified of the connection, 
-you need to pass a `connect_callback` function to the `connect()` method:
-
-```javascript
-  var connect_callback = function() {
-    // called back after the client is connected and authenticated to the STOMP server
-  };
-```
-
-But what happens if the connection fails? the `connect()` method accepts an
-  optional `error_callback` argument which will be called if the client is not able
-  to connect to the server.
-  The callback will be called with a single argument, an error object 
-  corresponding to STOMP
-  [ERROR](http://stomp.github.com/stomp-specification-1.2.html#ERROR) frame:
-  
-```javascript
-  var error_callback = function(error) {
-    // display the error's message header:
-    alert(error.headers.message);
-  };
-```
-
-The `connect()` method accepts different number of arguments to provide a simple 
-API to use in most cases:
-
-```javascript
-  client.connect(login, passcode, connectCallback);
-  client.connect(login, passcode, connectCallback, errorCallback);
-  client.connect(login, passcode, connectCallback, errorCallback, closeEventCallback);
-  client.connect(login, passcode, connectCallback, errorCallback, closeEventCallback, host);
-```
-
-where `login`, `passcode` and `host` are strings. `connectCallback` and
-`errorCallback` is a function which will receive a `Frame` as argument and 
-`closeEventCallback` is a function which will receive a [CloseEvent](https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent)
-
-The `connect()` method also accepts two other variants if you need
- to pass additional headers:
- 
-```javascript
-  client.connect(headers, connectCallback);
-  client.connect(headers, connectCallback, errorCallback);
-  client.connect(headers, connectCallback, errorCallback, closeEventCallback);
-```
-
-where `header` is a `map`. `connectCallback` and
-`errorCallback` is a function which will receive a `Frame` as argument and 
-`closeEventCallback` is a function which will receive a [CloseEvent](https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent)
-
-
-Please note that if you use these forms, you will typically add `login`,
- `passcode` (and `host`) headers yourself:
-
-```javascript
-    var headers = {
-      login: 'mylogin',
-      passcode: 'mypasscode',
-      // additional header
-      'client-id': 'my-client-id'
+    const client = new StompJs.Client({
+      brokerURL: "ws://localhost:15674/ws",
+      connectHeaders: {
+        login: "user",
+        passcode: "password"
+      },
+      debug: function (str) {
+        console.log(str);
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000
+    });
+    
+    client.onConnect = function(frame) {
+      // Do something, all subscribes must be done is this callback
+      // This is needed because this will be executed after a (re)connect
     };
-    client.connect(headers, connectCallback);
+    
+    client.onStompError = function (frame) {
+      // Will be invoked in case of error encountered at Broker
+      // Bad login/passcode typically will cause an error
+      // Complaint brokers will set `message` header with a brief message. Body may contain details.
+      // Compliant brokers will terminate the connection after any error
+      console.log('Broker reported error: ' + frame.headers['message']);
+      console.log('Additional details: ' + frame.body);
+    };
+    
+    client.activate();
 ```
 
-To disconnect a client from the server, you can call its `disconnect()`
- method. The disconnection is asynchronous: to be notified when 
- the disconnection is effective, the `disconnect` method takes an 
- optional `callback` argument.
+To deactivate a client call [Client#deactivate](../classes/Client.html#deactivate).
+It will stop sttempting to reconnect and disconnect if there is an active connection.
 
 ```javascript
-  client.disconnect(function() {
-    alert("See you next time!");
-  });
-```
-
-When a client is disconnected, it can no longer send or receive messages.
-
-## Heart-beating
-
-If the STOMP broker accepts STOMP 1.1 or higher frames, 
-heart-beating is enabled by default.
-
-The `client` object has a `heartbeat` field which can be used to configure 
-heart-beating by changing its incoming and outgoing integer fields 
-(default value for both is 10,000ms). These can be disabled by setting to 0.
-
-```javascript
-    client.heartbeat.outgoing = 20000; // client will send heartbeats every 20000ms
-    client.heartbeat.incoming = 0;     // client does not want to receive heartbeats
-                                       // from the server
-```
-
-## Auto Reconnect
-
-The `client` supports automatic reconnecting in case of a connection failure. It is
-controlled by a field `reconnect_delay`. Default value is 0, which indicates auto
-reconnect is disabled.
-
-```javascript
-  // Add the following if you need automatic reconnect (delay is in milli seconds)
-  client.reconnect_delay = 5000;
+    client.deactivate();
 ```
 
 ## Send messages
 
 When the client is connected to the server, it can send STOMP messages using
-  the `send()` method. The method takes a mandatory `destination`
-  argument corresponding to the STOMP destination. It also takes two optional
-  arguments: `headers`, a JavaScript object containing additional
-  message headers and `body`, a String.
+the [Client#publish](../classes/Client.html#publish) method.
 
 ```javascript
-  client.send("/queue/test", {priority: 9}, "Hello, STOMP");
+    client.publish({destination: '/topic/general', body: 'Hello world'});
+
+    // There is an option to skip content length header
+    client.publish({destination: '/topic/general', body: 'Hello world', skipContentLengthHeader: true});
+    
+    // Additional headers
+    client.publish({destination: '/topic/general', body: 'Hello world', headers: {'priority': '9'}});
 ```
 
-The client will send a STOMP 
-[SEND](http://stomp.github.com/stomp-specification-1.2.html#SEND)
-frame to `/queue/test` destination with a header `priority` set to `9` and
- a body `Hello, STOMP`.
-
-If you want to send a message with a `body`, you must also pass the `headers`
- argument. If you have no `headers` to pass, use an empty JavaScript literal `{}`:
+Starting version 5, sending binary messages is supported.
+If the body is of type 
+[Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array),
+the data will be treated as binary.
 
 ```javascript
-  client.send(destination, {}, body);
+    var binaryData = generateBinaryData(); // This need to be of type Uint8Array
+    client.publish({destination: '/topic/special', body: binaryData});
 ```
 
 ## Subscribe and receive messages
@@ -207,7 +141,7 @@ If you want to send a message with a `body`, you must also pass the `headers`
 To receive messages in the browser, the STOMP client must first subscribe to 
 a destination.
 
-You can use the `subscribe()` method to subscribe to a destination. The method
+You can use the [Client#subscribe](../classes/Client.html#subscribe) method to subscribe to a destination. The method
 takes 2 mandatory arguments: `destination`, a String corresponding to the 
 destination and `callback`, a function with one message argument and an optional
 argument `headers`, a JavaScript object for additional headers.
@@ -220,19 +154,9 @@ The subscribe() methods returns a JavaScript object with one attribute, `id`,
 that correspond to the client subscription ID and one method `unsubscribe()` 
 that can be used later on to unsubscribe the client from this destination.
 
-By default, the library will generate an unique ID if there is none provided
-in the headers. To use your own ID, pass it using the headers argument:
-
-```javascript
-  var mysubid = 'my-subscription-id-001';
-  var subscription = client.subscribe(destination, callback, { id: mysubid });
-```
-
-The client will send a STOMP 
-[SUBSCRIBE](http://stomp.github.com/stomp-specification-1.2.html#SUBSCRIBE) 
-frame to the server and register the callback. Every time the server sends 
-a message to the client, the client will in turn call the callback with a 
-STOMP `Frame` object corresponding to the message:
+Every time the server sends 
+a message to the client, the client will in turn invoke the callback with a 
+[Message](../classes/Message.html) object.
 
 ```javascript
   callback = function(message) {
@@ -249,28 +173,15 @@ The `subscribe()` method takes an optional headers argument to specify
 additional `headers` when subscribing to a destination:
 
 ```javascript
-  var headers = {ack: 'client', 'selector': "location = 'Europe'"};
+  var headers = {ack: 'client'};
   client.subscribe("/queue/test", message_callback, headers);
 ```
 
-The client specifies that it will handle the message acknowledgement and 
-is interested to receive only messages matching the selector location = 'Europe'.
+The client specifies that it will handle the message acknowledgement.
 
-
-If you want to subscribe the client to multiple destinations, you can use
-the same callback to receive all the messages:
-
-```javascript
-  onmessage = function(message) {
-    // called every time the client receives a message
-  };
-  
-  var sub1 = client.subscribe("queue/test", onmessage);
-  var sub2 = client.subscribe("queue/another", onmessage);
-```
-
-To stop receiving messages, the client can use the `unsubscribe()` method on 
-the object returned by the `subscribe()` method.
+To stop receiving messages, the client can use the 
+[unsubscribe](../interfaces/StompSubscription.html#unsubscribe) method on 
+the object returned by the [Client#subscribe](../classes/Client.html#subscribe) method.
 
 ```javascript
   var subscription = client.subscribe("queue/test", onmessage);
@@ -279,8 +190,49 @@ the object returned by the `subscribe()` method.
   
   subscription.unsubscribe();
 ```
+## Binary messages
 
-JSON support
+### Prep your broker
+
+Not every broker will support binary messages out of the box.
+For example RabbitMQ (see: https://www.rabbitmq.com/web-stomp.html)
+will need following to be added to the server configuration:
+
+```
+web_stomp.ws_frame = binary
+```
+
+### Publishing binary messages
+
+[Client#publish](../classes/Client.html#publish) will treat a message as binary if `body` is
+[Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array).
+
+### Receiving binary messages
+
+There is a callback [Client#treatMessageAsBinary](../classes/Client.html#treatMessageAsBinary)
+which by default returns `false` indicating all incoming messages are considered to be text and decoded as UTF8.
+If you are receiving binary messages you will need to provide an implementation of this callback.
+When this callback returns `true` the body will be returned as a
+[Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array).
+
+
+```javascript
+    // When `true` octet data from teh body is returned as is.
+    // When `false` body of incoming message is converted to `string` assuming to be UTF8.
+    
+    // Treat all messages a binary
+    client.treatMessageAsBinary = function(message) {
+      return true;
+    };
+    
+    // Treat a message as binary based on content-type
+    // This header is not a standard header, while publishing messages it needs to be explicitly set.
+    client.treatMessageAsBinary = function(message) {
+      return message.headers['content-type'] === 'application/octet-stream';
+    };
+```
+
+## JSON support
 
 The body of a STOMP message must be a String. If you want to send and receive
 [JSON](http://json.org/) objects, you can use `JSON.stringify()` and 
@@ -302,14 +254,12 @@ By default, STOMP messages will be automatically acknowledged by the server
 before the message is delivered to the client.
 
 The client can choose instead to handle message 
-[acknowledgement](http://stomp.github.com/stomp-specification-1.2.html#SUBSCRIBE_ack_Header) by subscribing 
+acknowledgement by subscribing 
 to a destination and specify a `ack` header set to `client` or 
 `client-individual`.
 
-In that case, the client must use the `message.ack()` method to inform the 
-server that it has acknowledge the message. This method sends an 
-[ACK](http://stomp.github.io/stomp-specification-1.2.html#ACK) Frame to the
-broker.
+In that case, the client must use the [Message#ack](../classes/Message.html#ack) method to inform the 
+server that it has processed the message.
 
 ```javascript
   var subscription = client.subscribe("/queue/test",
@@ -323,10 +273,9 @@ broker.
   );
 ```
 
-The `ack()` method accepts a `headers` argument for additional headers to 
-acknowledge the message. For example, it is possible to acknowledge a 
-message as part of a transaction and ask for a receipt when the `ACK` STOMP 
-frame has effectively be processed by the broker:
+The [Message#ack](../classes/Message.html#ack) method accepts `headers` argument for additional headers.
+For example, it is possible to acknowledge a 
+message as part of a transaction and ask for a receipt when the `ACK` has effectively been processed by the broker:
 
 ```javascript
   var tx = client.begin();
@@ -334,25 +283,22 @@ frame has effectively be processed by the broker:
   tx.commit();
 ```
 
-The `message.nack()` method can also be used to inform STOMP 1.1 or higher
-brokers that the client did not consume the message using a
-[NACK](http://stomp.github.io/stomp-specification-1.2.html#NACK) Frame. It 
-takes the same arguments than the `ack()` method.
+The [Message#nack](../classes/Message.html#nack) method can also be used to inform STOMP 1.1 or higher
+brokers that the client did not consume the message. It 
+takes the same arguments than the [Message#ack](../classes/Message.html#ack) method.
 
 ## Transactions
 
 Messages can be sent and acknowledged _in a transaction_.
 
-A transaction is started by the client using its `begin()` method which 
-takes an optional `transaction_id`, a String which uniquely identifies the 
-transaction. If no `transaction_id` is passed, the library will generate 
-one automatically.
+A transaction is started by the client using its [Client#begin](../classes/Client.html#begin) method which 
+takes an optional `transaction_id`.
 
 This methods returns a JavaScript object with an `id` attribute corresponding
 to the transaction ID and two methods:
 
-* `commit()` to commit the transaction
-* `abort()` to abort the transaction
+* [Client#commit](../classes/Client.html#commit) to commit the transaction
+* [Client#abort](../classes/Client.html#abort) to abort the transaction
 
 The client can then send and/or acknowledge messages in the transaction
 by specifying a `transaction` set with the transaction `id`.
@@ -361,44 +307,116 @@ by specifying a `transaction` set with the transaction `id`.
   // start the transaction
   var tx = client.begin();
   // send the message in a transaction
-  client.send("/queue/test", {transaction: tx.id}, "message in a transaction");
+  client.publish({destination: "/queue/test", headers: {transaction: tx.id}, body: "message in a transaction"});
   // commit the transaction to effectively send the message
   tx.commit();
 ```
 
-_If you forget to add the `transaction` header when calling `send()` the message
+_If you forget to add the `transaction` header when calling [Client#publish](../classes/Client.html#publish) the message
 will not be part of the transaction and will be sent directly without waiting
 for the completion of the transaction._
 
 ```javascript
-  var txid = "unique_transaction_identifier";
   // start the transaction
   var tx = client.begin();
   // oops! send the message outside the transaction
-  client.send("/queue/test", {}, "I thought I was in a transaction!");
+  client.publish({destination: "/queue/test", body: "message in a transaction"});
   tx.abort(); // Too late! the message has been sent
 ```
 
+## Heart-beating
+
+If the STOMP broker accepts STOMP 1.1 or higher frames, 
+heart-beating is enabled by default.
+Options [Client#heartbeatIncoming](../classes/Client.html#heartbeatIncoming)
+and [Client#heartbeatOutgoing](../classes/Client.html#heartbeatOutgoing)
+can be used to control heart-beating
+(default value for both is 10,000ms). These can be disabled by setting to 0.
+
+```javascript
+    client.heartbeatOutgoing = 20000; // client will send heartbeats every 20000ms
+    client.heartbeatIncoming = 0;     // client does not want to receive heartbeats
+                                       // from the server
+```
+
+## Auto Reconnect
+
+The `client` supports automatic reconnecting in case of a connection failure. It is
+controlled by a option [Client#reconnectDelay](../classes/Client.html#reconnectDelay).
+Default value is 5000ms, which indicates that
+a attempt to connect will be made after 5000ms of a connection drop.
+
+```javascript
+  // Add the following if you need automatic reconnect (delay is in milli seconds)
+  client.reconnectDelay = 300;
+```
+
+This can be set quite small.
+
 ## Debug
 
-There are few tests in the code and it is helpful to see what is sent and 
-received from the library to debug application.
-
-The client can set its `debug` property to a function with takes a `String` 
+The client can set its [Client#debug](../classes/Client.html#debug) property to a function with takes a `String` 
 argument to see all the debug statements of the library:
 
 ```javascript
   client.debug = function(str) {
-    // append the debug log to a #debug div somewhere in the page using JQuery:
-    $("#debug").append(str + "\n");
+    console.log(str);
   };
 ```
 
-By default, the debug messages are logged in the browser window's console.
+By default, the debug messages are ignored.
+On a busy system the logs can be overwhelming.
 
-On a busy system the logs can be overwhelming, to disable logging, set it to
-an empty function:
+## Callbacks
 
-```javascript
-  client.debug = function(str) {};
-```
+### Lifecycle callbacks
+
+- [Client#onConnect](../classes/Client.html#onConnect) - invoked for each time STOMP broker connects and
+  STOMP handshake is complete
+- [Client#onDisconnect](../classes/Client.html#onDisconnect) - invoked after each graceful disconnection.
+  If the connection breaks because of an error or network failure, it will no tbe called.
+- [Client#onStompError](../classes/Client.html#onStompError) - invoked when the broker reports an Error
+- [Client#onWebSocketClose](../classes/Client.html#onWebSocketClose)  - when the WebSocket closes.
+  It is most reliable way of knowing that the connection has terminated.
+
+### Frame callbacks
+
+- [Client#onUnhandledMessage](../classes/Client.html#onUnhandledMessage) - typically brokers will send messages
+  corresponding to subscriptions. 
+  However, brokers may support concepts that are beyond standard definition of STOMP -
+  for example RabbitMQ support concepts of temporary queues.
+  If any message is received that is not linked to a subscription, this callback will be invoked.
+- [Client#onUnhandledReceipt](../classes/Client.html#onUnhandledReceipt) - you should prefer
+  [Client#watchForReceipt](../classes/Client.html#watchForReceipt). If there is any incoming receipt for
+  which there is no active watcher, this callback will be invoked.
+- [Client#treatMessageAsBinary](../classes/Client.html#treatMessageAsBinary) - invoked for each incoming
+  message, depending on the outcome, the body is returned as string or Uint8Array. The default implementation
+  always returns `false`.
+- [Client#onUnhandledFrame](../classes/Client.html#onUnhandledFrame) - it will be invoked if broker sends a
+  non standard STOMP command.
+  
+## Advanced notes
+
+The version 5 of this library has taken significant variation from previous syntax. This version allows
+all of the options and callbacks to be altered.
+New values will take effect as soon as possible. For example:
+
+- Altered values of [Client#onUnhandledMessage](../classes/Client.html#onUnhandledMessage) 
+  or [Client#onDisconnect](../classes/Client.html#onDisconnect) will be effective immediately.
+- New values of [Client#heartbeatIncoming](../classes/Client.html#heartbeatIncoming)
+  and [Client#heartbeatOutgoing](../classes/Client.html#heartbeatOutgoing) will be used next time STOMP connects.
+
+The callback sequences are arranged in a way that most expected operations should work.
+For example it is possible to call [Client#deactivate](../classes/Client.html#deactivate)
+within [Client#onStompError](../classes/Client.html#onStompError)
+or [Client#onWebSocketClose](../classes/Client.html#onWebSocketClose).
+This is useful if we determine that we have incorrect credentials and no point keep on trying to connect.
+
+The above also allows readjusting [Client#reconnectDelay](../classes/Client.html#reconnectDelay)
+in [Client#onWebSocketClose](../classes/Client.html#onWebSocketClose).
+This can be used to implement exponential back-off before each successive reconnect attempt.
+
+Even [Client#brokerURL](../classes/Client.html#brokerURL)
+or [Client#connectHeaders](../classes/Client.html#connectHeaders)
+can be altered which would get used in a subsequent reconnect.
+However, I will suggest creating a new instance of the STOMP client in this scenario.
