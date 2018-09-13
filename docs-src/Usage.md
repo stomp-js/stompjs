@@ -4,8 +4,7 @@
 
 Ensure that your STOMP broker supports STOMP over WebSockets. Some messaging
 brokers supports it out of the box while some may need special configuration 
-or activating plugins. See [STOMP Brokers](./STOMP-brokers.md) for a non
-authoritative list.
+or activating plugins.
 
 ## Include STOMP.js
 

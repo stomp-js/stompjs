@@ -1,15 +1,7 @@
 [
   {
-    "title": "Introduction",
-    "file": "Introduction.md"
-  },
-  {
     "title": "Usage",
     "file": "Usage.md"
-  },
-  {
-    "title": "STOMP Brokers",
-    "file": "STOMP-brokers.md"
   },
   {
     "title": "Upgrading",
