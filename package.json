@@ -1,6 +1,6 @@
 {
   "name": "@stomp/stompjs",
-  "version": "5.0.0-beta1",
+  "version": "5.0.0-beta.1",
   "description": "STOMP cleint for Javascript and Typescript",
   "scripts": {
     "clean": "rm -rf bundles esm5 esm6",
