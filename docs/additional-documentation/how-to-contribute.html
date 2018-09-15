@@ -69,13 +69,7 @@
                     id="xs-additional-pages"
                 >
                     <li class="link ">
-                        <a href="additional-documentation/introduction.html" data-type="entity-link" data-context-id="additional">Introduction</a>
-                    </li>
-                    <li class="link ">
                         <a href="additional-documentation/usage.html" data-type="entity-link" data-context-id="additional">Usage</a>
-                    </li>
-                    <li class="link ">
-                        <a href="additional-documentation/stomp-brokers.html" data-type="entity-link" data-context-id="additional">STOMP Brokers</a>
                     </li>
                     <li class="link ">
                         <a href="additional-documentation/upgrading.html" data-type="entity-link" data-context-id="additional">Upgrading</a>
@@ -114,9 +108,6 @@
                     </li>
                     <li class="link">
                         <a href="classes/Frame.html" data-type="entity-link">Frame</a>
-                    </li>
-                    <li class="link">
-                        <a href="classes/Parser.html" data-type="entity-link">Parser</a>
                     </li>
                     <li class="link">
                         <a href="classes/Stomp.html" data-type="entity-link">Stomp</a>
@@ -175,9 +166,6 @@
                 >
                     <li class="link">
                       <a href="miscellaneous/typealiases.html" data-type="entity-link">Type aliases</a>
-                    </li>
-                    <li class="link">
-                      <a href="miscellaneous/variables.html" data-type="entity-link">Variables</a>
                     </li>
             </ul>
         </li>
@@ -246,13 +234,7 @@
                     id="additional-pages"
 >
                     <li class="link ">
-                        <a href="additional-documentation/introduction.html" data-type="entity-link" data-context-id="additional">Introduction</a>
-                    </li>
-                    <li class="link ">
                         <a href="additional-documentation/usage.html" data-type="entity-link" data-context-id="additional">Usage</a>
-                    </li>
-                    <li class="link ">
-                        <a href="additional-documentation/stomp-brokers.html" data-type="entity-link" data-context-id="additional">STOMP Brokers</a>
                     </li>
                     <li class="link ">
                         <a href="additional-documentation/upgrading.html" data-type="entity-link" data-context-id="additional">Upgrading</a>
@@ -291,9 +273,6 @@
                     </li>
                     <li class="link">
                         <a href="classes/Frame.html" data-type="entity-link">Frame</a>
-                    </li>
-                    <li class="link">
-                        <a href="classes/Parser.html" data-type="entity-link">Parser</a>
                     </li>
                     <li class="link">
                         <a href="classes/Stomp.html" data-type="entity-link">Stomp</a>
@@ -353,9 +332,6 @@
                     <li class="link">
                       <a href="miscellaneous/typealiases.html" data-type="entity-link">Type aliases</a>
                     </li>
-                    <li class="link">
-                      <a href="miscellaneous/variables.html" data-type="entity-link">Variables</a>
-                    </li>
             </ul>
         </li>
 
@@ -399,100 +375,85 @@
 <h2 id="summary-of-tools">Summary of tools</h2>
 <p>Following tools are getting used:</p>
 <ul>
-<li><code>CoffeeScript</code> as primary language - <a href="http://coffeescript.org/">http://coffeescript.org/</a></li>
-<li><code>codo</code> for API documentation - <a href="https://github.com/coffeedoc/codo">https://github.com/coffeedoc/codo</a></li>
-<li><code>cake</code> for build automation - <a href="http://coffeescript.org/">http://coffeescript.org/</a></li>
-<li><code>qunit</code> for test cases - <a href="http://qunitjs.com/">http://qunitjs.com/</a></li>
+<li><code>TypeScript</code> as primary language - <a href="https://www.typescriptlang.org/">https://www.typescriptlang.org/</a></li>
+<li><code>compodoc</code> for API documentation - <a href="https://compodoc.app/">https://compodoc.app/</a></li>
+<li><code>Jasmine</code> for test cases - <a href="https://jasmine.github.io/">https://jasmine.github.io/</a></li>
+<li><code>Karma</code> for running test cases in browsers - <a href="http://karma-runner.github.io/">http://karma-runner.github.io/</a></li>
+<li><code>webpack</code> for build - <a href="https://webpack.js.org/">https://webpack.js.org/</a></li>
 <li><code>nodejs</code> during development - <a href="https://nodejs.org/">https://nodejs.org/</a></li>
-<li><code>yarn</code> for dependency management - <a href="https://yarnpkg.com/">https://yarnpkg.com/</a></li>
-<li><code>npm</code> for packaging and distribution - <a href="https://www.npmjs.com/">https://www.npmjs.com/</a></li>
+<li><code>npm</code> for dependency management, packaging and distribution - <a href="https://www.npmjs.com/">https://www.npmjs.com/</a></li>
+<li><code>git</code> for version control - <a href="https://git-scm.com/">https://git-scm.com/</a></li>
 </ul>
 <h2 id="initial-setup">Initial setup</h2>
 <p>Instructions on setting up development environment:</p>
 <ul>
 <li>Install <code>node</code> and <code>npm</code> - <a href="https://nodejs.org/">https://nodejs.org/</a></li>
-<li>Install <code>yarn</code> - <a href="https://yarnpkg.com/en/docs/install">https://yarnpkg.com/en/docs/install</a></li>
-<li>Install &#39;codo&#39;, it needs to be installed globally - <code>npm install -g codo</code></li>
 <li>Checkout code from GitHub - you may fork the code first into your GitHub account.</li>
-<li>Use <code>yarn</code> to install dependencies:<div><pre class="line-numbers"><code class="language-bash">  $ yarn</code></pre></div></li>
+<li>Use <code>npm i</code> to install dependencies:<div><pre class="line-numbers"><code class="language-bash">  $ npm i</code></pre></div></li>
 </ul>
 <h2 id="project-structure">Project structure</h2>
-<pre>
-├── Cakefile                       - build/watch tasks & scripts
-├── LICENSE.txt
+<div><pre class="line-numbers"><code class="language-text">&lt;Project Folder&gt;
+├── LICENSE.md
 ├── README.md
-├── RELEASE_NOTES.md
-├── bower.json
-├── coffeelint.json
-├── doc/                           - Legacy documentation
-├── docs/                          - Documentation (root of GitHub pages)
-│   └── codo/                      - Generated documentation
-├── docs-src/                      - Guides (kodo build process uses it)
-├── example/                       - Legacy example 
-├── index.d.ts                     - Typescript type definitions
-├── index.js                       - Entry point for nodejs
-├── lib/                           - Compiled JS files
-│   ├── stomp.js                   - Main library code
-│   └── stomp.min.js
+├── bin/                     -- Scripts invoked from `npm` tasks
+├── bundles/                 -- Generated code browsers
+├── docs/                    -- Generated docs, root for GitHub pages
+├── docs-src/                -- Source for guides
+├── esm5/                    -- Generated ES5 modules
+├── esm6/                    -- Generated ES6 modules
+├── example/
+├── index.d.ts
+├── karma.conf.js
+├── package-lock.json
 ├── package.json
-├── src/                           - CoffeeSctipt files
-│   └── stomp.coffee               - Main library code
-├── tests/                         - All tests
-│   ├── config/
-│   │   ├── browser-config.js      - Browser specific configuration
-│   │   └── node-config.js         - NodeJS specific configuration
-│   ├── index.html                 - Entry point for browser tests
-│   └── unit/                      - All test files
-└── yarn.lock                      - Current package versions
-</pre>
-
-<h2 id="setup-a-stomp-broker">Setup a Stomp broker</h2>
+├── rabbitmq/
+│   └── Dockerfile           -- This builds a docker image that is used to run test cases
+├── spec/                    -- These test cases run both for nodejs (using just Jasmine) and Chrome (Jasmine/Karma)
+│   ├── config/              -- Slightly different setups for nodejs and Karma
+│   ├── helpers/
+│   ├── support/
+│   │   └── jasmine.json     -- Used only while running for nodejs
+│   └── unit/                -- Test cases using Jasmine
+│       └── compatibility/   -- Test cases to check compatibility mode
+├── src/                     -- Typescript sources
+│   └── compatibility/       -- Code for compatibility mode
+├── tsconfig.json
+└── webpack.config.js</code></pre></div><h2 id="setup-a-stomp-broker">Setup a Stomp broker</h2>
 <ul>
 <li>A Stomp broker is used for running the tests. I have been using RabbitMQ.</li>
-<li>Edit <code>tests/config/browser-config.js</code> and <code>tests/config/node-config.js</code> as per
-your setup. Defaults should work for a RabbitMQ default setup on localhost.</li>
+<li>Edit <code>spec/config/browser-config.js</code> and <code>spec/config/node-config.js</code> as per
+your setup. Defaults should work for as RabbitMQ default setup on localhost.</li>
 <li>Please note that in RabbitMQ you will need to enable Stomp and WebStomp plugins.</li>
-<li>A RabbitMQ Dockerfile is provided with the necessary plugins. To use it, run:<ul>
-<li><code>docker build -t myrabbitmq .</code></li>
-<li><code>docker run -d -p 15674:15674 myrabbitmq</code></li>
-</ul>
-</li>
+<li>By default RabbitMQ WebStomp will treat messages a text, you will need to tell
+it is use binary frames:<div><pre class="line-numbers"><code class="language-bash">  $ echo &#39;web_stomp.ws_frame = binary&#39; &gt;&gt; /etc/rabbitmq/rabbitmq.conf</code></pre></div></li>
+<li>A RabbitMQ Dockerfile is provided with necessary plugins and configuration. To use it, run:<div><pre class="line-numbers"><code class="language-bash">  $ docker build -t myrabbitmq rabbitmq/ # Needed only once
+  $ docker run -d -p 15674:15674 myrabbitmq # to start the broker</code></pre></div></li>
 </ul>
 <h2 id="building-and-testing">Building and testing</h2>
-<p>To build JavaScript from the CoffeeScript source code:</p>
-<div><pre class="line-numbers"><code class="language-bash">$ cake build</code></pre></div><p>To run tests using nodejs:</p>
-<div><pre class="line-numbers"><code class="language-bash">$ cake test</code></pre></div><p>To continuously run tests on file changes:</p>
-<div><pre class="line-numbers"><code class="language-bash">$ cake watch</code></pre></div><h2 id="browser-tests">Browser Tests</h2>
-<ul>
-<li>Browser and node environments use the same set of test cases.</li>
-<li>Open <code>test/index.html</code> in your browser.</li>
-<li>If Chrome fails with &quot;Uncaught DOMException: Failed to read the &#39;sessionStorage&#39; property from &#39;Window&#39;
-you need to <a href="https://www.chromium.org/for-testers/bug-reporting-guidelines/uncaught-securityerror-failed-to-read-the-localstorage-property-from-window-access-is-denied-for-this-document">Unblock third-party cookies</a> 
-or use Firefox.  </li>
+<p>Key npm tasks:</p>
+<div><pre class="line-numbers"><code class="language-text">clean - Remove generated built artifacts
+build-tsc - Internally used by `npm run build`
+build-webpack - Internally used by `npm run build`
+build - Build three variants - ES5, ES6, and UMD
+doc - Generate docs
+doc-serve - Generate docs and watch for changes
+test - Run tests in NodeJS
+karma - Rune test in browsers</code></pre></div><h3 id="basic-development-workflow">Basic development workflow</h3>
+<ol>
+<li>Checkout a new branch.</li>
+<li>Make code changes (src/specs)</li>
+<li>Build:<div><pre class="line-numbers"><code class="language-bash"> $ npm run build</code></pre></div></li>
+<li>Run tests:<ul>
+<li>To run tests using nodejs:<div><pre class="line-numbers"><code class="language-bash">  $ npm run test</code></pre></div></li>
+<li>To run tests using Chrome:<div><pre class="line-numbers"><code class="language-bash">  $ npm run karma</code></pre></div></li>
+<li><em><strong>Caution:</strong> As both browser and nodejs use same set of test cases and same queue
+names. So, running both together may cause unexpected failures.</em></li>
 </ul>
-<p><em><strong>Caution:</strong> As both browser and nodejs use same set of test cases and hence same queue
-names. So, running both together may cause unexpected failures.</em></p>
-<h2 id="submit-pull-requests">Submit pull requests</h2>
-<ul>
-<li>Run <code>cake build</code> to update generated files</li>
+</li>
+<li>Update documentation - do update the docs-src/Change-log.md</li>
+<li>Regenerate documentation:<div><pre class="line-numbers"><code class="language-bash"> $ npm run doc</code></pre></div></li>
 <li>Please follow GitHub guidelines. Raise an issue if you are unclear.</li>
-</ul>
-<h2 id="stomp-api">STOMP API</h2>
-<p>STOMP over WebSocket provides a straightforward mapping from a STOMP frame 
-to a JavaScript object. If you need to understand Stomp protocol,
-please see <a href="http://stomp.github.io/stomp-specification-1.2.html">http://stomp.github.io/stomp-specification-1.2.html</a></p>
-<table>
-<caption>Frame Object</caption>
-<tr><th>Property<th>Type<th>Notes
-<tr><th><code>command</code><td>String<td>name of the frame (<code>&quot;CONNECT&quot;</code>, <code>&quot;SEND&quot;</code>, etc.)
-<tr><th><code>headers</code><td>JavaScript object<td>
-<tr><th><code>body</code><td>String<td>
-</table>
-
-
-<p>The <code>command</code> and <code>headers</code> properties will always be defined but the <code>headers</code> 
-can be empty if the frame has no headers. The <code>body</code> can be <code>null</code> if the frame 
-does not have a body.</p>
+</ol>
 
                    </div><div class="search-results">
     <div class="has-results">

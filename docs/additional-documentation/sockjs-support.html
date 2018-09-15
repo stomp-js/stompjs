@@ -69,13 +69,7 @@
                     id="xs-additional-pages"
                 >
                     <li class="link ">
-                        <a href="additional-documentation/introduction.html" data-type="entity-link" data-context-id="additional">Introduction</a>
-                    </li>
-                    <li class="link ">
                         <a href="additional-documentation/usage.html" data-type="entity-link" data-context-id="additional">Usage</a>
-                    </li>
-                    <li class="link ">
-                        <a href="additional-documentation/stomp-brokers.html" data-type="entity-link" data-context-id="additional">STOMP Brokers</a>
                     </li>
                     <li class="link ">
                         <a href="additional-documentation/upgrading.html" data-type="entity-link" data-context-id="additional">Upgrading</a>
@@ -114,9 +108,6 @@
                     </li>
                     <li class="link">
                         <a href="classes/Frame.html" data-type="entity-link">Frame</a>
-                    </li>
-                    <li class="link">
-                        <a href="classes/Parser.html" data-type="entity-link">Parser</a>
                     </li>
                     <li class="link">
                         <a href="classes/Stomp.html" data-type="entity-link">Stomp</a>
@@ -175,9 +166,6 @@
                 >
                     <li class="link">
                       <a href="miscellaneous/typealiases.html" data-type="entity-link">Type aliases</a>
-                    </li>
-                    <li class="link">
-                      <a href="miscellaneous/variables.html" data-type="entity-link">Variables</a>
                     </li>
             </ul>
         </li>
@@ -246,13 +234,7 @@
                     id="additional-pages"
 >
                     <li class="link ">
-                        <a href="additional-documentation/introduction.html" data-type="entity-link" data-context-id="additional">Introduction</a>
-                    </li>
-                    <li class="link ">
                         <a href="additional-documentation/usage.html" data-type="entity-link" data-context-id="additional">Usage</a>
-                    </li>
-                    <li class="link ">
-                        <a href="additional-documentation/stomp-brokers.html" data-type="entity-link" data-context-id="additional">STOMP Brokers</a>
                     </li>
                     <li class="link ">
                         <a href="additional-documentation/upgrading.html" data-type="entity-link" data-context-id="additional">Upgrading</a>
@@ -291,9 +273,6 @@
                     </li>
                     <li class="link">
                         <a href="classes/Frame.html" data-type="entity-link">Frame</a>
-                    </li>
-                    <li class="link">
-                        <a href="classes/Parser.html" data-type="entity-link">Parser</a>
                     </li>
                     <li class="link">
                         <a href="classes/Stomp.html" data-type="entity-link">Stomp</a>
@@ -353,9 +332,6 @@
                     <li class="link">
                       <a href="miscellaneous/typealiases.html" data-type="entity-link">Type aliases</a>
                     </li>
-                    <li class="link">
-                      <a href="miscellaneous/variables.html" data-type="entity-link">Variables</a>
-                    </li>
             </ul>
         </li>
 
@@ -388,33 +364,64 @@
 
 
 <h1 id="in-the-web-browser-with-a-custom-websocket">In the Web browser with a custom WebSocket</h1>
-<p><em>Almost all brokers that support SockJS also support WebSockets. If your
-application does not need to support old browsers, switch to using
-WebSockets. Check <a href="https://en.wikipedia.org/wiki/WebSocket">https://en.wikipedia.org/wiki/WebSocket</a> for compatibility 
-information.</em></p>
-<p>Web browsers supports different versions of the WebSocket protocol. Some 
-older browsers does not provide the WebSocket JavaScript or expose it 
-under another name. By default, <code>stomp.js</code> will use the Web browser native 
-<code>WebSocket</code> class to create the WebSocket.</p>
-<p>However it is possible to use other type of WebSockets by using the 
-<code>Stomp.over(ws)</code> method. This method expects an object that conforms 
-to the WebSocket definition.</p>
-<p>For example, it is possible to use the implementation provided by the 
-<a href="https://github.com/sockjs/sockjs-client">SockJS</a> project which falls 
-back to a variety of browser-specific transport protocols instead:</p>
-<div><pre class="line-numbers"><code class="language-javascript">    // use SockJS implementation instead of the browser&#39;s native implementation
-    var client = Stomp.over(function(){
-        return new SockJS(url);
-    });</code></pre></div><p>Use <code>Stomp.client(url)</code> to use regular WebSockets or use <code>Stomp.over(ws_fn)</code> 
-if you required another type of WebSocket.</p>
-<p>Apart from this initialization, the STOMP API remains the same in both cases.</p>
-<h2 id="limitations-of-sockjs">Limitations of SockJS</h2>
+<p>As of 2018, WebSocket support in browsers is nearly ubiquitous.
+Please check <a href="https://caniuse.com/#feat=websockets">https://caniuse.com/#feat=websockets</a>.
+Depending on your user base you can skip this page.</p>
+<p>You can use <a href="https://github.com/sockjs/sockjs-client">SockJS</a>
+to support browsers that do not natively support WebSockets.</p>
+<p>You would need to consider the following:</p>
 <ul>
-<li>SockJS is an emulation of WebSockets. This is not a complete implementation.</li>
-<li>Heart beating is not supported.</li>
-<li>SockJS internally uses one of many possible means to communicate. In some of
-those, auto reconnect may occasionally fail.</li>
+<li>URL protocol conventions are different for WebSockets (<code>ws:</code>/<code>wss:</code>) and SockJS (<code>http:</code> or <code>https:</code>).</li>
+<li>Internal handshake sequences are different - so, some brokers will use different end points for
+both protocols.</li>
+<li>Neither of these allow custom headers to be set during the HTTP handshake.</li>
+<li>SockJS internally supports different transport mechanisms. You might face specific limitations
+depending on actual transport in use.</li>
+<li>Auto reconnect is not quite reliable with SockJS.</li>
+<li>Heartbeats may not be supported over SockJS by some brokers. </li>
 </ul>
+<p>It is advised to use WebSockets by default and then fall back to SockJS.</p>
+<div><pre class="line-numbers"><code class="language-javascript">    const client = new StompJs.Client({
+      brokerURL: &quot;ws://localhost:15674/ws&quot;,
+      connectHeaders: {
+        login: &quot;user&quot;,
+        passcode: &quot;password&quot;
+      },
+      debug: function (str) {
+        console.log(str);
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000
+    });
+
+    // Fallback code
+    if (typeof WebSocket !== &#39;function&#39;) {
+      // For SockJS you need to set a factory that creates a new SockJS instance
+      // to be used for each (re)connect
+      client.webSocketFactory = function () {
+        // Note that the URL is different from the WebSocket URL 
+        return new SockJS(&quot;http://localhost:15674/stomp&quot;);
+      };
+    }
+
+    client.onConnect = function(frame) {
+      // Do something, all subscribes must be done is this callback
+      // This is needed because this will be executed after a (re)connect
+    };
+
+    client.onStompError = function (frame) {
+      // Will be invoked in case of error encountered at Broker
+      // Bad login/passcode typically will cause an error
+      // Complaint brokers will set `message` header with a brief message. Body may contain details.
+      // Compliant brokers will terminate the connection after any error
+      console.log(&#39;Broker reported error: &#39; + frame.headers[&#39;message&#39;]);
+      console.log(&#39;Additional details: &#39; + frame.body);
+    };
+
+    client.activate();</code></pre></div><p>Compare the above against the sample in [../usage.html], only addition is the fallback code trying to
+use SockJS if WebSocket is unavailable.
+You will need to include latest <a href="https://github.com/sockjs/sockjs-client">https://github.com/sockjs/sockjs-client</a> in your web page.</p>
 
                    </div><div class="search-results">
     <div class="has-results">

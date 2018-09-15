@@ -69,13 +69,7 @@
                     id="xs-additional-pages"
                 >
                     <li class="link ">
-                        <a href="additional-documentation/introduction.html" data-type="entity-link" data-context-id="additional">Introduction</a>
-                    </li>
-                    <li class="link ">
                         <a href="additional-documentation/usage.html" data-type="entity-link" data-context-id="additional">Usage</a>
-                    </li>
-                    <li class="link ">
-                        <a href="additional-documentation/stomp-brokers.html" data-type="entity-link" data-context-id="additional">STOMP Brokers</a>
                     </li>
                     <li class="link ">
                         <a href="additional-documentation/upgrading.html" data-type="entity-link" data-context-id="additional">Upgrading</a>
@@ -114,9 +108,6 @@
                     </li>
                     <li class="link">
                         <a href="classes/Frame.html" data-type="entity-link">Frame</a>
-                    </li>
-                    <li class="link">
-                        <a href="classes/Parser.html" data-type="entity-link">Parser</a>
                     </li>
                     <li class="link">
                         <a href="classes/Stomp.html" data-type="entity-link">Stomp</a>
@@ -175,9 +166,6 @@
                 >
                     <li class="link">
                       <a href="miscellaneous/typealiases.html" data-type="entity-link">Type aliases</a>
-                    </li>
-                    <li class="link">
-                      <a href="miscellaneous/variables.html" data-type="entity-link">Variables</a>
                     </li>
             </ul>
         </li>
@@ -246,13 +234,7 @@
                     id="additional-pages"
 >
                     <li class="link ">
-                        <a href="additional-documentation/introduction.html" data-type="entity-link" data-context-id="additional">Introduction</a>
-                    </li>
-                    <li class="link ">
                         <a href="additional-documentation/usage.html" data-type="entity-link" data-context-id="additional">Usage</a>
-                    </li>
-                    <li class="link ">
-                        <a href="additional-documentation/stomp-brokers.html" data-type="entity-link" data-context-id="additional">STOMP Brokers</a>
                     </li>
                     <li class="link ">
                         <a href="additional-documentation/upgrading.html" data-type="entity-link" data-context-id="additional">Upgrading</a>
@@ -291,9 +273,6 @@
                     </li>
                     <li class="link">
                         <a href="classes/Frame.html" data-type="entity-link">Frame</a>
-                    </li>
-                    <li class="link">
-                        <a href="classes/Parser.html" data-type="entity-link">Parser</a>
                     </li>
                     <li class="link">
                         <a href="classes/Stomp.html" data-type="entity-link">Stomp</a>
@@ -353,9 +332,6 @@
                     <li class="link">
                       <a href="miscellaneous/typealiases.html" data-type="entity-link">Type aliases</a>
                     </li>
-                    <li class="link">
-                      <a href="miscellaneous/variables.html" data-type="entity-link">Variables</a>
-                    </li>
             </ul>
         </li>
 
@@ -388,6 +364,18 @@
 
 
 <h1 id="change-log">Change Log</h1>
+<h2 id="5-0-0-beta1-2018-09-15-">5.0.0-beta1 (2018/09/15)</h2>
+<ul>
+<li>Shift to Typescript, Jasmine, Karma, Webpack and compodoc</li>
+<li>3 variants of complied files - ES5, ES6 and UMD</li>
+<li>Convert all callbacks to get/set options</li>
+<li>Rationalized parameters for constructor, connect, disconnect and send.
+To support older semantics in legacy mode, renamed APIs (see Upgrade guide for details).</li>
+<li>Brand new evented, streaming, rec descent parser - 100% faithful protocol implementation.</li>
+<li>Binary payload support.</li>
+<li>Support for large frames.</li>
+<li>Upgrade guides.</li>
+</ul>
 <h2 id="4-0-6-2018-05-26-">4.0.6 (2018/05/26)</h2>
 <ul>
 <li>Updates in typescript definitions, Thanks <a href="https://github.com/rulonder">Raul</a>,

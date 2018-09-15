@@ -1082,10 +1082,62 @@ __export(__webpack_require__(/*! ./compatibility/stomp */ "./src/compatibility/s
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @internal
+ */
 var NULL = 0;
+/**
+ * @internal
+ */
 var LF = 10;
+/**
+ * @internal
+ */
 var CR = 13;
+/**
+ * @internal
+ */
 var COLON = 58;
+/**
+ * This is an evented, rec descent parser.
+ * A stream of Octets can be passed and whenever it recognizes
+ * a complete Frame or an incoming ping it will invoke the registered callbacks.
+ *
+ * All incoming Octets are fed into _onByte function.
+ * Depending on current state the _onByte function keeps changing.
+ * Depending on the state it keeps accumulating into _token and _results.
+ * State is indicated by current value of _onByte, all states are named as _collect.
+ *
+ * STOMP standards https://stomp.github.io/stomp-specification-1.2.html
+ * imply that all lengths are considered in bytes (instead of string lengths).
+ * So, before actual parsing, if the incoming data is String it is converted to Octets.
+ * This allows faithful implementation of the protocol and allows NULL Octets to be present in the body.
+ *
+ * There is no peek function on the incoming data.
+ * When a state change occurs based on an Octet without consuming the Octet,
+ * the Octet, after state change, is fed again (_reinjectByte).
+ * This became possible as the state change can be determined by inspecting just one Octet.
+ *
+ * There are two modes to collect the body, if content-length header is there then it by counting Octets
+ * otherwise it is determined by NULL terminator.
+ *
+ * Following the standards, the command and headers are converted to Strings
+ * and the body is returned as Octets.
+ * Headers are returned as an array and not as Hash - to allow multiple occurrence of an header.
+ *
+ * This parser does not use Regular Expressions as that can only operate on Strings.
+ *
+ * It handles if multiple STOMP frames are given as one chunk, a frame is split into multiple chunks, or
+ * any combination there of. The parser remembers its state (any partial frame) and continues when a new chunk
+ * is pushed.
+ *
+ * Typically the higher level function will convert headers to Hash, handle unescaping of header values
+ * (which is protocol version specific), and convert body to text.
+ *
+ * Check the parser.spec.js to understand cases that this parser is supposed to handle.
+ *
+ * @internal
+ */
 var Parser = /** @class */ (function () {
     function Parser(onFrame, onIncomingPing) {
         this.onFrame = onFrame;
