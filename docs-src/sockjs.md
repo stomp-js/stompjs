@@ -1,40 +1,68 @@
 # In the Web browser with a custom WebSocket
 
-_Almost all brokers that support SockJS also support WebSockets. If your
-application does not need to support old browsers, switch to using
-WebSockets. Check https://en.wikipedia.org/wiki/WebSocket for compatibility 
-information._
+As of 2018, WebSocket support in browsers is nearly ubiquitous.
+Please check https://caniuse.com/#feat=websockets.
+Depending on your user base you can skip this page.
 
-Web browsers supports different versions of the WebSocket protocol. Some 
-older browsers does not provide the WebSocket JavaScript or expose it 
-under another name. By default, `stomp.js` will use the Web browser native 
-`WebSocket` class to create the WebSocket.
+You can use [SockJS](https://github.com/sockjs/sockjs-client)
+to support browsers that do not natively support WebSockets.
 
-However it is possible to use other type of WebSockets by using the 
-`Stomp.over(ws)` method. This method expects an object that conforms 
-to the WebSocket definition.
+You would need to consider the following:
 
-For example, it is possible to use the implementation provided by the 
-[SockJS](https://github.com/sockjs/sockjs-client) project which falls 
-back to a variety of browser-specific transport protocols instead:
+- URL protocol conventions are different for WebSockets (`ws:`/`wss:`) and SockJS (`http:` or `https:`).
+- Internal handshake sequences are different - so, some brokers will use different end points for
+  both protocols.
+- Neither of these allow custom headers to be set during the HTTP handshake.
+- SockJS internally supports different transport mechanisms. You might face specific limitations
+  depending on actual transport in use.
+- Auto reconnect is not quite reliable with SockJS.
+- Heartbeats may not be supported over SockJS by some brokers. 
+
+It is advised to use WebSockets by default and then fall back to SockJS.
+
 
 ```javascript
-    // use SockJS implementation instead of the browser's native implementation
-    var client = Stomp.over(function(){
-        return new SockJS(url);
+    const client = new StompJs.Client({
+      brokerURL: "ws://localhost:15674/ws",
+      connectHeaders: {
+        login: "user",
+        passcode: "password"
+      },
+      debug: function (str) {
+        console.log(str);
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000
     });
-```
     
-Use `Stomp.client(url)` to use regular WebSockets or use `Stomp.over(ws_fn)` 
-if you required another type of WebSocket.
+    // Fallback code
+    if (typeof WebSocket !== 'function') {
+      // For SockJS you need to set a factory that creates a new SockJS instance
+      // to be used for each (re)connect
+      client.webSocketFactory = function () {
+        // Note that the URL is different from the WebSocket URL 
+        return new SockJS("http://localhost:15674/stomp");
+      };
+    }
 
-Apart from this initialization, the STOMP API remains the same in both cases.
+    client.onConnect = function(frame) {
+      // Do something, all subscribes must be done is this callback
+      // This is needed because this will be executed after a (re)connect
+    };
+    
+    client.onStompError = function (frame) {
+      // Will be invoked in case of error encountered at Broker
+      // Bad login/passcode typically will cause an error
+      // Complaint brokers will set `message` header with a brief message. Body may contain details.
+      // Compliant brokers will terminate the connection after any error
+      console.log('Broker reported error: ' + frame.headers['message']);
+      console.log('Additional details: ' + frame.body);
+    };
+    
+    client.activate();
+```
 
-## Limitations of SockJS
-
-* SockJS is an emulation of WebSockets. This is not a complete implementation.
-* Heart beating is not supported.
-* SockJS internally uses one of many possible means to communicate. In some of
-  those, auto reconnect may occasionally fail.
-  
-
+Compare the above against the sample in [../usage.html], only addition is the fallback code trying to
+use SockJS if WebSocket is unavailable.
+You will need to include latest https://github.com/sockjs/sockjs-client in your web page.
