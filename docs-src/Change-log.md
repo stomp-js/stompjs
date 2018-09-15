@@ -1,5 +1,17 @@
 # Change Log
 
+## 5.0.0-beta1 (2018/09/15)
+
+* Shift to Typescript, Jasmine, Karma, Webpack and compodoc
+* 3 variants of complied files - ES5, ES6 and UMD
+* Convert all callbacks to get/set options
+* Rationalized parameters for constructor, connect, disconnect and send.
+  To support older semantics in legacy mode, renamed APIs (see Upgrade guide for details).
+* Brand new evented, streaming, rec descent parser - 100% faithful protocol implementation.
+* Binary payload support.
+* Support for large frames.
+* Upgrade guides.
+
 ## 4.0.6 (2018/05/26)
 
 * Updates in typescript definitions, Thanks [Raul](https://github.com/rulonder),
