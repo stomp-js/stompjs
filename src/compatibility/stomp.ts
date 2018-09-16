@@ -27,7 +27,7 @@ export class Stomp {
    *        var client = Stomp.client(url);
    * ```
    */
-  public static client (url: string, protocols: string[]): CompatClient {
+  public static client (url: string, protocols?: string[]): CompatClient {
     // This is a hack to allow another implementation than the standard
     // HTML5 WebSocket class.
     //
