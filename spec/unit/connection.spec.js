@@ -41,7 +41,7 @@ describe("Stomp Connection", function () {
     client.activate();
   });
 
-  it("Disconnect", function (done) {
+  it("Deactivates", function (done) {
     client = stompClient();
     client.configure({
       onConnect: function () {
@@ -49,6 +49,86 @@ describe("Stomp Connection", function () {
         client.deactivate();
       },
       onDisconnect: function () {
+        done();
+      }
+    });
+
+    client.activate();
+  });
+
+  it("Activates following a deactivate", function (done) {
+    client = stompClient();
+    client.configure({
+      onConnect: function () {
+        // once connected, we disconnect
+        client.deactivate();
+      },
+      onDisconnect: function () {
+        client.onConnect = function () {
+          done();
+        };
+        client.activate();
+      }
+    });
+
+    client.activate();
+  });
+
+  it("Activates immediately following a deactivate", function (done) {
+    client = stompClient();
+    client.configure({
+      onConnect: function () {
+        // once connected, we disconnect
+        client.deactivate();
+        client.onConnect = function () {
+          done();
+        };
+        client.activate();
+      },
+      onDisconnect: function () {
+      }
+    });
+
+    client.activate();
+  });
+
+  it("Force disconnects", function (done) {
+    client = stompClient();
+    client.configure({
+      onConnect: function () {
+        // once connected, we disconnect
+        client.forceDisconnect();
+      },
+      onDisconnect: function () {
+        // Should not be called
+        expect(false).toBe(true);
+      },
+      onWebSocketClose: function () {
+        done();
+      }
+    });
+
+    client.activate();
+  });
+
+  it("Force disconnect handles non connected states", function (done) {
+    client = stompClient();
+    client.configure({
+      onConnect: function () {
+        // once connected, we disconnect
+        client.forceDisconnect();
+
+        // By now partial closure will be there, should not throw exception
+        client.forceDisconnect();
+      },
+      onDisconnect: function () {
+        // Should not be called
+        expect(false).toBe(true);
+      },
+      onWebSocketClose: function () {
+        // No longer connected, should not throw exception
+        client.forceDisconnect();
+
         done();
       }
     });

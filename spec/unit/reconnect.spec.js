@@ -23,7 +23,7 @@ describe("Stomp Reconnect", function () {
 
       // when connected for the first time, we close the Websocket to force disconnect
       if (num_try === 1) {
-        client.webSocket.close();
+        client.forceDisconnect();
       }
 
       num_try++;
@@ -83,9 +83,9 @@ describe("Stomp Reconnect", function () {
       onConnect: function () {
         expect(client.connected).toBe(true);
 
-        // when connected for the first time, we close the Websocket to force disconnect
+        // when connected for the first time, we close the WebSocket to force disconnect
         if (num_try === 1) {
-          client.webSocket.close();
+          client.forceDisconnect();
         }
 
         num_try++;

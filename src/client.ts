@@ -342,9 +342,10 @@ export class Client {
   }
 
   /**
-   * Disconnect and stop auto reconnect loop.
-   *
+   * Disconnect if connected and stop auto reconnect loop.
    * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
+   *
+   * To reactivate the {@link Client} you can call [Client#activate]{@link Client#activate}.
    */
   public deactivate(): void {
     // indicate that auto reconnect loop should terminate
@@ -355,6 +356,20 @@ export class Client {
       clearTimeout(this._reconnector);
     }
     this._disposeStompHandler();
+  }
+
+  /**
+   * Force disconnect if there is an active connection by directly closing the underlying WebSocket.
+   * This is different than a normal disconnect where a DISCONNECT sequence is carried out with the broker.
+   * After forcing disconnect, automatic reconnect will be attempted.
+   * To stop further reconnects call [Client#deactivate]{@link Client#deactivate} as well.
+   */
+  public forceDisconnect() {
+    if (this._webSocket) {
+      if (this._webSocket.readyState === WebSocket.CONNECTING || this._webSocket.readyState === WebSocket.OPEN) {
+        this._webSocket.close();
+      }
+    }
   }
 
   private _disposeStompHandler() {
