@@ -64,6 +64,7 @@ describe("Stomp Connection", function () {
         client.deactivate();
       },
       onDisconnect: function () {
+        client.onDisconnect = function () {};
         client.onConnect = function () {
           done();
         };
