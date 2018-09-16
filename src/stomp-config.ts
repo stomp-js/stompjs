@@ -39,11 +39,6 @@ export interface StompConfig {
   heartbeatOutgoing?: number;
 
   /**
-   * See [Client#maxWebSocketFrameSize]{@link Client#maxWebSocketFrameSize}.
-   */
-  maxWebSocketFrameSize?: number;
-
-  /**
    * See [Client#treatMessageAsBinary]{@link Client#treatMessageAsBinary}.
    */
   treatMessageAsBinary?: messageCheckCallbackType;

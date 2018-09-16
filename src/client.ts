@@ -62,13 +62,6 @@ export class Client {
   public heartbeatOutgoing: number = 10000;
 
   /**
-   * Maximum WebSocket frame size sent by the client. If a STOMP frame
-   * is bigger than this value, the STOMP frame will be sent using multiple
-   * WebSocket frames (default is 16KiB).
-   */
-  public maxWebSocketFrameSize: number = 16 * 1024;
-
-  /**
    * Underlying WebSocket instance, READONLY.
    */
   get webSocket(): WebSocket {
@@ -287,7 +280,6 @@ export class Client {
       disconnectHeaders: this.disconnectHeaders,
       heartbeatIncoming: this.heartbeatIncoming,
       heartbeatOutgoing: this.heartbeatOutgoing,
-      maxWebSocketFrameSize: this.maxWebSocketFrameSize,
       treatMessageAsBinary: this.treatMessageAsBinary,
       onConnect: (frame) => {
         if (!this._active) {

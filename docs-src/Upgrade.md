@@ -156,7 +156,8 @@ and to make meaning of the option clearer.
 
 #### Dropped APIs
 
-- Client.html#maxWebSocketFrameSize [TODO]
+- [maxWebSocketFrameSize](../classes/CompatClient.html#maxWebSocketFrameSize) -  large messages
+  work without this. Test cases have been added to test large text and binary messages.
 
 ## Migrating from Version 2
 

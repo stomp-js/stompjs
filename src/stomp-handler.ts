@@ -41,8 +41,6 @@ export class StompHandler {
 
   public onUnhandledFrame: frameCallbackType;
 
-  public maxWebSocketFrameSize: number;
-
   public onConnect: frameCallbackType;
 
   public onDisconnect: frameCallbackType;

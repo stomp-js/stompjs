@@ -12,6 +12,11 @@ import {frameCallbackType, messageCallbackType} from "../types";
 export class CompatClient extends Client {
 
   /**
+   * It is no op now. No longer needed. Large packets work out of the box.
+   */
+  public maxWebSocketFrameSize: number = 16 * 1024;
+
+  /**
    * Available for backward compatibility, please shift to using {@link Client}
    * and [Client#webSocketFactory]{@link Client#webSocketFactory}.
    *
