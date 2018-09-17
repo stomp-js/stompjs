@@ -347,15 +347,20 @@ export class Client {
    *
    * STOMP protocol specifies and suggests some headers and also allows broker specific headers.
    *
-   * Note: Body must be String or
-   * [Unit8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}.
-   * If the body is
-   * [Unit8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}
-   * the frame will be sent as binary.
+   * Body must be String.
+   * You will need to covert the payload to string in case it is not string (e.g. JSON).
+   *
+   * To send a binary message body use binaryBody parameter. It should be a
+   * [Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array).
    * Sometimes brokers may not support binary frames out of the box.
    * Please check your broker documentation.
    *
-   * You will need to covert the payload to string in case it is not string (e.g. JSON)
+   * `content-length` header is automatically added to the STOMP Frame sent to the broker.
+   * Set `skipContentLengthHeader` to indicate that `content-length` header should not be added.
+   * For binary messages `content-length` header is always added.
+   *
+   * Caution: The broker will, most likely, report an error and disconnect if message body has NULL octet(s)
+   * and `content-length` header is missing.
    *
    * ```javascript
    *        client.publish({destination: "/queue/test", headers: {priority: 9}, body: "Hello, STOMP"});
@@ -365,6 +370,11 @@ export class Client {
    *
    *        // Skip content-length header in the frame to the broker
    *        client.publish({"/queue/test", body: "Hello, STOMP", skipContentLengthHeader: true});
+   *
+   *        var binaryData = generateBinaryData(); // This need to be of type Uint8Array
+   *        // setting content-type header is not mandatory, however a good practice
+   *        client.publish({destination: '/topic/special', binaryBody: binaryData,
+   *                         headers: {'content-type': 'application/octet-stream'}});
    * ```
    */
   public publish(params: publishParams) {

@@ -126,13 +126,14 @@ the [Client#publish](../classes/Client.html#publish) method.
 ```
 
 Starting version 5, sending binary messages is supported.
-If the body is of type 
-[Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array),
-the data will be treated as binary.
+To send a binary message body use binaryBody parameter. It should be a
+[Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array).
 
 ```javascript
     var binaryData = generateBinaryData(); // This need to be of type Uint8Array
-    client.publish({destination: '/topic/special', body: binaryData});
+    // setting content-type header is not mandatory, however a good practice
+    client.publish({destination: '/topic/special', binaryBody: binaryData,
+                    headers: {'content-type': 'application/octet-stream'}});
 ```
 
 ## Subscribe and receive messages
@@ -203,32 +204,31 @@ web_stomp.ws_frame = binary
 
 ### Publishing binary messages
 
-[Client#publish](../classes/Client.html#publish) will treat a message as binary if `body` is
+Use parameter `binaryBody` of [Client#publish](../classes/Client.html#publish) to send binary data of type
 [Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array).
+
+See [Send messages](#send-messages) for an example.
 
 ### Receiving binary messages
 
-There is a callback [Client#treatMessageAsBinary](../classes/Client.html#treatMessageAsBinary)
-which by default returns `false` indicating all incoming messages are considered to be text and decoded as UTF8.
-If you are receiving binary messages you will need to provide an implementation of this callback.
-When this callback returns `true` the body will be returned as a
-[Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array).
+The library does not try to guess whether the incoming data is text/binary.
+When you access [Message#body](../classes/Frame.html#body) the message will be returned as string.
+To access the message body as binary please call [Message#binaryBody](../classes/Frame.html#binaryBody).
 
+There is no generally accepted convention in STOMP (actually messaging in general) to indicate that a message
+is binary. The message senders and receivers will need to agree on required convention.
+
+You may choose to set `content-type` header to indicate binary message.
 
 ```javascript
-    // When `true` octet data from teh body is returned as is.
-    // When `false` body of incoming message is converted to `string` assuming to be UTF8.
-    
-    // Treat all messages a binary
-    client.treatMessageAsBinary = function(message) {
-      return true;
-    };
-    
-    // Treat a message as binary based on content-type
-    // This header is not a standard header, while publishing messages it needs to be explicitly set.
-    client.treatMessageAsBinary = function(message) {
-      return message.headers['content-type'] === 'application/octet-stream';
-    };
+    // within message callback
+    if (message.headers['content-type'] === 'application/octet-stream') {
+      // message is binary
+      // call message.binaryBody 
+    } else {
+      // message is text
+      // call message.body
+    }
 ```
 
 ## JSON support
