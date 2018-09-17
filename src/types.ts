@@ -43,7 +43,11 @@ export interface publishParams {
   /**
    * body (optional)
    */
-  body?: string|Uint8Array,
+  body?: string,
+  /**
+   * binary body (optional)
+   */
+  binaryBody?: Uint8Array,
   /**
    * By default a `content-length` header will be added in the Frame to the broker.
    * Set it to `true` for the header to be skipped.
@@ -55,4 +59,4 @@ export interface publishParams {
  * The parser yield frames in this structure
  */
 export type RawHeaderType = [string, string];
-export type RawFrameType = { command: string; headers: RawHeaderType[]; body: Uint8Array; };
+export type RawFrameType = { command: string; headers: RawHeaderType[]; binaryBody: Uint8Array; };

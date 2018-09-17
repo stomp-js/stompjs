@@ -86,32 +86,6 @@ export class Client {
   public disconnectHeaders: StompHeaders;
 
   /**
-   * This callback will be called with the incoming message frame {@link Message}.
-   * If this function returns `true`, the [Frame#body]{@link Frame#body} will not be converted
-   * to `string` and be returned as
-   * [Uint8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}.
-   * If this returns `false`, the body will be assumed to UTF8 string and will be converted at `string`.
-   *
-   * By default this callback returns `false`, i.e., all messages are treated as text.
-   *
-   * Examples:
-   * ```javascript
-   *        // Treat all messages a binary
-   *        client.treatMessageAsBinary = function(message) {
-   *          return true;
-   *        };
-
-   *        // Treat a message as binary based on content-type
-   *        // This header is not a standard header, while publishing messages it needs to be explicitly set.
-   *        client.treatMessageAsBinary = function(message) {
-   *          return message.headers['content-type'] === 'application/octet-stream';
-   *        };
-   * ```
-   *
-   */
-  public treatMessageAsBinary: messageCheckCallbackType;
-
-  /**
    * This function will be called for any unhandled messages.
    * It is useful for receiving messages sent to RabbitMQ temporary queues.
    *
@@ -219,10 +193,6 @@ export class Client {
     this.debug = noOp;
     this.onConnect = noOp;
     this.onDisconnect = noOp;
-    // Treat messages as text by default
-    this.treatMessageAsBinary = (message) => {
-      return false;
-    };
     this.onUnhandledMessage = noOp;
     this.onUnhandledReceipt = noOp;
     this.onUnhandledFrame = noOp;
@@ -280,7 +250,6 @@ export class Client {
       disconnectHeaders: this.disconnectHeaders,
       heartbeatIncoming: this.heartbeatIncoming,
       heartbeatOutgoing: this.heartbeatOutgoing,
-      treatMessageAsBinary: this.treatMessageAsBinary,
       onConnect: (frame) => {
         if (!this._active) {
           this.debug('STOMP got connected while deactivate was issued, will disconnect now');

@@ -24,10 +24,29 @@ export class Frame {
    */
   public headers: StompHeaders;
 
+  public isBinaryBody: boolean;
+
   /**
-   * It is serialized string
+   * body of the frame
    */
-  public body: string | Uint8Array;
+  get body(): string {
+    if (!this._body && this.isBinaryBody) {
+      this._body = new TextDecoder().decode(this._binaryBody);
+    }
+    return this._body;
+  }
+  private _body: string;
+
+  /**
+   * body as Uint8Array
+   */
+  get binaryBody(): Uint8Array {
+    if (!this._binaryBody && !this.isBinaryBody) {
+      this._binaryBody = new TextEncoder().encode(this._body);
+    }
+    return this._binaryBody;
+  }
+  private _binaryBody: Uint8Array;
 
   private escapeHeaderValues: boolean;
   private skipContentLengthHeader: boolean;
@@ -38,13 +57,20 @@ export class Frame {
    * @internal
    */
   constructor(params: {
-    command: string, headers?: StompHeaders, body: any,
+    command: string, headers?: StompHeaders, body?: string, binaryBody?: Uint8Array,
     escapeHeaderValues?: boolean, skipContentLengthHeader?: boolean
   }) {
-    let {command, headers, body, escapeHeaderValues, skipContentLengthHeader} = params;
+    let {command, headers, body, binaryBody, escapeHeaderValues, skipContentLengthHeader} = params;
     this.command = command;
     this.headers = headers || {};
-    this.body = body || '';
+
+    if (binaryBody) {
+      this._binaryBody = binaryBody;
+      this.isBinaryBody = true;
+    } else {
+      this._body = body || '';
+      this.isBinaryBody = false;
+    }
     this.escapeHeaderValues = escapeHeaderValues || false;
     this.skipContentLengthHeader = skipContentLengthHeader || false;
   }
@@ -75,7 +101,7 @@ export class Frame {
     return new Frame({
       command: rawFrame.command,
       headers: headers,
-      body: rawFrame.body,
+      binaryBody: rawFrame.binaryBody,
       escapeHeaderValues: escapeHeaderValues
     });
   }
@@ -84,9 +110,7 @@ export class Frame {
    * @internal
    */
   public toString(): string {
-    const cmdAndHeaders = this.serializeCmdAndHeaders();
-    const bodyText = this.isBinaryBody() ? "<<binary data>>" : this.body;
-    return cmdAndHeaders + bodyText;
+    return this.serializeCmdAndHeaders();
   }
 
   /**
@@ -97,10 +121,10 @@ export class Frame {
   public serialize(): string|ArrayBuffer {
     const cmdAndHeaders = this.serializeCmdAndHeaders();
 
-    if(this.isBinaryBody()) {
-      return Frame.toUnit8Array(cmdAndHeaders, <Uint8Array>this.body).buffer;
+    if(this.isBinaryBody) {
+      return Frame.toUnit8Array(cmdAndHeaders, this._binaryBody).buffer;
     } else {
-      return cmdAndHeaders + this.body + Byte.NULL;
+      return cmdAndHeaders + this._body + Byte.NULL;
     }
   }
 
@@ -118,22 +142,19 @@ export class Frame {
         lines.push(`${name}:${value}`);
       }
     }
-    if (this.body && !this.skipContentLengthHeader) {
+    if (this.isBinaryBody || (!this.isBodyEmpty() && !this.skipContentLengthHeader)) {
       lines.push(`content-length:${this.bodyLength()}`);
     }
     return lines.join(Byte.LF) + Byte.LF + Byte.LF;
   }
 
-  private isBinaryBody(): boolean {
-    return (typeof this.body !== "string") && this.body.length > 0
-  }
-
   private isBodyEmpty(): boolean {
-    return this.body.length === 0;
+    return this.bodyLength() === 0;
   }
 
   private bodyLength(): number {
-    return this.isBinaryBody() ? this.body.length : Frame.sizeOfUTF8(<string>this.body)
+    const binaryBody = this.binaryBody;
+    return binaryBody ? binaryBody.length : 0;
   }
 
   /**
@@ -144,14 +165,14 @@ export class Frame {
     return s ? new TextEncoder().encode(s).length : 0;
   }
 
-  private static toUnit8Array(cmdAndHeaders: string, body: Uint8Array): Uint8Array {
+  private static toUnit8Array(cmdAndHeaders: string, binaryBody: Uint8Array): Uint8Array {
     const uint8CmdAndHeaders = new TextEncoder().encode(cmdAndHeaders);
     const nullTerminator = new Uint8Array([0]);
-    const uint8Frame = new Uint8Array(uint8CmdAndHeaders.length + body.length + nullTerminator.length);
+    const uint8Frame = new Uint8Array(uint8CmdAndHeaders.length + binaryBody.length + nullTerminator.length);
 
     uint8Frame.set(uint8CmdAndHeaders);
-    uint8Frame.set(body, uint8CmdAndHeaders.length);
-    uint8Frame.set(nullTerminator, uint8CmdAndHeaders.length + body.length);
+    uint8Frame.set(binaryBody, uint8CmdAndHeaders.length);
+    uint8Frame.set(nullTerminator, uint8CmdAndHeaders.length + binaryBody.length);
 
     return uint8Frame;
   }
@@ -161,7 +182,7 @@ export class Frame {
    * @internal
    */
   public static marshall(params: {
-    command: string, headers?: StompHeaders, body: string|Uint8Array,
+    command: string, headers?: StompHeaders, body?: string, binaryBody?: Uint8Array,
     escapeHeaderValues?: boolean, skipContentLengthHeader?: boolean
   }) {
     const frame = new Frame(params);

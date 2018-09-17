@@ -4,14 +4,7 @@ import {Versions} from "./versions";
 import {Message} from "./message";
 import {Frame} from "./frame";
 import {StompHeaders} from "./stomp-headers";
-import {
-  closeEventCallbackType,
-  debugFnType,
-  frameCallbackType,
-  messageCallbackType,
-  messageCheckCallbackType,
-  publishParams
-} from "./types";
+import {closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, publishParams} from "./types";
 import {StompSubscription} from "./stomp-subscription";
 import {Transaction} from "./transaction";
 import {StompConfig} from "./stomp-config";
@@ -28,8 +21,6 @@ export class StompHandler {
   public connectHeaders: StompHeaders;
 
   public disconnectHeaders: StompHeaders;
-
-  public treatMessageAsBinary: messageCheckCallbackType;
 
   public heartbeatIncoming: number;
 
@@ -98,16 +89,6 @@ export class StompHandler {
       // On Frame
       (rawFrame) => {
         const frame = Frame.fromRawFrame(rawFrame, this._escapeHeaderValues);
-
-        // Unless we have to treat message body as binary, convert it to `string`
-        if(!this.treatMessageAsBinary(frame) ||
-                  (frame.command === 'ERROR' && frame.headers['content-type'].match(/^text\//)) ) {
-          try {
-            frame.body = new TextDecoder().decode(<Uint8Array>frame.body);
-          } catch (e) {
-            // ignore
-          }
-        }
 
         this.debug(`<<< ${frame}`);
 
@@ -238,20 +219,21 @@ export class StompHandler {
   }
 
   private _transmit(params: { command: string, headers?: StompHeaders,
-                              body?: string | Uint8Array, skipContentLengthHeader?: boolean }): void {
-    let {command, headers, body, skipContentLengthHeader} = params;
+                              body?: string, binaryBody?: Uint8Array, skipContentLengthHeader?: boolean }): void {
+    let {command, headers, body, binaryBody, skipContentLengthHeader} = params;
     let frame = new Frame({
       command: command,
       headers: headers,
       body: body,
+      binaryBody: binaryBody,
       escapeHeaderValues: this._escapeHeaderValues,
       skipContentLengthHeader: skipContentLengthHeader
     });
     this.debug(`>>> ${frame}`);
-    // if necessary, split the *STOMP* frame to send it on many smaller
-    // *WebSocket* frames
     this._webSocket.send(frame.serialize());
 /* Do we need this?
+    // if necessary, split the *STOMP* frame to send it on many smaller
+    // *WebSocket* frames
     while (true) {
       if (out.length > this.maxWebSocketFrameSize) {
         this._webSocket.send(out.substring(0, this.maxWebSocketFrameSize));
@@ -299,9 +281,15 @@ export class StompHandler {
   }
 
   public publish(params: publishParams): void {
-    let {destination, headers, body, skipContentLengthHeader} = params;
+    let {destination, headers, body, binaryBody, skipContentLengthHeader} = params;
     headers = (<any>Object).assign({destination: destination}, headers);
-    this._transmit({command: "SEND", headers: headers, body: body, skipContentLengthHeader: skipContentLengthHeader});
+    this._transmit({
+      command: "SEND",
+      headers: headers,
+      body: body,
+      binaryBody: binaryBody,
+      skipContentLengthHeader: skipContentLengthHeader
+    });
   }
 
   public watchForReceipt(receiptId: string, callback: frameCallbackType): void {

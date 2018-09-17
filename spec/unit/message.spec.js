@@ -41,19 +41,16 @@ describe("Stomp Message", function () {
   });
 
   it("Send and receive binary message", function (done) {
-    const body = generateBinaryData(1);
-    client.treatMessageAsBinary = function (message) {
-      return true;
-    };
+    const binaryBody = generateBinaryData(1);
     client.onConnect = function () {
       client.subscribe(TEST.destination, function (message) {
-        expect(message.body.toString()).toEqual(body.toString());
+        expect(message.binaryBody.toString()).toEqual(binaryBody.toString());
         client.deactivate();
 
         done();
       });
 
-      client.publish({destination: TEST.destination, body: body});
+      client.publish({destination: TEST.destination, binaryBody: binaryBody});
     };
     client.activate();
   });
@@ -63,17 +60,14 @@ describe("Stomp Message", function () {
     const textData = 'Hello World';
     let numCalls = 0;
 
-    client.treatMessageAsBinary = function (message) {
-      return message.headers['content-type'] === 'application/octet-stream';
-    };
     client.onConnect = function () {
       client.subscribe(TEST.destination, function (message) {
         if(++numCalls === 1) { // First message should be binary
-          expect(typeof message.body).not.toEqual('string');
+          expect(message.binaryBody.toString()).toEqual(binaryData.toString());
           return;
         }
         // Second message should be text
-        expect(typeof message.body).toEqual('string');
+        expect(message.body).toEqual(textData);
 
         client.deactivate();
 
@@ -83,7 +77,7 @@ describe("Stomp Message", function () {
       // First a binary message
       client.publish({
         destination: TEST.destination,
-        body: binaryData,
+        binaryBody: binaryData,
         headers: {'content-type': 'application/octet-stream'}
       });
 
@@ -152,19 +146,16 @@ describe("Stomp Message", function () {
     });
 
     it("Large binary message (~1MB)", function (done) {
-      const body = generateBinaryData(1023); // 1 MB
-      client.treatMessageAsBinary = function (message) {
-        return true;
-      };
+      const binaryBody = generateBinaryData(1023); // 1 MB
       client.onConnect = function () {
         client.subscribe(TEST.destination, function (message) {
-          expect(message.body.toString()).toEqual(body.toString());
+          expect(message.binaryBody.toString()).toEqual(binaryBody.toString());
           client.deactivate();
 
           done();
         });
 
-        client.publish({destination: TEST.destination, body: body});
+        client.publish({destination: TEST.destination, binaryBody: binaryBody});
       };
       client.activate();
     });

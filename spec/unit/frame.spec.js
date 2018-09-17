@@ -9,9 +9,7 @@
     parser.parseChunk(data);
 
     const rawFrame = onFrame.calls.first().args[0];
-    const frame = StompJs.Frame.fromRawFrame(rawFrame, escapeHeaderValues);
-    frame.body = new TextDecoder().decode(frame.body);
-    return frame;
+    return StompJs.Frame.fromRawFrame(rawFrame, escapeHeaderValues);
   };
 
   it("escape header value", function () {

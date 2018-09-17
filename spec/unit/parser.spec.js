@@ -2,14 +2,14 @@ function toUint8Array(str) {
   return new TextEncoder().encode(str);
 }
 
-function toArrayBuffer(cmdAndHeaders, body) {
+function toArrayBuffer(cmdAndHeaders, binaryBody) {
   const uint8CmdAndHeaders = new TextEncoder().encode(cmdAndHeaders);
   const nullTerminator = new Uint8Array([0]);
-  const uint8Frame = new Uint8Array(uint8CmdAndHeaders.length + body.length + nullTerminator.length);
+  const uint8Frame = new Uint8Array(uint8CmdAndHeaders.length + binaryBody.length + nullTerminator.length);
 
   uint8Frame.set(uint8CmdAndHeaders);
-  uint8Frame.set(body, uint8CmdAndHeaders.length);
-  uint8Frame.set(nullTerminator, uint8CmdAndHeaders.length + body.length);
+  uint8Frame.set(binaryBody, uint8CmdAndHeaders.length);
+  uint8Frame.set(nullTerminator, uint8CmdAndHeaders.length + binaryBody.length);
 
   return uint8Frame.buffer;
 }
@@ -32,7 +32,7 @@ describe("Neo Parser", function () {
       expect(onFrame).toHaveBeenCalledWith({
         command: 'MESSAGE',
         headers: [['destination', 'foo'], ['message-id', '456']],
-        body: toUint8Array('')
+        binaryBody: toUint8Array('')
       });
     });
 
@@ -46,7 +46,7 @@ describe("Neo Parser", function () {
       expect(onFrame).toHaveBeenCalledWith({
         command: 'MESSAGE',
         headers: [['destination', 'foo'], ['message-id', '456']],
-        body: toUint8Array('')
+        binaryBody: toUint8Array('')
       });
     });
 
@@ -58,7 +58,7 @@ describe("Neo Parser", function () {
       expect(onFrame).toHaveBeenCalledWith({
         command: 'MESSAGE',
         headers: [['destination', 'foo:bar:baz'], ['message-id', '456']],
-        body: toUint8Array('')
+        binaryBody: toUint8Array('')
       });
     });
 
@@ -70,11 +70,11 @@ describe("Neo Parser", function () {
       expect(onFrame).toHaveBeenCalledWith({
         command: 'MESSAGE',
         headers: [['destination', 'foo'], ['hdr', ''], ['message-id', '456']],
-        body: toUint8Array('')
+        binaryBody: toUint8Array('')
       });
     });
 
-    it("parses a Frame without headers or body", function () {
+    it("parses a Frame without headers or binaryBody", function () {
       const msg = "MESSAGE\n\n\0";
 
       parser.parseChunk(msg);
@@ -82,7 +82,7 @@ describe("Neo Parser", function () {
       expect(onFrame).toHaveBeenCalledWith({
         command: 'MESSAGE',
         headers: [],
-        body: toUint8Array('')
+        binaryBody: toUint8Array('')
       });
     });
 
@@ -96,7 +96,7 @@ describe("Neo Parser", function () {
       expect(onFrame).toHaveBeenCalledWith({
         command: 'MESSAGE',
         headers: [['destination', 'foo'], ['message-id', '456']],
-        body: toUint8Array('')
+        binaryBody: toUint8Array('')
       });
     });
 
@@ -108,7 +108,7 @@ describe("Neo Parser", function () {
       expect(onFrame).toHaveBeenCalledWith({
         command: 'MESSAGE',
         headers: [['destination', 'foo'], ['message-id', '456']],
-        body: toUint8Array('')
+        binaryBody: toUint8Array('')
       });
 
       const msg2 = "MESSAGE\ndestination:bar\nmessage-id:203\n\nHello World\0";
@@ -118,7 +118,7 @@ describe("Neo Parser", function () {
       expect(onFrame.calls.mostRecent().args[0]).toEqual({
         command: 'MESSAGE',
         headers: [['destination', 'bar'], ['message-id', '203']],
-        body: toUint8Array('Hello World')
+        binaryBody: toUint8Array('Hello World')
       });
     });
 
@@ -131,13 +131,13 @@ describe("Neo Parser", function () {
       expect(onFrame.calls.first().args[0]).toEqual({
         command: 'MESSAGE',
         headers: [['destination', 'foo'], ['message-id', '456']],
-        body: toUint8Array('')
+        binaryBody: toUint8Array('')
       });
 
       expect(onFrame.calls.mostRecent().args[0]).toEqual({
         command: 'MESSAGE',
         headers: [['destination', 'bar'], ['message-id', '203']],
-        body: toUint8Array('Hello World')
+        binaryBody: toUint8Array('Hello World')
       });
     });
   });
@@ -179,7 +179,7 @@ describe("Neo Parser", function () {
       expect(onFrame).toHaveBeenCalledWith({
         command: 'MESSAGE',
         headers: [['destination', 'bar'], ['message-id', '203']],
-        body: toUint8Array('Hello World')
+        binaryBody: toUint8Array('Hello World')
       });
     });
 
@@ -191,7 +191,7 @@ describe("Neo Parser", function () {
       expect(onFrame).toHaveBeenCalledWith({
         command: 'MESSAGE',
         headers: [['destination', 'bar'], ['message-id', '203']],
-        body: toUint8Array('Hello World')
+        binaryBody: toUint8Array('Hello World')
       });
     });
 
@@ -203,29 +203,29 @@ describe("Neo Parser", function () {
       expect(onFrame).toHaveBeenCalledWith({
         command: 'MESSAGE',
         headers: [],
-        body: toUint8Array('Hello World')
+        binaryBody: toUint8Array('Hello World')
       });
     });
   });
 
   describe("Binary body", function () {
-    let unit8Body, commandAndHeaders, rawChunk;
+    let binaryBody, commandAndHeaders, rawChunk;
 
     let vefiyRawFrame = function (rawFrame) {
       expect(rawFrame.command).toEqual("SEND");
       expect(rawFrame.headers).toEqual([['destination', 'foo'], ['message-id', '456'], ['content-length', '1024']]);
-      expect(rawFrame.body.toString()).toEqual(unit8Body.toString());
+      expect(rawFrame.binaryBody.toString()).toEqual(binaryBody.toString());
     };
 
     beforeEach(function () {
-      // construct body with octets 0 to 255 repeated 4 times (1 Kilo Bytes)
-      unit8Body = generateBinaryData(1);
+      // construct binaryBody with octets 0 to 255 repeated 4 times (1 Kilo Bytes)
+      binaryBody = generateBinaryData(1);
       commandAndHeaders = "SEND\n"
         + "destination:foo\n"
         + "message-id:456\n"
         + "content-length:1024\n"
         + "\n";
-      rawChunk = toArrayBuffer(commandAndHeaders, unit8Body);
+      rawChunk = toArrayBuffer(commandAndHeaders, binaryBody);
     });
 
     it("handles binary octets in body", function () {
@@ -258,7 +258,7 @@ describe("Neo Parser", function () {
 
     it("handles mixed text and binary chunks", function () {
       parser.parseChunk(commandAndHeaders); // Text chunk
-      parser.parseChunk(unit8Body.buffer); // Array buffer chunk, binary octets
+      parser.parseChunk(binaryBody.buffer); // Array buffer chunk, binary octets
       parser.parseChunk("\0"); // Text chunk
 
       const rawFrame = onFrame.calls.first().args[0];

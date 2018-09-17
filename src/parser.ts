@@ -188,7 +188,7 @@ export class Parser {
   }
 
   private _retrievedBody() {
-    this._results.body = this._consumeTokenAsRaw();
+    this._results.binaryBody = this._consumeTokenAsRaw();
 
     this.onFrame(this._results);
 
@@ -215,7 +215,7 @@ export class Parser {
     this._results = {
       command: undefined,
       headers: [],
-      body: undefined,
+      binaryBody: undefined,
     };
 
     this._token = [];

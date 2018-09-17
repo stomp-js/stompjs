@@ -25,26 +25,6 @@ describe("Compat Stomp Message", function () {
       });
   });
 
-  it("Send and receive a binary message", function (done) {
-    const body = new Uint8Array([65,66,245]);
-
-    client.treatMessageAsBinary = function (message) {
-      return message.headers['content-type'] === 'application/octet-stream';
-    };
-
-    client.connect(TEST.login, TEST.password,
-      function () {
-        client.subscribe(TEST.destination, function (message) {
-          expect(message.body.toString()).toEqual(body.toString());
-          client.disconnect();
-
-          done();
-        });
-
-        client.send(TEST.destination, {'content-type': 'application/octet-stream'}, body);
-      });
-  });
-
   it("Send and receive a message with a JSON body", function (done) {
     const payload = {text: "hello", bool: true, value: randomText()};
 
