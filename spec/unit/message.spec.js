@@ -128,6 +128,28 @@ describe("Stomp Message", function () {
     client.activate();
   });
 
+  it("Should always add content length header for binary messages", function (done) {
+    const binaryBody = new Uint8Array([0]);
+
+    client.onConnect = function () {
+      client.subscribe(TEST.destination, function (message) {
+        client.deactivate();
+
+        done();
+      });
+
+      const spy= spyOn(client._webSocket, 'send').and.callThrough();
+
+      client.publish({destination: TEST.destination, binaryBody: binaryBody, skipContentLengthHeader: true});
+
+      const rawChunk = spy.calls.first().args[0];
+      // The frame is binary so needs to be converted to String before RegEx can be used
+      const chunkAsString = new TextDecoder().decode(rawChunk);
+      expect(chunkAsString).toMatch('content-length');
+    };
+    client.activate();
+  });
+
   describe("Large data", function () {
     it("Large text message (~1MB)", function (done) {
       const body = generateTextData(1023); // 1MB
