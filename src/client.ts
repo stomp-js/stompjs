@@ -121,6 +121,14 @@ export class Client {
   }
 
   /**
+   * Callback, invoked on before a connection connection to the STOMP broker.
+   *
+   * You can change options on the client, which will impact the immediate connect.
+   * It is valid to call [Client#decativate]{@link Client#deactivate} in this callback.
+   */
+  public beforeConnect: () => void;
+
+  /**
    * Callback, invoked on every successful connection to the STOMP broker.
    *
    * The actual {@link Frame} will be passed as parameter to the callback.
@@ -181,6 +189,12 @@ export class Client {
 
   private _stompHandler: StompHandler;
 
+  /**
+   * if the client is active (connected or going to reconnect)
+   */
+  get active(): boolean {
+    return this._active;
+  }
   private _active: boolean = false;
   private _reconnector: any;
 
@@ -191,6 +205,7 @@ export class Client {
     // Dummy callbacks
     const noOp = () => {};
     this.debug = noOp;
+    this.beforeConnect = noOp;
     this.onConnect = noOp;
     this.onDisconnect = noOp;
     this.onUnhandledMessage = noOp;
@@ -229,13 +244,15 @@ export class Client {
   }
 
   private _connect(): void {
-    if (!this._active) {
-      this.debug('Client has been marked inactive, will not attempt to connect');
+    if (this.connected) {
+      this.debug('STOMP: already connected, nothing to do');
       return;
     }
 
-    if (this.connected) {
-      this.debug('STOMP: already connected, nothing to do');
+    this.beforeConnect();
+
+    if (!this._active) {
+      this.debug('Client has been marked inactive, will not attempt to connect');
       return;
     }
 

@@ -56,6 +56,31 @@ describe("Stomp Connection", function () {
     client.activate();
   });
 
+  it("Deactivates in before connect", function (done) {
+    client = stompClient();
+    client.configure({
+      onConnect: function () {
+        // should not be called
+        expect(false).toBe(true);
+      },
+      beforeConnect: function () {
+        client.deactivate();
+      },
+      onDisconnect: function () {
+        // should not be called
+        expect(false).toBe(true);
+      }
+    });
+
+    client.activate();
+    setTimeout(() => {
+      expect(client.connected).toBe(false);
+      expect(client.active).toBe(false);
+
+      done()
+    }, 50);
+  });
+
   it("Activates following a deactivate", function (done) {
     client = stompClient();
     client.configure({

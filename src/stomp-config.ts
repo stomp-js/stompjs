@@ -64,6 +64,11 @@ export interface StompConfig {
   onUnhandledFrame?: frameCallbackType;
 
   /**
+   * See [Client#beforeConnect]{@link Client#beforeConnect}.
+   */
+  beforeConnect?: () => void;
+
+  /**
    * See [Client#onConnect]{@link Client#onConnect}.
    */
   onConnect?: frameCallbackType;
