@@ -1,6 +1,13 @@
 # Change Log
 
-## 5.0.0-beta1 (2018/09/15)
+## 5.0.0-beta.2 (2018/09/18)
+
+* added `forceDisconnect`
+* deprecate maxWebSocketFrameSize
+* new API for binary messages
+* beforeConnect callback
+
+## 5.0.0-beta.1 (2018/09/15)
 
 * Shift to Typescript, Jasmine, Karma, Webpack and compodoc
 * 3 variants of complied files - ES5, ES6 and UMD
