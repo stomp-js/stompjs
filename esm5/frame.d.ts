@@ -15,10 +15,17 @@ export declare class Frame {
      * Headers, key value pairs.
      */
     headers: StompHeaders;
+    isBinaryBody: boolean;
     /**
-     * It is serialized string
+     * body of the frame
      */
-    body: string | Uint8Array;
+    readonly body: string;
+    private _body;
+    /**
+     * body as Uint8Array
+     */
+    readonly binaryBody: Uint8Array;
+    private _binaryBody;
     private escapeHeaderValues;
     private skipContentLengthHeader;
     /**
@@ -29,7 +36,8 @@ export declare class Frame {
     constructor(params: {
         command: string;
         headers?: StompHeaders;
-        body: any;
+        body?: string;
+        binaryBody?: Uint8Array;
         escapeHeaderValues?: boolean;
         skipContentLengthHeader?: boolean;
     });
@@ -50,7 +58,6 @@ export declare class Frame {
      */
     serialize(): string | ArrayBuffer;
     private serializeCmdAndHeaders;
-    private isBinaryBody;
     private isBodyEmpty;
     private bodyLength;
     /**
@@ -67,7 +74,8 @@ export declare class Frame {
     static marshall(params: {
         command: string;
         headers?: StompHeaders;
-        body: string | Uint8Array;
+        body?: string;
+        binaryBody?: Uint8Array;
         escapeHeaderValues?: boolean;
         skipContentLengthHeader?: boolean;
     }): string | ArrayBuffer;

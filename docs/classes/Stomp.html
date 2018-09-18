@@ -518,7 +518,7 @@
                 <tr>
                     <td class="col-md-4">
                             <span class="modifier-icon fa fa-reset"></span>
-                        <code>client(url: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, protocols: string[])</code>
+                        <code>client(url: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, protocols?: string[])</code>
                     </td>
                 </tr>
 
@@ -567,7 +567,7 @@ the STOMP server located at the url.</p>
                                                         </td>
                                                     
                                                     <td>
-                                                            no
+                                                            yes
                                                     </td>
                                                     
 
@@ -708,7 +708,7 @@ export class Stomp {
    *        var client &#x3D; Stomp.client(url);
    * &#x60;&#x60;&#x60;
    */
-  public static client (url: string, protocols: string[]): CompatClient {
+  public static client (url: string, protocols?: string[]): CompatClient {
     // This is a hack to allow another implementation than the standard
     // HTML5 WebSocket class.
     //

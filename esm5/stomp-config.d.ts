@@ -1,5 +1,5 @@
 import { StompHeaders } from "./stomp-headers";
-import { frameCallbackType, messageCallbackType, closeEventCallbackType, debugFnType, messageCheckCallbackType } from "./types";
+import { frameCallbackType, messageCallbackType, closeEventCallbackType, debugFnType } from "./types";
 /**
  * Configuration options for STOMP Client, each key corresponds to
  * field by the same name in {@link Client}. This can be passed to
@@ -27,14 +27,6 @@ export interface StompConfig {
      */
     heartbeatOutgoing?: number;
     /**
-     * See [Client#maxWebSocketFrameSize]{@link Client#maxWebSocketFrameSize}.
-     */
-    maxWebSocketFrameSize?: number;
-    /**
-     * See [Client#treatMessageAsBinary]{@link Client#treatMessageAsBinary}.
-     */
-    treatMessageAsBinary?: messageCheckCallbackType;
-    /**
      * See [Client#connectHeaders]{@link Client#connectHeaders}.
      */
     connectHeaders?: StompHeaders;
@@ -54,6 +46,10 @@ export interface StompConfig {
      * See [Client#onUnhandledFrame]{@link Client#onUnhandledFrame}.
      */
     onUnhandledFrame?: frameCallbackType;
+    /**
+     * See [Client#beforeConnect]{@link Client#beforeConnect}.
+     */
+    beforeConnect?: () => void;
     /**
      * See [Client#onConnect]{@link Client#onConnect}.
      */

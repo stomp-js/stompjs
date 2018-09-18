@@ -452,11 +452,12 @@ the <a href="../classes/Client.html#publish">Client#publish</a> method.</p>
 
     // Additional headers
     client.publish({destination: &#39;/topic/general&#39;, body: &#39;Hello world&#39;, headers: {&#39;priority&#39;: &#39;9&#39;}});</code></pre></div><p>Starting version 5, sending binary messages is supported.
-If the body is of type 
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Uint8Array</a>,
-the data will be treated as binary.</p>
+To send a binary message body use binaryBody parameter. It should be a
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Uint8Array</a>.</p>
 <div><pre class="line-numbers"><code class="language-javascript">    var binaryData = generateBinaryData(); // This need to be of type Uint8Array
-    client.publish({destination: &#39;/topic/special&#39;, body: binaryData});</code></pre></div><h2 id="subscribe-and-receive-messages">Subscribe and receive messages</h2>
+    // setting content-type header is not mandatory, however a good practice
+    client.publish({destination: &#39;/topic/special&#39;, binaryBody: binaryData,
+                    headers: {&#39;content-type&#39;: &#39;application/octet-stream&#39;}});</code></pre></div><h2 id="subscribe-and-receive-messages">Subscribe and receive messages</h2>
 <p>To receive messages in the browser, the STOMP client must first subscribe to 
 a destination.</p>
 <p>You can use the <a href="../classes/Client.html#subscribe">Client#subscribe</a> method to subscribe to a destination. The method
@@ -493,27 +494,24 @@ the object returned by the <a href="../classes/Client.html#subscribe">Client#sub
 For example RabbitMQ (see: <a href="https://www.rabbitmq.com/web-stomp.html">https://www.rabbitmq.com/web-stomp.html</a>)
 will need following to be added to the server configuration:</p>
 <div><pre class="line-numbers"><code class="language-none">web_stomp.ws_frame = binary</code></pre></div><h3 id="publishing-binary-messages">Publishing binary messages</h3>
-<p><a href="../classes/Client.html#publish">Client#publish</a> will treat a message as binary if <code>body</code> is
+<p>Use parameter <code>binaryBody</code> of <a href="../classes/Client.html#publish">Client#publish</a> to send binary data of type
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Uint8Array</a>.</p>
+<p>See <a href="#send-messages">Send messages</a> for an example.</p>
 <h3 id="receiving-binary-messages">Receiving binary messages</h3>
-<p>There is a callback <a href="../classes/Client.html#treatMessageAsBinary">Client#treatMessageAsBinary</a>
-which by default returns <code>false</code> indicating all incoming messages are considered to be text and decoded as UTF8.
-If you are receiving binary messages you will need to provide an implementation of this callback.
-When this callback returns <code>true</code> the body will be returned as a
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Uint8Array</a>.</p>
-<div><pre class="line-numbers"><code class="language-javascript">    // When `true` octet data from teh body is returned as is.
-    // When `false` body of incoming message is converted to `string` assuming to be UTF8.
-
-    // Treat all messages a binary
-    client.treatMessageAsBinary = function(message) {
-      return true;
-    };
-
-    // Treat a message as binary based on content-type
-    // This header is not a standard header, while publishing messages it needs to be explicitly set.
-    client.treatMessageAsBinary = function(message) {
-      return message.headers[&#39;content-type&#39;] === &#39;application/octet-stream&#39;;
-    };</code></pre></div><h2 id="json-support">JSON support</h2>
+<p>The library does not try to guess whether the incoming data is text/binary.
+When you access <a href="../classes/Frame.html#body">Message#body</a> the message will be returned as string.
+To access the message body as binary please call <a href="../classes/Frame.html#binaryBody">Message#binaryBody</a>.</p>
+<p>There is no generally accepted convention in STOMP (actually messaging in general) to indicate that a message
+is binary. The message senders and receivers will need to agree on required convention.</p>
+<p>You may choose to set <code>content-type</code> header to indicate binary message.</p>
+<div><pre class="line-numbers"><code class="language-javascript">    // within message callback
+    if (message.headers[&#39;content-type&#39;] === &#39;application/octet-stream&#39;) {
+      // message is binary
+      // call message.binaryBody 
+    } else {
+      // message is text
+      // call message.body
+    }</code></pre></div><h2 id="json-support">JSON support</h2>
 <p>The body of a STOMP message must be a String. If you want to send and receive
 <a href="http://json.org/">JSON</a> objects, you can use <code>JSON.stringify()</code> and 
 <code>JSON.parse()</code> to transform the JSON object to a String and vice versa.</p>

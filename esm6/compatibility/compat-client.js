@@ -28,6 +28,10 @@ var CompatClient = /** @class */ (function (_super) {
      */
     function CompatClient(webSocketFactory) {
         var _this = _super.call(this) || this;
+        /**
+         * It is no op now. No longer needed. Large packets work out of the box.
+         */
+        _this.maxWebSocketFrameSize = 16 * 1024;
         _this._heartbeatInfo = new HeartbeatInfo(_this);
         _this.reconnect_delay = 0;
         _this.webSocketFactory = webSocketFactory;

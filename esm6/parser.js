@@ -165,7 +165,7 @@ var Parser = /** @class */ (function () {
         this._consumeByte(byte);
     };
     Parser.prototype._retrievedBody = function () {
-        this._results.body = this._consumeTokenAsRaw();
+        this._results.binaryBody = this._consumeTokenAsRaw();
         this.onFrame(this._results);
         this._initState();
     };
@@ -185,7 +185,7 @@ var Parser = /** @class */ (function () {
         this._results = {
             command: undefined,
             headers: [],
-            body: undefined,
+            binaryBody: undefined,
         };
         this._token = [];
         this._headerKey = undefined;

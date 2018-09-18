@@ -413,6 +413,14 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Public</span>
+                                <a href="#maxWebSocketFrameSize">maxWebSocketFrameSize</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#beforeConnect">beforeConnect</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#brokerURL">brokerURL</a>
                             </li>
                             <li>
@@ -434,10 +442,6 @@
                             <li>
                                     <span class="modifier">Public</span>
                                 <a href="#heartbeatOutgoing">heartbeatOutgoing</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                <a href="#maxWebSocketFrameSize">maxWebSocketFrameSize</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -470,10 +474,6 @@
                             <li>
                                     <span class="modifier">Public</span>
                                 <a href="#reconnectDelay">reconnectDelay</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                <a href="#treatMessageAsBinary">treatMessageAsBinary</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -533,6 +533,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
+                                <a href="#forceDisconnect">forceDisconnect</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#nack">nack</a>
                             </li>
                             <li>
@@ -569,6 +573,101 @@
         <h3 id="inputs">
             Properties
         </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="maxWebSocketFrameSize"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            maxWebSocketFrameSize
+                            </b>
+                            <a href="#maxWebSocketFrameSize"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <span class="modifier-icon fa fa-reset"></span><code>maxWebSocketFrameSize:     <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>16 * 1024</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/compatibility/compat-client.ts:17</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>It is no op now. No longer needed. Large packets work out of the box.</p>
+</div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="beforeConnect"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            beforeConnect
+                            </b>
+                            <a href="#beforeConnect"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <span class="modifier-icon fa fa-reset"></span><code>beforeConnect:     <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/function" target="_blank" >function</a></code>
+</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/function" target="_blank" >function</a></code>
+
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Inherited from     <code><a href="../classes/Client.html" target="_self" >Client</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in Client:129</div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>Callback, invoked on before a connection connection to the STOMP broker.</p>
+<p>You can change options on the client, which will impact the immediate connect.
+It is valid to call <a href="../classes/Client.html#deactivate">Client#decativate</a> in this callback.</p>
+</div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
         <table class="table table-sm table-bordered">
             <tbody>
                 <tr>
@@ -653,7 +752,7 @@ If both are set, <a href="../classes/Client.html#webSocketFactory">Client#webSoc
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:88</div>
+                                    <div class="io-line">Defined in Client:81</div>
                             </td>
                         </tr>
 
@@ -702,7 +801,7 @@ details specific to your broker.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:206</div>
+                                    <div class="io-line">Defined in Client:181</div>
                             </td>
                         </tr>
 
@@ -753,7 +852,7 @@ and may contain sensitive information (like passwords, tokens etc.).</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:93</div>
+                                    <div class="io-line">Defined in Client:86</div>
                             </td>
                         </tr>
 
@@ -874,60 +973,6 @@ and may contain sensitive information (like passwords, tokens etc.).</p>
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="maxWebSocketFrameSize"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Public</span>
-                            maxWebSocketFrameSize
-                            </b>
-                            <a href="#maxWebSocketFrameSize"><span class="fa fa-link"></span></a>
-                        </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <span class="modifier-icon fa fa-reset"></span><code>maxWebSocketFrameSize:     <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-</code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>16 * 1024</code>
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from     <code><a href="../classes/Client.html" target="_self" >Client</a></code>
-</div>
-                                </td>
-                            </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:69</div>
-                            </td>
-                        </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                        <div class="io-description"><p>Maximum WebSocket frame size sent by the client. If a STOMP frame
-is bigger than this value, the STOMP frame will be sent using multiple
-WebSocket frames (default is 16KiB).</p>
-</div>
-                    </td>
-                </tr>
-
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
                         <a name="onConnect"></a>
                         <span class="name">
                             <b>
@@ -958,7 +1003,7 @@ WebSocket frames (default is 16KiB).</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:162</div>
+                                    <div class="io-line">Defined in Client:137</div>
                             </td>
                         </tr>
 
@@ -1007,7 +1052,7 @@ Sometimes clients will like to use headers from this frame.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:175</div>
+                                    <div class="io-line">Defined in Client:150</div>
                             </td>
                         </tr>
 
@@ -1060,7 +1105,7 @@ STOMP broker disconnects.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:184</div>
+                                    <div class="io-line">Defined in Client:159</div>
                             </td>
                         </tr>
 
@@ -1110,7 +1155,7 @@ Please check broker specific documentation for exact behavior.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:147</div>
+                                    <div class="io-line">Defined in Client:114</div>
                             </td>
                         </tr>
 
@@ -1158,7 +1203,7 @@ Please check broker specific documentation for exact behavior.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:131</div>
+                                    <div class="io-line">Defined in Client:98</div>
                             </td>
                         </tr>
 
@@ -1210,7 +1255,7 @@ from an endpoint.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:140</div>
+                                    <div class="io-line">Defined in Client:107</div>
                             </td>
                         </tr>
 
@@ -1260,7 +1305,7 @@ Prefer using <a href="../classes/Client.html#watchForReceipt">Client#watchForRec
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:192</div>
+                                    <div class="io-line">Defined in Client:167</div>
                             </td>
                         </tr>
 
@@ -1322,68 +1367,6 @@ is passed as parameter to the callback.</p>
                     <td class="col-md-4">
                         <div class="io-description"><p>automatically reconnect with delay in milliseconds, set to 0 to disable.</p>
 </div>
-                    </td>
-                </tr>
-
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="treatMessageAsBinary"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Public</span>
-                            treatMessageAsBinary
-                            </b>
-                            <a href="#treatMessageAsBinary"><span class="fa fa-link"></span></a>
-                        </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <span class="modifier-icon fa fa-reset"></span><code>treatMessageAsBinary:     <code><a href="../miscellaneous/typealiases.html#messageCheckCallbackType" target="_self" >messageCheckCallbackType</a></code>
-</code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>    <code><a href="../miscellaneous/typealiases.html#messageCheckCallbackType" target="_self" >messageCheckCallbackType</a></code>
-
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from     <code><a href="../classes/Client.html" target="_self" >Client</a></code>
-</div>
-                                </td>
-                            </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:119</div>
-                            </td>
-                        </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                        <div class="io-description"><p>This callback will be called with the incoming message frame <a href="../interfaces/Message.html">Message</a>.
-If this function returns <code>true</code>, the <a href="../classes/Frame.html#body">Frame#body</a> will not be converted
-to <code>string</code> and be returned as
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Uint8Array</a>.
-If this returns <code>false</code>, the body will be assumed to UTF8 string and will be converted at <code>string</code>.</p>
-<p>By default this callback returns <code>false</code>, i.e., all messages are treated as text.</p>
-<p>Examples:</p>
-<div><pre class="line-numbers"><code class="language-javascript">        // Treat all messages a binary
-        client.treatMessageAsBinary = function(message) {
-          return true;
-        };
-
-        // Treat a message as binary based on content-type
-        // This header is not a standard header, while publishing messages it needs to be explicitly set.
-        client.treatMessageAsBinary = function(message) {
-          return message.headers[&#39;content-type&#39;] === &#39;application/octet-stream&#39;;
-        };</code></pre></div></div>
                     </td>
                 </tr>
 
@@ -1478,7 +1461,7 @@ If your STOMP Broker supports WebSockets, prefer setting <a href="../classes/Cli
 
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="80" class="link-to-prism">src/compatibility/compat-client.ts:80</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="85" class="link-to-prism">src/compatibility/compat-client.ts:85</a></div>
                             </td>
                         </tr>
 
@@ -1574,7 +1557,7 @@ version with headers to pass your broker specific options.</p>
 
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="102" class="link-to-prism">src/compatibility/compat-client.ts:102</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="107" class="link-to-prism">src/compatibility/compat-client.ts:107</a></div>
                             </td>
                         </tr>
 
@@ -1670,7 +1653,7 @@ version with headers to pass your broker specific options.</p>
 
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="131" class="link-to-prism">src/compatibility/compat-client.ts:131</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="136" class="link-to-prism">src/compatibility/compat-client.ts:136</a></div>
                             </td>
                         </tr>
 
@@ -1791,7 +1774,7 @@ However, there may be special purpose headers corresponding to your STOMP broker
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:518</div>
+                                    <div class="io-line">Defined in Client:521</div>
                             </td>
                         </tr>
 
@@ -1874,7 +1857,7 @@ It is preferable to abort a transaction by calling <a href="../interfaces/Transa
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:535</div>
+                                    <div class="io-line">Defined in Client:538</div>
                             </td>
                         </tr>
 
@@ -1991,7 +1974,7 @@ on the <a href="../interfaces/Message.html">Message</a> handled by a subscriptio
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:262</div>
+                                    <div class="io-line">Defined in Client:240</div>
                             </td>
                         </tr>
 
@@ -2042,7 +2025,7 @@ it will keep trying to reconnect.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:487</div>
+                                    <div class="io-line">Defined in Client:490</div>
                             </td>
                         </tr>
 
@@ -2123,7 +2106,7 @@ and <a href="../interfaces/Transaction.html#abort">abort</a>.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:503</div>
+                                    <div class="io-line">Defined in Client:506</div>
                             </td>
                         </tr>
 
@@ -2206,7 +2189,7 @@ and <a href="../interfaces/Transaction.html#abort">abort</a>.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:250</div>
+                                    <div class="io-line">Defined in Client:228</div>
                             </td>
                         </tr>
 
@@ -2285,15 +2268,67 @@ and <a href="../interfaces/Transaction.html#abort">abort</a>.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:349</div>
+                                    <div class="io-line">Defined in Client:328</div>
                             </td>
                         </tr>
 
 
                 <tr>
                     <td class="col-md-4">
-                            <div class="io-description"><p>Disconnect and stop auto reconnect loop.</p>
-<p>Appropriate callbacks will be invoked if underlying STOMP connection was connected.</p>
+                            <div class="io-description"><p>Disconnect if connected and stop auto reconnect loop.
+Appropriate callbacks will be invoked if underlying STOMP connection was connected.</p>
+<p>To reactivate the <a href="../classes/Client.html">Client</a> you can call <a href="../classes/Client.html#activate">Client#activate</a>.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Returns : </b>    <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="forceDisconnect"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            forceDisconnect
+                            </b>
+                            <a href="#forceDisconnect"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                            <span class="modifier-icon fa fa-reset"></span>
+                        <code>forceDisconnect()</code>
+                    </td>
+                </tr>
+
+
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Inherited from     <code><a href="../classes/Client.html" target="_self" >Client</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in Client:345</div>
+                            </td>
+                        </tr>
+
+
+                <tr>
+                    <td class="col-md-4">
+                            <div class="io-description"><p>Force disconnect if there is an active connection by directly closing the underlying WebSocket.
+This is different than a normal disconnect where a DISCONNECT sequence is carried out with the broker.
+After forcing disconnect, automatic reconnect will be attempted.
+To stop further reconnects call <a href="../classes/Client.html#deactivate">Client#deactivate</a> as well.</p>
 </div>
 
                             <div class="io-description">
@@ -2334,7 +2369,7 @@ and <a href="../interfaces/Transaction.html#abort">abort</a>.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:552</div>
+                                    <div class="io-line">Defined in Client:555</div>
                             </td>
                         </tr>
 
@@ -2451,7 +2486,7 @@ on the <a href="../interfaces/Message.html">Message</a> handled by a subscriptio
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:394</div>
+                                    <div class="io-line">Defined in Client:397</div>
                             </td>
                         </tr>
 
@@ -2461,21 +2496,29 @@ on the <a href="../interfaces/Message.html">Message</a> handled by a subscriptio
                             <div class="io-description"><p>Send a message to a named destination. Refer to your STOMP broker documentation for types
 and naming of destinations.</p>
 <p>STOMP protocol specifies and suggests some headers and also allows broker specific headers.</p>
-<p>Note: Body must be String or
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Unit8Array</a>.
-If the body is
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Unit8Array</a>
-the frame will be sent as binary.
+<p>Body must be String.
+You will need to covert the payload to string in case it is not string (e.g. JSON).</p>
+<p>To send a binary message body use binaryBody parameter. It should be a
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Uint8Array</a>.
 Sometimes brokers may not support binary frames out of the box.
 Please check your broker documentation.</p>
-<p>You will need to covert the payload to string in case it is not string (e.g. JSON)</p>
+<p><code>content-length</code> header is automatically added to the STOMP Frame sent to the broker.
+Set <code>skipContentLengthHeader</code> to indicate that <code>content-length</code> header should not be added.
+For binary messages <code>content-length</code> header is always added.</p>
+<p>Caution: The broker will, most likely, report an error and disconnect if message body has NULL octet(s)
+and <code>content-length</code> header is missing.</p>
 <div><pre class="line-numbers"><code class="language-javascript">        client.publish({destination: &quot;/queue/test&quot;, headers: {priority: 9}, body: &quot;Hello, STOMP&quot;});
 
         // Only destination is mandatory parameter
         client.publish({destination: &quot;/queue/test&quot;, body: &quot;Hello, STOMP&quot;});
 
         // Skip content-length header in the frame to the broker
-        client.publish({&quot;/queue/test&quot;, body: &quot;Hello, STOMP&quot;, skipContentLengthHeader: true});</code></pre></div></div>
+        client.publish({&quot;/queue/test&quot;, body: &quot;Hello, STOMP&quot;, skipContentLengthHeader: true});
+
+        var binaryData = generateBinaryData(); // This need to be of type Uint8Array
+        // setting content-type header is not mandatory, however a good practice
+        client.publish({destination: &#39;/topic/special&#39;, binaryBody: binaryData,
+                         headers: {&#39;content-type&#39;: &#39;application/octet-stream&#39;}});</code></pre></div></div>
 
                             <div class="io-description">
                                     <b>Parameters :</b>
@@ -2546,7 +2589,7 @@ Please check your broker documentation.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:461</div>
+                                    <div class="io-line">Defined in Client:464</div>
                             </td>
                         </tr>
 
@@ -2673,7 +2716,7 @@ the <a href="../interfaces/Message.html">Message</a> as argument.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:477</div>
+                                    <div class="io-line">Defined in Client:480</div>
                             </td>
                         </tr>
 
@@ -2774,7 +2817,7 @@ the <a href="../interfaces/Message.html">Message</a> as argument.</p>
                             </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in Client:433</div>
+                                    <div class="io-line">Defined in Client:436</div>
                             </td>
                         </tr>
 
@@ -2888,7 +2931,7 @@ when corresponding receipt has been received.</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="149" class="link-to-prism">src/compatibility/compat-client.ts:149</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="154" class="link-to-prism">src/compatibility/compat-client.ts:154</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -2949,7 +2992,7 @@ when corresponding receipt has been received.</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="158" class="link-to-prism">src/compatibility/compat-client.ts:158</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="163" class="link-to-prism">src/compatibility/compat-client.ts:163</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -2983,7 +3026,7 @@ when corresponding receipt has been received.</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="167" class="link-to-prism">src/compatibility/compat-client.ts:167</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="172" class="link-to-prism">src/compatibility/compat-client.ts:172</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3006,7 +3049,7 @@ when corresponding receipt has been received.</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="176" class="link-to-prism">src/compatibility/compat-client.ts:176</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="181" class="link-to-prism">src/compatibility/compat-client.ts:181</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3063,7 +3106,7 @@ when corresponding receipt has been received.</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="186" class="link-to-prism">src/compatibility/compat-client.ts:186</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="191" class="link-to-prism">src/compatibility/compat-client.ts:191</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3087,7 +3130,7 @@ Prefer using <a href="../classes/Client.html#watchForReceipt">Client#watchForRec
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="195" class="link-to-prism">src/compatibility/compat-client.ts:195</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="200" class="link-to-prism">src/compatibility/compat-client.ts:200</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3144,7 +3187,7 @@ Prefer using <a href="../classes/Client.html#watchForReceipt">Client#watchForRec
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="207" class="link-to-prism">src/compatibility/compat-client.ts:207</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="212" class="link-to-prism">src/compatibility/compat-client.ts:212</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3164,7 +3207,7 @@ Prefer using <a href="../classes/Client.html#watchForReceipt">Client#watchForRec
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="217" class="link-to-prism">src/compatibility/compat-client.ts:217</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="222" class="link-to-prism">src/compatibility/compat-client.ts:222</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3227,6 +3270,11 @@ import {frameCallbackType, messageCallbackType} from &quot;../types&quot;;
  * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
  */
 export class CompatClient extends Client {
+
+  /**
+   * It is no op now. No longer needed. Large packets work out of the box.
+   */
+  public maxWebSocketFrameSize: number &#x3D; 16 * 1024;
 
   /**
    * Available for backward compatibility, please shift to using {@link Client}

@@ -153,22 +153,13 @@ var Client = /** @class */ (function () {
          * Outgoing heartbeat interval in milliseconds. Set to 0 to disable.
          */
         this.heartbeatOutgoing = 10000;
-        /**
-         * Maximum WebSocket frame size sent by the client. If a STOMP frame
-         * is bigger than this value, the STOMP frame will be sent using multiple
-         * WebSocket frames (default is 16KiB).
-         */
-        this.maxWebSocketFrameSize = 16 * 1024;
         this._active = false;
         // Dummy callbacks
         var noOp = function () { };
         this.debug = noOp;
+        this.beforeConnect = noOp;
         this.onConnect = noOp;
         this.onDisconnect = noOp;
-        // Treat messages as text by default
-        this.treatMessageAsBinary = function (message) {
-            return false;
-        };
         this.onUnhandledMessage = noOp;
         this.onUnhandledReceipt = noOp;
         this.onUnhandledFrame = noOp;
@@ -210,6 +201,16 @@ var Client = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Client.prototype, "active", {
+        /**
+         * if the client is active (connected or going to reconnect)
+         */
+        get: function () {
+            return this._active;
+        },
+        enumerable: true,
+        configurable: true
+    });
     /**
      * Update configuration.
      */
@@ -230,12 +231,13 @@ var Client = /** @class */ (function () {
     };
     Client.prototype._connect = function () {
         var _this = this;
-        if (!this._active) {
-            this.debug('Client has been marked inactive, will not attempt to connect');
-            return;
-        }
         if (this.connected) {
             this.debug('STOMP: already connected, nothing to do');
+            return;
+        }
+        this.beforeConnect();
+        if (!this._active) {
+            this.debug('Client has been marked inactive, will not attempt to connect');
             return;
         }
         this.debug("Opening Web Socket...");
@@ -247,8 +249,6 @@ var Client = /** @class */ (function () {
             disconnectHeaders: this.disconnectHeaders,
             heartbeatIncoming: this.heartbeatIncoming,
             heartbeatOutgoing: this.heartbeatOutgoing,
-            maxWebSocketFrameSize: this.maxWebSocketFrameSize,
-            treatMessageAsBinary: this.treatMessageAsBinary,
             onConnect: function (frame) {
                 if (!_this._active) {
                     _this.debug('STOMP got connected while deactivate was issued, will disconnect now');
@@ -298,9 +298,10 @@ var Client = /** @class */ (function () {
         }
     };
     /**
-     * Disconnect and stop auto reconnect loop.
-     *
+     * Disconnect if connected and stop auto reconnect loop.
      * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
+     *
+     * To reactivate the {@link Client} you can call [Client#activate]{@link Client#activate}.
      */
     Client.prototype.deactivate = function () {
         // indicate that auto reconnect loop should terminate
@@ -310,6 +311,19 @@ var Client = /** @class */ (function () {
             clearTimeout(this._reconnector);
         }
         this._disposeStompHandler();
+    };
+    /**
+     * Force disconnect if there is an active connection by directly closing the underlying WebSocket.
+     * This is different than a normal disconnect where a DISCONNECT sequence is carried out with the broker.
+     * After forcing disconnect, automatic reconnect will be attempted.
+     * To stop further reconnects call [Client#deactivate]{@link Client#deactivate} as well.
+     */
+    Client.prototype.forceDisconnect = function () {
+        if (this._webSocket) {
+            if (this._webSocket.readyState === WebSocket.CONNECTING || this._webSocket.readyState === WebSocket.OPEN) {
+                this._webSocket.close();
+            }
+        }
     };
     Client.prototype._disposeStompHandler = function () {
         // Dispose STOMP Handler
@@ -324,15 +338,20 @@ var Client = /** @class */ (function () {
      *
      * STOMP protocol specifies and suggests some headers and also allows broker specific headers.
      *
-     * Note: Body must be String or
-     * [Unit8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}.
-     * If the body is
-     * [Unit8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}
-     * the frame will be sent as binary.
+     * Body must be String.
+     * You will need to covert the payload to string in case it is not string (e.g. JSON).
+     *
+     * To send a binary message body use binaryBody parameter. It should be a
+     * [Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array).
      * Sometimes brokers may not support binary frames out of the box.
      * Please check your broker documentation.
      *
-     * You will need to covert the payload to string in case it is not string (e.g. JSON)
+     * `content-length` header is automatically added to the STOMP Frame sent to the broker.
+     * Set `skipContentLengthHeader` to indicate that `content-length` header should not be added.
+     * For binary messages `content-length` header is always added.
+     *
+     * Caution: The broker will, most likely, report an error and disconnect if message body has NULL octet(s)
+     * and `content-length` header is missing.
      *
      * ```javascript
      *        client.publish({destination: "/queue/test", headers: {priority: 9}, body: "Hello, STOMP"});
@@ -342,6 +361,11 @@ var Client = /** @class */ (function () {
      *
      *        // Skip content-length header in the frame to the broker
      *        client.publish({"/queue/test", body: "Hello, STOMP", skipContentLengthHeader: true});
+     *
+     *        var binaryData = generateBinaryData(); // This need to be of type Uint8Array
+     *        // setting content-type header is not mandatory, however a good practice
+     *        client.publish({destination: '/topic/special', binaryBody: binaryData,
+     *                         headers: {'content-type': 'application/octet-stream'}});
      * ```
      */
     Client.prototype.publish = function (params) {
@@ -548,6 +572,10 @@ var CompatClient = /** @class */ (function (_super) {
      */
     function CompatClient(webSocketFactory) {
         var _this = _super.call(this) || this;
+        /**
+         * It is no op now. No longer needed. Large packets work out of the box.
+         */
+        _this.maxWebSocketFrameSize = 16 * 1024;
         _this._heartbeatInfo = new HeartbeatInfo(_this);
         _this.reconnect_delay = 0;
         _this.webSocketFactory = webSocketFactory;
@@ -920,13 +948,46 @@ var Frame = /** @class */ (function () {
      * @internal
      */
     function Frame(params) {
-        var command = params.command, headers = params.headers, body = params.body, escapeHeaderValues = params.escapeHeaderValues, skipContentLengthHeader = params.skipContentLengthHeader;
+        var command = params.command, headers = params.headers, body = params.body, binaryBody = params.binaryBody, escapeHeaderValues = params.escapeHeaderValues, skipContentLengthHeader = params.skipContentLengthHeader;
         this.command = command;
         this.headers = headers || {};
-        this.body = body || '';
+        if (binaryBody) {
+            this._binaryBody = binaryBody;
+            this.isBinaryBody = true;
+        }
+        else {
+            this._body = body || '';
+            this.isBinaryBody = false;
+        }
         this.escapeHeaderValues = escapeHeaderValues || false;
         this.skipContentLengthHeader = skipContentLengthHeader || false;
     }
+    Object.defineProperty(Frame.prototype, "body", {
+        /**
+         * body of the frame
+         */
+        get: function () {
+            if (!this._body && this.isBinaryBody) {
+                this._body = new TextDecoder().decode(this._binaryBody);
+            }
+            return this._body;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Frame.prototype, "binaryBody", {
+        /**
+         * body as Uint8Array
+         */
+        get: function () {
+            if (!this._binaryBody && !this.isBinaryBody) {
+                this._binaryBody = new TextEncoder().encode(this._body);
+            }
+            return this._binaryBody;
+        },
+        enumerable: true,
+        configurable: true
+    });
     /**
      * deserialize a STOMP Frame from raw data.
      *
@@ -949,7 +1010,7 @@ var Frame = /** @class */ (function () {
         return new Frame({
             command: rawFrame.command,
             headers: headers,
-            body: rawFrame.body,
+            binaryBody: rawFrame.binaryBody,
             escapeHeaderValues: escapeHeaderValues
         });
     };
@@ -957,9 +1018,7 @@ var Frame = /** @class */ (function () {
      * @internal
      */
     Frame.prototype.toString = function () {
-        var cmdAndHeaders = this.serializeCmdAndHeaders();
-        var bodyText = this.isBinaryBody() ? "<<binary data>>" : this.body;
-        return cmdAndHeaders + bodyText;
+        return this.serializeCmdAndHeaders();
     };
     /**
      * serialize this Frame in a format suitable to be passed to WebSocket.
@@ -968,11 +1027,11 @@ var Frame = /** @class */ (function () {
      */
     Frame.prototype.serialize = function () {
         var cmdAndHeaders = this.serializeCmdAndHeaders();
-        if (this.isBinaryBody()) {
-            return Frame.toUnit8Array(cmdAndHeaders, this.body).buffer;
+        if (this.isBinaryBody) {
+            return Frame.toUnit8Array(cmdAndHeaders, this._binaryBody).buffer;
         }
         else {
-            return cmdAndHeaders + this.body + byte_1.Byte.NULL;
+            return cmdAndHeaders + this._body + byte_1.Byte.NULL;
         }
     };
     Frame.prototype.serializeCmdAndHeaders = function () {
@@ -990,19 +1049,17 @@ var Frame = /** @class */ (function () {
                 lines.push(name_1 + ":" + value);
             }
         }
-        if (this.body && !this.skipContentLengthHeader) {
+        if (this.isBinaryBody || (!this.isBodyEmpty() && !this.skipContentLengthHeader)) {
             lines.push("content-length:" + this.bodyLength());
         }
         return lines.join(byte_1.Byte.LF) + byte_1.Byte.LF + byte_1.Byte.LF;
     };
-    Frame.prototype.isBinaryBody = function () {
-        return (typeof this.body !== "string") && this.body.length > 0;
-    };
     Frame.prototype.isBodyEmpty = function () {
-        return this.body.length === 0;
+        return this.bodyLength() === 0;
     };
     Frame.prototype.bodyLength = function () {
-        return this.isBinaryBody() ? this.body.length : Frame.sizeOfUTF8(this.body);
+        var binaryBody = this.binaryBody;
+        return binaryBody ? binaryBody.length : 0;
     };
     /**
      * Compute the size of a UTF-8 string by counting its number of bytes
@@ -1011,13 +1068,13 @@ var Frame = /** @class */ (function () {
     Frame.sizeOfUTF8 = function (s) {
         return s ? new TextEncoder().encode(s).length : 0;
     };
-    Frame.toUnit8Array = function (cmdAndHeaders, body) {
+    Frame.toUnit8Array = function (cmdAndHeaders, binaryBody) {
         var uint8CmdAndHeaders = new TextEncoder().encode(cmdAndHeaders);
         var nullTerminator = new Uint8Array([0]);
-        var uint8Frame = new Uint8Array(uint8CmdAndHeaders.length + body.length + nullTerminator.length);
+        var uint8Frame = new Uint8Array(uint8CmdAndHeaders.length + binaryBody.length + nullTerminator.length);
         uint8Frame.set(uint8CmdAndHeaders);
-        uint8Frame.set(body, uint8CmdAndHeaders.length);
-        uint8Frame.set(nullTerminator, uint8CmdAndHeaders.length + body.length);
+        uint8Frame.set(binaryBody, uint8CmdAndHeaders.length);
+        uint8Frame.set(nullTerminator, uint8CmdAndHeaders.length + binaryBody.length);
         return uint8Frame;
     };
     /**
@@ -1249,7 +1306,7 @@ var Parser = /** @class */ (function () {
         this._consumeByte(byte);
     };
     Parser.prototype._retrievedBody = function () {
-        this._results.body = this._consumeTokenAsRaw();
+        this._results.binaryBody = this._consumeTokenAsRaw();
         this.onFrame(this._results);
         this._initState();
     };
@@ -1269,7 +1326,7 @@ var Parser = /** @class */ (function () {
         this._results = {
             command: undefined,
             headers: [],
-            body: undefined,
+            binaryBody: undefined,
         };
         this._token = [];
         this._headerKey = undefined;
@@ -1399,16 +1456,6 @@ var StompHandler = /** @class */ (function () {
         // On Frame
         function (rawFrame) {
             var frame = frame_1.Frame.fromRawFrame(rawFrame, _this._escapeHeaderValues);
-            // Unless we have to treat message body as binary, convert it to `string`
-            if (!_this.treatMessageAsBinary(frame) ||
-                (frame.command === 'ERROR' && frame.headers['content-type'].match(/^text\//))) {
-                try {
-                    frame.body = new TextDecoder().decode(frame.body);
-                }
-                catch (e) {
-                    // ignore
-                }
-            }
             _this.debug("<<< " + frame);
             var serverFrameHandler = _this._serverFrameHandlers[frame.command] || _this.onUnhandledFrame;
             serverFrameHandler(frame);
@@ -1465,19 +1512,20 @@ var StompHandler = /** @class */ (function () {
         }
     };
     StompHandler.prototype._transmit = function (params) {
-        var command = params.command, headers = params.headers, body = params.body, skipContentLengthHeader = params.skipContentLengthHeader;
+        var command = params.command, headers = params.headers, body = params.body, binaryBody = params.binaryBody, skipContentLengthHeader = params.skipContentLengthHeader;
         var frame = new frame_1.Frame({
             command: command,
             headers: headers,
             body: body,
+            binaryBody: binaryBody,
             escapeHeaderValues: this._escapeHeaderValues,
             skipContentLengthHeader: skipContentLengthHeader
         });
         this.debug(">>> " + frame);
-        // if necessary, split the *STOMP* frame to send it on many smaller
-        // *WebSocket* frames
         this._webSocket.send(frame.serialize());
         /* Do we need this?
+            // if necessary, split the *STOMP* frame to send it on many smaller
+            // *WebSocket* frames
             while (true) {
               if (out.length > this.maxWebSocketFrameSize) {
                 this._webSocket.send(out.substring(0, this.maxWebSocketFrameSize));
@@ -1524,9 +1572,15 @@ var StompHandler = /** @class */ (function () {
         }
     };
     StompHandler.prototype.publish = function (params) {
-        var destination = params.destination, headers = params.headers, body = params.body, skipContentLengthHeader = params.skipContentLengthHeader;
+        var destination = params.destination, headers = params.headers, body = params.body, binaryBody = params.binaryBody, skipContentLengthHeader = params.skipContentLengthHeader;
         headers = Object.assign({ destination: destination }, headers);
-        this._transmit({ command: "SEND", headers: headers, body: body, skipContentLengthHeader: skipContentLengthHeader });
+        this._transmit({
+            command: "SEND",
+            headers: headers,
+            body: body,
+            binaryBody: binaryBody,
+            skipContentLengthHeader: skipContentLengthHeader
+        });
     };
     StompHandler.prototype.watchForReceipt = function (receiptId, callback) {
         this._receiptWatchers[receiptId] = callback;

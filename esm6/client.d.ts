@@ -1,7 +1,7 @@
 import { StompHeaders } from "./stomp-headers";
 import { StompSubscription } from "./stomp-subscription";
 import { Transaction } from "./transaction";
-import { closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, messageCheckCallbackType, publishParams } from "./types";
+import { closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, publishParams } from "./types";
 import { StompConfig } from './stomp-config';
 /**
  * STOMP Client Class.
@@ -48,12 +48,6 @@ export declare class Client {
      */
     heartbeatOutgoing: number;
     /**
-     * Maximum WebSocket frame size sent by the client. If a STOMP frame
-     * is bigger than this value, the STOMP frame will be sent using multiple
-     * WebSocket frames (default is 16KiB).
-     */
-    maxWebSocketFrameSize: number;
-    /**
      * Underlying WebSocket instance, READONLY.
      */
     readonly webSocket: WebSocket;
@@ -72,31 +66,6 @@ export declare class Client {
      * Disconnection headers.
      */
     disconnectHeaders: StompHeaders;
-    /**
-     * This callback will be called with the incoming message frame {@link Message}.
-     * If this function returns `true`, the [Frame#body]{@link Frame#body} will not be converted
-     * to `string` and be returned as
-     * [Uint8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}.
-     * If this returns `false`, the body will be assumed to UTF8 string and will be converted at `string`.
-     *
-     * By default this callback returns `false`, i.e., all messages are treated as text.
-     *
-     * Examples:
-     * ```javascript
-     *        // Treat all messages a binary
-     *        client.treatMessageAsBinary = function(message) {
-     *          return true;
-     *        };
-  
-     *        // Treat a message as binary based on content-type
-     *        // This header is not a standard header, while publishing messages it needs to be explicitly set.
-     *        client.treatMessageAsBinary = function(message) {
-     *          return message.headers['content-type'] === 'application/octet-stream';
-     *        };
-     * ```
-     *
-     */
-    treatMessageAsBinary: messageCheckCallbackType;
     /**
      * This function will be called for any unhandled messages.
      * It is useful for receiving messages sent to RabbitMQ temporary queues.
@@ -126,6 +95,13 @@ export declare class Client {
      * `true` if there is a active connection with STOMP Broker
      */
     readonly connected: boolean;
+    /**
+     * Callback, invoked on before a connection connection to the STOMP broker.
+     *
+     * You can change options on the client, which will impact the immediate connect.
+     * It is valid to call [Client#decativate]{@link Client#deactivate} in this callback.
+     */
+    beforeConnect: () => void;
     /**
      * Callback, invoked on every successful connection to the STOMP broker.
      *
@@ -178,6 +154,10 @@ export declare class Client {
      */
     readonly version: string;
     private _stompHandler;
+    /**
+     * if the client is active (connected or going to reconnect)
+     */
+    readonly active: boolean;
     private _active;
     private _reconnector;
     /**
@@ -200,11 +180,19 @@ export declare class Client {
     private _createWebSocket;
     private _schedule_reconnect;
     /**
-     * Disconnect and stop auto reconnect loop.
-     *
+     * Disconnect if connected and stop auto reconnect loop.
      * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
+     *
+     * To reactivate the {@link Client} you can call [Client#activate]{@link Client#activate}.
      */
     deactivate(): void;
+    /**
+     * Force disconnect if there is an active connection by directly closing the underlying WebSocket.
+     * This is different than a normal disconnect where a DISCONNECT sequence is carried out with the broker.
+     * After forcing disconnect, automatic reconnect will be attempted.
+     * To stop further reconnects call [Client#deactivate]{@link Client#deactivate} as well.
+     */
+    forceDisconnect(): void;
     private _disposeStompHandler;
     /**
      * Send a message to a named destination. Refer to your STOMP broker documentation for types
@@ -212,15 +200,20 @@ export declare class Client {
      *
      * STOMP protocol specifies and suggests some headers and also allows broker specific headers.
      *
-     * Note: Body must be String or
-     * [Unit8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}.
-     * If the body is
-     * [Unit8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}
-     * the frame will be sent as binary.
+     * Body must be String.
+     * You will need to covert the payload to string in case it is not string (e.g. JSON).
+     *
+     * To send a binary message body use binaryBody parameter. It should be a
+     * [Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array).
      * Sometimes brokers may not support binary frames out of the box.
      * Please check your broker documentation.
      *
-     * You will need to covert the payload to string in case it is not string (e.g. JSON)
+     * `content-length` header is automatically added to the STOMP Frame sent to the broker.
+     * Set `skipContentLengthHeader` to indicate that `content-length` header should not be added.
+     * For binary messages `content-length` header is always added.
+     *
+     * Caution: The broker will, most likely, report an error and disconnect if message body has NULL octet(s)
+     * and `content-length` header is missing.
      *
      * ```javascript
      *        client.publish({destination: "/queue/test", headers: {priority: 9}, body: "Hello, STOMP"});
@@ -230,6 +223,11 @@ export declare class Client {
      *
      *        // Skip content-length header in the frame to the broker
      *        client.publish({"/queue/test", body: "Hello, STOMP", skipContentLengthHeader: true});
+     *
+     *        var binaryData = generateBinaryData(); // This need to be of type Uint8Array
+     *        // setting content-type header is not mandatory, however a good practice
+     *        client.publish({destination: '/topic/special', binaryBody: binaryData,
+     *                         headers: {'content-type': 'application/octet-stream'}});
      * ```
      */
     publish(params: publishParams): void;

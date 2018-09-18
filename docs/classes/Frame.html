@@ -407,15 +407,15 @@ the STOMP broker. For advanced usage you might need to access <a href="../classe
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Public</span>
-                                <a href="#body">body</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
                                 <a href="#command">command</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
                                 <a href="#headers">headers</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#isBinaryBody">isBinaryBody</a>
                             </li>
                         </ul>
                     </td>
@@ -451,47 +451,6 @@ the STOMP broker. For advanced usage you might need to access <a href="../classe
         <h3 id="inputs">
             Properties
         </h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="body"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Public</span>
-                            body
-                            </b>
-                            <a href="#body"><span class="fa fa-link"></span></a>
-                        </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <span class="modifier-icon fa fa-reset"></span><code>body:     <code>string | Uint8Array</code>
-</code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>    <code>string | Uint8Array</code>
-
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/frame.ts:30</a></div>
-                            </td>
-                        </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                        <div class="io-description"><p>It is serialized string</p>
-</div>
-                    </td>
-                </tr>
-
-            </tbody>
-        </table>
         <table class="table table-sm table-bordered">
             <tbody>
                 <tr>
@@ -574,6 +533,41 @@ the STOMP broker. For advanced usage you might need to access <a href="../classe
 
             </tbody>
         </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="isBinaryBody"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            isBinaryBody
+                            </b>
+                            <a href="#isBinaryBody"><span class="fa fa-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <span class="modifier-icon fa fa-reset"></span><code>isBinaryBody:     <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/frame.ts:27</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
 </section>
 
             <section>
@@ -605,7 +599,7 @@ the STOMP broker. For advanced usage you might need to access <a href="../classe
 
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="97" class="link-to-prism">src/frame.ts:97</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="121" class="link-to-prism">src/frame.ts:121</a></div>
                             </td>
                         </tr>
 
@@ -632,6 +626,77 @@ If the body is binary (i.e. of type Unit8Array) it will be serialized to ArrayBu
 
 
 
+            <section>
+    <h3 id="accessors">
+        Accessors
+    </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="body"></a>
+                        <span class="name"><b>body</b><a href="#body"><span class="fa fa-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>body()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/frame.ts:32</a></div>
+                                </td>
+                            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-description"><p>body of the frame</p>
+</div>
+
+                                <div class="io-description">
+                                    <b>Returns : </b>    <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                                </div>
+                        </td>
+                    </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="binaryBody"></a>
+                        <span class="name"><b>binaryBody</b><a href="#binaryBody"><span class="fa fa-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>binaryBody()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/frame.ts:43</a></div>
+                                </td>
+                            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-description"><p>body as Uint8Array</p>
+</div>
+
+                                <div class="io-description">
+                                    <b>Returns : </b>    <code>Uint8Array</code>
+
+                                </div>
+                        </td>
+                    </tr>
+
+            </tbody>
+        </table>
+</section>
     </div>
 
 
@@ -662,10 +727,29 @@ export class Frame {
    */
   public headers: StompHeaders;
 
+  public isBinaryBody: boolean;
+
   /**
-   * It is serialized string
+   * body of the frame
    */
-  public body: string | Uint8Array;
+  get body(): string {
+    if (!this._body &amp;&amp; this.isBinaryBody) {
+      this._body &#x3D; new TextDecoder().decode(this._binaryBody);
+    }
+    return this._body;
+  }
+  private _body: string;
+
+  /**
+   * body as Uint8Array
+   */
+  get binaryBody(): Uint8Array {
+    if (!this._binaryBody &amp;&amp; !this.isBinaryBody) {
+      this._binaryBody &#x3D; new TextEncoder().encode(this._body);
+    }
+    return this._binaryBody;
+  }
+  private _binaryBody: Uint8Array;
 
   private escapeHeaderValues: boolean;
   private skipContentLengthHeader: boolean;
@@ -676,13 +760,20 @@ export class Frame {
    * @internal
    */
   constructor(params: {
-    command: string, headers?: StompHeaders, body: any,
+    command: string, headers?: StompHeaders, body?: string, binaryBody?: Uint8Array,
     escapeHeaderValues?: boolean, skipContentLengthHeader?: boolean
   }) {
-    let {command, headers, body, escapeHeaderValues, skipContentLengthHeader} &#x3D; params;
+    let {command, headers, body, binaryBody, escapeHeaderValues, skipContentLengthHeader} &#x3D; params;
     this.command &#x3D; command;
     this.headers &#x3D; headers || {};
-    this.body &#x3D; body || &#x27;&#x27;;
+
+    if (binaryBody) {
+      this._binaryBody &#x3D; binaryBody;
+      this.isBinaryBody &#x3D; true;
+    } else {
+      this._body &#x3D; body || &#x27;&#x27;;
+      this.isBinaryBody &#x3D; false;
+    }
     this.escapeHeaderValues &#x3D; escapeHeaderValues || false;
     this.skipContentLengthHeader &#x3D; skipContentLengthHeader || false;
   }
@@ -713,7 +804,7 @@ export class Frame {
     return new Frame({
       command: rawFrame.command,
       headers: headers,
-      body: rawFrame.body,
+      binaryBody: rawFrame.binaryBody,
       escapeHeaderValues: escapeHeaderValues
     });
   }
@@ -722,9 +813,7 @@ export class Frame {
    * @internal
    */
   public toString(): string {
-    const cmdAndHeaders &#x3D; this.serializeCmdAndHeaders();
-    const bodyText &#x3D; this.isBinaryBody() ? &quot;&lt;&lt;binary data&gt;&gt;&quot; : this.body;
-    return cmdAndHeaders + bodyText;
+    return this.serializeCmdAndHeaders();
   }
 
   /**
@@ -735,10 +824,10 @@ export class Frame {
   public serialize(): string|ArrayBuffer {
     const cmdAndHeaders &#x3D; this.serializeCmdAndHeaders();
 
-    if(this.isBinaryBody()) {
-      return Frame.toUnit8Array(cmdAndHeaders, &lt;Uint8Array&gt;this.body).buffer;
+    if(this.isBinaryBody) {
+      return Frame.toUnit8Array(cmdAndHeaders, this._binaryBody).buffer;
     } else {
-      return cmdAndHeaders + this.body + Byte.NULL;
+      return cmdAndHeaders + this._body + Byte.NULL;
     }
   }
 
@@ -756,22 +845,19 @@ export class Frame {
         lines.push(&#x60;${name}:${value}&#x60;);
       }
     }
-    if (this.body &amp;&amp; !this.skipContentLengthHeader) {
+    if (this.isBinaryBody || (!this.isBodyEmpty() &amp;&amp; !this.skipContentLengthHeader)) {
       lines.push(&#x60;content-length:${this.bodyLength()}&#x60;);
     }
     return lines.join(Byte.LF) + Byte.LF + Byte.LF;
   }
 
-  private isBinaryBody(): boolean {
-    return (typeof this.body !&#x3D;&#x3D; &quot;string&quot;) &amp;&amp; this.body.length &gt; 0
-  }
-
   private isBodyEmpty(): boolean {
-    return this.body.length &#x3D;&#x3D;&#x3D; 0;
+    return this.bodyLength() &#x3D;&#x3D;&#x3D; 0;
   }
 
   private bodyLength(): number {
-    return this.isBinaryBody() ? this.body.length : Frame.sizeOfUTF8(&lt;string&gt;this.body)
+    const binaryBody &#x3D; this.binaryBody;
+    return binaryBody ? binaryBody.length : 0;
   }
 
   /**
@@ -782,14 +868,14 @@ export class Frame {
     return s ? new TextEncoder().encode(s).length : 0;
   }
 
-  private static toUnit8Array(cmdAndHeaders: string, body: Uint8Array): Uint8Array {
+  private static toUnit8Array(cmdAndHeaders: string, binaryBody: Uint8Array): Uint8Array {
     const uint8CmdAndHeaders &#x3D; new TextEncoder().encode(cmdAndHeaders);
     const nullTerminator &#x3D; new Uint8Array([0]);
-    const uint8Frame &#x3D; new Uint8Array(uint8CmdAndHeaders.length + body.length + nullTerminator.length);
+    const uint8Frame &#x3D; new Uint8Array(uint8CmdAndHeaders.length + binaryBody.length + nullTerminator.length);
 
     uint8Frame.set(uint8CmdAndHeaders);
-    uint8Frame.set(body, uint8CmdAndHeaders.length);
-    uint8Frame.set(nullTerminator, uint8CmdAndHeaders.length + body.length);
+    uint8Frame.set(binaryBody, uint8CmdAndHeaders.length);
+    uint8Frame.set(nullTerminator, uint8CmdAndHeaders.length + binaryBody.length);
 
     return uint8Frame;
   }
@@ -799,7 +885,7 @@ export class Frame {
    * @internal
    */
   public static marshall(params: {
-    command: string, headers?: StompHeaders, body: string|Uint8Array,
+    command: string, headers?: StompHeaders, body?: string, binaryBody?: Uint8Array,
     escapeHeaderValues?: boolean, skipContentLengthHeader?: boolean
   }) {
     const frame &#x3D; new Frame(params);

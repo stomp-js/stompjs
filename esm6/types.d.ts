@@ -37,7 +37,11 @@ export interface publishParams {
     /**
      * body (optional)
      */
-    body?: string | Uint8Array;
+    body?: string;
+    /**
+     * binary body (optional)
+     */
+    binaryBody?: Uint8Array;
     /**
      * By default a `content-length` header will be added in the Frame to the broker.
      * Set it to `true` for the header to be skipped.
@@ -51,5 +55,5 @@ export declare type RawHeaderType = [string, string];
 export declare type RawFrameType = {
     command: string;
     headers: RawHeaderType[];
-    body: Uint8Array;
+    binaryBody: Uint8Array;
 };

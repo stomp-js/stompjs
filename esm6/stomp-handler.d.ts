@@ -1,6 +1,6 @@
 import { Client } from './client';
 import { StompHeaders } from "./stomp-headers";
-import { closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, messageCheckCallbackType, publishParams } from "./types";
+import { closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, publishParams } from "./types";
 import { StompSubscription } from "./stomp-subscription";
 import { Transaction } from "./transaction";
 import { StompConfig } from "./stomp-config";
@@ -15,13 +15,11 @@ export declare class StompHandler {
     debug: debugFnType;
     connectHeaders: StompHeaders;
     disconnectHeaders: StompHeaders;
-    treatMessageAsBinary: messageCheckCallbackType;
     heartbeatIncoming: number;
     heartbeatOutgoing: number;
     onUnhandledMessage: messageCallbackType;
     onUnhandledReceipt: frameCallbackType;
     onUnhandledFrame: frameCallbackType;
-    maxWebSocketFrameSize: number;
     onConnect: frameCallbackType;
     onDisconnect: frameCallbackType;
     onStompError: frameCallbackType;

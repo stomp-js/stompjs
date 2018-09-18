@@ -107,16 +107,6 @@ var StompHandler = /** @class */ (function () {
         // On Frame
         function (rawFrame) {
             var frame = frame_1.Frame.fromRawFrame(rawFrame, _this._escapeHeaderValues);
-            // Unless we have to treat message body as binary, convert it to `string`
-            if (!_this.treatMessageAsBinary(frame) ||
-                (frame.command === 'ERROR' && frame.headers['content-type'].match(/^text\//))) {
-                try {
-                    frame.body = new TextDecoder().decode(frame.body);
-                }
-                catch (e) {
-                    // ignore
-                }
-            }
             _this.debug("<<< " + frame);
             var serverFrameHandler = _this._serverFrameHandlers[frame.command] || _this.onUnhandledFrame;
             serverFrameHandler(frame);
@@ -173,19 +163,20 @@ var StompHandler = /** @class */ (function () {
         }
     };
     StompHandler.prototype._transmit = function (params) {
-        var command = params.command, headers = params.headers, body = params.body, skipContentLengthHeader = params.skipContentLengthHeader;
+        var command = params.command, headers = params.headers, body = params.body, binaryBody = params.binaryBody, skipContentLengthHeader = params.skipContentLengthHeader;
         var frame = new frame_1.Frame({
             command: command,
             headers: headers,
             body: body,
+            binaryBody: binaryBody,
             escapeHeaderValues: this._escapeHeaderValues,
             skipContentLengthHeader: skipContentLengthHeader
         });
         this.debug(">>> " + frame);
-        // if necessary, split the *STOMP* frame to send it on many smaller
-        // *WebSocket* frames
         this._webSocket.send(frame.serialize());
         /* Do we need this?
+            // if necessary, split the *STOMP* frame to send it on many smaller
+            // *WebSocket* frames
             while (true) {
               if (out.length > this.maxWebSocketFrameSize) {
                 this._webSocket.send(out.substring(0, this.maxWebSocketFrameSize));
@@ -232,9 +223,15 @@ var StompHandler = /** @class */ (function () {
         }
     };
     StompHandler.prototype.publish = function (params) {
-        var destination = params.destination, headers = params.headers, body = params.body, skipContentLengthHeader = params.skipContentLengthHeader;
+        var destination = params.destination, headers = params.headers, body = params.body, binaryBody = params.binaryBody, skipContentLengthHeader = params.skipContentLengthHeader;
         headers = Object.assign({ destination: destination }, headers);
-        this._transmit({ command: "SEND", headers: headers, body: body, skipContentLengthHeader: skipContentLengthHeader });
+        this._transmit({
+            command: "SEND",
+            headers: headers,
+            body: body,
+            binaryBody: binaryBody,
+            skipContentLengthHeader: skipContentLengthHeader
+        });
     };
     StompHandler.prototype.watchForReceipt = function (receiptId, callback) {
         this._receiptWatchers[receiptId] = callback;

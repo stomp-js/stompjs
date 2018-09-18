@@ -12,13 +12,46 @@ var Frame = /** @class */ (function () {
      * @internal
      */
     function Frame(params) {
-        var command = params.command, headers = params.headers, body = params.body, escapeHeaderValues = params.escapeHeaderValues, skipContentLengthHeader = params.skipContentLengthHeader;
+        var command = params.command, headers = params.headers, body = params.body, binaryBody = params.binaryBody, escapeHeaderValues = params.escapeHeaderValues, skipContentLengthHeader = params.skipContentLengthHeader;
         this.command = command;
         this.headers = headers || {};
-        this.body = body || '';
+        if (binaryBody) {
+            this._binaryBody = binaryBody;
+            this.isBinaryBody = true;
+        }
+        else {
+            this._body = body || '';
+            this.isBinaryBody = false;
+        }
         this.escapeHeaderValues = escapeHeaderValues || false;
         this.skipContentLengthHeader = skipContentLengthHeader || false;
     }
+    Object.defineProperty(Frame.prototype, "body", {
+        /**
+         * body of the frame
+         */
+        get: function () {
+            if (!this._body && this.isBinaryBody) {
+                this._body = new TextDecoder().decode(this._binaryBody);
+            }
+            return this._body;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Frame.prototype, "binaryBody", {
+        /**
+         * body as Uint8Array
+         */
+        get: function () {
+            if (!this._binaryBody && !this.isBinaryBody) {
+                this._binaryBody = new TextEncoder().encode(this._body);
+            }
+            return this._binaryBody;
+        },
+        enumerable: true,
+        configurable: true
+    });
     /**
      * deserialize a STOMP Frame from raw data.
      *
@@ -41,7 +74,7 @@ var Frame = /** @class */ (function () {
         return new Frame({
             command: rawFrame.command,
             headers: headers,
-            body: rawFrame.body,
+            binaryBody: rawFrame.binaryBody,
             escapeHeaderValues: escapeHeaderValues
         });
     };
@@ -49,9 +82,7 @@ var Frame = /** @class */ (function () {
      * @internal
      */
     Frame.prototype.toString = function () {
-        var cmdAndHeaders = this.serializeCmdAndHeaders();
-        var bodyText = this.isBinaryBody() ? "<<binary data>>" : this.body;
-        return cmdAndHeaders + bodyText;
+        return this.serializeCmdAndHeaders();
     };
     /**
      * serialize this Frame in a format suitable to be passed to WebSocket.
@@ -60,11 +91,11 @@ var Frame = /** @class */ (function () {
      */
     Frame.prototype.serialize = function () {
         var cmdAndHeaders = this.serializeCmdAndHeaders();
-        if (this.isBinaryBody()) {
-            return Frame.toUnit8Array(cmdAndHeaders, this.body).buffer;
+        if (this.isBinaryBody) {
+            return Frame.toUnit8Array(cmdAndHeaders, this._binaryBody).buffer;
         }
         else {
-            return cmdAndHeaders + this.body + Byte.NULL;
+            return cmdAndHeaders + this._body + Byte.NULL;
         }
     };
     Frame.prototype.serializeCmdAndHeaders = function () {
@@ -82,19 +113,17 @@ var Frame = /** @class */ (function () {
                 lines.push(name_1 + ":" + value);
             }
         }
-        if (this.body && !this.skipContentLengthHeader) {
+        if (this.isBinaryBody || (!this.isBodyEmpty() && !this.skipContentLengthHeader)) {
             lines.push("content-length:" + this.bodyLength());
         }
         return lines.join(Byte.LF) + Byte.LF + Byte.LF;
     };
-    Frame.prototype.isBinaryBody = function () {
-        return (typeof this.body !== "string") && this.body.length > 0;
-    };
     Frame.prototype.isBodyEmpty = function () {
-        return this.body.length === 0;
+        return this.bodyLength() === 0;
     };
     Frame.prototype.bodyLength = function () {
-        return this.isBinaryBody() ? this.body.length : Frame.sizeOfUTF8(this.body);
+        var binaryBody = this.binaryBody;
+        return binaryBody ? binaryBody.length : 0;
     };
     /**
      * Compute the size of a UTF-8 string by counting its number of bytes
@@ -103,13 +132,13 @@ var Frame = /** @class */ (function () {
     Frame.sizeOfUTF8 = function (s) {
         return s ? new TextEncoder().encode(s).length : 0;
     };
-    Frame.toUnit8Array = function (cmdAndHeaders, body) {
+    Frame.toUnit8Array = function (cmdAndHeaders, binaryBody) {
         var uint8CmdAndHeaders = new TextEncoder().encode(cmdAndHeaders);
         var nullTerminator = new Uint8Array([0]);
-        var uint8Frame = new Uint8Array(uint8CmdAndHeaders.length + body.length + nullTerminator.length);
+        var uint8Frame = new Uint8Array(uint8CmdAndHeaders.length + binaryBody.length + nullTerminator.length);
         uint8Frame.set(uint8CmdAndHeaders);
-        uint8Frame.set(body, uint8CmdAndHeaders.length);
-        uint8Frame.set(nullTerminator, uint8CmdAndHeaders.length + body.length);
+        uint8Frame.set(binaryBody, uint8CmdAndHeaders.length);
+        uint8Frame.set(nullTerminator, uint8CmdAndHeaders.length + binaryBody.length);
         return uint8Frame;
     };
     /**

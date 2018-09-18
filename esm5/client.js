@@ -22,22 +22,13 @@ var Client = /** @class */ (function () {
          * Outgoing heartbeat interval in milliseconds. Set to 0 to disable.
          */
         this.heartbeatOutgoing = 10000;
-        /**
-         * Maximum WebSocket frame size sent by the client. If a STOMP frame
-         * is bigger than this value, the STOMP frame will be sent using multiple
-         * WebSocket frames (default is 16KiB).
-         */
-        this.maxWebSocketFrameSize = 16 * 1024;
         this._active = false;
         // Dummy callbacks
         var noOp = function () { };
         this.debug = noOp;
+        this.beforeConnect = noOp;
         this.onConnect = noOp;
         this.onDisconnect = noOp;
-        // Treat messages as text by default
-        this.treatMessageAsBinary = function (message) {
-            return false;
-        };
         this.onUnhandledMessage = noOp;
         this.onUnhandledReceipt = noOp;
         this.onUnhandledFrame = noOp;
@@ -79,6 +70,16 @@ var Client = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Client.prototype, "active", {
+        /**
+         * if the client is active (connected or going to reconnect)
+         */
+        get: function () {
+            return this._active;
+        },
+        enumerable: true,
+        configurable: true
+    });
     /**
      * Update configuration.
      */
@@ -99,12 +100,13 @@ var Client = /** @class */ (function () {
     };
     Client.prototype._connect = function () {
         var _this = this;
-        if (!this._active) {
-            this.debug('Client has been marked inactive, will not attempt to connect');
-            return;
-        }
         if (this.connected) {
             this.debug('STOMP: already connected, nothing to do');
+            return;
+        }
+        this.beforeConnect();
+        if (!this._active) {
+            this.debug('Client has been marked inactive, will not attempt to connect');
             return;
         }
         this.debug("Opening Web Socket...");
@@ -116,8 +118,6 @@ var Client = /** @class */ (function () {
             disconnectHeaders: this.disconnectHeaders,
             heartbeatIncoming: this.heartbeatIncoming,
             heartbeatOutgoing: this.heartbeatOutgoing,
-            maxWebSocketFrameSize: this.maxWebSocketFrameSize,
-            treatMessageAsBinary: this.treatMessageAsBinary,
             onConnect: function (frame) {
                 if (!_this._active) {
                     _this.debug('STOMP got connected while deactivate was issued, will disconnect now');
@@ -167,9 +167,10 @@ var Client = /** @class */ (function () {
         }
     };
     /**
-     * Disconnect and stop auto reconnect loop.
-     *
+     * Disconnect if connected and stop auto reconnect loop.
      * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
+     *
+     * To reactivate the {@link Client} you can call [Client#activate]{@link Client#activate}.
      */
     Client.prototype.deactivate = function () {
         // indicate that auto reconnect loop should terminate
@@ -179,6 +180,19 @@ var Client = /** @class */ (function () {
             clearTimeout(this._reconnector);
         }
         this._disposeStompHandler();
+    };
+    /**
+     * Force disconnect if there is an active connection by directly closing the underlying WebSocket.
+     * This is different than a normal disconnect where a DISCONNECT sequence is carried out with the broker.
+     * After forcing disconnect, automatic reconnect will be attempted.
+     * To stop further reconnects call [Client#deactivate]{@link Client#deactivate} as well.
+     */
+    Client.prototype.forceDisconnect = function () {
+        if (this._webSocket) {
+            if (this._webSocket.readyState === WebSocket.CONNECTING || this._webSocket.readyState === WebSocket.OPEN) {
+                this._webSocket.close();
+            }
+        }
     };
     Client.prototype._disposeStompHandler = function () {
         // Dispose STOMP Handler
@@ -193,15 +207,20 @@ var Client = /** @class */ (function () {
      *
      * STOMP protocol specifies and suggests some headers and also allows broker specific headers.
      *
-     * Note: Body must be String or
-     * [Unit8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}.
-     * If the body is
-     * [Unit8Array]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array}
-     * the frame will be sent as binary.
+     * Body must be String.
+     * You will need to covert the payload to string in case it is not string (e.g. JSON).
+     *
+     * To send a binary message body use binaryBody parameter. It should be a
+     * [Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array).
      * Sometimes brokers may not support binary frames out of the box.
      * Please check your broker documentation.
      *
-     * You will need to covert the payload to string in case it is not string (e.g. JSON)
+     * `content-length` header is automatically added to the STOMP Frame sent to the broker.
+     * Set `skipContentLengthHeader` to indicate that `content-length` header should not be added.
+     * For binary messages `content-length` header is always added.
+     *
+     * Caution: The broker will, most likely, report an error and disconnect if message body has NULL octet(s)
+     * and `content-length` header is missing.
      *
      * ```javascript
      *        client.publish({destination: "/queue/test", headers: {priority: 9}, body: "Hello, STOMP"});
@@ -211,6 +230,11 @@ var Client = /** @class */ (function () {
      *
      *        // Skip content-length header in the frame to the broker
      *        client.publish({"/queue/test", body: "Hello, STOMP", skipContentLengthHeader: true});
+     *
+     *        var binaryData = generateBinaryData(); // This need to be of type Uint8Array
+     *        // setting content-type header is not mandatory, however a good practice
+     *        client.publish({destination: '/topic/special', binaryBody: binaryData,
+     *                         headers: {'content-type': 'application/octet-stream'}});
      * ```
      */
     Client.prototype.publish = function (params) {

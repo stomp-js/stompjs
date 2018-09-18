@@ -24,7 +24,7 @@ export declare class Stomp {
      *        var client = Stomp.client(url);
      * ```
      */
-    static client(url: string, protocols: string[]): CompatClient;
+    static client(url: string, protocols?: string[]): CompatClient;
     /**
      * This method is an alternative to [Stomp#client]{@link Stomp#client} to let the user
      * specify the WebSocket to use (either a standard HTML5 WebSocket or
