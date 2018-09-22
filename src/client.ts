@@ -11,6 +11,7 @@ import {
 } from "./types";
 import {StompConfig} from './stomp-config';
 import {StompHandler} from "./stomp-handler";
+import {Versions} from "./versions";
 
 /**
  * STOMP Client Class.
@@ -24,6 +25,17 @@ export class Client {
    * If both are set, [Client#webSocketFactory]{@link Client#webSocketFactory} will be used.
    */
   public brokerURL: string;
+
+  /**
+   * STOMP versions to attempt during STOMP handshake. By default versions 1.0, 1.1, 1.2 are attempted.
+   *
+   * Example:
+   * ```javascript
+   *        // Try only versions 1.0 and 1.1
+   *        client.stompVersions = new Versions(['1.0', '1.1'])
+   * ```
+   */
+  public stompVersions = Versions.default;
 
   /**
    * This function should return a WebSocket or a similar (e.g. SockJS) object.
@@ -263,6 +275,7 @@ export class Client {
 
     this._stompHandler = new StompHandler(this, this._webSocket, {
       debug: this.debug,
+      stompVersions: this.stompVersions,
       connectHeaders: this.connectHeaders,
       disconnectHeaders: this.disconnectHeaders,
       heartbeatIncoming: this.heartbeatIncoming,
@@ -304,7 +317,13 @@ export class Client {
   }
 
   private _createWebSocket() {
-    const webSocket = this.webSocketFactory ? this.webSocketFactory() : new WebSocket(this.brokerURL);
+    let webSocket: WebSocket;
+
+    if (this.webSocketFactory) {
+      webSocket = this.webSocketFactory();
+    } else {
+      webSocket = new WebSocket(this.brokerURL, this.stompVersions.protocolVersions());
+    }
     webSocket.binaryType = "arraybuffer";
     return webSocket;
   }

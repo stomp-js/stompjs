@@ -18,19 +18,22 @@ export class Versions {
   /**
    * @internal
    */
-  static versions() {
-    return [Versions.V1_0, Versions.V1_1, Versions.V1_2]
-  }
+  static default = new Versions([Versions.V1_0, Versions.V1_1, Versions.V1_2]);
+
   /**
-   * @internal
+   * Takes an array of string of versions, typical elements '1.0', '1.1', or '1.2'
+   *
+   * You will an instance if this class if you want to override supported versions to be declared during
+   * STOMP handshake.
    */
-  static supportedVersions() {
-    return Versions.versions().join(',');
+  constructor (public versions: string[]) {
   }
-  /**
-   * @internal
-   */
-  static protocolVersions() {
-    return Versions.versions().map(x => `v${x.replace('.', '')}.stomp`);
+
+  public supportedVersions() {
+    return this.versions.join(',');
+  }
+
+  public protocolVersions() {
+    return this.versions.map(x => `v${x.replace('.', '')}.stomp`);
   }
 }

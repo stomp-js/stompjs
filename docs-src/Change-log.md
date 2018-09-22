@@ -1,5 +1,9 @@
 # Change Log
 
+## 5.0.0-beta.3 ()
+
+* Allowed STOMP versions is now configurable
+
 ## 5.0.0-beta.2 (2018/09/18)
 
 * added `forceDisconnect`

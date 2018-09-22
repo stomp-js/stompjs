@@ -6,6 +6,7 @@ import {
   debugFnType,
   messageCheckCallbackType
 } from "./types";
+import {Versions} from "./versions";
 
 /**
  * Configuration options for STOMP Client, each key corresponds to
@@ -17,6 +18,11 @@ export interface StompConfig {
    * See [Client#brokerURL]{@link Client#brokerURL}.
    */
   brokerURL?: string;
+
+  /**
+   * See See [Client#stompVersions]{@link Client#stompVersions}.
+   */
+  stompVersions?: Versions;
 
   /**
    * See [Client#webSocketFactory]{@link Client#webSocketFactory}.

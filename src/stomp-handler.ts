@@ -18,6 +18,8 @@ import {Parser} from "./parser";
 export class StompHandler {
   public debug: debugFnType;
 
+  public stompVersions: Versions;
+
   public connectHeaders: StompHeaders;
 
   public disconnectHeaders: StompHeaders;
@@ -116,7 +118,7 @@ export class StompHandler {
 
     this._webSocket.onopen = () => {
       this.debug('Web Socket Opened...');
-      this.connectHeaders["accept-version"] = Versions.supportedVersions();
+      this.connectHeaders["accept-version"] = this.stompVersions.supportedVersions();
       this.connectHeaders["heart-beat"] = [this.heartbeatOutgoing, this.heartbeatIncoming].join(',');
       this._transmit({command: "CONNECT", headers: this.connectHeaders});
     };

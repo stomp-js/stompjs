@@ -41,7 +41,7 @@ export class Stomp {
     // instead.
 
     // See remarks on the function Stomp.over
-    if (protocols == null) { protocols = Versions.protocolVersions(); }
+    if (protocols == null) { protocols = Versions.default.protocolVersions(); }
     const ws_fn= function() {
       const klass = Stomp.WebSocketClass || WebSocket;
       return new klass(url, protocols);
