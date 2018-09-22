@@ -149,6 +149,7 @@ and to make meaning of the option clearer.
 
 - [reconnect_delay](../classes/CompatClient.html#reconnect_delay) --> [Client#reconnectDelay](../classes/Client.html#reconnectDelay)
 - [ws](../classes/CompatClient.html#ws) --> [Client#webSocket](../classes/Client.html#webSocket)
+- [version](../classes/CompatClient.html#version) --> [Client#connectedVersion](../classes/Client.html#connectedVersion)
 - [onreceive](../classes/CompatClient.html#onreceive) --> [Client#onUnhandledMessage](../classes/Client.html#onUnhandledMessage)
 - [onreceipt](../classes/CompatClient.html#onreceipt) --> [Client#onUnhandledReceipt](../classes/Client.html#onUnhandledReceipt)
 - [heartbeat](../classes/CompatClient.html#heartbeat).incoming --> [Client#heartbeatIncoming](../classes/Client.html#heartbeatIncoming)

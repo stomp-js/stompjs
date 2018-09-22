@@ -195,8 +195,8 @@ export class Client {
   /**
    * version of STOMP protocol negotiated with the server, READONLY
    */
-  get version(): string {
-    return this._stompHandler ? this._stompHandler.version : undefined;
+  get connectedVersion(): string {
+    return this._stompHandler ? this._stompHandler.connectedVersion : undefined;
   }
 
   private _stompHandler: StompHandler;

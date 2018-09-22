@@ -42,10 +42,10 @@ export class StompHandler {
 
   public onWebSocketClose: closeEventCallbackType;
 
-  get version(): string {
-    return this._version;
+  get connectedVersion(): string {
+    return this._connectedVersion;
   }
-  private _version: string;
+  private _connectedVersion: string;
 
   get connected(): boolean {
     return this._connected;
@@ -130,9 +130,9 @@ export class StompHandler {
     'CONNECTED': (frame) => {
       this.debug(`connected to server ${frame.headers.server}`);
       this._connected = true;
-      this._version = frame.headers.version;
+      this._connectedVersion = frame.headers.version;
       // STOMP version 1.2 needs header values to be escaped
-      if (this._version === Versions.V1_2) {
+      if (this._connectedVersion === Versions.V1_2) {
         this._escapeHeaderValues = true;
       }
 
@@ -156,7 +156,7 @@ export class StompHandler {
       const message = <Message>frame;
 
       const client = this;
-      const messageId = this._version === Versions.V1_2 ? message.headers["ack"] : message.headers["message-id"];
+      const messageId = this._connectedVersion === Versions.V1_2 ? message.headers["ack"] : message.headers["message-id"];
 
       // add `ack()` and `nack()` methods directly to the returned frame
       // so that a simple call to `message.ack()` can acknowledge the message.
@@ -360,7 +360,7 @@ export class StompHandler {
   }
 
   public ack(messageId: string, subscriptionId: string, headers: StompHeaders = {}): void {
-    if (this._version === Versions.V1_2) {
+    if (this._connectedVersion === Versions.V1_2) {
       headers["id"] = messageId;
     } else {
       headers["message-id"] = messageId;
@@ -370,7 +370,7 @@ export class StompHandler {
   }
 
   public nack(messageId: string, subscriptionId: string, headers: StompHeaders = {}): void {
-    if (this._version === Versions.V1_2) {
+    if (this._connectedVersion === Versions.V1_2) {
       headers["id"] = messageId;
     } else {
       headers["message-id"] = messageId;

@@ -165,6 +165,15 @@ export class CompatClient extends Client {
   }
 
   /**
+   * Available for backward compatibility, renamed to [Client#connectedVersion]{@link Client#connectedVersion}.
+   *
+   * **Deprecated**
+   */
+  get version() {
+    return this.connectedVersion;
+  }
+
+  /**
    * Available for backward compatibility, renamed to [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
    *
    * **Deprecated**

@@ -32,7 +32,7 @@ describe("Stomp Subscription", function () {
 
     client.onConnect = function () {
       // This is a test intended for version 1.2 of STOMP client
-      if (client.version !== StompJs.Versions.V1_2) {
+      if (client.connectedVersion !== StompJs.Versions.V1_2) {
         client.debug(`Skipping 1.2 specific test, current STOMP version: ${client.version}`);
         done();
         return;
