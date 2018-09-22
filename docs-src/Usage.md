@@ -370,6 +370,8 @@ On a busy system the logs can be overwhelming.
 
 ### Lifecycle callbacks
 
+- [Client#beforeConnect](../classes/Client.html#beforeConnect) - invoked each time before 
+  connection to STOMP broker is attempted. You can modify connection parameters and other callbacks.
 - [Client#onConnect](../classes/Client.html#onConnect) - invoked for each time STOMP broker connects and
   STOMP handshake is complete
 - [Client#onDisconnect](../classes/Client.html#onDisconnect) - invoked after each graceful disconnection.

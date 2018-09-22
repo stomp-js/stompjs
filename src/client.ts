@@ -27,7 +27,7 @@ export class Client {
   public brokerURL: string;
 
   /**
-   * STOMP versions to attempt during STOMP handshake. By default versions 1.0, 1.1, 1.2 are attempted.
+   * STOMP versions to attempt during STOMP handshake. By default versions `1.0`, `1.1`, and `1.2` are attempted.
    *
    * Example:
    * ```javascript
