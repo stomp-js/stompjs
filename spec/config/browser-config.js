@@ -4,7 +4,8 @@ TEST = {
   password: "guest",
   url: "ws://localhost:15674/ws",
   badUrl: "ws://localhost:61625",
-  timeout: 2000
+  timeout: 2000,
+  largeMessageSize: 1024 // 1MB body
 };
 
 Stomp = StompJs.Stomp;

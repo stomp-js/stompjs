@@ -4,6 +4,7 @@
 
 * Allowed STOMP versions is now configurable
 * renamed `version` --> `connectedVersion`
+* for large message tests, make size configurable
 
 ## 5.0.0-beta.2 (2018/09/18)
 

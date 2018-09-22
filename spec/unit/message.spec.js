@@ -151,8 +151,8 @@ describe("Stomp Message", function () {
   });
 
   describe("Large data", function () {
-    it("Large text message (~1MB)", function (done) {
-      const body = generateTextData(1023); // 1MB
+    it("Large text message", function (done) {
+      const body = generateTextData(TEST.largeMessageSize);
       client.debug = function () {}; // disable for this test
       client.onConnect = function () {
         client.subscribe(TEST.destination, function (message) {
@@ -167,8 +167,8 @@ describe("Stomp Message", function () {
       client.activate();
     });
 
-    it("Large binary message (~1MB)", function (done) {
-      const binaryBody = generateBinaryData(1023); // 1 MB
+    it("Large binary message", function (done) {
+      const binaryBody = generateBinaryData(TEST.largeMessageSize);
       client.onConnect = function () {
         client.subscribe(TEST.destination, function (message) {
           expect(message.binaryBody.toString()).toEqual(binaryBody.toString());
