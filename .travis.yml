@@ -5,10 +5,11 @@ node_js:
 services:
   - docker
 
-before_script:
+before_install:
   - docker build -t rabbitmq:official-alpine-with-webstomp rabbitmq/
   - docker run -d --hostname rabbitmq --name rabbitmq -p 15674:15674 rabbitmq:official-alpine-with-webstomp
-  - sleep 10
+
+before_script:
   - docker exec rabbitmq rabbitmqctl status
   - npm run build
 
