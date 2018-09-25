@@ -2,6 +2,7 @@
  * Supported STOMP versions
  */
 export declare class Versions {
+    versions: string[];
     /**
      * 1.0
      */
@@ -17,13 +18,14 @@ export declare class Versions {
     /**
      * @internal
      */
-    static versions(): string[];
+    static default: Versions;
     /**
-     * @internal
+     * Takes an array of string of versions, typical elements '1.0', '1.1', or '1.2'
+     *
+     * You will an instance if this class if you want to override supported versions to be declared during
+     * STOMP handshake.
      */
-    static supportedVersions(): string;
-    /**
-     * @internal
-     */
-    static protocolVersions(): string[];
+    constructor(versions: string[]);
+    supportedVersions(): string;
+    protocolVersions(): string[];
 }

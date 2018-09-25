@@ -1,6 +1,6 @@
 # Change Log
 
-## 5.0.0-beta.3 ()
+## 5.0.0-beta.3 (2018-09-25)
 
 * Allowed STOMP versions is now configurable
 * renamed `version` --> `connectedVersion`

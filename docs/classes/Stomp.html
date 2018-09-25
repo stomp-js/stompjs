@@ -722,7 +722,7 @@ export class Stomp {
     // instead.
 
     // See remarks on the function Stomp.over
-    if (protocols &#x3D;&#x3D; null) { protocols &#x3D; Versions.protocolVersions(); }
+    if (protocols &#x3D;&#x3D; null) { protocols &#x3D; Versions.default.protocolVersions(); }
     const ws_fn&#x3D; function() {
       const klass &#x3D; Stomp.WebSocketClass || WebSocket;
       return new klass(url, protocols);

@@ -31,7 +31,7 @@ var Stomp = /** @class */ (function () {
         // instead.
         // See remarks on the function Stomp.over
         if (protocols == null) {
-            protocols = versions_1.Versions.protocolVersions();
+            protocols = versions_1.Versions.default.protocolVersions();
         }
         var ws_fn = function () {
             var klass = Stomp.WebSocketClass || WebSocket;

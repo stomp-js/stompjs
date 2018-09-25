@@ -99,6 +99,12 @@ export declare class CompatClient extends Client {
      */
     readonly ws: any;
     /**
+     * Available for backward compatibility, renamed to [Client#connectedVersion]{@link Client#connectedVersion}.
+     *
+     * **Deprecated**
+     */
+    readonly version: string;
+    /**
      * Available for backward compatibility, renamed to [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
      *
      * **Deprecated**

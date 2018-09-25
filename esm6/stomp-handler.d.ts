@@ -1,4 +1,5 @@
 import { Client } from './client';
+import { Versions } from "./versions";
 import { StompHeaders } from "./stomp-headers";
 import { closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, publishParams } from "./types";
 import { StompSubscription } from "./stomp-subscription";
@@ -13,6 +14,7 @@ export declare class StompHandler {
     private _client;
     private _webSocket;
     debug: debugFnType;
+    stompVersions: Versions;
     connectHeaders: StompHeaders;
     disconnectHeaders: StompHeaders;
     heartbeatIncoming: number;
@@ -24,8 +26,8 @@ export declare class StompHandler {
     onDisconnect: frameCallbackType;
     onStompError: frameCallbackType;
     onWebSocketClose: closeEventCallbackType;
-    readonly version: string;
-    private _version;
+    readonly connectedVersion: string;
+    private _connectedVersion;
     readonly connected: boolean;
     private _connected;
     private readonly _subscriptions;

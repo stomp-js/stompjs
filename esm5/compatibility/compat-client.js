@@ -195,6 +195,18 @@ var CompatClient = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(CompatClient.prototype, "version", {
+        /**
+         * Available for backward compatibility, renamed to [Client#connectedVersion]{@link Client#connectedVersion}.
+         *
+         * **Deprecated**
+         */
+        get: function () {
+            return this.connectedVersion;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(CompatClient.prototype, "onreceive", {
         /**
          * Available for backward compatibility, renamed to [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.

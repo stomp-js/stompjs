@@ -2,25 +2,20 @@
  * Supported STOMP versions
  */
 var Versions = /** @class */ (function () {
-    function Versions() {
+    /**
+     * Takes an array of string of versions, typical elements '1.0', '1.1', or '1.2'
+     *
+     * You will an instance if this class if you want to override supported versions to be declared during
+     * STOMP handshake.
+     */
+    function Versions(versions) {
+        this.versions = versions;
     }
-    /**
-     * @internal
-     */
-    Versions.versions = function () {
-        return [Versions.V1_0, Versions.V1_1, Versions.V1_2];
+    Versions.prototype.supportedVersions = function () {
+        return this.versions.join(',');
     };
-    /**
-     * @internal
-     */
-    Versions.supportedVersions = function () {
-        return Versions.versions().join(',');
-    };
-    /**
-     * @internal
-     */
-    Versions.protocolVersions = function () {
-        return Versions.versions().map(function (x) { return "v" + x.replace('.', '') + ".stomp"; });
+    Versions.prototype.protocolVersions = function () {
+        return this.versions.map(function (x) { return "v" + x.replace('.', '') + ".stomp"; });
     };
     /**
      * 1.0
@@ -34,6 +29,10 @@ var Versions = /** @class */ (function () {
      * 1.2
      */
     Versions.V1_2 = '1.2';
+    /**
+     * @internal
+     */
+    Versions.default = new Versions([Versions.V1_0, Versions.V1_1, Versions.V1_2]);
     return Versions;
 }());
 export { Versions };

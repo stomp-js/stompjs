@@ -18,9 +18,9 @@ var StompHandler = /** @class */ (function () {
             'CONNECTED': function (frame) {
                 _this.debug("connected to server " + frame.headers.server);
                 _this._connected = true;
-                _this._version = frame.headers.version;
+                _this._connectedVersion = frame.headers.version;
                 // STOMP version 1.2 needs header values to be escaped
-                if (_this._version === Versions.V1_2) {
+                if (_this._connectedVersion === Versions.V1_2) {
                     _this._escapeHeaderValues = true;
                 }
                 _this._setupHeartbeat(frame.headers);
@@ -40,7 +40,7 @@ var StompHandler = /** @class */ (function () {
                 // bless the frame to be a Message
                 var message = frame;
                 var client = _this;
-                var messageId = _this._version === Versions.V1_2 ? message.headers["ack"] : message.headers["message-id"];
+                var messageId = _this._connectedVersion === Versions.V1_2 ? message.headers["ack"] : message.headers["message-id"];
                 // add `ack()` and `nack()` methods directly to the returned frame
                 // so that a simple call to `message.ack()` can acknowledge the message.
                 message.ack = function (headers) {
@@ -81,9 +81,9 @@ var StompHandler = /** @class */ (function () {
         this._lastServerActivityTS = Date.now();
         this.configure(config);
     }
-    Object.defineProperty(StompHandler.prototype, "version", {
+    Object.defineProperty(StompHandler.prototype, "connectedVersion", {
         get: function () {
-            return this._version;
+            return this._connectedVersion;
         },
         enumerable: true,
         configurable: true
@@ -125,7 +125,7 @@ var StompHandler = /** @class */ (function () {
         };
         this._webSocket.onopen = function () {
             _this.debug('Web Socket Opened...');
-            _this.connectHeaders["accept-version"] = Versions.supportedVersions();
+            _this.connectHeaders["accept-version"] = _this.stompVersions.supportedVersions();
             _this.connectHeaders["heart-beat"] = [_this.heartbeatOutgoing, _this.heartbeatIncoming].join(',');
             _this._transmit({ command: "CONNECT", headers: _this.connectHeaders });
         };
@@ -293,7 +293,7 @@ var StompHandler = /** @class */ (function () {
     };
     StompHandler.prototype.ack = function (messageId, subscriptionId, headers) {
         if (headers === void 0) { headers = {}; }
-        if (this._version === Versions.V1_2) {
+        if (this._connectedVersion === Versions.V1_2) {
             headers["id"] = messageId;
         }
         else {
@@ -304,7 +304,7 @@ var StompHandler = /** @class */ (function () {
     };
     StompHandler.prototype.nack = function (messageId, subscriptionId, headers) {
         if (headers === void 0) { headers = {}; }
-        if (this._version === Versions.V1_2) {
+        if (this._connectedVersion === Versions.V1_2) {
             headers["id"] = messageId;
         }
         else {

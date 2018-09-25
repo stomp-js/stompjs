@@ -3,6 +3,7 @@ import { StompSubscription } from "./stomp-subscription";
 import { Transaction } from "./transaction";
 import { closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, publishParams } from "./types";
 import { StompConfig } from './stomp-config';
+import { Versions } from "./versions";
 /**
  * STOMP Client Class.
  */
@@ -15,6 +16,16 @@ export declare class Client {
      * If both are set, [Client#webSocketFactory]{@link Client#webSocketFactory} will be used.
      */
     brokerURL: string;
+    /**
+     * STOMP versions to attempt during STOMP handshake. By default versions `1.0`, `1.1`, and `1.2` are attempted.
+     *
+     * Example:
+     * ```javascript
+     *        // Try only versions 1.0 and 1.1
+     *        client.stompVersions = new Versions(['1.0', '1.1'])
+     * ```
+     */
+    stompVersions: Versions;
     /**
      * This function should return a WebSocket or a similar (e.g. SockJS) object.
      * If your STOMP Broker supports WebSockets, prefer setting [Client#brokerURL]{@link Client#brokerURL}.
@@ -152,7 +163,7 @@ export declare class Client {
     /**
      * version of STOMP protocol negotiated with the server, READONLY
      */
-    readonly version: string;
+    readonly connectedVersion: string;
     private _stompHandler;
     /**
      * if the client is active (connected or going to reconnect)

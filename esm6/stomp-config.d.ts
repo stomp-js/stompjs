@@ -1,5 +1,6 @@
 import { StompHeaders } from "./stomp-headers";
 import { frameCallbackType, messageCallbackType, closeEventCallbackType, debugFnType } from "./types";
+import { Versions } from "./versions";
 /**
  * Configuration options for STOMP Client, each key corresponds to
  * field by the same name in {@link Client}. This can be passed to
@@ -10,6 +11,10 @@ export interface StompConfig {
      * See [Client#brokerURL]{@link Client#brokerURL}.
      */
     brokerURL?: string;
+    /**
+     * See See [Client#stompVersions]{@link Client#stompVersions}.
+     */
+    stompVersions?: Versions;
     /**
      * See [Client#webSocketFactory]{@link Client#webSocketFactory}.
      */

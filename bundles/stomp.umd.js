@@ -132,6 +132,7 @@ exports.Byte = {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var stomp_handler_1 = __webpack_require__(/*! ./stomp-handler */ "./src/stomp-handler.ts");
+var versions_1 = __webpack_require__(/*! ./versions */ "./src/versions.ts");
 /**
  * STOMP Client Class.
  */
@@ -141,6 +142,16 @@ var Client = /** @class */ (function () {
      */
     function Client(conf) {
         if (conf === void 0) { conf = {}; }
+        /**
+         * STOMP versions to attempt during STOMP handshake. By default versions `1.0`, `1.1`, and `1.2` are attempted.
+         *
+         * Example:
+         * ```javascript
+         *        // Try only versions 1.0 and 1.1
+         *        client.stompVersions = new Versions(['1.0', '1.1'])
+         * ```
+         */
+        this.stompVersions = versions_1.Versions.default;
         /**
          *  automatically reconnect with delay in milliseconds, set to 0 to disable.
          */
@@ -191,12 +202,12 @@ var Client = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Client.prototype, "version", {
+    Object.defineProperty(Client.prototype, "connectedVersion", {
         /**
          * version of STOMP protocol negotiated with the server, READONLY
          */
         get: function () {
-            return this._stompHandler ? this._stompHandler.version : undefined;
+            return this._stompHandler ? this._stompHandler.connectedVersion : undefined;
         },
         enumerable: true,
         configurable: true
@@ -245,6 +256,7 @@ var Client = /** @class */ (function () {
         this._webSocket = this._createWebSocket();
         this._stompHandler = new stomp_handler_1.StompHandler(this, this._webSocket, {
             debug: this.debug,
+            stompVersions: this.stompVersions,
             connectHeaders: this.connectHeaders,
             disconnectHeaders: this.disconnectHeaders,
             heartbeatIncoming: this.heartbeatIncoming,
@@ -284,7 +296,13 @@ var Client = /** @class */ (function () {
         this._stompHandler.start();
     };
     Client.prototype._createWebSocket = function () {
-        var webSocket = this.webSocketFactory ? this.webSocketFactory() : new WebSocket(this.brokerURL);
+        var webSocket;
+        if (this.webSocketFactory) {
+            webSocket = this.webSocketFactory();
+        }
+        else {
+            webSocket = new WebSocket(this.brokerURL, this.stompVersions.protocolVersions());
+        }
         webSocket.binaryType = "arraybuffer";
         return webSocket;
     };
@@ -737,6 +755,18 @@ var CompatClient = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(CompatClient.prototype, "version", {
+        /**
+         * Available for backward compatibility, renamed to [Client#connectedVersion]{@link Client#connectedVersion}.
+         *
+         * **Deprecated**
+         */
+        get: function () {
+            return this.connectedVersion;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(CompatClient.prototype, "onreceive", {
         /**
          * Available for backward compatibility, renamed to [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
@@ -878,7 +908,7 @@ var Stomp = /** @class */ (function () {
         // instead.
         // See remarks on the function Stomp.over
         if (protocols == null) {
-            protocols = versions_1.Versions.protocolVersions();
+            protocols = versions_1.Versions.default.protocolVersions();
         }
         var ws_fn = function () {
             var klass = Stomp.WebSocketClass || WebSocket;
@@ -1369,9 +1399,9 @@ var StompHandler = /** @class */ (function () {
             'CONNECTED': function (frame) {
                 _this.debug("connected to server " + frame.headers.server);
                 _this._connected = true;
-                _this._version = frame.headers.version;
+                _this._connectedVersion = frame.headers.version;
                 // STOMP version 1.2 needs header values to be escaped
-                if (_this._version === versions_1.Versions.V1_2) {
+                if (_this._connectedVersion === versions_1.Versions.V1_2) {
                     _this._escapeHeaderValues = true;
                 }
                 _this._setupHeartbeat(frame.headers);
@@ -1391,7 +1421,7 @@ var StompHandler = /** @class */ (function () {
                 // bless the frame to be a Message
                 var message = frame;
                 var client = _this;
-                var messageId = _this._version === versions_1.Versions.V1_2 ? message.headers["ack"] : message.headers["message-id"];
+                var messageId = _this._connectedVersion === versions_1.Versions.V1_2 ? message.headers["ack"] : message.headers["message-id"];
                 // add `ack()` and `nack()` methods directly to the returned frame
                 // so that a simple call to `message.ack()` can acknowledge the message.
                 message.ack = function (headers) {
@@ -1432,9 +1462,9 @@ var StompHandler = /** @class */ (function () {
         this._lastServerActivityTS = Date.now();
         this.configure(config);
     }
-    Object.defineProperty(StompHandler.prototype, "version", {
+    Object.defineProperty(StompHandler.prototype, "connectedVersion", {
         get: function () {
-            return this._version;
+            return this._connectedVersion;
         },
         enumerable: true,
         configurable: true
@@ -1476,7 +1506,7 @@ var StompHandler = /** @class */ (function () {
         };
         this._webSocket.onopen = function () {
             _this.debug('Web Socket Opened...');
-            _this.connectHeaders["accept-version"] = versions_1.Versions.supportedVersions();
+            _this.connectHeaders["accept-version"] = _this.stompVersions.supportedVersions();
             _this.connectHeaders["heart-beat"] = [_this.heartbeatOutgoing, _this.heartbeatIncoming].join(',');
             _this._transmit({ command: "CONNECT", headers: _this.connectHeaders });
         };
@@ -1644,7 +1674,7 @@ var StompHandler = /** @class */ (function () {
     };
     StompHandler.prototype.ack = function (messageId, subscriptionId, headers) {
         if (headers === void 0) { headers = {}; }
-        if (this._version === versions_1.Versions.V1_2) {
+        if (this._connectedVersion === versions_1.Versions.V1_2) {
             headers["id"] = messageId;
         }
         else {
@@ -1655,7 +1685,7 @@ var StompHandler = /** @class */ (function () {
     };
     StompHandler.prototype.nack = function (messageId, subscriptionId, headers) {
         if (headers === void 0) { headers = {}; }
-        if (this._version === versions_1.Versions.V1_2) {
+        if (this._connectedVersion === versions_1.Versions.V1_2) {
             headers["id"] = messageId;
         }
         else {
@@ -1685,25 +1715,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * Supported STOMP versions
  */
 var Versions = /** @class */ (function () {
-    function Versions() {
+    /**
+     * Takes an array of string of versions, typical elements '1.0', '1.1', or '1.2'
+     *
+     * You will an instance if this class if you want to override supported versions to be declared during
+     * STOMP handshake.
+     */
+    function Versions(versions) {
+        this.versions = versions;
     }
-    /**
-     * @internal
-     */
-    Versions.versions = function () {
-        return [Versions.V1_0, Versions.V1_1, Versions.V1_2];
+    Versions.prototype.supportedVersions = function () {
+        return this.versions.join(',');
     };
-    /**
-     * @internal
-     */
-    Versions.supportedVersions = function () {
-        return Versions.versions().join(',');
-    };
-    /**
-     * @internal
-     */
-    Versions.protocolVersions = function () {
-        return Versions.versions().map(function (x) { return "v" + x.replace('.', '') + ".stomp"; });
+    Versions.prototype.protocolVersions = function () {
+        return this.versions.map(function (x) { return "v" + x.replace('.', '') + ".stomp"; });
     };
     /**
      * 1.0
@@ -1717,6 +1742,10 @@ var Versions = /** @class */ (function () {
      * 1.2
      */
     Versions.V1_2 = '1.2';
+    /**
+     * @internal
+     */
+    Versions.default = new Versions([Versions.V1_0, Versions.V1_1, Versions.V1_2]);
     return Versions;
 }());
 exports.Versions = Versions;

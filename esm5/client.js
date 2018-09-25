@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var stomp_handler_1 = require("./stomp-handler");
+var versions_1 = require("./versions");
 /**
  * STOMP Client Class.
  */
@@ -10,6 +11,16 @@ var Client = /** @class */ (function () {
      */
     function Client(conf) {
         if (conf === void 0) { conf = {}; }
+        /**
+         * STOMP versions to attempt during STOMP handshake. By default versions `1.0`, `1.1`, and `1.2` are attempted.
+         *
+         * Example:
+         * ```javascript
+         *        // Try only versions 1.0 and 1.1
+         *        client.stompVersions = new Versions(['1.0', '1.1'])
+         * ```
+         */
+        this.stompVersions = versions_1.Versions.default;
         /**
          *  automatically reconnect with delay in milliseconds, set to 0 to disable.
          */
@@ -60,12 +71,12 @@ var Client = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Client.prototype, "version", {
+    Object.defineProperty(Client.prototype, "connectedVersion", {
         /**
          * version of STOMP protocol negotiated with the server, READONLY
          */
         get: function () {
-            return this._stompHandler ? this._stompHandler.version : undefined;
+            return this._stompHandler ? this._stompHandler.connectedVersion : undefined;
         },
         enumerable: true,
         configurable: true
@@ -114,6 +125,7 @@ var Client = /** @class */ (function () {
         this._webSocket = this._createWebSocket();
         this._stompHandler = new stomp_handler_1.StompHandler(this, this._webSocket, {
             debug: this.debug,
+            stompVersions: this.stompVersions,
             connectHeaders: this.connectHeaders,
             disconnectHeaders: this.disconnectHeaders,
             heartbeatIncoming: this.heartbeatIncoming,
@@ -153,7 +165,13 @@ var Client = /** @class */ (function () {
         this._stompHandler.start();
     };
     Client.prototype._createWebSocket = function () {
-        var webSocket = this.webSocketFactory ? this.webSocketFactory() : new WebSocket(this.brokerURL);
+        var webSocket;
+        if (this.webSocketFactory) {
+            webSocket = this.webSocketFactory();
+        }
+        else {
+            webSocket = new WebSocket(this.brokerURL, this.stompVersions.protocolVersions());
+        }
         webSocket.binaryType = "arraybuffer";
         return webSocket;
     };
