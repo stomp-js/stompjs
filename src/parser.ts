@@ -82,9 +82,10 @@ export class Parser {
       chunk = this._encoder.encode(segment);
     }
 
-    chunk.forEach((byte) => {
+    for (let i = 0; i < chunk.length; i++) {
+      const byte = chunk[i];
       this._onByte(byte);
-    });
+    }
   }
 
   // The following implements a simple Rec Descent Parser.
