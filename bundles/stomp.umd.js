@@ -1235,7 +1235,6 @@ var Parser = /** @class */ (function () {
         this._initState();
     }
     Parser.prototype.parseChunk = function (segment) {
-        var _this = this;
         var chunk;
         if ((segment instanceof ArrayBuffer)) {
             chunk = new Uint8Array(segment);
@@ -1243,9 +1242,10 @@ var Parser = /** @class */ (function () {
         else {
             chunk = this._encoder.encode(segment);
         }
-        chunk.forEach(function (byte) {
-            _this._onByte(byte);
-        });
+        for (var i = 0; i < chunk.length; i++) {
+            var byte = chunk[i];
+            this._onByte(byte);
+        }
     };
     // The following implements a simple Rec Descent Parser.
     // The grammar is simple and just one byte tells what should be the next state

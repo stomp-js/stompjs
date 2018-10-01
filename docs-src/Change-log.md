@@ -1,5 +1,9 @@
 # Change Log
 
+## 5.0.0-beta.4 (2018-10-01)
+
+* Change Uint8Array forEach to regular access using [], should fix [#12](https://github.com/stomp-js/stompjs/issues/12)
+
 ## 5.0.0-beta.3 (2018-09-25)
 
 * Allowed STOMP versions is now configurable
