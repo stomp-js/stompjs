@@ -236,6 +236,7 @@ var StompHandler = /** @class */ (function () {
     };
     StompHandler.prototype.subscribe = function (destination, callback, headers) {
         if (headers === void 0) { headers = {}; }
+        headers = Object.assign({}, headers);
         if (!headers.id) {
             headers.id = "sub-" + this._counter++;
         }
@@ -252,9 +253,7 @@ var StompHandler = /** @class */ (function () {
     };
     StompHandler.prototype.unsubscribe = function (id, headers) {
         if (headers === void 0) { headers = {}; }
-        if (headers == null) {
-            headers = {};
-        }
+        headers = Object.assign({}, headers);
         delete this._subscriptions[id];
         headers.id = id;
         this._transmit({ command: "UNSUBSCRIBE", headers: headers });
@@ -293,6 +292,7 @@ var StompHandler = /** @class */ (function () {
     };
     StompHandler.prototype.ack = function (messageId, subscriptionId, headers) {
         if (headers === void 0) { headers = {}; }
+        headers = Object.assign({}, headers);
         if (this._connectedVersion === Versions.V1_2) {
             headers["id"] = messageId;
         }
@@ -304,6 +304,7 @@ var StompHandler = /** @class */ (function () {
     };
     StompHandler.prototype.nack = function (messageId, subscriptionId, headers) {
         if (headers === void 0) { headers = {}; }
+        headers = Object.assign({}, headers);
         if (this._connectedVersion === Versions.V1_2) {
             headers["id"] = messageId;
         }

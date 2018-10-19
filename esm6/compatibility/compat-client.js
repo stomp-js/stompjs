@@ -158,6 +158,7 @@ var CompatClient = /** @class */ (function (_super) {
     CompatClient.prototype.send = function (destination, headers, body) {
         if (headers === void 0) { headers = {}; }
         if (body === void 0) { body = ''; }
+        headers = Object.assign({}, headers);
         var skipContentLengthHeader = (headers['content-length'] === false);
         if (skipContentLengthHeader) {
             delete headers['content-length'];

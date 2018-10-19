@@ -16,7 +16,7 @@ var Frame = /** @class */ (function () {
     function Frame(params) {
         var command = params.command, headers = params.headers, body = params.body, binaryBody = params.binaryBody, escapeHeaderValues = params.escapeHeaderValues, skipContentLengthHeader = params.skipContentLengthHeader;
         this.command = command;
-        this.headers = headers || {};
+        this.headers = Object.assign({}, headers || {});
         if (binaryBody) {
             this._binaryBody = binaryBody;
             this.isBinaryBody = true;
