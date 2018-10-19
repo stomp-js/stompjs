@@ -1,5 +1,9 @@
 # Change Log
 
+## 5.0.0 (2018-10-19)
+
+* Same as 5.0.0-beta.5
+
 ## 5.0.0-beta.5 (2018-10-19)
 
 * Any function must not change `headers` received as parameter, should fix [#11](https://github.com/stomp-js/stompjs/issues/11)
