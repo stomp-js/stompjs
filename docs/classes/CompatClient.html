@@ -2983,7 +2983,7 @@ when corresponding receipt has been received.</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="154" class="link-to-prism">src/compatibility/compat-client.ts:154</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="156" class="link-to-prism">src/compatibility/compat-client.ts:156</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3044,7 +3044,7 @@ when corresponding receipt has been received.</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="163" class="link-to-prism">src/compatibility/compat-client.ts:163</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="165" class="link-to-prism">src/compatibility/compat-client.ts:165</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3078,7 +3078,7 @@ when corresponding receipt has been received.</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="172" class="link-to-prism">src/compatibility/compat-client.ts:172</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="174" class="link-to-prism">src/compatibility/compat-client.ts:174</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3108,7 +3108,7 @@ when corresponding receipt has been received.</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="181" class="link-to-prism">src/compatibility/compat-client.ts:181</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="183" class="link-to-prism">src/compatibility/compat-client.ts:183</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3131,7 +3131,7 @@ when corresponding receipt has been received.</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="190" class="link-to-prism">src/compatibility/compat-client.ts:190</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="192" class="link-to-prism">src/compatibility/compat-client.ts:192</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3188,7 +3188,7 @@ when corresponding receipt has been received.</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="200" class="link-to-prism">src/compatibility/compat-client.ts:200</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="202" class="link-to-prism">src/compatibility/compat-client.ts:202</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3212,7 +3212,7 @@ Prefer using <a href="../classes/Client.html#watchForReceipt">Client#watchForRec
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="209" class="link-to-prism">src/compatibility/compat-client.ts:209</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="211" class="link-to-prism">src/compatibility/compat-client.ts:211</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3269,7 +3269,7 @@ Prefer using <a href="../classes/Client.html#watchForReceipt">Client#watchForRec
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="221" class="link-to-prism">src/compatibility/compat-client.ts:221</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="223" class="link-to-prism">src/compatibility/compat-client.ts:223</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3289,7 +3289,7 @@ Prefer using <a href="../classes/Client.html#watchForReceipt">Client#watchForRec
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="231" class="link-to-prism">src/compatibility/compat-client.ts:231</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="233" class="link-to-prism">src/compatibility/compat-client.ts:233</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -3476,6 +3476,8 @@ export class CompatClient extends Client {
    * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
    */
   public send(destination: string, headers: {[key:string]: any} &#x3D; {}, body: string &#x3D; &#x27;&#x27;): void {
+    headers &#x3D; (&lt;any&gt;Object).assign({}, headers);
+
     const skipContentLengthHeader &#x3D; (headers[&#x27;content-length&#x27;] &#x3D;&#x3D;&#x3D; false);
     if (skipContentLengthHeader) {
       delete headers[&#x27;content-length&#x27;];

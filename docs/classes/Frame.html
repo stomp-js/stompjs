@@ -765,7 +765,7 @@ export class Frame {
   }) {
     let {command, headers, body, binaryBody, escapeHeaderValues, skipContentLengthHeader} &#x3D; params;
     this.command &#x3D; command;
-    this.headers &#x3D; headers || {};
+    this.headers &#x3D; (&lt;any&gt;Object).assign({}, headers || {});
 
     if (binaryBody) {
       this._binaryBody &#x3D; binaryBody;
