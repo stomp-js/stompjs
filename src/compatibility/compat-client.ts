@@ -134,6 +134,8 @@ export class CompatClient extends Client {
    * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
    */
   public send(destination: string, headers: {[key:string]: any} = {}, body: string = ''): void {
+    headers = (<any>Object).assign({}, headers);
+
     const skipContentLengthHeader = (headers['content-length'] === false);
     if (skipContentLengthHeader) {
       delete headers['content-length'];

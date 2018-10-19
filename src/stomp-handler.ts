@@ -299,6 +299,8 @@ export class StompHandler {
   }
 
   public subscribe(destination: string, callback: messageCallbackType, headers: StompHeaders = {}): StompSubscription {
+    headers = (<any>Object).assign({}, headers);
+
     if (!headers.id) {
       headers.id = `sub-${this._counter++}`;
     }
@@ -316,9 +318,8 @@ export class StompHandler {
   }
 
   public unsubscribe(id: string, headers: StompHeaders = {}): void {
-    if (headers == null) {
-      headers = {};
-    }
+    headers = (<any>Object).assign({}, headers);
+
     delete this._subscriptions[id];
     headers.id = id;
     this._transmit({command: "UNSUBSCRIBE", headers: headers});
@@ -360,6 +361,8 @@ export class StompHandler {
   }
 
   public ack(messageId: string, subscriptionId: string, headers: StompHeaders = {}): void {
+    headers = (<any>Object).assign({}, headers);
+
     if (this._connectedVersion === Versions.V1_2) {
       headers["id"] = messageId;
     } else {
@@ -370,6 +373,8 @@ export class StompHandler {
   }
 
   public nack(messageId: string, subscriptionId: string, headers: StompHeaders = {}): void {
+    headers = (<any>Object).assign({}, headers);
+
     if (this._connectedVersion === Versions.V1_2) {
       headers["id"] = messageId;
     } else {

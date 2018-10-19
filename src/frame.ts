@@ -62,7 +62,7 @@ export class Frame {
   }) {
     let {command, headers, body, binaryBody, escapeHeaderValues, skipContentLengthHeader} = params;
     this.command = command;
-    this.headers = headers || {};
+    this.headers = (<any>Object).assign({}, headers || {});
 
     if (binaryBody) {
       this._binaryBody = binaryBody;
