@@ -29,10 +29,16 @@ export class Versions {
   constructor(public versions: string[]) {
   }
 
+  /**
+   * Used as part of CONNECT STOMP Frame
+   */
   public supportedVersions() {
     return this.versions.join(',');
   }
 
+  /**
+   * Used while creating a WebSocket
+   */
   public protocolVersions() {
     return this.versions.map((x) => `v${x.replace('.', '')}.stomp`);
   }
