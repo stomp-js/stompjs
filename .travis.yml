@@ -14,4 +14,4 @@ before_script:
   - npm run build
 
 script:
-  - npm run test && npm run karma
+  - npm run lint && npm run test && npm run karma
