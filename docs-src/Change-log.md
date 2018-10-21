@@ -1,5 +1,9 @@
 # Change Log
 
+## 5.0.1
+
+* Configured `tslint`. `src` is `tslint` clean.
+
 ## 5.0.0 (2018-10-19)
 
 * Same as 5.0.0-beta.5
