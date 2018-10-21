@@ -5,4 +5,4 @@
  * `key` and `value` must be valid strings.
  * In addition, `key` must not contain `CR`, `LF`, or `:`.
  */
-export interface StompHeaders { [key: string]: string }
+export class StompHeaders { [key: string]: string }

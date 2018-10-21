@@ -1,17 +1,16 @@
-import {StompHeaders} from "./stomp-headers";
-import {StompSubscription} from "./stomp-subscription";
-import {Transaction} from "./transaction";
+import {StompConfig} from './stomp-config';
+import {StompHandler} from './stomp-handler';
+import {StompHeaders} from './stomp-headers';
+import {StompSubscription} from './stomp-subscription';
+import {Transaction} from './transaction';
 import {
   closeEventCallbackType,
   debugFnType,
   frameCallbackType,
-  messageCallbackType,
-  messageCheckCallbackType,
-  publishParams
-} from "./types";
-import {StompConfig} from './stomp-config';
-import {StompHandler} from "./stomp-handler";
-import {Versions} from "./versions";
+  IPublishParams,
+  messageCallbackType
+} from './types';
+import {Versions} from './versions';
 
 /**
  * STOMP Client Class.
@@ -239,7 +238,7 @@ export class Client {
    */
   public configure(conf: StompConfig): void {
     // bulk assign all properties to this
-    (<any>Object).assign(this, conf);
+    (Object as any).assign(this, conf);
   }
 
   /**
@@ -268,7 +267,7 @@ export class Client {
       return;
     }
 
-    this.debug("Opening Web Socket...");
+    this.debug('Opening Web Socket...');
 
     // Get the actual WebSocket (or a similar object)
     this._webSocket = this._createWebSocket();
@@ -324,7 +323,7 @@ export class Client {
     } else {
       webSocket = new WebSocket(this.brokerURL, this.stompVersions.protocolVersions());
     }
-    webSocket.binaryType = "arraybuffer";
+    webSocket.binaryType = 'arraybuffer';
     return webSocket;
   }
 
@@ -413,7 +412,7 @@ export class Client {
    *                         headers: {'content-type': 'application/octet-stream'}});
    * ```
    */
-  public publish(params: publishParams) {
+  public publish(params: IPublishParams) {
     this._stompHandler.publish(params);
   }
 

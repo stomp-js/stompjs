@@ -1,5 +1,5 @@
-import {Versions} from "../versions";
-import {CompatClient} from "./compat-client";
+import {Versions} from '../versions';
+import {CompatClient} from './compat-client';
 
 /**
  * STOMP Class, acts like a factory to create {@link Client}.
@@ -16,7 +16,8 @@ export class Stomp {
    *        Stomp.WebSocketClass = require('websocket').w3cwebsocket;
    * ```
    */
-  public static WebSocketClass:any = null;
+  // tslint:disable-next-line:variable-name
+  public static WebSocketClass: any = null;
 
   /**
    * This method creates a WebSocket client that is connected to
@@ -27,7 +28,7 @@ export class Stomp {
    *        var client = Stomp.client(url);
    * ```
    */
-  public static client (url: string, protocols?: string[]): CompatClient {
+  public static client(url: string, protocols?: string[]): CompatClient {
     // This is a hack to allow another implementation than the standard
     // HTML5 WebSocket class.
     //
@@ -42,12 +43,12 @@ export class Stomp {
 
     // See remarks on the function Stomp.over
     if (protocols == null) { protocols = Versions.default.protocolVersions(); }
-    const ws_fn= function() {
+    const wsFn = () => {
       const klass = Stomp.WebSocketClass || WebSocket;
       return new klass(url, protocols);
     };
 
-    return new CompatClient(ws_fn);
+    return new CompatClient(wsFn);
   }
 
   /**
@@ -55,7 +56,8 @@ export class Stomp {
    * specify the WebSocket to use (either a standard HTML5 WebSocket or
    * a similar object).
    *
-   * In order to support reconnection, the function Client._connect should be callable more than once. While reconnecting
+   * In order to support reconnection, the function Client._connect should be callable more than once.
+   * While reconnecting
    * a new instance of underlying transport (TCP Socket, WebSocket or SockJS) will be needed. So, this function
    * alternatively allows passing a function that should return a new instance of the underlying socket.
    *
@@ -65,9 +67,9 @@ export class Stomp {
    *        });
    * ```
    */
-  public static over (ws: any): CompatClient {
-    const ws_fn = typeof(ws) === "function" ? ws : () => ws;
+  public static over(ws: any): CompatClient {
+    const wsFn = typeof(ws) === 'function' ? ws : () => ws;
 
-    return new CompatClient(ws_fn);
+    return new CompatClient(wsFn);
   }
 }

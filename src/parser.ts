@@ -1,4 +1,4 @@
-import {RawFrameType} from './types';
+import {IRawFrameType} from './types';
 
 /**
  * @internal
@@ -61,15 +61,15 @@ export class Parser {
   private readonly _encoder = new TextEncoder();
   private readonly _decoder = new TextDecoder();
 
-  private _results: RawFrameType;
+  private _results: IRawFrameType;
 
   private _token: number[] = [];
   private _headerKey: string;
-  private _bodyBytesRemaining:number;
+  private _bodyBytesRemaining: number;
 
   private _onByte: (byte: number) => void;
 
-  public constructor(public onFrame: (rawFrame: RawFrameType) => void, public onIncomingPing: () => void) {
+  public constructor(public onFrame: (rawFrame: IRawFrameType) => void, public onIncomingPing: () => void) {
     this._initState();
   }
 
@@ -82,6 +82,7 @@ export class Parser {
       chunk = this._encoder.encode(segment);
     }
 
+    // tslint:disable-next-line:prefer-for-of
     for (let i = 0; i < chunk.length; i++) {
       const byte = chunk[i];
       this._onByte(byte);
@@ -159,12 +160,12 @@ export class Parser {
   }
 
   private _setupCollectBody() {
-    const contentLengthHeader = this._results.headers.filter(function (header: [string, string]) {
-      return header[0] === "content-length";
+    const contentLengthHeader = this._results.headers.filter((header: [string, string]) => {
+      return header[0] === 'content-length';
     })[0];
 
-    if(contentLengthHeader) {
-      this._bodyBytesRemaining = parseInt(contentLengthHeader[1]);
+    if (contentLengthHeader) {
+      this._bodyBytesRemaining = parseInt(contentLengthHeader[1], 10);
       this._onByte = this._collectBodyFixedSize;
     } else {
       this._onByte = this._collectBodyNullTerminated;
@@ -216,7 +217,7 @@ export class Parser {
     this._results = {
       command: undefined,
       headers: [],
-      binaryBody: undefined,
+      binaryBody: undefined
     };
 
     this._token = [];

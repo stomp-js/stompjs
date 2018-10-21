@@ -1,16 +1,16 @@
-import {StompHeaders} from "./stomp-headers";
+import {StompHeaders} from './stomp-headers';
 
 /**
  * Call [Client#subscribe]{@link Client#subscribe} to create a StompSubscription.
  */
-export interface StompSubscription {
+export class StompSubscription {
   /**
    * @internal
    */
-  id: string;
+  public id: string;
 
   /**
    * Unsubscribe. See [Client#unsubscribe]{@link Client#unsubscribe} for an example.
    */
-  unsubscribe(headers?: StompHeaders): void;
+  public unsubscribe: (headers?: StompHeaders) => void;
 }

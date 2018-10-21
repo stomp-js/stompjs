@@ -1,6 +1,7 @@
-import {Client} from "../client";
-import {StompHeaders} from "../stomp-headers";
-import {frameCallbackType, messageCallbackType} from "../types";
+import {Client} from '../client';
+import {StompHeaders} from '../stomp-headers';
+import {frameCallbackType, messageCallbackType} from '../types';
+import {HeartbeatInfo} from './heartbeat-info';
 
 /**
  * Available for backward compatibility, please shift to using {@link Client}.
@@ -35,20 +36,22 @@ export class CompatClient extends Client {
   }
 
   private _parseConnect(...args: any[]): any {
-    let closeEventCallback, connectCallback, errorCallback;
+    let closeEventCallback;
+    let connectCallback;
+    let errorCallback;
     let headers: StompHeaders = {};
     if (args.length < 2) {
-      throw("Connect requires at least 2 arguments");
+      throw new Error(('Connect requires at least 2 arguments'));
     }
     if (typeof(args[1]) === 'function') {
       [headers, connectCallback, errorCallback, closeEventCallback] = args;
     } else {
       switch (args.length) {
         case 6:
-          [headers['login'], headers['passcode'], connectCallback, errorCallback, closeEventCallback, headers['host']] = args;
+          [headers.login, headers.passcode, connectCallback, errorCallback, closeEventCallback, headers.host] = args;
           break;
         default:
-          [headers['login'], headers['passcode'], connectCallback, errorCallback, closeEventCallback] = args;
+          [headers.login, headers.passcode, connectCallback, errorCallback, closeEventCallback] = args;
       }
     }
 
@@ -133,18 +136,18 @@ export class CompatClient extends Client {
    *
    * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
    */
-  public send(destination: string, headers: {[key:string]: any} = {}, body: string = ''): void {
-    headers = (<any>Object).assign({}, headers);
+  public send(destination: string, headers: {[key: string]: any} = {}, body: string = ''): void {
+    headers = (Object as any).assign({}, headers);
 
     const skipContentLengthHeader = (headers['content-length'] === false);
     if (skipContentLengthHeader) {
       delete headers['content-length'];
     }
     this.publish({
-      destination: destination,
-      headers: <StompHeaders>headers,
-      body: body,
-      skipContentLengthHeader: skipContentLengthHeader
+      destination,
+      headers: headers as StompHeaders,
+      body,
+      skipContentLengthHeader
     });
   }
 
@@ -233,29 +236,5 @@ export class CompatClient extends Client {
   set heartbeat(value: {incoming: number, outgoing: number}) {
     this.heartbeatIncoming = value.incoming;
     this.heartbeatOutgoing = value.outgoing;
-  }
-}
-
-/**
- * @internal
- */
-class HeartbeatInfo {
-  constructor (private client: CompatClient) {
-  }
-
-  get outgoing(): number {
-    return this.client.heartbeatOutgoing;
-  }
-
-  set outgoing(value: number) {
-    this.client.heartbeatOutgoing = value;
-  }
-
-  get incoming(): number {
-    return this.client.heartbeatIncoming;
-  }
-
-  set incoming(value: number) {
-    this.client.heartbeatIncoming = value;
   }
 }

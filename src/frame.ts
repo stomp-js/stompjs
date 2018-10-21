@@ -1,11 +1,10 @@
-import {StompHeaders} from "./stomp-headers";
-import {Byte} from "./byte";
-import {RawFrameType} from "./types";
+import {BYTE} from './byte';
+import {StompHeaders} from './stomp-headers';
+import {IRawFrameType} from './types';
 
 /**
  * @internal
  */
-type unmarshallResults = { frames: Frame[]; partial: string };
 
 /**
  * Frame class represents a STOMP frame. Many of the callbacks pass the Frame received from
@@ -60,9 +59,9 @@ export class Frame {
     command: string, headers?: StompHeaders, body?: string, binaryBody?: Uint8Array,
     escapeHeaderValues?: boolean, skipContentLengthHeader?: boolean
   }) {
-    let {command, headers, body, binaryBody, escapeHeaderValues, skipContentLengthHeader} = params;
+    const {command, headers, body, binaryBody, escapeHeaderValues, skipContentLengthHeader} = params;
     this.command = command;
-    this.headers = (<any>Object).assign({}, headers || {});
+    this.headers = (Object as any).assign({}, headers || {});
 
     if (binaryBody) {
       this._binaryBody = binaryBody;
@@ -80,12 +79,12 @@ export class Frame {
    *
    * @internal
    */
-  public static fromRawFrame(rawFrame: RawFrameType, escapeHeaderValues: boolean): Frame {
+  public static fromRawFrame(rawFrame: IRawFrameType, escapeHeaderValues: boolean): Frame {
     const headers: StompHeaders = {};
     const trim = (str: string): string => str.replace(/^\s+|\s+$/g, '');
 
     // In case of repeated headers, as per standards, first value need to be used
-    for (let header of rawFrame.headers.reverse()) {
+    for (const header of rawFrame.headers.reverse()) {
       const idx = header.indexOf(':');
 
       const key = trim(header[0]);
@@ -100,9 +99,9 @@ export class Frame {
 
     return new Frame({
       command: rawFrame.command,
-      headers: headers,
+      headers,
       binaryBody: rawFrame.binaryBody,
-      escapeHeaderValues: escapeHeaderValues
+      escapeHeaderValues
     });
   }
 
@@ -121,10 +120,10 @@ export class Frame {
   public serialize(): string|ArrayBuffer {
     const cmdAndHeaders = this.serializeCmdAndHeaders();
 
-    if(this.isBinaryBody) {
+    if (this.isBinaryBody) {
       return Frame.toUnit8Array(cmdAndHeaders, this._binaryBody).buffer;
     } else {
-      return cmdAndHeaders + this._body + Byte.NULL;
+      return cmdAndHeaders + this._body + BYTE.NULL;
     }
   }
 
@@ -134,7 +133,7 @@ export class Frame {
       delete this.headers['content-length'];
     }
 
-    for (let name of Object.keys(this.headers || {})) {
+    for (const name of Object.keys(this.headers || {})) {
       const value = this.headers[name];
       if (this.escapeHeaderValues && (this.command !== 'CONNECT') && (this.command !== 'CONNECTED')) {
         lines.push(`${name}:${Frame.hdrValueEscape(`${value}`)}`);
@@ -145,7 +144,7 @@ export class Frame {
     if (this.isBinaryBody || (!this.isBodyEmpty() && !this.skipContentLengthHeader)) {
       lines.push(`content-length:${this.bodyLength()}`);
     }
-    return lines.join(Byte.LF) + Byte.LF + Byte.LF;
+    return lines.join(BYTE.LF) + BYTE.LF + BYTE.LF;
   }
 
   private isBodyEmpty(): boolean {
@@ -193,13 +192,13 @@ export class Frame {
    *  Escape header values
    */
   private static hdrValueEscape(str: string): string {
-    return str.replace(/\\/g, "\\\\").replace(/\r/g, "\\r").replace(/\n/g, "\\n").replace(/:/g, "\\c");
+    return str.replace(/\\/g, '\\\\').replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/:/g, '\\c');
   }
 
   /**
    * UnEscape header values
    */
   private static hdrValueUnEscape(str: string): string {
-    return str.replace(/\\r/g, "\r").replace(/\\n/g, "\n").replace(/\\c/g, ":").replace(/\\\\/g, "\\");
+    return str.replace(/\\r/g, '\r').replace(/\\n/g, '\n').replace(/\\c/g, ':').replace(/\\\\/g, '\\');
   }
 }

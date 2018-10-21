@@ -1,101 +1,100 @@
-import {StompHeaders} from "./stomp-headers";
+import {StompHeaders} from './stomp-headers';
 import {
-  frameCallbackType,
-  messageCallbackType,
   closeEventCallbackType,
   debugFnType,
-  messageCheckCallbackType
-} from "./types";
-import {Versions} from "./versions";
+  frameCallbackType,
+  messageCallbackType
+} from './types';
+import {Versions} from './versions';
 
 /**
  * Configuration options for STOMP Client, each key corresponds to
  * field by the same name in {@link Client}. This can be passed to
  * the constructor of {@link Client} or to [Client#configure]{@link Client#configure}.
  */
-export interface StompConfig {
+export class StompConfig {
   /**
    * See [Client#brokerURL]{@link Client#brokerURL}.
    */
-  brokerURL?: string;
+  public brokerURL?: string;
 
   /**
    * See See [Client#stompVersions]{@link Client#stompVersions}.
    */
-  stompVersions?: Versions;
+  public stompVersions?: Versions;
 
   /**
    * See [Client#webSocketFactory]{@link Client#webSocketFactory}.
    */
-  webSocketFactory?: () => any;
+  public webSocketFactory?: () => any;
 
   /**
    * See [Client#reconnectDelay]{@link Client#reconnectDelay}.
    */
-  reconnectDelay?: number;
+  public reconnectDelay?: number;
 
   /**
    * See [Client#heartbeatIncoming]{@link Client#heartbeatIncoming}.
    */
-  heartbeatIncoming?: number;
+  public heartbeatIncoming?: number;
 
   /**
    * See [Client#heartbeatOutgoing]{@link Client#heartbeatOutgoing}.
    */
-  heartbeatOutgoing?: number;
+  public heartbeatOutgoing?: number;
 
   /**
    * See [Client#connectHeaders]{@link Client#connectHeaders}.
    */
-  connectHeaders?: StompHeaders;
+  public connectHeaders?: StompHeaders;
 
   /**
    * See [Client#disconnectHeaders]{@link Client#disconnectHeaders}.
    */
-  disconnectHeaders?: StompHeaders;
+  public disconnectHeaders?: StompHeaders;
 
   /**
    * See [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
    */
-  onUnhandledMessage?: messageCallbackType;
+  public onUnhandledMessage?: messageCallbackType;
 
   /**
    * See [Client#onUnhandledReceipt]{@link Client#onUnhandledReceipt}.
    */
-  onUnhandledReceipt?: frameCallbackType;
+  public onUnhandledReceipt?: frameCallbackType;
 
   /**
    * See [Client#onUnhandledFrame]{@link Client#onUnhandledFrame}.
    */
-  onUnhandledFrame?: frameCallbackType;
+  public onUnhandledFrame?: frameCallbackType;
 
   /**
    * See [Client#beforeConnect]{@link Client#beforeConnect}.
    */
-  beforeConnect?: () => void;
+  public beforeConnect?: () => void;
 
   /**
    * See [Client#onConnect]{@link Client#onConnect}.
    */
-  onConnect?: frameCallbackType;
+  public onConnect?: frameCallbackType;
 
   /**
    * See [Client#onDisconnect]{@link Client#onDisconnect}.
    */
-  onDisconnect?: frameCallbackType;
+  public onDisconnect?: frameCallbackType;
 
   /**
    * See [Client#onStompError]{@link Client#onStompError}.
    */
-  onStompError?: frameCallbackType;
+  public onStompError?: frameCallbackType;
 
   /**
    * See [Client#onWebSocketClose]{@link Client#onWebSocketClose}.
    */
-  onWebSocketClose?: closeEventCallbackType;
+  public onWebSocketClose?: closeEventCallbackType;
 
   /**
    * See [Client#debug]{@link Client#debug}.
    */
-  debug?: debugFnType;
+  public debug?: debugFnType;
 }
