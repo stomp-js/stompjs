@@ -10,7 +10,8 @@
     "doc": "bin/doc-gen.sh",
     "doc-serve": "bin/doc-gen.sh -r 59320 -s -w -o",
     "test": "jasmine",
-    "karma": "karma start --single-run"
+    "karma": "karma start --single-run",
+    "lint": "tslint 'src/**/*.ts'"
   },
   "repository": {
     "type": "git",
