@@ -341,7 +341,7 @@ export class Client {
    * Disconnect if connected and stop auto reconnect loop.
    * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
    *
-   * To reactivate the {@link Client} you can call [Client#activate]{@link Client#activate}.
+   * To reactivate you can call [Client#activate]{@link Client#activate}.
    */
   public deactivate(): void {
     // indicate that auto reconnect loop should terminate
@@ -382,7 +382,7 @@ export class Client {
    *
    * STOMP protocol specifies and suggests some headers and also allows broker specific headers.
    *
-   * Body must be String.
+   * `body` must be String.
    * You will need to covert the payload to string in case it is not string (e.g. JSON).
    *
    * To send a binary message body use binaryBody parameter. It should be a
@@ -456,7 +456,7 @@ export class Client {
   }
 
   /**
-   * Subscribe to a STOMP Broker location. The callbck will be invoked for each received message with
+   * Subscribe to a STOMP Broker location. The callback will be invoked for each received message with
    * the {@link Message} as argument.
    *
    * Note: The library will generate an unique ID if there is none provided in the headers.
