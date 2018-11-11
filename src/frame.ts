@@ -3,10 +3,6 @@ import {StompHeaders} from './stomp-headers';
 import {IRawFrameType} from './types';
 
 /**
- * @internal
- */
-
-/**
  * Frame class represents a STOMP frame. Many of the callbacks pass the Frame received from
  * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
  *
@@ -23,6 +19,9 @@ export class Frame {
    */
   public headers: StompHeaders;
 
+  /**
+   * Is this frame binary (based on whether body/binaryBody was passed when creating this frame).
+   */
   public isBinaryBody: boolean;
 
   /**
@@ -116,6 +115,8 @@ export class Frame {
    * serialize this Frame in a format suitable to be passed to WebSocket.
    * If the body is string the output will be string.
    * If the body is binary (i.e. of type Unit8Array) it will be serialized to ArrayBuffer.
+   *
+   * @internal
    */
   public serialize(): string|ArrayBuffer {
     const cmdAndHeaders = this.serializeCmdAndHeaders();
