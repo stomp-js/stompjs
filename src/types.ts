@@ -73,7 +73,7 @@ export interface IPublishParams {
  *
  * Part of `@stomp/stompjs`.
  *
- * @Internal
+ * @internal
  */
 export type RawHeaderType = [string, string];
 
@@ -82,6 +82,6 @@ export type RawHeaderType = [string, string];
  *
  * Part of `@stomp/stompjs`.
  *
- * @Internal
+ * @internal
  */
 export interface IRawFrameType { command: string; headers: RawHeaderType[]; binaryBody: Uint8Array; }
