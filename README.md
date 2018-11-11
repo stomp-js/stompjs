@@ -58,12 +58,12 @@ The npm package includes TypeScript definitions, so there is no need no install 
 
 ## Change log
 
-Please visit [Change Log](https://stomp-js.github.io/stompjs/additional-documentation/change-log.html).
+Please visit [Change Log](Change-log.md).
 
 ## Contributing
 
 If you want to understand the code, develop, or contribute. Please visit
-[How to contribute](https://stomp-js.github.io/stompjs/additional-documentation/how-to-contribute.html). 
+[How to contribute](Contribute.md). 
 
 ## Authors
 
@@ -78,4 +78,4 @@ If you want to understand the code, develop, or contribute. Please visit
 
 ## License
 
-[License](https://github.com/stomp-js/stompjs/blob/master/LICENSE.md) - Apache v2 License
+[License](LICENSE.md) - Apache v2 License
