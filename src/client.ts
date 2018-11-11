@@ -14,6 +14,8 @@ import {Versions} from './versions';
 
 /**
  * STOMP Client Class.
+ *
+ * Part of `@stomp/stompjs`.
  */
 export class Client {
   /**

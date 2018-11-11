@@ -55,6 +55,8 @@ const COLON = 58;
  *
  * Check the parser.spec.js to understand cases that this parser is supposed to handle.
  *
+ * Part of `@stomp/stompjs`.
+ *
  * @internal
  */
 export class Parser {

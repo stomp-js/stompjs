@@ -3,6 +3,12 @@ import {CompatClient} from './compat-client';
 
 /**
  * STOMP Class, acts like a factory to create {@link Client}.
+ *
+ * Part of `@stomp/stompjs`.
+ *
+ * **Deprecated**
+ *
+ * It will be removed in next major version. Please switch to {@link Client}.
  */
 export class Stomp {
   /**
@@ -15,6 +21,12 @@ export class Stomp {
    *        Stomp = StompJs.Stomp;
    *        Stomp.WebSocketClass = require('websocket').w3cwebsocket;
    * ```
+   *
+   * **Deprecated**
+   *
+   *
+   * It will be removed in next major version. Please switch to {@link Client}
+   * using [Client#webSocketFactory]{@link Client#webSocketFactory}.
    */
   // tslint:disable-next-line:variable-name
   public static WebSocketClass: any = null;
@@ -27,6 +39,11 @@ export class Stomp {
    *        var url = "ws://localhost:61614/stomp";
    *        var client = Stomp.client(url);
    * ```
+   *
+   * **Deprecated**
+   *
+   * It will be removed in next major version. Please switch to {@link Client}
+   * using [Client#brokerURL]{@link Client#brokerURL}.
    */
   public static client(url: string, protocols?: string[]): CompatClient {
     // This is a hack to allow another implementation than the standard
@@ -66,6 +83,11 @@ export class Stomp {
    *          return new WebSocket('ws://localhost:15674/ws')
    *        });
    * ```
+   *
+   * **Deprecated**
+   *
+   * It will be removed in next major version. Please switch to {@link Client}
+   * using [Client#webSocketFactory]{@link Client#webSocketFactory}.
    */
   public static over(ws: any): CompatClient {
     const wsFn = typeof(ws) === 'function' ? ws : () => ws;

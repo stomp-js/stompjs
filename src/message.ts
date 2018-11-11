@@ -7,6 +7,8 @@ import {StompHeaders} from './stomp-headers';
  * Since it is an extended {@link Frame}, you can access [headers]{@link Frame#headers}
  * and [body]{@link Frame#body} as properties.
  *
+ * Part of `@stomp/stompjs`.
+ *
  * See [Client#subscribe]{@link Client#subscribe} for example.
  */
 export class Message extends Frame {

@@ -6,6 +6,8 @@ import {IRawFrameType} from './types';
  * Frame class represents a STOMP frame. Many of the callbacks pass the Frame received from
  * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
  *
+ * Part of `@stomp/stompjs`.
+ *
  * {@link Message} is an extended Frame.
  */
 export class Frame {

@@ -1,17 +1,19 @@
 /**
  * Supported STOMP versions
+ *
+ * Part of `@stomp/stompjs`.
  */
 export class Versions {
   /**
-   * 1.0
+   * Indicates protocol version 1.0
    */
   public static V1_0 = '1.0';
   /**
-   * 1.1
+   * Indicates protocol version 1.1
    */
   public static V1_1 = '1.1';
   /**
-   * 1.2
+   * Indicates protocol version 1.2
    */
   public static V1_2 = '1.2';
 

@@ -4,33 +4,45 @@ import {StompHeaders} from './stomp-headers';
 
 /**
  * This callback will receive a `string` as parameter.
+ *
+ * Part of `@stomp/stompjs`.
  */
 export type debugFnType = (msg: string) => void;
 
 /**
  * This callback will receive a {@link Message} as parameter.
+ *
+ * Part of `@stomp/stompjs`.
  */
 export type messageCallbackType = (message: Message) => void;
 
 /**
  * This callback will receive a {@link Message} as parameter.
  * The callback will need to return a boolean value.
+ *
+ * Part of `@stomp/stompjs`.
  */
 export type messageCheckCallbackType = (frame: Frame) => boolean;
 
 /**
  * This callback will receive a {@link Frame} as parameter.
+ *
+ * Part of `@stomp/stompjs`.
  */
 export type frameCallbackType = (receipt: Frame) => void;
 
 /**
  * This callback will receive a [CloseEvent]{@link https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent}
  * as parameter.
+ *
+ * Part of `@stomp/stompjs`.
  */
 export type closeEventCallbackType = (evt: CloseEvent) => void;
 
 /**
  * Parameters for [Client#publish]{@link Client#publish}
+ *
+ * Part of `@stomp/stompjs`.
  */
 export interface IPublishParams {
   /**
@@ -57,7 +69,19 @@ export interface IPublishParams {
 }
 
 /**
- * The parser yield frames in this structure
+ * Used in {@link IRawFrameType}
+ *
+ * Part of `@stomp/stompjs`.
+ *
+ * @Internal
  */
 export type RawHeaderType = [string, string];
+
+/**
+ * The parser yield frames in this structure
+ *
+ * Part of `@stomp/stompjs`.
+ *
+ * @Internal
+ */
 export interface IRawFrameType { command: string; headers: RawHeaderType[]; binaryBody: Uint8Array; }

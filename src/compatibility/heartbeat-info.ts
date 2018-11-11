@@ -1,6 +1,8 @@
 import {CompatClient} from './compat-client';
 
 /**
+ * Part of `@stomp/stompjs`.
+ *
  * @internal
  */
 export class HeartbeatInfo {

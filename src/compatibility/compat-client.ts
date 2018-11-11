@@ -8,6 +8,8 @@ import {HeartbeatInfo} from './heartbeat-info';
  *
  * **Deprecated**
  *
+ * Part of `@stomp/stompjs`.
+ *
  * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
  */
 export class CompatClient extends Client {

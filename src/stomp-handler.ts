@@ -13,6 +13,8 @@ import {Versions} from './versions';
 /**
  * The STOMP protocol handler
  *
+ * Part of `@stomp/stompjs`.
+ *
  * @internal
  */
 export class StompHandler {
