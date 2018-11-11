@@ -5,7 +5,7 @@ import {StompHeaders} from './stomp-headers';
  */
 export class StompSubscription {
   /**
-   * @internal
+   * Id associated with this subscription.
    */
   public id: string;
 
