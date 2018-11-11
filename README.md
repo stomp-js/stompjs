@@ -33,18 +33,18 @@ is actively maintained. You are welcome to file issues and submit pull requests.
 
 if you were using an older version of this library, you would need to make changes
 to your code. Head to
-[Upgrading](https://stomp-js.github.io/stompjs/additional-documentation/upgrading.html)
+[Upgrading](https://stomp-js.github.io/guide/stompjs/2018/09/08/upgrading-stompjs.html)
 
 ## Getting started
 
-The documentation is hosted as GitHub pages.
-You may head straight to the https://stomp-js.github.io/stompjs/
+The API documentation is hosted as GitHub pages for entire StompJS family of libraries.
+You may head straight to the https://stomp-js.github.io/api-docs/latest/
 
 This library comes with detailed usage instructions. Please find it at 
-[Usage instructions](https://stomp-js.github.io/stompjs/additional-documentation/usage.html). 
+[Usage instructions](https://stomp-js.github.io/guide/stompjs/2018/06/28/using-stompjs-v5.html). 
 
 There are quite detailed API documentation,
-you should start at https://stomp-js.github.io/stompjs/classes/Client.html.
+you should start at https://stomp-js.github.io/api-docs/latest/classes/Client.html.
 
 ## Usage with Angular2/4/5
 
@@ -78,4 +78,4 @@ If you want to understand the code, develop, or contribute. Please visit
 
 ## License
 
-[License](https://stomp-js.github.io/stompjs/license.html) - Apache v2 License
+[License](https://github.com/stomp-js/stompjs/blob/master/LICENSE.md) - Apache v2 License
