@@ -9,3 +9,5 @@ TEST = {
 };
 
 Stomp = StompJs.Stomp;
+
+// For ActiveMQ "ws://localhost:61614/stomp
