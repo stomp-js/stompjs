@@ -1,31 +1,37 @@
-import { Message } from "./message";
-import { Frame } from "./frame";
-import { StompHeaders } from "./stomp-headers";
+import { Frame } from './frame';
+import { Message } from './message';
+import { StompHeaders } from './stomp-headers';
 /**
  * This callback will receive a `string` as parameter.
+ *
+ * Part of `@stomp/stompjs`.
  */
 export declare type debugFnType = (msg: string) => void;
 /**
  * This callback will receive a {@link Message} as parameter.
+ *
+ * Part of `@stomp/stompjs`.
  */
 export declare type messageCallbackType = (message: Message) => void;
 /**
- * This callback will receive a {@link Message} as parameter.
- * The callback will need to return a boolean value.
- */
-export declare type messageCheckCallbackType = (frame: Frame) => boolean;
-/**
  * This callback will receive a {@link Frame} as parameter.
+ *
+ * Part of `@stomp/stompjs`.
  */
 export declare type frameCallbackType = (receipt: Frame) => void;
 /**
- * This callback will receive a [CloseEvent]{@link https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent} as parameter.
+ * This callback will receive a [CloseEvent]{@link https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent}
+ * as parameter.
+ *
+ * Part of `@stomp/stompjs`.
  */
 export declare type closeEventCallbackType = (evt: CloseEvent) => void;
 /**
  * Parameters for [Client#publish]{@link Client#publish}
+ *
+ * Part of `@stomp/stompjs`.
  */
-export interface publishParams {
+export interface IPublishParams {
     /**
      * destination end point
      */
@@ -49,11 +55,22 @@ export interface publishParams {
     skipContentLengthHeader?: boolean;
 }
 /**
- * The parser yield frames in this structure
+ * Used in {@link IRawFrameType}
+ *
+ * Part of `@stomp/stompjs`.
+ *
+ * @internal
  */
 export declare type RawHeaderType = [string, string];
-export declare type RawFrameType = {
+/**
+ * The parser yield frames in this structure
+ *
+ * Part of `@stomp/stompjs`.
+ *
+ * @internal
+ */
+export interface IRawFrameType {
     command: string;
     headers: RawHeaderType[];
     binaryBody: Uint8Array;
-};
+}

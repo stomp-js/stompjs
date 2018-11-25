@@ -1,4 +1,4 @@
-import { RawFrameType } from './types';
+import { IRawFrameType } from './types';
 /**
  * This is an evented, rec descent parser.
  * A stream of Octets can be passed and whenever it recognizes
@@ -37,10 +37,12 @@ import { RawFrameType } from './types';
  *
  * Check the parser.spec.js to understand cases that this parser is supposed to handle.
  *
+ * Part of `@stomp/stompjs`.
+ *
  * @internal
  */
 export declare class Parser {
-    onFrame: (rawFrame: RawFrameType) => void;
+    onFrame: (rawFrame: IRawFrameType) => void;
     onIncomingPing: () => void;
     private readonly _encoder;
     private readonly _decoder;
@@ -49,7 +51,7 @@ export declare class Parser {
     private _headerKey;
     private _bodyBytesRemaining;
     private _onByte;
-    constructor(onFrame: (rawFrame: RawFrameType) => void, onIncomingPing: () => void);
+    constructor(onFrame: (rawFrame: IRawFrameType) => void, onIncomingPing: () => void);
     parseChunk(segment: string | ArrayBuffer): void;
     private _collectFrame;
     private _collectCommand;

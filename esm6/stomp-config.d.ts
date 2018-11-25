@@ -1,12 +1,14 @@
-import { StompHeaders } from "./stomp-headers";
-import { frameCallbackType, messageCallbackType, closeEventCallbackType, debugFnType } from "./types";
-import { Versions } from "./versions";
+import { StompHeaders } from './stomp-headers';
+import { closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType } from './types';
+import { Versions } from './versions';
 /**
  * Configuration options for STOMP Client, each key corresponds to
  * field by the same name in {@link Client}. This can be passed to
  * the constructor of {@link Client} or to [Client#configure]{@link Client#configure}.
+ *
+ * Part of `@stomp/stompjs`.
  */
-export interface StompConfig {
+export declare class StompConfig {
     /**
      * See [Client#brokerURL]{@link Client#brokerURL}.
      */

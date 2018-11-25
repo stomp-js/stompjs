@@ -54,6 +54,8 @@ var COLON = 58;
  *
  * Check the parser.spec.js to understand cases that this parser is supposed to handle.
  *
+ * Part of `@stomp/stompjs`.
+ *
  * @internal
  */
 var Parser = /** @class */ (function () {
@@ -73,6 +75,7 @@ var Parser = /** @class */ (function () {
         else {
             chunk = this._encoder.encode(segment);
         }
+        // tslint:disable-next-line:prefer-for-of
         for (var i = 0; i < chunk.length; i++) {
             var byte = chunk[i];
             this._onByte(byte);
@@ -141,10 +144,10 @@ var Parser = /** @class */ (function () {
     };
     Parser.prototype._setupCollectBody = function () {
         var contentLengthHeader = this._results.headers.filter(function (header) {
-            return header[0] === "content-length";
+            return header[0] === 'content-length';
         })[0];
         if (contentLengthHeader) {
-            this._bodyBytesRemaining = parseInt(contentLengthHeader[1]);
+            this._bodyBytesRemaining = parseInt(contentLengthHeader[1], 10);
             this._onByte = this._collectBodyFixedSize;
         }
         else {
@@ -187,7 +190,7 @@ var Parser = /** @class */ (function () {
         this._results = {
             command: undefined,
             headers: [],
-            binaryBody: undefined,
+            binaryBody: undefined
         };
         this._token = [];
         this._headerKey = undefined;

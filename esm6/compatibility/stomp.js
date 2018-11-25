@@ -1,7 +1,13 @@
-import { Versions } from "../versions";
-import { CompatClient } from "./compat-client";
+import { Versions } from '../versions';
+import { CompatClient } from './compat-client';
 /**
  * STOMP Class, acts like a factory to create {@link Client}.
+ *
+ * Part of `@stomp/stompjs`.
+ *
+ * **Deprecated**
+ *
+ * It will be removed in next major version. Please switch to {@link Client}.
  */
 var Stomp = /** @class */ (function () {
     function Stomp() {
@@ -14,6 +20,11 @@ var Stomp = /** @class */ (function () {
      *        var url = "ws://localhost:61614/stomp";
      *        var client = Stomp.client(url);
      * ```
+     *
+     * **Deprecated**
+     *
+     * It will be removed in next major version. Please switch to {@link Client}
+     * using [Client#brokerURL]{@link Client#brokerURL}.
      */
     Stomp.client = function (url, protocols) {
         // This is a hack to allow another implementation than the standard
@@ -31,18 +42,19 @@ var Stomp = /** @class */ (function () {
         if (protocols == null) {
             protocols = Versions.default.protocolVersions();
         }
-        var ws_fn = function () {
+        var wsFn = function () {
             var klass = Stomp.WebSocketClass || WebSocket;
             return new klass(url, protocols);
         };
-        return new CompatClient(ws_fn);
+        return new CompatClient(wsFn);
     };
     /**
      * This method is an alternative to [Stomp#client]{@link Stomp#client} to let the user
      * specify the WebSocket to use (either a standard HTML5 WebSocket or
      * a similar object).
      *
-     * In order to support reconnection, the function Client._connect should be callable more than once. While reconnecting
+     * In order to support reconnection, the function Client._connect should be callable more than once.
+     * While reconnecting
      * a new instance of underlying transport (TCP Socket, WebSocket or SockJS) will be needed. So, this function
      * alternatively allows passing a function that should return a new instance of the underlying socket.
      *
@@ -51,10 +63,15 @@ var Stomp = /** @class */ (function () {
      *          return new WebSocket('ws://localhost:15674/ws')
      *        });
      * ```
+     *
+     * **Deprecated**
+     *
+     * It will be removed in next major version. Please switch to {@link Client}
+     * using [Client#webSocketFactory]{@link Client#webSocketFactory}.
      */
     Stomp.over = function (ws) {
-        var ws_fn = typeof (ws) === "function" ? ws : function () { return ws; };
-        return new CompatClient(ws_fn);
+        var wsFn = typeof (ws) === 'function' ? ws : function () { return ws; };
+        return new CompatClient(wsFn);
     };
     /**
      * In case you need to use a non standard class for WebSocket.
@@ -66,7 +83,14 @@ var Stomp = /** @class */ (function () {
      *        Stomp = StompJs.Stomp;
      *        Stomp.WebSocketClass = require('websocket').w3cwebsocket;
      * ```
+     *
+     * **Deprecated**
+     *
+     *
+     * It will be removed in next major version. Please switch to {@link Client}
+     * using [Client#webSocketFactory]{@link Client#webSocketFactory}.
      */
+    // tslint:disable-next-line:variable-name
     Stomp.WebSocketClass = null;
     return Stomp;
 }());

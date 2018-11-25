@@ -1,12 +1,14 @@
 import { Client } from './client';
-import { Versions } from "./versions";
-import { StompHeaders } from "./stomp-headers";
-import { closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, publishParams } from "./types";
-import { StompSubscription } from "./stomp-subscription";
-import { Transaction } from "./transaction";
-import { StompConfig } from "./stomp-config";
+import { StompConfig } from './stomp-config';
+import { StompHeaders } from './stomp-headers';
+import { StompSubscription } from './stomp-subscription';
+import { Transaction } from './transaction';
+import { closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, messageCallbackType } from './types';
+import { Versions } from './versions';
 /**
  * The STOMP protocol handler
+ *
+ * Part of `@stomp/stompjs`.
  *
  * @internal
  */
@@ -46,7 +48,7 @@ export declare class StompHandler {
     private _transmit;
     dispose(): void;
     private _cleanUp;
-    publish(params: publishParams): void;
+    publish(params: IPublishParams): void;
     watchForReceipt(receiptId: string, callback: frameCallbackType): void;
     subscribe(destination: string, callback: messageCallbackType, headers?: StompHeaders): StompSubscription;
     unsubscribe(id: string, headers?: StompHeaders): void;

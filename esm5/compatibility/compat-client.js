@@ -11,10 +11,13 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = require("../client");
+var heartbeat_info_1 = require("./heartbeat-info");
 /**
  * Available for backward compatibility, please shift to using {@link Client}.
  *
  * **Deprecated**
+ *
+ * Part of `@stomp/stompjs`.
  *
  * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
  */
@@ -34,7 +37,7 @@ var CompatClient = /** @class */ (function (_super) {
          * It is no op now. No longer needed. Large packets work out of the box.
          */
         _this.maxWebSocketFrameSize = 16 * 1024;
-        _this._heartbeatInfo = new HeartbeatInfo(_this);
+        _this._heartbeatInfo = new heartbeat_info_1.HeartbeatInfo(_this);
         _this.reconnect_delay = 0;
         _this.webSocketFactory = webSocketFactory;
         // Default from previous version
@@ -52,10 +55,12 @@ var CompatClient = /** @class */ (function (_super) {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        var closeEventCallback, connectCallback, errorCallback;
+        var closeEventCallback;
+        var connectCallback;
+        var errorCallback;
         var headers = {};
         if (args.length < 2) {
-            throw ("Connect requires at least 2 arguments");
+            throw new Error(('Connect requires at least 2 arguments'));
         }
         if (typeof (args[1]) === 'function') {
             headers = args[0], connectCallback = args[1], errorCallback = args[2], closeEventCallback = args[3];
@@ -63,10 +68,10 @@ var CompatClient = /** @class */ (function (_super) {
         else {
             switch (args.length) {
                 case 6:
-                    headers['login'] = args[0], headers['passcode'] = args[1], connectCallback = args[2], errorCallback = args[3], closeEventCallback = args[4], headers['host'] = args[5];
+                    headers.login = args[0], headers.passcode = args[1], connectCallback = args[2], errorCallback = args[3], closeEventCallback = args[4], headers.host = args[5];
                     break;
                 default:
-                    headers['login'] = args[0], headers['passcode'] = args[1], connectCallback = args[2], errorCallback = args[3], closeEventCallback = args[4];
+                    headers.login = args[0], headers.passcode = args[1], connectCallback = args[2], errorCallback = args[3], closeEventCallback = args[4];
             }
         }
         return [headers, connectCallback, errorCallback, closeEventCallback];
@@ -275,33 +280,4 @@ var CompatClient = /** @class */ (function (_super) {
     return CompatClient;
 }(client_1.Client));
 exports.CompatClient = CompatClient;
-/**
- * @internal
- */
-var HeartbeatInfo = /** @class */ (function () {
-    function HeartbeatInfo(client) {
-        this.client = client;
-    }
-    Object.defineProperty(HeartbeatInfo.prototype, "outgoing", {
-        get: function () {
-            return this.client.heartbeatOutgoing;
-        },
-        set: function (value) {
-            this.client.heartbeatOutgoing = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HeartbeatInfo.prototype, "incoming", {
-        get: function () {
-            return this.client.heartbeatIncoming;
-        },
-        set: function (value) {
-            this.client.heartbeatIncoming = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return HeartbeatInfo;
-}());
 //# sourceMappingURL=compat-client.js.map

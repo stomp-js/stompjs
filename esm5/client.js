@@ -4,6 +4,8 @@ var stomp_handler_1 = require("./stomp-handler");
 var versions_1 = require("./versions");
 /**
  * STOMP Client Class.
+ *
+ * Part of `@stomp/stompjs`.
  */
 var Client = /** @class */ (function () {
     /**
@@ -47,7 +49,7 @@ var Client = /** @class */ (function () {
         this.onWebSocketClose = noOp;
         // These parameters would typically get proper values before connect is called
         this.connectHeaders = {};
-        this.disconnectHeaders = {};
+        this._disconnectHeaders = {};
         // Apply configuration
         this.configure(conf);
     }
@@ -57,6 +59,22 @@ var Client = /** @class */ (function () {
          */
         get: function () {
             return this._webSocket;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Client.prototype, "disconnectHeaders", {
+        /**
+         * Disconnection headers.
+         */
+        get: function () {
+            return this._disconnectHeaders;
+        },
+        set: function (value) {
+            this._disconnectHeaders = value;
+            if (this._stompHandler) {
+                this._stompHandler.disconnectHeaders = this._disconnectHeaders;
+            }
         },
         enumerable: true,
         configurable: true
@@ -120,14 +138,14 @@ var Client = /** @class */ (function () {
             this.debug('Client has been marked inactive, will not attempt to connect');
             return;
         }
-        this.debug("Opening Web Socket...");
+        this.debug('Opening Web Socket...');
         // Get the actual WebSocket (or a similar object)
         this._webSocket = this._createWebSocket();
         this._stompHandler = new stomp_handler_1.StompHandler(this, this._webSocket, {
             debug: this.debug,
             stompVersions: this.stompVersions,
             connectHeaders: this.connectHeaders,
-            disconnectHeaders: this.disconnectHeaders,
+            disconnectHeaders: this._disconnectHeaders,
             heartbeatIncoming: this.heartbeatIncoming,
             heartbeatOutgoing: this.heartbeatOutgoing,
             onConnect: function (frame) {
@@ -172,7 +190,7 @@ var Client = /** @class */ (function () {
         else {
             webSocket = new WebSocket(this.brokerURL, this.stompVersions.protocolVersions());
         }
-        webSocket.binaryType = "arraybuffer";
+        webSocket.binaryType = 'arraybuffer';
         return webSocket;
     };
     Client.prototype._schedule_reconnect = function () {
@@ -188,7 +206,7 @@ var Client = /** @class */ (function () {
      * Disconnect if connected and stop auto reconnect loop.
      * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
      *
-     * To reactivate the {@link Client} you can call [Client#activate]{@link Client#activate}.
+     * To reactivate you can call [Client#activate]{@link Client#activate}.
      */
     Client.prototype.deactivate = function () {
         // indicate that auto reconnect loop should terminate
@@ -225,7 +243,7 @@ var Client = /** @class */ (function () {
      *
      * STOMP protocol specifies and suggests some headers and also allows broker specific headers.
      *
-     * Body must be String.
+     * `body` must be String.
      * You will need to covert the payload to string in case it is not string (e.g. JSON).
      *
      * To send a binary message body use binaryBody parameter. It should be a
@@ -297,7 +315,7 @@ var Client = /** @class */ (function () {
         this._stompHandler.watchForReceipt(receiptId, callback);
     };
     /**
-     * Subscribe to a STOMP Broker location. The callbck will be invoked for each received message with
+     * Subscribe to a STOMP Broker location. The callback will be invoked for each received message with
      * the {@link Message} as argument.
      *
      * Note: The library will generate an unique ID if there is none provided in the headers.

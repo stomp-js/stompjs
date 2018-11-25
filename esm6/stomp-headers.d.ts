@@ -4,7 +4,9 @@
  *
  * `key` and `value` must be valid strings.
  * In addition, `key` must not contain `CR`, `LF`, or `:`.
+ *
+ * Part of `@stomp/stompjs`.
  */
-export interface StompHeaders {
+export declare class StompHeaders {
     [key: string]: string;
 }

@@ -1,9 +1,11 @@
 /**
  * A Transaction is created by calling [Client#begin]{@link Client#begin}
  *
+ * Part of `@stomp/stompjs`.
+ *
  * TODO: Example and caveat
  */
-export interface Transaction {
+export declare class Transaction {
     /**
      * You will need to access this to send, ack, or nack within this transaction.
      */

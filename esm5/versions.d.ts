@@ -1,18 +1,20 @@
 /**
  * Supported STOMP versions
+ *
+ * Part of `@stomp/stompjs`.
  */
 export declare class Versions {
     versions: string[];
     /**
-     * 1.0
+     * Indicates protocol version 1.0
      */
     static V1_0: string;
     /**
-     * 1.1
+     * Indicates protocol version 1.1
      */
     static V1_1: string;
     /**
-     * 1.2
+     * Indicates protocol version 1.2
      */
     static V1_2: string;
     /**
@@ -26,6 +28,12 @@ export declare class Versions {
      * STOMP handshake.
      */
     constructor(versions: string[]);
+    /**
+     * Used as part of CONNECT STOMP Frame
+     */
     supportedVersions(): string;
+    /**
+     * Used while creating a WebSocket
+     */
     protocolVersions(): string[];
 }

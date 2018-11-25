@@ -109,9 +109,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Some byte values, used as per STOMP specifications.
  *
+ * Part of `@stomp/stompjs`.
+ *
  * @internal
  */
-exports.Byte = {
+exports.BYTE = {
     // LINEFEED byte (octet 10)
     LF: '\x0A',
     // NULL byte (octet 0)
@@ -135,6 +137,8 @@ var stomp_handler_1 = __webpack_require__(/*! ./stomp-handler */ "./src/stomp-ha
 var versions_1 = __webpack_require__(/*! ./versions */ "./src/versions.ts");
 /**
  * STOMP Client Class.
+ *
+ * Part of `@stomp/stompjs`.
  */
 var Client = /** @class */ (function () {
     /**
@@ -178,7 +182,7 @@ var Client = /** @class */ (function () {
         this.onWebSocketClose = noOp;
         // These parameters would typically get proper values before connect is called
         this.connectHeaders = {};
-        this.disconnectHeaders = {};
+        this._disconnectHeaders = {};
         // Apply configuration
         this.configure(conf);
     }
@@ -188,6 +192,22 @@ var Client = /** @class */ (function () {
          */
         get: function () {
             return this._webSocket;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Client.prototype, "disconnectHeaders", {
+        /**
+         * Disconnection headers.
+         */
+        get: function () {
+            return this._disconnectHeaders;
+        },
+        set: function (value) {
+            this._disconnectHeaders = value;
+            if (this._stompHandler) {
+                this._stompHandler.disconnectHeaders = this._disconnectHeaders;
+            }
         },
         enumerable: true,
         configurable: true
@@ -251,14 +271,14 @@ var Client = /** @class */ (function () {
             this.debug('Client has been marked inactive, will not attempt to connect');
             return;
         }
-        this.debug("Opening Web Socket...");
+        this.debug('Opening Web Socket...');
         // Get the actual WebSocket (or a similar object)
         this._webSocket = this._createWebSocket();
         this._stompHandler = new stomp_handler_1.StompHandler(this, this._webSocket, {
             debug: this.debug,
             stompVersions: this.stompVersions,
             connectHeaders: this.connectHeaders,
-            disconnectHeaders: this.disconnectHeaders,
+            disconnectHeaders: this._disconnectHeaders,
             heartbeatIncoming: this.heartbeatIncoming,
             heartbeatOutgoing: this.heartbeatOutgoing,
             onConnect: function (frame) {
@@ -303,7 +323,7 @@ var Client = /** @class */ (function () {
         else {
             webSocket = new WebSocket(this.brokerURL, this.stompVersions.protocolVersions());
         }
-        webSocket.binaryType = "arraybuffer";
+        webSocket.binaryType = 'arraybuffer';
         return webSocket;
     };
     Client.prototype._schedule_reconnect = function () {
@@ -319,7 +339,7 @@ var Client = /** @class */ (function () {
      * Disconnect if connected and stop auto reconnect loop.
      * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
      *
-     * To reactivate the {@link Client} you can call [Client#activate]{@link Client#activate}.
+     * To reactivate you can call [Client#activate]{@link Client#activate}.
      */
     Client.prototype.deactivate = function () {
         // indicate that auto reconnect loop should terminate
@@ -356,7 +376,7 @@ var Client = /** @class */ (function () {
      *
      * STOMP protocol specifies and suggests some headers and also allows broker specific headers.
      *
-     * Body must be String.
+     * `body` must be String.
      * You will need to covert the payload to string in case it is not string (e.g. JSON).
      *
      * To send a binary message body use binaryBody parameter. It should be a
@@ -428,7 +448,7 @@ var Client = /** @class */ (function () {
         this._stompHandler.watchForReceipt(receiptId, callback);
     };
     /**
-     * Subscribe to a STOMP Broker location. The callbck will be invoked for each received message with
+     * Subscribe to a STOMP Broker location. The callback will be invoked for each received message with
      * the {@link Message} as argument.
      *
      * Note: The library will generate an unique ID if there is none provided in the headers.
@@ -571,10 +591,13 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = __webpack_require__(/*! ../client */ "./src/client.ts");
+var heartbeat_info_1 = __webpack_require__(/*! ./heartbeat-info */ "./src/compatibility/heartbeat-info.ts");
 /**
  * Available for backward compatibility, please shift to using {@link Client}.
  *
  * **Deprecated**
+ *
+ * Part of `@stomp/stompjs`.
  *
  * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
  */
@@ -594,7 +617,7 @@ var CompatClient = /** @class */ (function (_super) {
          * It is no op now. No longer needed. Large packets work out of the box.
          */
         _this.maxWebSocketFrameSize = 16 * 1024;
-        _this._heartbeatInfo = new HeartbeatInfo(_this);
+        _this._heartbeatInfo = new heartbeat_info_1.HeartbeatInfo(_this);
         _this.reconnect_delay = 0;
         _this.webSocketFactory = webSocketFactory;
         // Default from previous version
@@ -612,10 +635,12 @@ var CompatClient = /** @class */ (function (_super) {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        var closeEventCallback, connectCallback, errorCallback;
+        var closeEventCallback;
+        var connectCallback;
+        var errorCallback;
         var headers = {};
         if (args.length < 2) {
-            throw ("Connect requires at least 2 arguments");
+            throw new Error(('Connect requires at least 2 arguments'));
         }
         if (typeof (args[1]) === 'function') {
             headers = args[0], connectCallback = args[1], errorCallback = args[2], closeEventCallback = args[3];
@@ -623,10 +648,10 @@ var CompatClient = /** @class */ (function (_super) {
         else {
             switch (args.length) {
                 case 6:
-                    headers['login'] = args[0], headers['passcode'] = args[1], connectCallback = args[2], errorCallback = args[3], closeEventCallback = args[4], headers['host'] = args[5];
+                    headers.login = args[0], headers.passcode = args[1], connectCallback = args[2], errorCallback = args[3], closeEventCallback = args[4], headers.host = args[5];
                     break;
                 default:
-                    headers['login'] = args[0], headers['passcode'] = args[1], connectCallback = args[2], errorCallback = args[3], closeEventCallback = args[4];
+                    headers.login = args[0], headers.passcode = args[1], connectCallback = args[2], errorCallback = args[3], closeEventCallback = args[4];
             }
         }
         return [headers, connectCallback, errorCallback, closeEventCallback];
@@ -835,7 +860,23 @@ var CompatClient = /** @class */ (function (_super) {
     return CompatClient;
 }(client_1.Client));
 exports.CompatClient = CompatClient;
+
+
+/***/ }),
+
+/***/ "./src/compatibility/heartbeat-info.ts":
+/*!*********************************************!*\
+  !*** ./src/compatibility/heartbeat-info.ts ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
+ * Part of `@stomp/stompjs`.
+ *
  * @internal
  */
 var HeartbeatInfo = /** @class */ (function () {
@@ -864,6 +905,7 @@ var HeartbeatInfo = /** @class */ (function () {
     });
     return HeartbeatInfo;
 }());
+exports.HeartbeatInfo = HeartbeatInfo;
 
 
 /***/ }),
@@ -882,6 +924,12 @@ var versions_1 = __webpack_require__(/*! ../versions */ "./src/versions.ts");
 var compat_client_1 = __webpack_require__(/*! ./compat-client */ "./src/compatibility/compat-client.ts");
 /**
  * STOMP Class, acts like a factory to create {@link Client}.
+ *
+ * Part of `@stomp/stompjs`.
+ *
+ * **Deprecated**
+ *
+ * It will be removed in next major version. Please switch to {@link Client}.
  */
 var Stomp = /** @class */ (function () {
     function Stomp() {
@@ -894,6 +942,11 @@ var Stomp = /** @class */ (function () {
      *        var url = "ws://localhost:61614/stomp";
      *        var client = Stomp.client(url);
      * ```
+     *
+     * **Deprecated**
+     *
+     * It will be removed in next major version. Please switch to {@link Client}
+     * using [Client#brokerURL]{@link Client#brokerURL}.
      */
     Stomp.client = function (url, protocols) {
         // This is a hack to allow another implementation than the standard
@@ -911,18 +964,19 @@ var Stomp = /** @class */ (function () {
         if (protocols == null) {
             protocols = versions_1.Versions.default.protocolVersions();
         }
-        var ws_fn = function () {
+        var wsFn = function () {
             var klass = Stomp.WebSocketClass || WebSocket;
             return new klass(url, protocols);
         };
-        return new compat_client_1.CompatClient(ws_fn);
+        return new compat_client_1.CompatClient(wsFn);
     };
     /**
      * This method is an alternative to [Stomp#client]{@link Stomp#client} to let the user
      * specify the WebSocket to use (either a standard HTML5 WebSocket or
      * a similar object).
      *
-     * In order to support reconnection, the function Client._connect should be callable more than once. While reconnecting
+     * In order to support reconnection, the function Client._connect should be callable more than once.
+     * While reconnecting
      * a new instance of underlying transport (TCP Socket, WebSocket or SockJS) will be needed. So, this function
      * alternatively allows passing a function that should return a new instance of the underlying socket.
      *
@@ -931,10 +985,15 @@ var Stomp = /** @class */ (function () {
      *          return new WebSocket('ws://localhost:15674/ws')
      *        });
      * ```
+     *
+     * **Deprecated**
+     *
+     * It will be removed in next major version. Please switch to {@link Client}
+     * using [Client#webSocketFactory]{@link Client#webSocketFactory}.
      */
     Stomp.over = function (ws) {
-        var ws_fn = typeof (ws) === "function" ? ws : function () { return ws; };
-        return new compat_client_1.CompatClient(ws_fn);
+        var wsFn = typeof (ws) === 'function' ? ws : function () { return ws; };
+        return new compat_client_1.CompatClient(wsFn);
     };
     /**
      * In case you need to use a non standard class for WebSocket.
@@ -946,7 +1005,14 @@ var Stomp = /** @class */ (function () {
      *        Stomp = StompJs.Stomp;
      *        Stomp.WebSocketClass = require('websocket').w3cwebsocket;
      * ```
+     *
+     * **Deprecated**
+     *
+     *
+     * It will be removed in next major version. Please switch to {@link Client}
+     * using [Client#webSocketFactory]{@link Client#webSocketFactory}.
      */
+    // tslint:disable-next-line:variable-name
     Stomp.WebSocketClass = null;
     return Stomp;
 }());
@@ -969,6 +1035,8 @@ var byte_1 = __webpack_require__(/*! ./byte */ "./src/byte.ts");
 /**
  * Frame class represents a STOMP frame. Many of the callbacks pass the Frame received from
  * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
+ *
+ * Part of `@stomp/stompjs`.
  *
  * {@link Message} is an extended Frame.
  */
@@ -1055,6 +1123,8 @@ var Frame = /** @class */ (function () {
      * serialize this Frame in a format suitable to be passed to WebSocket.
      * If the body is string the output will be string.
      * If the body is binary (i.e. of type Unit8Array) it will be serialized to ArrayBuffer.
+     *
+     * @internal
      */
     Frame.prototype.serialize = function () {
         var cmdAndHeaders = this.serializeCmdAndHeaders();
@@ -1062,7 +1132,7 @@ var Frame = /** @class */ (function () {
             return Frame.toUnit8Array(cmdAndHeaders, this._binaryBody).buffer;
         }
         else {
-            return cmdAndHeaders + this._body + byte_1.Byte.NULL;
+            return cmdAndHeaders + this._body + byte_1.BYTE.NULL;
         }
     };
     Frame.prototype.serializeCmdAndHeaders = function () {
@@ -1083,7 +1153,7 @@ var Frame = /** @class */ (function () {
         if (this.isBinaryBody || (!this.isBodyEmpty() && !this.skipContentLengthHeader)) {
             lines.push("content-length:" + this.bodyLength());
         }
-        return lines.join(byte_1.Byte.LF) + byte_1.Byte.LF + byte_1.Byte.LF;
+        return lines.join(byte_1.BYTE.LF) + byte_1.BYTE.LF + byte_1.BYTE.LF;
     };
     Frame.prototype.isBodyEmpty = function () {
         return this.bodyLength() === 0;
@@ -1121,13 +1191,13 @@ var Frame = /** @class */ (function () {
      *  Escape header values
      */
     Frame.hdrValueEscape = function (str) {
-        return str.replace(/\\/g, "\\\\").replace(/\r/g, "\\r").replace(/\n/g, "\\n").replace(/:/g, "\\c");
+        return str.replace(/\\/g, '\\\\').replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/:/g, '\\c');
     };
     /**
      * UnEscape header values
      */
     Frame.hdrValueUnEscape = function (str) {
-        return str.replace(/\\r/g, "\r").replace(/\\n/g, "\n").replace(/\\c/g, ":").replace(/\\\\/g, "\\");
+        return str.replace(/\\r/g, '\r').replace(/\\n/g, '\n').replace(/\\c/g, ':').replace(/\\\\/g, '\\');
     };
     return Frame;
 }());
@@ -1151,11 +1221,59 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(__webpack_require__(/*! ./client */ "./src/client.ts"));
 __export(__webpack_require__(/*! ./frame */ "./src/frame.ts"));
+__export(__webpack_require__(/*! ./message */ "./src/message.ts"));
 __export(__webpack_require__(/*! ./parser */ "./src/parser.ts"));
+__export(__webpack_require__(/*! ./stomp-config */ "./src/stomp-config.ts"));
+__export(__webpack_require__(/*! ./stomp-headers */ "./src/stomp-headers.ts"));
+__export(__webpack_require__(/*! ./stomp-subscription */ "./src/stomp-subscription.ts"));
+__export(__webpack_require__(/*! ./transaction */ "./src/transaction.ts"));
 __export(__webpack_require__(/*! ./versions */ "./src/versions.ts"));
 // Compatibility code
 __export(__webpack_require__(/*! ./compatibility/compat-client */ "./src/compatibility/compat-client.ts"));
 __export(__webpack_require__(/*! ./compatibility/stomp */ "./src/compatibility/stomp.ts"));
+
+
+/***/ }),
+
+/***/ "./src/message.ts":
+/*!************************!*\
+  !*** ./src/message.ts ***!
+  \************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var frame_1 = __webpack_require__(/*! ./frame */ "./src/frame.ts");
+/**
+ * Instance of Message will be passed to [subscription callback]{@link Client#subscribe}
+ * and [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
+ * Since it is an extended {@link Frame}, you can access [headers]{@link Frame#headers}
+ * and [body]{@link Frame#body} as properties.
+ *
+ * Part of `@stomp/stompjs`.
+ *
+ * See [Client#subscribe]{@link Client#subscribe} for example.
+ */
+var Message = /** @class */ (function (_super) {
+    __extends(Message, _super);
+    function Message() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Message;
+}(frame_1.Frame));
+exports.Message = Message;
 
 
 /***/ }),
@@ -1224,6 +1342,8 @@ var COLON = 58;
  *
  * Check the parser.spec.js to understand cases that this parser is supposed to handle.
  *
+ * Part of `@stomp/stompjs`.
+ *
  * @internal
  */
 var Parser = /** @class */ (function () {
@@ -1243,6 +1363,7 @@ var Parser = /** @class */ (function () {
         else {
             chunk = this._encoder.encode(segment);
         }
+        // tslint:disable-next-line:prefer-for-of
         for (var i = 0; i < chunk.length; i++) {
             var byte = chunk[i];
             this._onByte(byte);
@@ -1311,10 +1432,10 @@ var Parser = /** @class */ (function () {
     };
     Parser.prototype._setupCollectBody = function () {
         var contentLengthHeader = this._results.headers.filter(function (header) {
-            return header[0] === "content-length";
+            return header[0] === 'content-length';
         })[0];
         if (contentLengthHeader) {
-            this._bodyBytesRemaining = parseInt(contentLengthHeader[1]);
+            this._bodyBytesRemaining = parseInt(contentLengthHeader[1], 10);
             this._onByte = this._collectBodyFixedSize;
         }
         else {
@@ -1357,7 +1478,7 @@ var Parser = /** @class */ (function () {
         this._results = {
             command: undefined,
             headers: [],
-            binaryBody: undefined,
+            binaryBody: undefined
         };
         this._token = [];
         this._headerKey = undefined;
@@ -1366,6 +1487,33 @@ var Parser = /** @class */ (function () {
     return Parser;
 }());
 exports.Parser = Parser;
+
+
+/***/ }),
+
+/***/ "./src/stomp-config.ts":
+/*!*****************************!*\
+  !*** ./src/stomp-config.ts ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Configuration options for STOMP Client, each key corresponds to
+ * field by the same name in {@link Client}. This can be passed to
+ * the constructor of {@link Client} or to [Client#configure]{@link Client#configure}.
+ *
+ * Part of `@stomp/stompjs`.
+ */
+var StompConfig = /** @class */ (function () {
+    function StompConfig() {
+    }
+    return StompConfig;
+}());
+exports.StompConfig = StompConfig;
 
 
 /***/ }),
@@ -1381,11 +1529,13 @@ exports.Parser = Parser;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var byte_1 = __webpack_require__(/*! ./byte */ "./src/byte.ts");
-var versions_1 = __webpack_require__(/*! ./versions */ "./src/versions.ts");
 var frame_1 = __webpack_require__(/*! ./frame */ "./src/frame.ts");
 var parser_1 = __webpack_require__(/*! ./parser */ "./src/parser.ts");
+var versions_1 = __webpack_require__(/*! ./versions */ "./src/versions.ts");
 /**
  * The STOMP protocol handler
+ *
+ * Part of `@stomp/stompjs`.
  *
  * @internal
  */
@@ -1397,7 +1547,7 @@ var StompHandler = /** @class */ (function () {
         this._webSocket = _webSocket;
         this._serverFrameHandlers = {
             // [CONNECTED Frame](http://stomp.github.com/stomp-specification-1.2.html#CONNECTED_Frame)
-            'CONNECTED': function (frame) {
+            CONNECTED: function (frame) {
                 _this.debug("connected to server " + frame.headers.server);
                 _this._connected = true;
                 _this._connectedVersion = frame.headers.version;
@@ -1409,7 +1559,7 @@ var StompHandler = /** @class */ (function () {
                 _this.onConnect(frame);
             },
             // [MESSAGE Frame](http://stomp.github.com/stomp-specification-1.2.html#MESSAGE)
-            "MESSAGE": function (frame) {
+            MESSAGE: function (frame) {
                 // the callback is registered when the client calls
                 // `subscribe()`.
                 // If there is no registered subscription for the received message,
@@ -1422,7 +1572,7 @@ var StompHandler = /** @class */ (function () {
                 // bless the frame to be a Message
                 var message = frame;
                 var client = _this;
-                var messageId = _this._connectedVersion === versions_1.Versions.V1_2 ? message.headers["ack"] : message.headers["message-id"];
+                var messageId = _this._connectedVersion === versions_1.Versions.V1_2 ? message.headers.ack : message.headers['message-id'];
                 // add `ack()` and `nack()` methods directly to the returned frame
                 // so that a simple call to `message.ack()` can acknowledge the message.
                 message.ack = function (headers) {
@@ -1436,19 +1586,19 @@ var StompHandler = /** @class */ (function () {
                 onReceive(message);
             },
             // [RECEIPT Frame](http://stomp.github.com/stomp-specification-1.2.html#RECEIPT)
-            "RECEIPT": function (frame) {
-                var callback = _this._receiptWatchers[frame.headers["receipt-id"]];
+            RECEIPT: function (frame) {
+                var callback = _this._receiptWatchers[frame.headers['receipt-id']];
                 if (callback) {
                     callback(frame);
                     // Server will acknowledge only once, remove the callback
-                    delete _this._receiptWatchers[frame.headers["receipt-id"]];
+                    delete _this._receiptWatchers[frame.headers['receipt-id']];
                 }
                 else {
                     _this.onUnhandledReceipt(frame);
                 }
             },
             // [ERROR Frame](http://stomp.github.com/stomp-specification-1.2.html#ERROR)
-            'ERROR': function (frame) {
+            ERROR: function (frame) {
                 _this.onStompError(frame);
             }
         };
@@ -1493,7 +1643,7 @@ var StompHandler = /** @class */ (function () {
         }, 
         // On Incoming Ping
         function () {
-            _this.debug("<<< PONG");
+            _this.debug('<<< PONG');
         });
         this._webSocket.onmessage = function (evt) {
             _this.debug('Received data');
@@ -1506,10 +1656,12 @@ var StompHandler = /** @class */ (function () {
             _this._cleanUp();
         };
         this._webSocket.onopen = function () {
+            // Clone before updating
+            var connectHeaders = Object.assign({}, _this.connectHeaders);
             _this.debug('Web Socket Opened...');
-            _this.connectHeaders["accept-version"] = _this.stompVersions.supportedVersions();
-            _this.connectHeaders["heart-beat"] = [_this.heartbeatOutgoing, _this.heartbeatIncoming].join(',');
-            _this._transmit({ command: "CONNECT", headers: _this.connectHeaders });
+            connectHeaders['accept-version'] = _this.stompVersions.supportedVersions();
+            connectHeaders['heart-beat'] = [_this.heartbeatOutgoing, _this.heartbeatIncoming].join(',');
+            _this._transmit({ command: 'CONNECT', headers: connectHeaders });
         };
     };
     StompHandler.prototype._setupHeartbeat = function (headers) {
@@ -1520,13 +1672,13 @@ var StompHandler = /** @class */ (function () {
         // heart-beat header received from the server looks like:
         //
         //     heart-beat: sx, sy
-        var _a = (headers['heart-beat']).split(",").map(function (v) { return parseInt(v); }), serverOutgoing = _a[0], serverIncoming = _a[1];
+        var _a = (headers['heart-beat']).split(',').map(function (v) { return parseInt(v, 10); }), serverOutgoing = _a[0], serverIncoming = _a[1];
         if ((this.heartbeatOutgoing !== 0) && (serverIncoming !== 0)) {
             var ttl = Math.max(this.heartbeatOutgoing, serverIncoming);
             this.debug("send PING every " + ttl + "ms");
             this._pinger = setInterval(function () {
-                _this._webSocket.send(byte_1.Byte.LF);
-                _this.debug(">>> PING");
+                _this._webSocket.send(byte_1.BYTE.LF);
+                _this.debug('>>> PING');
             }, ttl);
         }
         if ((this.heartbeatIncoming !== 0) && (serverOutgoing !== 0)) {
@@ -1573,15 +1725,17 @@ var StompHandler = /** @class */ (function () {
         var _this = this;
         if (this.connected) {
             try {
-                if (!this.disconnectHeaders['receipt']) {
-                    this.disconnectHeaders['receipt'] = "close-" + this._counter++;
+                // clone before updating
+                var disconnectHeaders = Object.assign({}, this.disconnectHeaders);
+                if (!disconnectHeaders.receipt) {
+                    disconnectHeaders.receipt = "close-" + this._counter++;
                 }
-                this.watchForReceipt(this.disconnectHeaders['receipt'], function (frame) {
+                this.watchForReceipt(disconnectHeaders.receipt, function (frame) {
                     _this._webSocket.close();
                     _this._cleanUp();
                     _this.onDisconnect(frame);
                 });
-                this._transmit({ command: "DISCONNECT", headers: this.disconnectHeaders });
+                this._transmit({ command: 'DISCONNECT', headers: disconnectHeaders });
             }
             catch (error) {
                 this.debug("Ignoring error during disconnect " + error);
@@ -1604,10 +1758,10 @@ var StompHandler = /** @class */ (function () {
     };
     StompHandler.prototype.publish = function (params) {
         var destination = params.destination, headers = params.headers, body = params.body, binaryBody = params.binaryBody, skipContentLengthHeader = params.skipContentLengthHeader;
-        headers = Object.assign({ destination: destination }, headers);
+        var hdrs = Object.assign({ destination: destination }, headers);
         this._transmit({
-            command: "SEND",
-            headers: headers,
+            command: 'SEND',
+            headers: hdrs,
             body: body,
             binaryBody: binaryBody,
             skipContentLengthHeader: skipContentLengthHeader
@@ -1624,7 +1778,7 @@ var StompHandler = /** @class */ (function () {
         }
         headers.destination = destination;
         this._subscriptions[headers.id] = callback;
-        this._transmit({ command: "SUBSCRIBE", headers: headers });
+        this._transmit({ command: 'SUBSCRIBE', headers: headers });
         var client = this;
         return {
             id: headers.id,
@@ -1638,12 +1792,12 @@ var StompHandler = /** @class */ (function () {
         headers = Object.assign({}, headers);
         delete this._subscriptions[id];
         headers.id = id;
-        this._transmit({ command: "UNSUBSCRIBE", headers: headers });
+        this._transmit({ command: 'UNSUBSCRIBE', headers: headers });
     };
     StompHandler.prototype.begin = function (transactionId) {
         var txId = transactionId || ("tx-" + this._counter++);
         this._transmit({
-            command: "BEGIN", headers: {
+            command: 'BEGIN', headers: {
                 transaction: txId
             }
         });
@@ -1660,14 +1814,14 @@ var StompHandler = /** @class */ (function () {
     };
     StompHandler.prototype.commit = function (transactionId) {
         this._transmit({
-            command: "COMMIT", headers: {
+            command: 'COMMIT', headers: {
                 transaction: transactionId
             }
         });
     };
     StompHandler.prototype.abort = function (transactionId) {
         this._transmit({
-            command: "ABORT", headers: {
+            command: 'ABORT', headers: {
                 transaction: transactionId
             }
         });
@@ -1676,29 +1830,110 @@ var StompHandler = /** @class */ (function () {
         if (headers === void 0) { headers = {}; }
         headers = Object.assign({}, headers);
         if (this._connectedVersion === versions_1.Versions.V1_2) {
-            headers["id"] = messageId;
+            headers.id = messageId;
         }
         else {
-            headers["message-id"] = messageId;
+            headers['message-id'] = messageId;
         }
         headers.subscription = subscriptionId;
-        this._transmit({ command: "ACK", headers: headers });
+        this._transmit({ command: 'ACK', headers: headers });
     };
     StompHandler.prototype.nack = function (messageId, subscriptionId, headers) {
         if (headers === void 0) { headers = {}; }
         headers = Object.assign({}, headers);
         if (this._connectedVersion === versions_1.Versions.V1_2) {
-            headers["id"] = messageId;
+            headers.id = messageId;
         }
         else {
-            headers["message-id"] = messageId;
+            headers['message-id'] = messageId;
         }
         headers.subscription = subscriptionId;
-        return this._transmit({ command: "NACK", headers: headers });
+        return this._transmit({ command: 'NACK', headers: headers });
     };
     return StompHandler;
 }());
 exports.StompHandler = StompHandler;
+
+
+/***/ }),
+
+/***/ "./src/stomp-headers.ts":
+/*!******************************!*\
+  !*** ./src/stomp-headers.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * STOMP headers. Many functions calls will accept headers as parameters.
+ * The headers sent by Broker will be available as [Frame#headers]{@link Frame#headers}.
+ *
+ * `key` and `value` must be valid strings.
+ * In addition, `key` must not contain `CR`, `LF`, or `:`.
+ *
+ * Part of `@stomp/stompjs`.
+ */
+var StompHeaders = /** @class */ (function () {
+    function StompHeaders() {
+    }
+    return StompHeaders;
+}());
+exports.StompHeaders = StompHeaders;
+
+
+/***/ }),
+
+/***/ "./src/stomp-subscription.ts":
+/*!***********************************!*\
+  !*** ./src/stomp-subscription.ts ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Call [Client#subscribe]{@link Client#subscribe} to create a StompSubscription.
+ *
+ * Part of `@stomp/stompjs`.
+ */
+var StompSubscription = /** @class */ (function () {
+    function StompSubscription() {
+    }
+    return StompSubscription;
+}());
+exports.StompSubscription = StompSubscription;
+
+
+/***/ }),
+
+/***/ "./src/transaction.ts":
+/*!****************************!*\
+  !*** ./src/transaction.ts ***!
+  \****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * A Transaction is created by calling [Client#begin]{@link Client#begin}
+ *
+ * Part of `@stomp/stompjs`.
+ *
+ * TODO: Example and caveat
+ */
+var Transaction = /** @class */ (function () {
+    function Transaction() {
+    }
+    return Transaction;
+}());
+exports.Transaction = Transaction;
 
 
 /***/ }),
@@ -1715,6 +1950,8 @@ exports.StompHandler = StompHandler;
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Supported STOMP versions
+ *
+ * Part of `@stomp/stompjs`.
  */
 var Versions = /** @class */ (function () {
     /**
@@ -1726,22 +1963,28 @@ var Versions = /** @class */ (function () {
     function Versions(versions) {
         this.versions = versions;
     }
+    /**
+     * Used as part of CONNECT STOMP Frame
+     */
     Versions.prototype.supportedVersions = function () {
         return this.versions.join(',');
     };
+    /**
+     * Used while creating a WebSocket
+     */
     Versions.prototype.protocolVersions = function () {
         return this.versions.map(function (x) { return "v" + x.replace('.', '') + ".stomp"; });
     };
     /**
-     * 1.0
+     * Indicates protocol version 1.0
      */
     Versions.V1_0 = '1.0';
     /**
-     * 1.1
+     * Indicates protocol version 1.1
      */
     Versions.V1_1 = '1.1';
     /**
-     * 1.2
+     * Indicates protocol version 1.2
      */
     Versions.V1_2 = '1.2';
     /**

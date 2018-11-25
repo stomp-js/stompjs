@@ -1,11 +1,13 @@
-import { StompHeaders } from "./stomp-headers";
-import { StompSubscription } from "./stomp-subscription";
-import { Transaction } from "./transaction";
-import { closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, publishParams } from "./types";
 import { StompConfig } from './stomp-config';
-import { Versions } from "./versions";
+import { StompHeaders } from './stomp-headers';
+import { StompSubscription } from './stomp-subscription';
+import { Transaction } from './transaction';
+import { closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, messageCallbackType } from './types';
+import { Versions } from './versions';
 /**
  * STOMP Client Class.
+ *
+ * Part of `@stomp/stompjs`.
  */
 export declare class Client {
     /**
@@ -77,6 +79,7 @@ export declare class Client {
      * Disconnection headers.
      */
     disconnectHeaders: StompHeaders;
+    private _disconnectHeaders;
     /**
      * This function will be called for any unhandled messages.
      * It is useful for receiving messages sent to RabbitMQ temporary queues.
@@ -194,7 +197,7 @@ export declare class Client {
      * Disconnect if connected and stop auto reconnect loop.
      * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
      *
-     * To reactivate the {@link Client} you can call [Client#activate]{@link Client#activate}.
+     * To reactivate you can call [Client#activate]{@link Client#activate}.
      */
     deactivate(): void;
     /**
@@ -211,7 +214,7 @@ export declare class Client {
      *
      * STOMP protocol specifies and suggests some headers and also allows broker specific headers.
      *
-     * Body must be String.
+     * `body` must be String.
      * You will need to covert the payload to string in case it is not string (e.g. JSON).
      *
      * To send a binary message body use binaryBody parameter. It should be a
@@ -241,7 +244,7 @@ export declare class Client {
      *                         headers: {'content-type': 'application/octet-stream'}});
      * ```
      */
-    publish(params: publishParams): void;
+    publish(params: IPublishParams): void;
     /**
      * STOMP brokers may carry out operation asynchronously and allow requesting for acknowledgement.
      * To request an acknowledgement, a `receipt` header needs to be sent with the actual request.
@@ -279,7 +282,7 @@ export declare class Client {
      */
     watchForReceipt(receiptId: string, callback: frameCallbackType): void;
     /**
-     * Subscribe to a STOMP Broker location. The callbck will be invoked for each received message with
+     * Subscribe to a STOMP Broker location. The callback will be invoked for each received message with
      * the {@link Message} as argument.
      *
      * Note: The library will generate an unique ID if there is none provided in the headers.

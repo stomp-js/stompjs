@@ -5,6 +5,8 @@ var byte_1 = require("./byte");
  * Frame class represents a STOMP frame. Many of the callbacks pass the Frame received from
  * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
  *
+ * Part of `@stomp/stompjs`.
+ *
  * {@link Message} is an extended Frame.
  */
 var Frame = /** @class */ (function () {
@@ -90,6 +92,8 @@ var Frame = /** @class */ (function () {
      * serialize this Frame in a format suitable to be passed to WebSocket.
      * If the body is string the output will be string.
      * If the body is binary (i.e. of type Unit8Array) it will be serialized to ArrayBuffer.
+     *
+     * @internal
      */
     Frame.prototype.serialize = function () {
         var cmdAndHeaders = this.serializeCmdAndHeaders();
@@ -97,7 +101,7 @@ var Frame = /** @class */ (function () {
             return Frame.toUnit8Array(cmdAndHeaders, this._binaryBody).buffer;
         }
         else {
-            return cmdAndHeaders + this._body + byte_1.Byte.NULL;
+            return cmdAndHeaders + this._body + byte_1.BYTE.NULL;
         }
     };
     Frame.prototype.serializeCmdAndHeaders = function () {
@@ -118,7 +122,7 @@ var Frame = /** @class */ (function () {
         if (this.isBinaryBody || (!this.isBodyEmpty() && !this.skipContentLengthHeader)) {
             lines.push("content-length:" + this.bodyLength());
         }
-        return lines.join(byte_1.Byte.LF) + byte_1.Byte.LF + byte_1.Byte.LF;
+        return lines.join(byte_1.BYTE.LF) + byte_1.BYTE.LF + byte_1.BYTE.LF;
     };
     Frame.prototype.isBodyEmpty = function () {
         return this.bodyLength() === 0;
@@ -156,13 +160,13 @@ var Frame = /** @class */ (function () {
      *  Escape header values
      */
     Frame.hdrValueEscape = function (str) {
-        return str.replace(/\\/g, "\\\\").replace(/\r/g, "\\r").replace(/\n/g, "\\n").replace(/:/g, "\\c");
+        return str.replace(/\\/g, '\\\\').replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/:/g, '\\c');
     };
     /**
      * UnEscape header values
      */
     Frame.hdrValueUnEscape = function (str) {
-        return str.replace(/\\r/g, "\r").replace(/\\n/g, "\n").replace(/\\c/g, ":").replace(/\\\\/g, "\\");
+        return str.replace(/\\r/g, '\r').replace(/\\n/g, '\n').replace(/\\c/g, ':').replace(/\\\\/g, '\\');
     };
     return Frame;
 }());

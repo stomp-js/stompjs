@@ -1,8 +1,10 @@
-import { StompHeaders } from "./stomp-headers";
-import { RawFrameType } from "./types";
+import { StompHeaders } from './stomp-headers';
+import { IRawFrameType } from './types';
 /**
  * Frame class represents a STOMP frame. Many of the callbacks pass the Frame received from
  * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
+ *
+ * Part of `@stomp/stompjs`.
  *
  * {@link Message} is an extended Frame.
  */
@@ -15,6 +17,9 @@ export declare class Frame {
      * Headers, key value pairs.
      */
     headers: StompHeaders;
+    /**
+     * Is this frame binary (based on whether body/binaryBody was passed when creating this frame).
+     */
     isBinaryBody: boolean;
     /**
      * body of the frame
@@ -46,7 +51,7 @@ export declare class Frame {
      *
      * @internal
      */
-    static fromRawFrame(rawFrame: RawFrameType, escapeHeaderValues: boolean): Frame;
+    static fromRawFrame(rawFrame: IRawFrameType, escapeHeaderValues: boolean): Frame;
     /**
      * @internal
      */
@@ -55,6 +60,8 @@ export declare class Frame {
      * serialize this Frame in a format suitable to be passed to WebSocket.
      * If the body is string the output will be string.
      * If the body is binary (i.e. of type Unit8Array) it will be serialized to ArrayBuffer.
+     *
+     * @internal
      */
     serialize(): string | ArrayBuffer;
     private serializeCmdAndHeaders;

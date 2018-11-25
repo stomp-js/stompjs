@@ -1,5 +1,7 @@
 /**
  * Supported STOMP versions
+ *
+ * Part of `@stomp/stompjs`.
  */
 var Versions = /** @class */ (function () {
     /**
@@ -11,22 +13,28 @@ var Versions = /** @class */ (function () {
     function Versions(versions) {
         this.versions = versions;
     }
+    /**
+     * Used as part of CONNECT STOMP Frame
+     */
     Versions.prototype.supportedVersions = function () {
         return this.versions.join(',');
     };
+    /**
+     * Used while creating a WebSocket
+     */
     Versions.prototype.protocolVersions = function () {
         return this.versions.map(function (x) { return "v" + x.replace('.', '') + ".stomp"; });
     };
     /**
-     * 1.0
+     * Indicates protocol version 1.0
      */
     Versions.V1_0 = '1.0';
     /**
-     * 1.1
+     * Indicates protocol version 1.1
      */
     Versions.V1_1 = '1.1';
     /**
-     * 1.2
+     * Indicates protocol version 1.2
      */
     Versions.V1_2 = '1.2';
     /**
