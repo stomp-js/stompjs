@@ -119,10 +119,13 @@ export class StompHandler {
     };
 
     this._webSocket.onopen = () => {
+      // Clone before updating
+      const connectHeaders = (Object as any).assign({}, this.connectHeaders);
+
       this.debug('Web Socket Opened...');
-      this.connectHeaders['accept-version'] = this.stompVersions.supportedVersions();
-      this.connectHeaders['heart-beat'] = [this.heartbeatOutgoing, this.heartbeatIncoming].join(',');
-      this._transmit({command: 'CONNECT', headers: this.connectHeaders});
+      connectHeaders['accept-version'] = this.stompVersions.supportedVersions();
+      connectHeaders['heart-beat'] = [this.heartbeatOutgoing, this.heartbeatIncoming].join(',');
+      this._transmit({command: 'CONNECT', headers: connectHeaders});
     };
   }
 
@@ -254,15 +257,18 @@ export class StompHandler {
   public dispose(): void {
     if (this.connected) {
       try {
-        if (!this.disconnectHeaders.receipt) {
-          this.disconnectHeaders.receipt = `close-${this._counter++}`;
+        // clone before updating
+        const disconnectHeaders = (Object as any).assign({}, this.disconnectHeaders);
+
+        if (!disconnectHeaders.receipt) {
+          disconnectHeaders.receipt = `close-${this._counter++}`;
         }
-        this.watchForReceipt(this.disconnectHeaders.receipt, (frame) => {
+        this.watchForReceipt(disconnectHeaders.receipt, (frame) => {
           this._webSocket.close();
           this._cleanUp();
           this.onDisconnect(frame);
         });
-        this._transmit({command: 'DISCONNECT', headers: this.disconnectHeaders});
+        this._transmit({command: 'DISCONNECT', headers: disconnectHeaders});
       } catch (error) {
         this.debug(`Ignoring error during disconnect ${error}`);
       }

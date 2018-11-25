@@ -96,7 +96,17 @@ export class Client {
   /**
    * Disconnection headers.
    */
-  public disconnectHeaders: StompHeaders;
+  get disconnectHeaders(): StompHeaders {
+    return this._disconnectHeaders;
+  }
+
+  set disconnectHeaders(value: StompHeaders) {
+    this._disconnectHeaders = value;
+    if (this._stompHandler) {
+      this._stompHandler.disconnectHeaders = this._disconnectHeaders;
+    }
+  }
+  private _disconnectHeaders: StompHeaders;
 
   /**
    * This function will be called for any unhandled messages.
@@ -229,7 +239,7 @@ export class Client {
 
     // These parameters would typically get proper values before connect is called
     this.connectHeaders = {};
-    this.disconnectHeaders = {};
+    this._disconnectHeaders = {};
 
     // Apply configuration
     this.configure(conf);
@@ -278,7 +288,7 @@ export class Client {
       debug: this.debug,
       stompVersions: this.stompVersions,
       connectHeaders: this.connectHeaders,
-      disconnectHeaders: this.disconnectHeaders,
+      disconnectHeaders: this._disconnectHeaders,
       heartbeatIncoming: this.heartbeatIncoming,
       heartbeatOutgoing: this.heartbeatOutgoing,
       onConnect: (frame) => {

@@ -1,8 +1,11 @@
 # Change Log
 
-## 5.0.1
+## 5.0.1 (2018-11-25)
 
 * Configured `tslint`. `src` is `tslint` clean.
+* Update of disconnectHeaders take effect from subsequent disconnect.
+  Fixes [#27](https://github.com/stomp-js/stompjs/issues/27).
+* This library does not alter passed connect and disconnect header objects any longer.
 
 ## 5.0.0 (2018-10-19)
 
