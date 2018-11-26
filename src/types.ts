@@ -32,7 +32,8 @@ export type frameCallbackType = (receipt: Frame) => void;
 export type closeEventCallbackType = (evt: CloseEvent) => void;
 
 /**
- * Parameters for [Client#publish]{@link Client#publish}
+ * Parameters for [Client#publish]{@link Client#publish}.
+ * Aliased as publishParams as well.
  *
  * Part of `@stomp/stompjs`.
  */
@@ -59,6 +60,13 @@ export interface IPublishParams {
    */
   skipContentLengthHeader?: boolean;
 }
+
+/**
+ * @Internal
+ *
+ * Backward compatibility
+ */
+export type publishParams = IPublishParams;
 
 /**
  * Used in {@link IRawFrameType}

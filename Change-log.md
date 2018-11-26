@@ -1,5 +1,10 @@
 # Change Log
 
+# 5.0.2 (2018-11-26)
+
+* Emergency release - added `publishParams` back.
+  Should fix [ng2-stompjs-angular7/issues/2](https://github.com/stomp-js/ng2-stompjs-angular7/issues/2)
+
 ## 5.0.1 (2018-11-25)
 
 * Configured `tslint`. `src` is `tslint` clean.
