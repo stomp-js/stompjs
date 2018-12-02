@@ -7,7 +7,14 @@ import {StompConfig} from './stomp-config';
 import {StompHeaders} from './stomp-headers';
 import {StompSubscription} from './stomp-subscription';
 import {Transaction} from './transaction';
-import {closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, messageCallbackType} from './types';
+import {
+  closeEventCallbackType,
+  debugFnType,
+  frameCallbackType,
+  IPublishParams,
+  messageCallbackType,
+  wsErrorCallbackType
+} from './types';
 import {Versions} from './versions';
 
 /**
@@ -43,6 +50,8 @@ export class StompHandler {
   public onStompError: frameCallbackType;
 
   public onWebSocketClose: closeEventCallbackType;
+
+  public onWebSocketError: wsErrorCallbackType;
 
   get connectedVersion(): string {
     return this._connectedVersion;
@@ -112,10 +121,14 @@ export class StompHandler {
       parser.parseChunk(evt.data);
     };
 
-    this._webSocket.onclose = (closeEvent: any): void => {
+    this._webSocket.onclose = (closeEvent: CloseEvent): void => {
       this.debug(`Connection closed to ${this._webSocket.url}`);
       this.onWebSocketClose(closeEvent);
       this._cleanUp();
+    };
+
+    this._webSocket.onerror = (errorEvent: Event): void => {
+      this.onWebSocketError(errorEvent);
     };
 
     this._webSocket.onopen = () => {

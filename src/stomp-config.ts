@@ -3,7 +3,8 @@ import {
   closeEventCallbackType,
   debugFnType,
   frameCallbackType,
-  messageCallbackType
+  messageCallbackType,
+  wsErrorCallbackType
 } from './types';
 import {Versions} from './versions';
 
@@ -94,6 +95,11 @@ export class StompConfig {
    * See [Client#onWebSocketClose]{@link Client#onWebSocketClose}.
    */
   public onWebSocketClose?: closeEventCallbackType;
+
+  /**
+   * See [Client#onWebSocketError]{@link Client#onWebSocketError}.
+   */
+  public onWebSocketError?: wsErrorCallbackType;
 
   /**
    * See [Client#debug]{@link Client#debug}.

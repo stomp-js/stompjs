@@ -32,6 +32,14 @@ export type frameCallbackType = (receipt: Frame) => void;
 export type closeEventCallbackType = (evt: CloseEvent) => void;
 
 /**
+ * This callback will receive an [Event]{@link https://developer.mozilla.org/en-US/docs/Web/API/Event}
+ * as parameter.
+ *
+ * Part of `@stomp/stompjs`.
+ */
+export type wsErrorCallbackType = (evt: Event) => void;
+
+/**
  * Parameters for [Client#publish]{@link Client#publish}.
  * Aliased as publishParams as well.
  *

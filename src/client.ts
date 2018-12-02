@@ -8,7 +8,8 @@ import {
   debugFnType,
   frameCallbackType,
   IPublishParams,
-  messageCallbackType
+  messageCallbackType,
+  wsErrorCallbackType
 } from './types';
 import {Versions} from './versions';
 
@@ -190,6 +191,14 @@ export class Client {
   public onWebSocketClose: closeEventCallbackType;
 
   /**
+   * Callback, invoked when underlying WebSocket raises an error.
+   *
+   * Actual [Event]{@link https://developer.mozilla.org/en-US/docs/Web/API/Event}
+   * is passed as parameter to the callback.
+   */
+  public onWebSocketError: wsErrorCallbackType;
+
+  /**
    * By default, debug messages are discarded. To log to `console` following can be used:
    *
    * ```javascript
@@ -236,6 +245,7 @@ export class Client {
     this.onUnhandledFrame = noOp;
     this.onStompError = noOp;
     this.onWebSocketClose = noOp;
+    this.onWebSocketError = noOp;
 
     // These parameters would typically get proper values before connect is called
     this.connectHeaders = {};
@@ -312,6 +322,9 @@ export class Client {
         if (this._active) {
           this._schedule_reconnect();
         }
+      },
+      onWebSocketError: (evt) => {
+        this.onWebSocketError(evt);
       },
       onUnhandledMessage: (message) => {
         this.onUnhandledMessage(message);

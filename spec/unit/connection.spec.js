@@ -5,13 +5,18 @@ describe("Stomp Connection", function () {
     disconnectStomp(client);
   });
 
-  it("Should not connect to an invalid Stomp server", function (done) {
+  it("Should trigger WebSocket error while connecting to an invalid Stomp server", function (done) {
     client = badStompClient();
     client.onConnect = function () {
       expect(false).toBe(true);
       done();
     };
-    client.onWebSocketClose = function () {
+
+    const onWebSocketError= jasmine.createSpy('onWebSocketError');
+    client.onWebSocketError = onWebSocketError;
+
+    client.onWebSocketClose = function (evt) {
+      expect(onWebSocketError).toHaveBeenCalled();
       done();
     };
     client.activate();
