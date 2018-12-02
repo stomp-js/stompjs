@@ -1,16 +1,14 @@
 import {BYTE} from './byte';
+import {IFrame} from './i-frame';
 import {StompHeaders} from './stomp-headers';
 import {IRawFrameType} from './types';
 
 /**
- * Frame class represents a STOMP frame. Many of the callbacks pass the Frame received from
- * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
+ * Frame class represents a STOMP frame.
  *
- * Part of `@stomp/stompjs`.
- *
- * {@link Message} is an extended Frame.
+ * @internal
  */
-export class Frame {
+export class FrameImpl implements IFrame {
   /**
    * STOMP Command
    */
@@ -80,7 +78,7 @@ export class Frame {
    *
    * @internal
    */
-  public static fromRawFrame(rawFrame: IRawFrameType, escapeHeaderValues: boolean): Frame {
+  public static fromRawFrame(rawFrame: IRawFrameType, escapeHeaderValues: boolean): FrameImpl {
     const headers: StompHeaders = {};
     const trim = (str: string): string => str.replace(/^\s+|\s+$/g, '');
 
@@ -92,13 +90,13 @@ export class Frame {
       let value = trim(header[1]);
 
       if (escapeHeaderValues && (rawFrame.command !== 'CONNECT') && (rawFrame.command !== 'CONNECTED')) {
-        value = Frame.hdrValueUnEscape(value);
+        value = FrameImpl.hdrValueUnEscape(value);
       }
 
       headers[key] = value;
     }
 
-    return new Frame({
+    return new FrameImpl({
       command: rawFrame.command,
       headers,
       binaryBody: rawFrame.binaryBody,
@@ -124,7 +122,7 @@ export class Frame {
     const cmdAndHeaders = this.serializeCmdAndHeaders();
 
     if (this.isBinaryBody) {
-      return Frame.toUnit8Array(cmdAndHeaders, this._binaryBody).buffer;
+      return FrameImpl.toUnit8Array(cmdAndHeaders, this._binaryBody).buffer;
     } else {
       return cmdAndHeaders + this._body + BYTE.NULL;
     }
@@ -139,7 +137,7 @@ export class Frame {
     for (const name of Object.keys(this.headers || {})) {
       const value = this.headers[name];
       if (this.escapeHeaderValues && (this.command !== 'CONNECT') && (this.command !== 'CONNECTED')) {
-        lines.push(`${name}:${Frame.hdrValueEscape(`${value}`)}`);
+        lines.push(`${name}:${FrameImpl.hdrValueEscape(`${value}`)}`);
       } else {
         lines.push(`${name}:${value}`);
       }
@@ -187,7 +185,7 @@ export class Frame {
     command: string, headers?: StompHeaders, body?: string, binaryBody?: Uint8Array,
     escapeHeaderValues?: boolean, skipContentLengthHeader?: boolean
   }) {
-    const frame = new Frame(params);
+    const frame = new FrameImpl(params);
     return frame.serialize();
   }
 

@@ -5,19 +5,19 @@
  *
  * TODO: Example and caveat
  */
-export class Transaction {
+export interface ITransaction {
   /**
    * You will need to access this to send, ack, or nack within this transaction.
    */
-  public id: string;
+  id: string;
 
   /**
    * Commit this transaction. See [Client#commit]{@link Client#commit} for an example.
    */
-  public commit: () => void;
+  commit: () => void;
 
   /**
    * Abort this transaction. See [Client#abort]{@link Client#abort} for an example.
    */
-  public abort: () => void;
+  abort: () => void;
 }

@@ -1,5 +1,5 @@
-import {Frame} from './frame';
-import {Message} from './message';
+import {IFrame} from './i-frame';
+import {IMessage} from './i-message';
 import {StompHeaders} from './stomp-headers';
 
 /**
@@ -10,18 +10,18 @@ import {StompHeaders} from './stomp-headers';
 export type debugFnType = (msg: string) => void;
 
 /**
- * This callback will receive a {@link Message} as parameter.
+ * This callback will receive a {@link IMessage} as parameter.
  *
  * Part of `@stomp/stompjs`.
  */
-export type messageCallbackType = (message: Message) => void;
+export type messageCallbackType = (message: IMessage) => void;
 
 /**
- * This callback will receive a {@link Frame} as parameter.
+ * This callback will receive a {@link IFrame} as parameter.
  *
  * Part of `@stomp/stompjs`.
  */
-export type frameCallbackType = (receipt: Frame) => void;
+export type frameCallbackType = (receipt: IFrame) => void;
 
 /**
  * This callback will receive a [CloseEvent]{@link https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent}

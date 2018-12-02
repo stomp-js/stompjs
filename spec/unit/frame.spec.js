@@ -1,4 +1,4 @@
-﻿describe("Stomp Frame", function () {
+﻿describe("Stomp FrameImpl", function () {
 
   // un-marshall a data chunk, for ease of matching body is converted to string
   const unmarshall = function(data, escapeHeaderValues) {
@@ -9,32 +9,32 @@
     parser.parseChunk(data);
 
     const rawFrame = onFrame.calls.first().args[0];
-    return StompJs.Frame.fromRawFrame(rawFrame, escapeHeaderValues);
+    return StompJs.FrameImpl.fromRawFrame(rawFrame, escapeHeaderValues);
   };
 
   it("escape header value", function () {
-    const out = StompJs.Frame.hdrValueEscape("anything\\a\nb\nc\rd\re:f:\\anything\\a\nb\nc\rd\re:f:\\");
+    const out = StompJs.FrameImpl.hdrValueEscape("anything\\a\nb\nc\rd\re:f:\\anything\\a\nb\nc\rd\re:f:\\");
     expect(out).toEqual("anything\\\\a\\nb\\nc\\rd\\re\\cf\\c\\\\anything\\\\a\\nb\\nc\\rd\\re\\cf\\c\\\\");
   });
 
   it("escapes and then unescapes header value to give original string", function () {
     const orig = "anything\\a\nb\nc\rd\re:f:\\anything\\a\nb\nc\rd\re:f:\\";
-    const out = StompJs.Frame.hdrValueUnEscape(StompJs.Frame.hdrValueEscape(orig));
+    const out = StompJs.FrameImpl.hdrValueUnEscape(StompJs.FrameImpl.hdrValueEscape(orig));
     expect(out).toEqual(orig);
   });
 
   it("marshall a CONNECT frame", function () {
-    const out = StompJs.Frame.marshall({command: "CONNECT", headers: {login: 'jmesnil', passcode: 'wombats'}});
+    const out = StompJs.FrameImpl.marshall({command: "CONNECT", headers: {login: 'jmesnil', passcode: 'wombats'}});
     expect(out).toEqual("CONNECT\nlogin:jmesnil\npasscode:wombats\n\n\0");
   });
 
   it("marshall a SEND frame", function () {
-    const out = StompJs.Frame.marshall({command: "SEND", headers: {destination: '/queue/test'}, body: "hello, world!"});
+    const out = StompJs.FrameImpl.marshall({command: "SEND", headers: {destination: '/queue/test'}, body: "hello, world!"});
     expect(out).toEqual("SEND\ndestination:/queue/test\ncontent-length:13\n\nhello, world!\0");
   });
 
   it("marshall a SEND frame without content-length", function () {
-    const out = StompJs.Frame.marshall({
+    const out = StompJs.FrameImpl.marshall({
       command: "SEND",
       headers: {destination: '/queue/test'},
       body: "hello, world!",
@@ -93,7 +93,7 @@
     const dest = 'f:o:o\nbar\rbaz\\foo\nbar\rbaz\\',
       msg = "MESSAGE\ndestination:" + 'f\\co\\co\\nbar\\rbaz\\\\foo\\nbar\\rbaz\\\\' + "\nmessage-id:456\n\n\0";
 
-    expect(StompJs.Frame.marshall({
+    expect(StompJs.FrameImpl.marshall({
       command: "MESSAGE",
       headers: {"destination": dest, "message-id": "456"},
       body: "",
@@ -107,7 +107,7 @@
     const headers = {"destination": dest, "message-id": "456"};
     const body = "";
 
-    const msg = StompJs.Frame.marshall({command: command, headers: headers, body: body, escapeHeaderValues: true});
+    const msg = StompJs.FrameImpl.marshall({command: command, headers: headers, body: body, escapeHeaderValues: true});
     const frame = unmarshall(msg, true);
 
     expect(frame.headers).toEqual(headers);
@@ -120,12 +120,12 @@
   });
 
   it("Content length of UTF-8 strings", function () {
-    expect(0).toEqual(StompJs.Frame.sizeOfUTF8());
-    expect(0).toEqual(StompJs.Frame.sizeOfUTF8(""));
-    expect(1).toEqual(StompJs.Frame.sizeOfUTF8("a"));
-    expect(2).toEqual(StompJs.Frame.sizeOfUTF8("ф"));
-    expect(3).toEqual(StompJs.Frame.sizeOfUTF8("№"));
-    expect(15).toEqual(StompJs.Frame.sizeOfUTF8("1 a ф № @ ®"));
+    expect(0).toEqual(StompJs.FrameImpl.sizeOfUTF8());
+    expect(0).toEqual(StompJs.FrameImpl.sizeOfUTF8(""));
+    expect(1).toEqual(StompJs.FrameImpl.sizeOfUTF8("a"));
+    expect(2).toEqual(StompJs.FrameImpl.sizeOfUTF8("ф"));
+    expect(3).toEqual(StompJs.FrameImpl.sizeOfUTF8("№"));
+    expect(15).toEqual(StompJs.FrameImpl.sizeOfUTF8("1 a ф № @ ®"));
   });
 
 });

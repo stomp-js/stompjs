@@ -1,12 +1,12 @@
 import {BYTE} from './byte';
 import {Client} from './client';
-import {Frame} from './frame';
-import {Message} from './message';
+import {FrameImpl} from './frame-impl';
+import {IMessage} from './i-message';
 import {Parser} from './parser';
 import {StompConfig} from './stomp-config';
 import {StompHeaders} from './stomp-headers';
 import {StompSubscription} from './stomp-subscription';
-import {Transaction} from './transaction';
+import {ITransaction} from './i-transaction';
 import {
   closeEventCallbackType,
   debugFnType,
@@ -101,7 +101,7 @@ export class StompHandler {
     const parser = new Parser(
       // On Frame
       (rawFrame) => {
-        const frame = Frame.fromRawFrame(rawFrame, this._escapeHeaderValues);
+        const frame = FrameImpl.fromRawFrame(rawFrame, this._escapeHeaderValues);
 
         this.debug(`<<< ${frame}`);
 
@@ -171,7 +171,7 @@ export class StompHandler {
       const onReceive = this._subscriptions[subscription] || this.onUnhandledMessage;
 
       // bless the frame to be a Message
-      const message = frame as Message;
+      const message = frame as IMessage;
 
       const client = this;
       const messageId = this._connectedVersion === Versions.V1_2 ? message.headers.ack : message.headers['message-id'];
@@ -241,7 +241,7 @@ export class StompHandler {
   private _transmit(params: { command: string, headers?: StompHeaders,
                               body?: string, binaryBody?: Uint8Array, skipContentLengthHeader?: boolean }): void {
     const {command, headers, body, binaryBody, skipContentLengthHeader} = params;
-    const frame = new Frame({
+    const frame = new FrameImpl({
       command,
       headers,
       body,
@@ -346,7 +346,7 @@ export class StompHandler {
     this._transmit({command: 'UNSUBSCRIBE', headers});
   }
 
-  public begin(transactionId: string): Transaction {
+  public begin(transactionId: string): ITransaction {
     const txId = transactionId || (`tx-${this._counter++}`);
     this._transmit({
       command: 'BEGIN', headers: {
