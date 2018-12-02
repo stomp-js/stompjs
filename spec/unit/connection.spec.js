@@ -86,6 +86,28 @@ describe("Stomp Connection", function () {
     }, 50);
   });
 
+  it("async beforeConnect", function (done) {
+    // To test async beforeConnect, we set onConnect
+    // handler in beforeConnect asynchronously after a wait
+    // If the newly set onConnect is invoked we can conclude that
+    // unless async beforeConnect is resolved, connect waits.
+    client = stompClient();
+    client.configure({
+      beforeConnect: function () {
+        return new Promise(function (resolve, reject) {
+          setTimeout(function () {
+            client.onConnect = function () {
+              done();
+            };
+            resolve();
+          }, 200)
+        });
+      }
+    });
+
+    client.activate();
+  });
+
   it("Activates following a deactivate", function (done) {
     client = stompClient();
     client.configure({

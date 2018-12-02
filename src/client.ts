@@ -149,8 +149,16 @@ export class Client {
    *
    * You can change options on the client, which will impact the immediate connect.
    * It is valid to call [Client#decativate]{@link Client#deactivate} in this callback.
+   *
+   * As of version 5.1, this callback can be
+   * [async](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)
+   * (i.e., it can return a
+   * [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)).
+   * In that case connect will be called only after the Promise is resolved.
+   * This can be used to reliably fetch credentials, access token etc. from some other service
+   * in an asynchronous way.
    */
-  public beforeConnect: () => void;
+  public beforeConnect: () => void|Promise<void>;
 
   /**
    * Callback, invoked on every successful connection to the STOMP broker.
@@ -276,13 +284,13 @@ export class Client {
     this._connect();
   }
 
-  private _connect(): void {
+  private async _connect(): Promise<void> {
     if (this.connected) {
       this.debug('STOMP: already connected, nothing to do');
       return;
     }
 
-    this.beforeConnect();
+    await this.beforeConnect();
 
     if (!this._active) {
       this.debug('Client has been marked inactive, will not attempt to connect');
