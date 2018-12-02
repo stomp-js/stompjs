@@ -1,6 +1,6 @@
 # STOMP.js
 
-[![Build Status](https://travis-ci.org/stomp-js/stompjs.svg?branch=master)](https://travis-ci.org/stomp-js/stompjs)
+[![Build Status](https://travis-ci.org/stomp-js/stompjs.svg?branch=master)](https://travis-ci.org/stomp-js/stompjs) [![Greenkeeper badge](https://badges.greenkeeper.io/stomp-js/stompjs.svg)](https://greenkeeper.io/)
 
 This library provides a STOMP over WebSocket client for Web browser or node.js.
 applications.
