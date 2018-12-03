@@ -17,5 +17,5 @@ before_script:
 script:
   - npm run lint && npm run test && npm run karma
   - npm pack
-  - git clone --depth 1 https://github.com/stomp-js/rx-stomp.git && cd rx-stomp && npm ci && npm i ../stomp-stompjs-*.tgz && npm run karma && cd ..
   - git clone --depth 1 https://github.com/stomp-js/ng2-stompjs.git && cd ng2-stompjs && npm ci && npm i ../stomp-stompjs-*.tgz --save-dev && ng test && cd ..
+  - git clone --depth 1 https://github.com/stomp-js/rx-stomp.git && cd rx-stomp && npm ci && npm i ../stomp-stompjs-*.tgz && npm run karma && cd ..
