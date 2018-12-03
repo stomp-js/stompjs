@@ -2,11 +2,11 @@ import {BYTE} from './byte';
 import {Client} from './client';
 import {FrameImpl} from './frame-impl';
 import {IMessage} from './i-message';
+import {ITransaction} from './i-transaction';
 import {Parser} from './parser';
 import {StompConfig} from './stomp-config';
 import {StompHeaders} from './stomp-headers';
 import {StompSubscription} from './stomp-subscription';
-import {ITransaction} from './i-transaction';
 import {
   closeEventCallbackType,
   debugFnType,

@@ -1,8 +1,8 @@
+import {ITransaction} from './i-transaction';
 import {StompConfig} from './stomp-config';
 import {StompHandler} from './stomp-handler';
 import {StompHeaders} from './stomp-headers';
 import {StompSubscription} from './stomp-subscription';
-import {ITransaction} from './i-transaction';
 import {
   closeEventCallbackType,
   debugFnType,
