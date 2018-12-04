@@ -23,6 +23,7 @@ const config = {
     filename: '[name].umd.js',
     libraryTarget: 'umd',
     library: 'StompJs',
+    globalObject: `typeof self !== 'undefined' ? self : this`,
     umdNamedDefine: true
   },
   mode: 'development',
