@@ -1,8 +1,21 @@
 # Change Log
 
-# 5.0.3
+# 5.1.0-beta.1
 
-* Green keeper
+* Using [dependbot](https://dependabot.com/) to keep dependencies up to date.
+* Concept of onWebSocketError, fixes [#21](https://github.com/stomp-js/stompjs/issues/21).
+* Support for Asynchronous beforeConnect. Fixes [#14](https://github.com/stomp-js/stompjs/issues/14).
+* Travis now checks out rx-stomp & ng2-stompjs and runs tests in those against this version
+  of the library. To avoid issues like
+  [ng2-stompjs-angular7/issues/2](https://github.com/stomp-js/ng2-stompjs-angular7/issues/2).
+* Some entities which should have been exported as Interfaces were exported as Classes.
+  This might cause type mis-match issues if any of the private members change in any of
+  the implementation. Concept of IFrame, IMessage, ITransaction interfaces introduced.
+  Fixes [#25](https://github.com/stomp-js/stompjs/issues/25).
+* Updated Webpack config as per
+  [webpack/issues/6525#issuecomment-417580843](https://github.com/webpack/webpack/issues/6525#issuecomment-417580843)
+  to resolve [#26](https://github.com/stomp-js/stompjs/issues/26).
+* Dependencies updated as per [dependbot](https://dependabot.com/).
 
 # 5.0.2 (2018-11-26)
 
