@@ -40,6 +40,31 @@ describe("Stomp Message", function () {
     client.activate();
   });
 
+  it("Logs raw communication", function (done) {
+    // Text picked up from https://github.com/stomp-js/stomp-websocket/pull/46
+    const body = "Älä sinä yhtään and السابق";
+    client.logRawCommunication = true;
+
+    client.debug = jasmine.createSpy('debug');
+
+    client.onConnect = function () {
+      client.subscribe(TEST.destination, function (message) {
+        // matching entire frame is not feasible as the broker adds headers which will vary for each execution
+        // So, just check presence of the body
+        expect(client.debug.calls.mostRecent().args[0]).toMatch(body);
+
+        client.deactivate();
+
+        done();
+      });
+
+      client.publish({destination: TEST.destination, body: body});
+      expect(client.debug.calls.mostRecent().args[0]).toEqual(
+        ">>> SEND\ndestination:/topic/chat.general\ncontent-length:37\n\nÄlä sinä yhtään and السابق" + "\0");
+    };
+    client.activate();
+  });
+
   it("Send and receive binary message", function (done) {
     const binaryBody = generateBinaryData(1);
     client.onConnect = function () {

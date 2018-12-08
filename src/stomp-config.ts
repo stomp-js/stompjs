@@ -102,6 +102,11 @@ export class StompConfig {
   public onWebSocketError?: wsErrorCallbackType;
 
   /**
+   * See [Client#logRawCommunication]{@link Client#logRawCommunication}.
+   */
+  public logRawCommunication?: boolean;
+
+  /**
    * See [Client#debug]{@link Client#debug}.
    */
   public debug?: debugFnType;

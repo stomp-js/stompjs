@@ -207,6 +207,16 @@ export class Client {
   public onWebSocketError: wsErrorCallbackType;
 
   /**
+   * Set it to log the actual raw communication with the broker.
+   * When unset, it logs headers of the parsed frames.
+   *
+   * Change in this effects from next broker reconnect.
+   *
+   * **Caution: this assumes that frames only have valid UTF8 strings.**
+   */
+  public logRawCommunication: boolean;
+
+  /**
    * By default, debug messages are discarded. To log to `console` following can be used:
    *
    * ```javascript
@@ -254,6 +264,7 @@ export class Client {
     this.onStompError = noOp;
     this.onWebSocketClose = noOp;
     this.onWebSocketError = noOp;
+    this.logRawCommunication = false;
 
     // These parameters would typically get proper values before connect is called
     this.connectHeaders = {};
@@ -309,6 +320,8 @@ export class Client {
       disconnectHeaders: this._disconnectHeaders,
       heartbeatIncoming: this.heartbeatIncoming,
       heartbeatOutgoing: this.heartbeatOutgoing,
+      logRawCommunication: this.logRawCommunication,
+
       onConnect: (frame) => {
         if (!this._active) {
           this.debug('STOMP got connected while deactivate was issued, will disconnect now');

@@ -53,6 +53,8 @@ export class StompHandler {
 
   public onWebSocketError: wsErrorCallbackType;
 
+  public logRawCommunication: boolean;
+
   get connectedVersion(): string {
     return this._connectedVersion;
   }
@@ -103,7 +105,10 @@ export class StompHandler {
       (rawFrame) => {
         const frame = FrameImpl.fromRawFrame(rawFrame, this._escapeHeaderValues);
 
-        this.debug(`<<< ${frame}`);
+        // if this.logRawCommunication is set, the rawChunk is logged at this._webSocket.onmessage
+        if (!this.logRawCommunication) {
+          this.debug(`<<< ${frame}`);
+        }
 
         const serverFrameHandler = this._serverFrameHandlers[frame.command] || this.onUnhandledFrame;
         serverFrameHandler(frame);
@@ -117,6 +122,11 @@ export class StompHandler {
     this._webSocket.onmessage = (evt: any) => {
       this.debug('Received data');
       this._lastServerActivityTS = Date.now();
+
+      if (this.logRawCommunication) {
+        const rawChunkAsString = (evt.data instanceof ArrayBuffer) ? new TextDecoder().decode(evt.data) : evt.data;
+        this.debug(`<<< ${rawChunkAsString}`);
+      }
 
       parser.parseChunk(evt.data);
     };
@@ -249,22 +259,16 @@ export class StompHandler {
       escapeHeaderValues: this._escapeHeaderValues,
       skipContentLengthHeader
     });
-    this.debug(`>>> ${frame}`);
-    this._webSocket.send(frame.serialize());
-/* Do we need this?
-    // if necessary, split the *STOMP* frame to send it on many smaller
-    // *WebSocket* frames
-    while (true) {
-      if (out.length > this.maxWebSocketFrameSize) {
-        this._webSocket.send(out.substring(0, this.maxWebSocketFrameSize));
-        out = out.substring(this.maxWebSocketFrameSize);
-        this.debug(`remaining = ${out.length}`);
-      } else {
-        this._webSocket.send(out);
-        return;
-      }
+
+    const rawChunk = frame.serialize();
+
+    if (this.logRawCommunication) {
+      this.debug(`>>> ${rawChunk}`);
+    } else {
+      this.debug(`>>> ${frame}`);
     }
-*/
+
+    this._webSocket.send(rawChunk);
   }
 
   public dispose(): void {

@@ -16,6 +16,8 @@
   [webpack/issues/6525#issuecomment-417580843](https://github.com/webpack/webpack/issues/6525#issuecomment-417580843)
   to resolve [#26](https://github.com/stomp-js/stompjs/issues/26).
 * Dependencies updated as per [dependbot](https://dependabot.com/).
+* Ability to log raw communication with broker.
+  Fixes: [#29](https://github.com/stomp-js/stompjs/issues/29).
 
 # 5.0.2 (2018-11-26)
 
