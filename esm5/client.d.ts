@@ -1,8 +1,8 @@
+import { ITransaction } from './i-transaction';
 import { StompConfig } from './stomp-config';
 import { StompHeaders } from './stomp-headers';
 import { StompSubscription } from './stomp-subscription';
-import { Transaction } from './transaction';
-import { closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, messageCallbackType } from './types';
+import { closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, messageCallbackType, wsErrorCallbackType } from './types';
 import { Versions } from './versions';
 /**
  * STOMP Client Class.
@@ -88,7 +88,7 @@ export declare class Client {
      * a request to [Client#unsubscribe]{@link Client#unsubscribe}
      * from an endpoint.
      *
-     * The actual {@link Message} will be passed as parameter to the callback.
+     * The actual {@link IMessage} will be passed as parameter to the callback.
      */
     onUnhandledMessage: messageCallbackType;
     /**
@@ -96,13 +96,13 @@ export declare class Client {
      * Prefer using [Client#watchForReceipt]{@link Client#watchForReceipt}. See
      * [Client#watchForReceipt]{@link Client#watchForReceipt} for examples.
      *
-     * The actual {@link Frame} will be passed as parameter to the callback.
+     * The actual {@link FrameImpl} will be passed as parameter to the callback.
      */
     onUnhandledReceipt: frameCallbackType;
     /**
-     * Will be invoked if {@link Frame} of unknown type is received from the STOMP broker.
+     * Will be invoked if {@link FrameImpl} of unknown type is received from the STOMP broker.
      *
-     * The actual {@link Frame} will be passed as parameter to the callback.
+     * The actual {@link FrameImpl} will be passed as parameter to the callback.
      */
     onUnhandledFrame: frameCallbackType;
     /**
@@ -114,12 +114,20 @@ export declare class Client {
      *
      * You can change options on the client, which will impact the immediate connect.
      * It is valid to call [Client#decativate]{@link Client#deactivate} in this callback.
+     *
+     * As of version 5.1, this callback can be
+     * [async](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)
+     * (i.e., it can return a
+     * [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)).
+     * In that case connect will be called only after the Promise is resolved.
+     * This can be used to reliably fetch credentials, access token etc. from some other service
+     * in an asynchronous way.
      */
-    beforeConnect: () => void;
+    beforeConnect: () => void | Promise<void>;
     /**
      * Callback, invoked on every successful connection to the STOMP broker.
      *
-     * The actual {@link Frame} will be passed as parameter to the callback.
+     * The actual {@link FrameImpl} will be passed as parameter to the callback.
      * Sometimes clients will like to use headers from this frame.
      */
     onConnect: frameCallbackType;
@@ -127,10 +135,10 @@ export declare class Client {
      * Callback, invoked on every successful disconnection from the STOMP broker. It will not be invoked if
      * the STOMP broker disconnected due to an error.
      *
-     * The actual Receipt {@link Frame} acknowledging the DISCONNECT will be passed as parameter to the callback.
+     * The actual Receipt {@link FrameImpl} acknowledging the DISCONNECT will be passed as parameter to the callback.
      *
      * The way STOMP protocol is designed, the connection may close/terminate without the client
-     * receiving the Receipt {@link Frame} acknowledging the DISCONNECT.
+     * receiving the Receipt {@link FrameImpl} acknowledging the DISCONNECT.
      * You might find [Client#onWebSocketClose]{@link Client#onWebSocketClose} more appropriate to watch
      * STOMP broker disconnects.
      */
@@ -140,7 +148,7 @@ export declare class Client {
      * A compliant STOMP Broker will close the connection after this type of frame.
      * Please check broker specific documentation for exact behavior.
      *
-     * The actual {@link Frame} will be passed as parameter to the callback.
+     * The actual {@link FrameImpl} will be passed as parameter to the callback.
      */
     onStompError: frameCallbackType;
     /**
@@ -150,6 +158,22 @@ export declare class Client {
      * is passed as parameter to the callback.
      */
     onWebSocketClose: closeEventCallbackType;
+    /**
+     * Callback, invoked when underlying WebSocket raises an error.
+     *
+     * Actual [Event]{@link https://developer.mozilla.org/en-US/docs/Web/API/Event}
+     * is passed as parameter to the callback.
+     */
+    onWebSocketError: wsErrorCallbackType;
+    /**
+     * Set it to log the actual raw communication with the broker.
+     * When unset, it logs headers of the parsed frames.
+     *
+     * Change in this effects from next broker reconnect.
+     *
+     * **Caution: this assumes that frames only have valid UTF8 strings.**
+     */
+    logRawCommunication: boolean;
     /**
      * By default, debug messages are discarded. To log to `console` following can be used:
      *
@@ -257,7 +281,7 @@ export declare class Client {
      * This method allow watching for a receipt and invoke the callback
      * when corresponding receipt has been received.
      *
-     * The actual {@link Frame} will be passed as parameter to the callback.
+     * The actual {@link FrameImpl} will be passed as parameter to the callback.
      *
      * Example:
      * ```javascript
@@ -283,7 +307,7 @@ export declare class Client {
     watchForReceipt(receiptId: string, callback: frameCallbackType): void;
     /**
      * Subscribe to a STOMP Broker location. The callback will be invoked for each received message with
-     * the {@link Message} as argument.
+     * the {@link IMessage} as argument.
      *
      * Note: The library will generate an unique ID if there is none provided in the headers.
      *       To use your own ID, pass it using the headers argument.
@@ -320,17 +344,17 @@ export declare class Client {
      */
     unsubscribe(id: string, headers?: StompHeaders): void;
     /**
-     * Start a transaction, the returned {@link Transaction} has methods - [commit]{@link Transaction#commit}
-     * and [abort]{@link Transaction#abort}.
+     * Start a transaction, the returned {@link ITransaction} has methods - [commit]{@link ITransaction#commit}
+     * and [abort]{@link ITransaction#abort}.
      *
      * `transactionId` is optional, if not passed the library will generate it internally.
      */
-    begin(transactionId?: string): Transaction;
+    begin(transactionId?: string): ITransaction;
     /**
      * Commit a transaction.
      *
-     * It is preferable to commit a transaction by calling [commit]{@link Transaction#commit} directly on
-     * {@link Transaction} returned by [client.begin]{@link Client#begin}.
+     * It is preferable to commit a transaction by calling [commit]{@link ITransaction#commit} directly on
+     * {@link ITransaction} returned by [client.begin]{@link Client#begin}.
      *
      * ```javascript
      *        var tx = client.begin(txId);
@@ -341,8 +365,8 @@ export declare class Client {
     commit(transactionId: string): void;
     /**
      * Abort a transaction.
-     * It is preferable to abort a transaction by calling [abort]{@link Transaction#abort} directly on
-     * {@link Transaction} returned by [client.begin]{@link Client#begin}.
+     * It is preferable to abort a transaction by calling [abort]{@link ITransaction#abort} directly on
+     * {@link ITransaction} returned by [client.begin]{@link Client#begin}.
      *
      * ```javascript
      *        var tx = client.begin(txId);
@@ -352,8 +376,8 @@ export declare class Client {
      */
     abort(transactionId: string): void;
     /**
-     * ACK a message. It is preferable to acknowledge a message by calling [ack]{@link Message#ack} directly
-     * on the {@link Message} handled by a subscription callback:
+     * ACK a message. It is preferable to acknowledge a message by calling [ack]{@link IMessage#ack} directly
+     * on the {@link IMessage} handled by a subscription callback:
      *
      * ```javascript
      *        var callback = function (message) {
@@ -366,8 +390,8 @@ export declare class Client {
      */
     ack(messageId: string, subscriptionId: string, headers?: StompHeaders): void;
     /**
-     * NACK a message. It is preferable to acknowledge a message by calling [nack]{@link Message#nack} directly
-     * on the {@link Message} handled by a subscription callback:
+     * NACK a message. It is preferable to acknowledge a message by calling [nack]{@link IMessage#nack} directly
+     * on the {@link IMessage} handled by a subscription callback:
      *
      * ```javascript
      *        var callback = function (message) {

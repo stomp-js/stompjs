@@ -1,5 +1,5 @@
 import { StompHeaders } from './stomp-headers';
-import { closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType } from './types';
+import { closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, wsErrorCallbackType } from './types';
 import { Versions } from './versions';
 /**
  * Configuration options for STOMP Client, each key corresponds to
@@ -56,7 +56,7 @@ export declare class StompConfig {
     /**
      * See [Client#beforeConnect]{@link Client#beforeConnect}.
      */
-    beforeConnect?: () => void;
+    beforeConnect?: () => void | Promise<void>;
     /**
      * See [Client#onConnect]{@link Client#onConnect}.
      */
@@ -73,6 +73,14 @@ export declare class StompConfig {
      * See [Client#onWebSocketClose]{@link Client#onWebSocketClose}.
      */
     onWebSocketClose?: closeEventCallbackType;
+    /**
+     * See [Client#onWebSocketError]{@link Client#onWebSocketError}.
+     */
+    onWebSocketError?: wsErrorCallbackType;
+    /**
+     * See [Client#logRawCommunication]{@link Client#logRawCommunication}.
+     */
+    logRawCommunication?: boolean;
     /**
      * See [Client#debug]{@link Client#debug}.
      */

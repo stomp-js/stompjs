@@ -5,7 +5,7 @@
  *
  * TODO: Example and caveat
  */
-export declare class Transaction {
+export interface ITransaction {
     /**
      * You will need to access this to send, ack, or nack within this transaction.
      */

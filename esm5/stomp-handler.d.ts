@@ -1,9 +1,9 @@
 import { Client } from './client';
+import { ITransaction } from './i-transaction';
 import { StompConfig } from './stomp-config';
 import { StompHeaders } from './stomp-headers';
 import { StompSubscription } from './stomp-subscription';
-import { Transaction } from './transaction';
-import { closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, messageCallbackType } from './types';
+import { closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, messageCallbackType, wsErrorCallbackType } from './types';
 import { Versions } from './versions';
 /**
  * The STOMP protocol handler
@@ -28,6 +28,8 @@ export declare class StompHandler {
     onDisconnect: frameCallbackType;
     onStompError: frameCallbackType;
     onWebSocketClose: closeEventCallbackType;
+    onWebSocketError: wsErrorCallbackType;
+    logRawCommunication: boolean;
     readonly connectedVersion: string;
     private _connectedVersion;
     readonly connected: boolean;
@@ -52,7 +54,7 @@ export declare class StompHandler {
     watchForReceipt(receiptId: string, callback: frameCallbackType): void;
     subscribe(destination: string, callback: messageCallbackType, headers?: StompHeaders): StompSubscription;
     unsubscribe(id: string, headers?: StompHeaders): void;
-    begin(transactionId: string): Transaction;
+    begin(transactionId: string): ITransaction;
     commit(transactionId: string): void;
     abort(transactionId: string): void;
     ack(messageId: string, subscriptionId: string, headers?: StompHeaders): void;

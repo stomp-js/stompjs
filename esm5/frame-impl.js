@@ -1,19 +1,18 @@
-import { BYTE } from './byte';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var byte_1 = require("./byte");
 /**
- * Frame class represents a STOMP frame. Many of the callbacks pass the Frame received from
- * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
+ * Frame class represents a STOMP frame.
  *
- * Part of `@stomp/stompjs`.
- *
- * {@link Message} is an extended Frame.
+ * @internal
  */
-var Frame = /** @class */ (function () {
+var FrameImpl = /** @class */ (function () {
     /**
      * Frame constructor. `command`, `headers` and `body` are available as properties.
      *
      * @internal
      */
-    function Frame(params) {
+    function FrameImpl(params) {
         var command = params.command, headers = params.headers, body = params.body, binaryBody = params.binaryBody, escapeHeaderValues = params.escapeHeaderValues, skipContentLengthHeader = params.skipContentLengthHeader;
         this.command = command;
         this.headers = Object.assign({}, headers || {});
@@ -28,7 +27,7 @@ var Frame = /** @class */ (function () {
         this.escapeHeaderValues = escapeHeaderValues || false;
         this.skipContentLengthHeader = skipContentLengthHeader || false;
     }
-    Object.defineProperty(Frame.prototype, "body", {
+    Object.defineProperty(FrameImpl.prototype, "body", {
         /**
          * body of the frame
          */
@@ -41,7 +40,7 @@ var Frame = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Frame.prototype, "binaryBody", {
+    Object.defineProperty(FrameImpl.prototype, "binaryBody", {
         /**
          * body as Uint8Array
          */
@@ -59,7 +58,7 @@ var Frame = /** @class */ (function () {
      *
      * @internal
      */
-    Frame.fromRawFrame = function (rawFrame, escapeHeaderValues) {
+    FrameImpl.fromRawFrame = function (rawFrame, escapeHeaderValues) {
         var headers = {};
         var trim = function (str) { return str.replace(/^\s+|\s+$/g, ''); };
         // In case of repeated headers, as per standards, first value need to be used
@@ -69,11 +68,11 @@ var Frame = /** @class */ (function () {
             var key = trim(header[0]);
             var value = trim(header[1]);
             if (escapeHeaderValues && (rawFrame.command !== 'CONNECT') && (rawFrame.command !== 'CONNECTED')) {
-                value = Frame.hdrValueUnEscape(value);
+                value = FrameImpl.hdrValueUnEscape(value);
             }
             headers[key] = value;
         }
-        return new Frame({
+        return new FrameImpl({
             command: rawFrame.command,
             headers: headers,
             binaryBody: rawFrame.binaryBody,
@@ -83,7 +82,7 @@ var Frame = /** @class */ (function () {
     /**
      * @internal
      */
-    Frame.prototype.toString = function () {
+    FrameImpl.prototype.toString = function () {
         return this.serializeCmdAndHeaders();
     };
     /**
@@ -93,16 +92,16 @@ var Frame = /** @class */ (function () {
      *
      * @internal
      */
-    Frame.prototype.serialize = function () {
+    FrameImpl.prototype.serialize = function () {
         var cmdAndHeaders = this.serializeCmdAndHeaders();
         if (this.isBinaryBody) {
-            return Frame.toUnit8Array(cmdAndHeaders, this._binaryBody).buffer;
+            return FrameImpl.toUnit8Array(cmdAndHeaders, this._binaryBody).buffer;
         }
         else {
-            return cmdAndHeaders + this._body + BYTE.NULL;
+            return cmdAndHeaders + this._body + byte_1.BYTE.NULL;
         }
     };
-    Frame.prototype.serializeCmdAndHeaders = function () {
+    FrameImpl.prototype.serializeCmdAndHeaders = function () {
         var lines = [this.command];
         if (this.skipContentLengthHeader) {
             delete this.headers['content-length'];
@@ -111,7 +110,7 @@ var Frame = /** @class */ (function () {
             var name_1 = _a[_i];
             var value = this.headers[name_1];
             if (this.escapeHeaderValues && (this.command !== 'CONNECT') && (this.command !== 'CONNECTED')) {
-                lines.push(name_1 + ":" + Frame.hdrValueEscape("" + value));
+                lines.push(name_1 + ":" + FrameImpl.hdrValueEscape("" + value));
             }
             else {
                 lines.push(name_1 + ":" + value);
@@ -120,12 +119,12 @@ var Frame = /** @class */ (function () {
         if (this.isBinaryBody || (!this.isBodyEmpty() && !this.skipContentLengthHeader)) {
             lines.push("content-length:" + this.bodyLength());
         }
-        return lines.join(BYTE.LF) + BYTE.LF + BYTE.LF;
+        return lines.join(byte_1.BYTE.LF) + byte_1.BYTE.LF + byte_1.BYTE.LF;
     };
-    Frame.prototype.isBodyEmpty = function () {
+    FrameImpl.prototype.isBodyEmpty = function () {
         return this.bodyLength() === 0;
     };
-    Frame.prototype.bodyLength = function () {
+    FrameImpl.prototype.bodyLength = function () {
         var binaryBody = this.binaryBody;
         return binaryBody ? binaryBody.length : 0;
     };
@@ -133,10 +132,10 @@ var Frame = /** @class */ (function () {
      * Compute the size of a UTF-8 string by counting its number of bytes
      * (and not the number of characters composing the string)
      */
-    Frame.sizeOfUTF8 = function (s) {
+    FrameImpl.sizeOfUTF8 = function (s) {
         return s ? new TextEncoder().encode(s).length : 0;
     };
-    Frame.toUnit8Array = function (cmdAndHeaders, binaryBody) {
+    FrameImpl.toUnit8Array = function (cmdAndHeaders, binaryBody) {
         var uint8CmdAndHeaders = new TextEncoder().encode(cmdAndHeaders);
         var nullTerminator = new Uint8Array([0]);
         var uint8Frame = new Uint8Array(uint8CmdAndHeaders.length + binaryBody.length + nullTerminator.length);
@@ -150,23 +149,23 @@ var Frame = /** @class */ (function () {
      *
      * @internal
      */
-    Frame.marshall = function (params) {
-        var frame = new Frame(params);
+    FrameImpl.marshall = function (params) {
+        var frame = new FrameImpl(params);
         return frame.serialize();
     };
     /**
      *  Escape header values
      */
-    Frame.hdrValueEscape = function (str) {
+    FrameImpl.hdrValueEscape = function (str) {
         return str.replace(/\\/g, '\\\\').replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/:/g, '\\c');
     };
     /**
      * UnEscape header values
      */
-    Frame.hdrValueUnEscape = function (str) {
+    FrameImpl.hdrValueUnEscape = function (str) {
         return str.replace(/\\r/g, '\r').replace(/\\n/g, '\n').replace(/\\c/g, ':').replace(/\\\\/g, '\\');
     };
-    return Frame;
+    return FrameImpl;
 }());
-export { Frame };
-//# sourceMappingURL=frame.js.map
+exports.FrameImpl = FrameImpl;
+//# sourceMappingURL=frame-impl.js.map

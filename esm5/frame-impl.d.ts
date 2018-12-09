@@ -1,14 +1,12 @@
+import { IFrame } from './i-frame';
 import { StompHeaders } from './stomp-headers';
 import { IRawFrameType } from './types';
 /**
- * Frame class represents a STOMP frame. Many of the callbacks pass the Frame received from
- * the STOMP broker. For advanced usage you might need to access [headers]{@link Frame#headers}.
+ * Frame class represents a STOMP frame.
  *
- * Part of `@stomp/stompjs`.
- *
- * {@link Message} is an extended Frame.
+ * @internal
  */
-export declare class Frame {
+export declare class FrameImpl implements IFrame {
     /**
      * STOMP Command
      */
@@ -51,7 +49,7 @@ export declare class Frame {
      *
      * @internal
      */
-    static fromRawFrame(rawFrame: IRawFrameType, escapeHeaderValues: boolean): Frame;
+    static fromRawFrame(rawFrame: IRawFrameType, escapeHeaderValues: boolean): FrameImpl;
     /**
      * @internal
      */

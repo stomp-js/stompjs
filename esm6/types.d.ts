@@ -1,5 +1,5 @@
-import { Frame } from './frame';
-import { Message } from './message';
+import { IFrame } from './i-frame';
+import { IMessage } from './i-message';
 import { StompHeaders } from './stomp-headers';
 /**
  * This callback will receive a `string` as parameter.
@@ -8,17 +8,17 @@ import { StompHeaders } from './stomp-headers';
  */
 export declare type debugFnType = (msg: string) => void;
 /**
- * This callback will receive a {@link Message} as parameter.
+ * This callback will receive a {@link IMessage} as parameter.
  *
  * Part of `@stomp/stompjs`.
  */
-export declare type messageCallbackType = (message: Message) => void;
+export declare type messageCallbackType = (message: IMessage) => void;
 /**
- * This callback will receive a {@link Frame} as parameter.
+ * This callback will receive a {@link IFrame} as parameter.
  *
  * Part of `@stomp/stompjs`.
  */
-export declare type frameCallbackType = (receipt: Frame) => void;
+export declare type frameCallbackType = (receipt: IFrame) => void;
 /**
  * This callback will receive a [CloseEvent]{@link https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent}
  * as parameter.
@@ -26,6 +26,13 @@ export declare type frameCallbackType = (receipt: Frame) => void;
  * Part of `@stomp/stompjs`.
  */
 export declare type closeEventCallbackType = (evt: CloseEvent) => void;
+/**
+ * This callback will receive an [Event]{@link https://developer.mozilla.org/en-US/docs/Web/API/Event}
+ * as parameter.
+ *
+ * Part of `@stomp/stompjs`.
+ */
+export declare type wsErrorCallbackType = (evt: Event) => void;
 /**
  * Parameters for [Client#publish]{@link Client#publish}.
  * Aliased as publishParams as well.
@@ -56,9 +63,7 @@ export interface IPublishParams {
     skipContentLengthHeader?: boolean;
 }
 /**
- * @Internal
- *
- * Backward compatibility
+ * Backward compatibility, switch to {@link IPublishParams}.
  */
 export declare type publishParams = IPublishParams;
 /**

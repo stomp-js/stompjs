@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var byte_1 = require("./byte");
-var frame_1 = require("./frame");
+var frame_impl_1 = require("./frame-impl");
 var parser_1 = require("./parser");
 var versions_1 = require("./versions");
 /**
@@ -108,8 +108,11 @@ var StompHandler = /** @class */ (function () {
         var parser = new parser_1.Parser(
         // On Frame
         function (rawFrame) {
-            var frame = frame_1.Frame.fromRawFrame(rawFrame, _this._escapeHeaderValues);
-            _this.debug("<<< " + frame);
+            var frame = frame_impl_1.FrameImpl.fromRawFrame(rawFrame, _this._escapeHeaderValues);
+            // if this.logRawCommunication is set, the rawChunk is logged at this._webSocket.onmessage
+            if (!_this.logRawCommunication) {
+                _this.debug("<<< " + frame);
+            }
             var serverFrameHandler = _this._serverFrameHandlers[frame.command] || _this.onUnhandledFrame;
             serverFrameHandler(frame);
         }, 
@@ -120,12 +123,19 @@ var StompHandler = /** @class */ (function () {
         this._webSocket.onmessage = function (evt) {
             _this.debug('Received data');
             _this._lastServerActivityTS = Date.now();
+            if (_this.logRawCommunication) {
+                var rawChunkAsString = (evt.data instanceof ArrayBuffer) ? new TextDecoder().decode(evt.data) : evt.data;
+                _this.debug("<<< " + rawChunkAsString);
+            }
             parser.parseChunk(evt.data);
         };
         this._webSocket.onclose = function (closeEvent) {
             _this.debug("Connection closed to " + _this._webSocket.url);
             _this.onWebSocketClose(closeEvent);
             _this._cleanUp();
+        };
+        this._webSocket.onerror = function (errorEvent) {
+            _this.onWebSocketError(errorEvent);
         };
         this._webSocket.onopen = function () {
             // Clone before updating
@@ -168,7 +178,7 @@ var StompHandler = /** @class */ (function () {
     };
     StompHandler.prototype._transmit = function (params) {
         var command = params.command, headers = params.headers, body = params.body, binaryBody = params.binaryBody, skipContentLengthHeader = params.skipContentLengthHeader;
-        var frame = new frame_1.Frame({
+        var frame = new frame_impl_1.FrameImpl({
             command: command,
             headers: headers,
             body: body,
@@ -176,22 +186,14 @@ var StompHandler = /** @class */ (function () {
             escapeHeaderValues: this._escapeHeaderValues,
             skipContentLengthHeader: skipContentLengthHeader
         });
-        this.debug(">>> " + frame);
-        this._webSocket.send(frame.serialize());
-        /* Do we need this?
-            // if necessary, split the *STOMP* frame to send it on many smaller
-            // *WebSocket* frames
-            while (true) {
-              if (out.length > this.maxWebSocketFrameSize) {
-                this._webSocket.send(out.substring(0, this.maxWebSocketFrameSize));
-                out = out.substring(this.maxWebSocketFrameSize);
-                this.debug(`remaining = ${out.length}`);
-              } else {
-                this._webSocket.send(out);
-                return;
-              }
-            }
-        */
+        var rawChunk = frame.serialize();
+        if (this.logRawCommunication) {
+            this.debug(">>> " + rawChunk);
+        }
+        else {
+            this.debug(">>> " + frame);
+        }
+        this._webSocket.send(rawChunk);
     };
     StompHandler.prototype.dispose = function () {
         var _this = this;
