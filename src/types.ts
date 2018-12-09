@@ -70,9 +70,7 @@ export interface IPublishParams {
 }
 
 /**
- * @Internal
- *
- * Backward compatibility
+ * Backward compatibility, switch to {@link IPublishParams}.
  */
 export type publishParams = IPublishParams;
 
