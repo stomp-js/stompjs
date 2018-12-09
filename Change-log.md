@@ -1,7 +1,8 @@
 # Change Log
 
-# 5.1.0-beta.1
+# 5.1.0-beta.1 (2018-12-09)
 
+* See issues marked for [v5.1.0](https://github.com/stomp-js/stompjs/issues?utf8=%E2%9C%93&q=is%3Aissue+milestone%3A5.1.0).
 * Using [dependbot](https://dependabot.com/) to keep dependencies up to date.
 * Concept of onWebSocketError, fixes [#21](https://github.com/stomp-js/stompjs/issues/21).
 * Support for Asynchronous beforeConnect. Fixes [#14](https://github.com/stomp-js/stompjs/issues/14).
