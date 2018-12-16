@@ -1,5 +1,9 @@
 # Change Log
 
+# 5.1.0 (2018-12-16)
+
+* Promoting 5.1.0-beta.1 as 5.1.0.
+
 # 5.1.0-beta.1 (2018-12-09)
 
 * See issues marked for [v5.1.0](https://github.com/stomp-js/stompjs/issues?utf8=%E2%9C%93&q=is%3Aissue+milestone%3A5.1.0).
