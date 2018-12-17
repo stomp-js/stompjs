@@ -1,6 +1,7 @@
 # STOMP.js
 
-[![Build Status](https://travis-ci.org/stomp-js/stompjs.svg?branch=master)](https://travis-ci.org/stomp-js/stompjs) [![Greenkeeper badge](https://badges.greenkeeper.io/stomp-js/stompjs.svg)](https://greenkeeper.io/)
+[![Build Status](https://travis-ci.org/stomp-js/stompjs.svg?branch=master)](https://travis-ci.org/stomp-js/stompjs)
+[![Greenkeeper badge](https://badges.greenkeeper.io/stomp-js/stompjs.svg)](https://greenkeeper.io/)
 
 This library provides a STOMP over WebSocket client for Web browser or node.js.
 applications.
@@ -41,16 +42,21 @@ The API documentation is hosted as GitHub pages for entire StompJS family of lib
 You may head straight to the https://stomp-js.github.io/api-docs/latest/
 
 This library comes with detailed usage instructions. Please find it at 
-[Usage instructions](https://stomp-js.github.io/guide/stompjs/2018/06/28/using-stompjs-v5.html). 
+[Usage instructions](https://stomp-js.github.io/guide/stompjs/2018/06/28/using-stompjs-v5.html).
+Check out other guides at https://stomp-js.github.io/.
 
 There are quite detailed API documentation,
 you should start at https://stomp-js.github.io/api-docs/latest/classes/Client.html.
 
-## Usage with Angular2/4/5
+## Usage with RxJS
 
-https://github.com/stomp-js/ng2-stompjs is based on this library and exposes the entire functionality
-offered by this library as Angular Services and rxjs Observables. Both these libraries are maintained
-by a similar set of contributors.
+https://github.com/stomp-js/rx-stomp is based on this library and exposes the entire functionality
+offered by this library as rxjs Observables.
+
+## Usage with Angular2/4/5/6/7
+
+https://github.com/stomp-js/ng2-stompjs is based on https://github.com/stomp-js/rx-stomp 
+and exposes key classes as Angular Injectable Services.
 
 ## TypeScript definitions
 
