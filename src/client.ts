@@ -133,7 +133,7 @@ export class Client {
   /**
    * Will be invoked if {@link FrameImpl} of unknown type is received from the STOMP broker.
    *
-   * The actual {@link FrameImpl} will be passed as parameter to the callback.
+   * The actual {@link IFrame} will be passed as parameter to the callback.
    */
   public onUnhandledFrame: frameCallbackType;
 
@@ -186,7 +186,7 @@ export class Client {
    * A compliant STOMP Broker will close the connection after this type of frame.
    * Please check broker specific documentation for exact behavior.
    *
-   * The actual {@link FrameImpl} will be passed as parameter to the callback.
+   * The actual {@link IFrame} will be passed as parameter to the callback.
    */
   public onStompError: frameCallbackType;
 
