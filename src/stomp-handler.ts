@@ -229,8 +229,10 @@ export class StompHandler {
       const ttl: number = Math.max(this.heartbeatOutgoing, serverIncoming);
       this.debug(`send PING every ${ttl}ms`);
       this._pinger = setInterval(() => {
-        this._webSocket.send(BYTE.LF);
-        this.debug('>>> PING');
+        if (this._webSocket.readyState === WebSocket.OPEN) {
+          this._webSocket.send(BYTE.LF);
+          this.debug('>>> PING');
+        }
       }, ttl);
     }
 
