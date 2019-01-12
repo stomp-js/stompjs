@@ -76,6 +76,26 @@ export class Client {
   public heartbeatOutgoing: number = 10000;
 
   /**
+   * This switches on a non standard behavior while sending WebSocket packets.
+   * It splits larger (text) packets into chunks of [maxWebSocketChunkSize]{@link Client#maxWebSocketChunkSize}.
+   * Only Java Spring brokers seems to use this mode.
+   *
+   * WebSockets split large (text) packets, so it is not needed with a truly compliant STOMP/WebSocket broker.
+   * Actually setting it for such broker will cause large messages to fail.
+   *
+   * `false` by default.
+   *
+   * Binary frames are never split.
+   */
+  public splitLargeFrames: boolean = false;
+
+  /**
+   * See [splitLargeFrames]{@link Client#splitLargeFrames}.
+   * This has no effect if [splitLargeFrames]{@link Client#splitLargeFrames} is `false`.
+   */
+  public maxWebSocketChunkSize: number = 8 * 1024;
+
+  /**
    * Underlying WebSocket instance, READONLY.
    */
   get webSocket(): WebSocket {
@@ -320,6 +340,8 @@ export class Client {
       disconnectHeaders: this._disconnectHeaders,
       heartbeatIncoming: this.heartbeatIncoming,
       heartbeatOutgoing: this.heartbeatOutgoing,
+      splitLargeFrames: this.splitLargeFrames,
+      maxWebSocketChunkSize: this.maxWebSocketChunkSize,
       logRawCommunication: this.logRawCommunication,
 
       onConnect: (frame) => {

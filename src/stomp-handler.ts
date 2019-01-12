@@ -55,6 +55,10 @@ export class StompHandler {
 
   public logRawCommunication: boolean;
 
+  public splitLargeFrames: boolean;
+
+  public maxWebSocketChunkSize: number = 8000;
+
   get connectedVersion(): string {
     return this._connectedVersion;
   }
@@ -270,7 +274,17 @@ export class StompHandler {
       this.debug(`>>> ${frame}`);
     }
 
-    this._webSocket.send(rawChunk);
+    if (frame.isBinaryBody || !this.splitLargeFrames) {
+      this._webSocket.send(rawChunk);
+    } else {
+      let out = rawChunk as string;
+      while (out.length > 0) {
+        const chunk = out.substring(0, this.maxWebSocketChunkSize);
+        out = out.substring(this.maxWebSocketChunkSize);
+        this._webSocket.send(chunk);
+        this.debug(`chunk sent = ${chunk.length}, remaining = ${out.length}`);
+      }
+    }
   }
 
   public dispose(): void {

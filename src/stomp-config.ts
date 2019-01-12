@@ -47,6 +47,16 @@ export class StompConfig {
   public heartbeatOutgoing?: number;
 
   /**
+   * See [Client#splitLargeFrames]{@link Client#splitLargeFrames}.
+   */
+  public splitLargeFrames?: boolean;
+
+  /**
+   * See [Client#maxWebSocketChunkSize]{@link Client#maxWebSocketChunkSize}.
+   */
+  public maxWebSocketChunkSize?: number;
+
+  /**
    * See [Client#connectHeaders]{@link Client#connectHeaders}.
    */
   public connectHeaders?: StompHeaders;
