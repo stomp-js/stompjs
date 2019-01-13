@@ -52,6 +52,11 @@ export class StompConfig {
   public splitLargeFrames?: boolean;
 
   /**
+   * See [Client#forceBinaryWSFrames]{@link Client#forceBinaryWSFrames}.
+   */
+  public forceBinaryWSFrames?: boolean;
+
+  /**
    * See [Client#maxWebSocketChunkSize]{@link Client#maxWebSocketChunkSize}.
    */
   public maxWebSocketChunkSize?: number;

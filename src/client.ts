@@ -96,6 +96,16 @@ export class Client {
   public maxWebSocketChunkSize: number = 8 * 1024;
 
   /**
+   * Usually the
+   * [type of WebSocket frame]{@link https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/send#Parameters}
+   * is automatically decided by type of the payload.
+   * Default is `false`, which should work with all compliant brokers.
+   *
+   * Set this flag to force binary frames.
+   */
+  public forceBinaryWSFrames: boolean = false;
+
+  /**
    * Underlying WebSocket instance, READONLY.
    */
   get webSocket(): WebSocket {
@@ -342,6 +352,7 @@ export class Client {
       heartbeatOutgoing: this.heartbeatOutgoing,
       splitLargeFrames: this.splitLargeFrames,
       maxWebSocketChunkSize: this.maxWebSocketChunkSize,
+      forceBinaryWSFrames: this.forceBinaryWSFrames,
       logRawCommunication: this.logRawCommunication,
 
       onConnect: (frame) => {

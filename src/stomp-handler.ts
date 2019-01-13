@@ -59,6 +59,8 @@ export class StompHandler {
 
   public maxWebSocketChunkSize: number = 8000;
 
+  public forceBinaryWSFrames: boolean;
+
   get connectedVersion(): string {
     return this._connectedVersion;
   }
@@ -266,7 +268,7 @@ export class StompHandler {
       skipContentLengthHeader
     });
 
-    const rawChunk = frame.serialize();
+    let rawChunk = frame.serialize();
 
     if (this.logRawCommunication) {
       this.debug(`>>> ${rawChunk}`);
@@ -274,7 +276,11 @@ export class StompHandler {
       this.debug(`>>> ${frame}`);
     }
 
-    if (frame.isBinaryBody || !this.splitLargeFrames) {
+    if (this.forceBinaryWSFrames && typeof rawChunk === 'string') {
+      rawChunk = new TextEncoder().encode(rawChunk);
+    }
+
+    if (typeof rawChunk !== 'string' || !this.splitLargeFrames) {
       this._webSocket.send(rawChunk);
     } else {
       let out = rawChunk as string;
