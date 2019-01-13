@@ -1,5 +1,11 @@
 # Change Log
 
+# 5.2.0-beta.1 
+
+* Send ping only if WebSocket is connected.
+* Concept of splitLargeFrames flag.
+  Working towards [ng2-stompjs#120](https://github.com/stomp-js/ng2-stompjs/issues/120)
+
 # 5.1.0 (2018-12-16)
 
 * Promoting 5.1.0-beta.1 as 5.1.0.
