@@ -57,7 +57,7 @@ export class StompHandler {
 
   public splitLargeFrames: boolean;
 
-  public maxWebSocketChunkSize: number = 8000;
+  public maxWebSocketChunkSize: number;
 
   public forceBinaryWSFrames: boolean;
 

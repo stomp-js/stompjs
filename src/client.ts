@@ -80,7 +80,8 @@ export class Client {
    * It splits larger (text) packets into chunks of [maxWebSocketChunkSize]{@link Client#maxWebSocketChunkSize}.
    * Only Java Spring brokers seems to use this mode.
    *
-   * WebSockets split large (text) packets, so it is not needed with a truly compliant STOMP/WebSocket broker.
+   * WebSockets, by itself, split large (text) packets,
+   * so it is not needed with a truly compliant STOMP/WebSocket broker.
    * Actually setting it for such broker will cause large messages to fail.
    *
    * `false` by default.
