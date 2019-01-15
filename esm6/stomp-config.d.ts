@@ -34,6 +34,18 @@ export declare class StompConfig {
      */
     heartbeatOutgoing?: number;
     /**
+     * See [Client#splitLargeFrames]{@link Client#splitLargeFrames}.
+     */
+    splitLargeFrames?: boolean;
+    /**
+     * See [Client#forceBinaryWSFrames]{@link Client#forceBinaryWSFrames}.
+     */
+    forceBinaryWSFrames?: boolean;
+    /**
+     * See [Client#maxWebSocketChunkSize]{@link Client#maxWebSocketChunkSize}.
+     */
+    maxWebSocketChunkSize?: number;
+    /**
      * See [Client#connectHeaders]{@link Client#connectHeaders}.
      */
     connectHeaders?: StompHeaders;

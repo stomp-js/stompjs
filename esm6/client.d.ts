@@ -61,6 +61,34 @@ export declare class Client {
      */
     heartbeatOutgoing: number;
     /**
+     * This switches on a non standard behavior while sending WebSocket packets.
+     * It splits larger (text) packets into chunks of [maxWebSocketChunkSize]{@link Client#maxWebSocketChunkSize}.
+     * Only Java Spring brokers seems to use this mode.
+     *
+     * WebSockets, by itself, split large (text) packets,
+     * so it is not needed with a truly compliant STOMP/WebSocket broker.
+     * Actually setting it for such broker will cause large messages to fail.
+     *
+     * `false` by default.
+     *
+     * Binary frames are never split.
+     */
+    splitLargeFrames: boolean;
+    /**
+     * See [splitLargeFrames]{@link Client#splitLargeFrames}.
+     * This has no effect if [splitLargeFrames]{@link Client#splitLargeFrames} is `false`.
+     */
+    maxWebSocketChunkSize: number;
+    /**
+     * Usually the
+     * [type of WebSocket frame]{@link https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/send#Parameters}
+     * is automatically decided by type of the payload.
+     * Default is `false`, which should work with all compliant brokers.
+     *
+     * Set this flag to force binary frames.
+     */
+    forceBinaryWSFrames: boolean;
+    /**
      * Underlying WebSocket instance, READONLY.
      */
     readonly webSocket: WebSocket;
@@ -102,7 +130,7 @@ export declare class Client {
     /**
      * Will be invoked if {@link FrameImpl} of unknown type is received from the STOMP broker.
      *
-     * The actual {@link FrameImpl} will be passed as parameter to the callback.
+     * The actual {@link IFrame} will be passed as parameter to the callback.
      */
     onUnhandledFrame: frameCallbackType;
     /**
@@ -148,7 +176,7 @@ export declare class Client {
      * A compliant STOMP Broker will close the connection after this type of frame.
      * Please check broker specific documentation for exact behavior.
      *
-     * The actual {@link FrameImpl} will be passed as parameter to the callback.
+     * The actual {@link IFrame} will be passed as parameter to the callback.
      */
     onStompError: frameCallbackType;
     /**

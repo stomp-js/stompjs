@@ -30,6 +30,9 @@ export declare class StompHandler {
     onWebSocketClose: closeEventCallbackType;
     onWebSocketError: wsErrorCallbackType;
     logRawCommunication: boolean;
+    splitLargeFrames: boolean;
+    maxWebSocketChunkSize: number;
+    forceBinaryWSFrames: boolean;
     readonly connectedVersion: string;
     private _connectedVersion;
     readonly connected: boolean;

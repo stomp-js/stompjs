@@ -1,6 +1,6 @@
 # Change Log
 
-# 5.2.0-beta.1 
+# 5.2.0-beta.1 (2019-01-15)
 
 * Send ping only if WebSocket is connected.
 * Concept of splitLargeFrames flag.

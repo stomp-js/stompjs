@@ -159,8 +159,10 @@ var StompHandler = /** @class */ (function () {
             var ttl = Math.max(this.heartbeatOutgoing, serverIncoming);
             this.debug("send PING every " + ttl + "ms");
             this._pinger = setInterval(function () {
-                _this._webSocket.send(byte_1.BYTE.LF);
-                _this.debug('>>> PING');
+                if (_this._webSocket.readyState === WebSocket.OPEN) {
+                    _this._webSocket.send(byte_1.BYTE.LF);
+                    _this.debug('>>> PING');
+                }
             }, ttl);
         }
         if ((this.heartbeatIncoming !== 0) && (serverOutgoing !== 0)) {
@@ -193,7 +195,21 @@ var StompHandler = /** @class */ (function () {
         else {
             this.debug(">>> " + frame);
         }
-        this._webSocket.send(rawChunk);
+        if (this.forceBinaryWSFrames && typeof rawChunk === 'string') {
+            rawChunk = new TextEncoder().encode(rawChunk);
+        }
+        if (typeof rawChunk !== 'string' || !this.splitLargeFrames) {
+            this._webSocket.send(rawChunk);
+        }
+        else {
+            var out = rawChunk;
+            while (out.length > 0) {
+                var chunk = out.substring(0, this.maxWebSocketChunkSize);
+                out = out.substring(this.maxWebSocketChunkSize);
+                this._webSocket.send(chunk);
+                this.debug("chunk sent = " + chunk.length + ", remaining = " + out.length);
+            }
+        }
     };
     StompHandler.prototype.dispose = function () {
         var _this = this;
