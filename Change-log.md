@@ -1,5 +1,9 @@
 # Change Log
 
+# 5.2.0 (2019-01-17)
+
+* Promoting 5.2.0-beta.1 as 5.2.0.
+
 # 5.2.0-beta.1 (2019-01-15)
 
 * Send ping only if WebSocket is connected.
