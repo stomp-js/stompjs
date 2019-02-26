@@ -58,6 +58,9 @@ offered by this library as rxjs Observables.
 https://github.com/stomp-js/ng2-stompjs is based on https://github.com/stomp-js/rx-stomp 
 and exposes key classes as Angular Injectable Services.
 
+## Usage with IE11
+Make sure to polyfill TextEncoder and TextDecoder.
+
 ## TypeScript definitions
 
 The npm package includes TypeScript definitions, so there is no need no install it separately.
