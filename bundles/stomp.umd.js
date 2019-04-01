@@ -231,6 +231,20 @@ var Client = /** @class */ (function () {
          * Set this flag to force binary frames.
          */
         this.forceBinaryWSFrames = false;
+        /**
+         * A bug in ReactNative chops a string on occurrence of a NULL.
+         * See issue [https://github.com/stomp-js/stompjs/issues/89]{@link https://github.com/stomp-js/stompjs/issues/89}.
+         * This makes incoming WebSocket messages invalid STOMP packets.
+         * Seeting this flag attempts to reverse the damage by appending a NULL.
+         * If the broker splits a large message into multiple WebSocket messages,
+         * this flag will cause data loss and abnormal termination of connection.
+         *
+         * This is not an ideal solution, but a stop gap until the underlying issue is fixed at ReactNative library.
+         *
+         * This flag only impacts handling of text frames.
+         * Binary frames are not impacted by the underlying issue.
+         */
+        this.appendMissingNULLonIncoming = false;
         this._active = false;
         // Dummy callbacks
         var noOp = function () { };
@@ -1693,6 +1707,16 @@ var StompHandler = /** @class */ (function () {
                 _this.debug("<<< " + rawChunkAsString);
             }
             parser.parseChunk(evt.data);
+            // See https://github.com/stomp-js/stompjs/issues/89
+            // Remove when underlying issue is fixed.
+            //
+            // Send a NULL byte, if the last byte of a Text frame was not NULL.
+            if (_this.appendMissingNULLonIncoming && !(evt.data instanceof ArrayBuffer)) {
+                if (evt.data[evt.data.length - 1] !== 0) {
+                    var bufferWithNull = (new Uint8Array([0])).buffer;
+                    parser.parseChunk(bufferWithNull);
+                }
+            }
         };
         this._webSocket.onclose = function (closeEvent) {
             _this.debug("Connection closed to " + _this._webSocket.url);
@@ -2033,7 +2057,7 @@ exports.Versions = Versions;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/kdeepak/MyWork/Tech/stomp/stompjs/src/index.ts */"./src/index.ts");
+module.exports = __webpack_require__(/*! /home/kdeepak/MyWork/Tech/stomp/stompjs/src/index.ts */"./src/index.ts");
 
 
 /***/ })

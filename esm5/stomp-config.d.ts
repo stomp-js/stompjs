@@ -42,6 +42,10 @@ export declare class StompConfig {
      */
     forceBinaryWSFrames?: boolean;
     /**
+     * See [Client#appendMissingNULLonIncoming]{@link Client#appendMissingNULLonIncoming}.
+     */
+    appendMissingNULLonIncoming?: boolean;
+    /**
      * See [Client#maxWebSocketChunkSize]{@link Client#maxWebSocketChunkSize}.
      */
     maxWebSocketChunkSize?: number;
