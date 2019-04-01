@@ -57,6 +57,11 @@ export class StompConfig {
   public forceBinaryWSFrames?: boolean;
 
   /**
+   * See [Client#appendMissingNULLonIncoming]{@link Client#appendMissingNULLonIncoming}.
+   */
+  public appendMissingNULLonIncoming?: boolean;
+
+  /**
    * See [Client#maxWebSocketChunkSize]{@link Client#maxWebSocketChunkSize}.
    */
   public maxWebSocketChunkSize?: number;
