@@ -126,6 +126,16 @@ var StompHandler = /** @class */ (function () {
                 _this.debug("<<< " + rawChunkAsString);
             }
             parser.parseChunk(evt.data);
+            // See https://github.com/stomp-js/stompjs/issues/89
+            // Remove when underlying issue is fixed.
+            //
+            // Send a NULL byte, if the last byte of a Text frame was not NULL.
+            if (_this.appendMissingNULLonIncoming && !(evt.data instanceof ArrayBuffer)) {
+                if (evt.data[evt.data.length - 1] !== 0) {
+                    var bufferWithNull = (new Uint8Array([0])).buffer;
+                    parser.parseChunk(bufferWithNull);
+                }
+            }
         };
         this._webSocket.onclose = function (closeEvent) {
             _this.debug("Connection closed to " + _this._webSocket.url);

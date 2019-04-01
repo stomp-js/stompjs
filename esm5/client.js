@@ -98,6 +98,20 @@ var Client = /** @class */ (function () {
          * Set this flag to force binary frames.
          */
         this.forceBinaryWSFrames = false;
+        /**
+         * A bug in ReactNative chops a string on occurrence of a NULL.
+         * See issue [https://github.com/stomp-js/stompjs/issues/89]{@link https://github.com/stomp-js/stompjs/issues/89}.
+         * This makes incoming WebSocket messages invalid STOMP packets.
+         * Seeting this flag attempts to reverse the damage by appending a NULL.
+         * If the broker splits a large message into multiple WebSocket messages,
+         * this flag will cause data loss and abnormal termination of connection.
+         *
+         * This is not an ideal solution, but a stop gap until the underlying issue is fixed at ReactNative library.
+         *
+         * This flag only impacts handling of text frames.
+         * Binary frames are not impacted by the underlying issue.
+         */
+        this.appendMissingNULLonIncoming = false;
         this._active = false;
         // Dummy callbacks
         var noOp = function () { };

@@ -33,6 +33,7 @@ export declare class StompHandler {
     splitLargeFrames: boolean;
     maxWebSocketChunkSize: number;
     forceBinaryWSFrames: boolean;
+    appendMissingNULLonIncoming: boolean;
     readonly connectedVersion: string;
     private _connectedVersion;
     readonly connected: boolean;
