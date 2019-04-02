@@ -1,5 +1,10 @@
 # Change Log
 
+# 5.3.0 (2019-04-04)
+
+* Concept of appendMissingNULLonIncoming, workaround for
+  [#89](https://github.com/stomp-js/stompjs/issues/89).
+
 # 5.2.0 (2019-01-17)
 
 * Promoting 5.2.0-beta.1 as 5.2.0.
