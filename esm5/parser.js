@@ -67,13 +67,24 @@ var Parser = /** @class */ (function () {
         this._token = [];
         this._initState();
     }
-    Parser.prototype.parseChunk = function (segment) {
+    Parser.prototype.parseChunk = function (segment, appendMissingNULLonIncoming) {
+        if (appendMissingNULLonIncoming === void 0) { appendMissingNULLonIncoming = false; }
         var chunk;
         if ((segment instanceof ArrayBuffer)) {
             chunk = new Uint8Array(segment);
         }
         else {
             chunk = this._encoder.encode(segment);
+        }
+        // See https://github.com/stomp-js/stompjs/issues/89
+        // Remove when underlying issue is fixed.
+        //
+        // Send a NULL byte, if the last byte of a Text frame was not NULL.F
+        if (appendMissingNULLonIncoming && chunk[chunk.length - 1] !== 0) {
+            var chunkWithNull = new Uint8Array(chunk.length + 1);
+            chunkWithNull.set(chunk, 0);
+            chunkWithNull[chunk.length] = 0;
+            chunk = chunkWithNull;
         }
         // tslint:disable-next-line:prefer-for-of
         for (var i = 0; i < chunk.length; i++) {

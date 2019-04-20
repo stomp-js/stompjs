@@ -235,14 +235,11 @@ var Client = /** @class */ (function () {
          * A bug in ReactNative chops a string on occurrence of a NULL.
          * See issue [https://github.com/stomp-js/stompjs/issues/89]{@link https://github.com/stomp-js/stompjs/issues/89}.
          * This makes incoming WebSocket messages invalid STOMP packets.
-         * Seeting this flag attempts to reverse the damage by appending a NULL.
+         * Setting this flag attempts to reverse the damage by appending a NULL.
          * If the broker splits a large message into multiple WebSocket messages,
          * this flag will cause data loss and abnormal termination of connection.
          *
          * This is not an ideal solution, but a stop gap until the underlying issue is fixed at ReactNative library.
-         *
-         * This flag only impacts handling of text frames.
-         * Binary frames are not impacted by the underlying issue.
          */
         this.appendMissingNULLonIncoming = false;
         this._active = false;
@@ -370,6 +367,7 @@ var Client = /** @class */ (function () {
                             maxWebSocketChunkSize: this.maxWebSocketChunkSize,
                             forceBinaryWSFrames: this.forceBinaryWSFrames,
                             logRawCommunication: this.logRawCommunication,
+                            appendMissingNULLonIncoming: this.appendMissingNULLonIncoming,
                             onConnect: function (frame) {
                                 if (!_this._active) {
                                     _this.debug('STOMP got connected while deactivate was issued, will disconnect now');
@@ -1406,13 +1404,24 @@ var Parser = /** @class */ (function () {
         this._token = [];
         this._initState();
     }
-    Parser.prototype.parseChunk = function (segment) {
+    Parser.prototype.parseChunk = function (segment, appendMissingNULLonIncoming) {
+        if (appendMissingNULLonIncoming === void 0) { appendMissingNULLonIncoming = false; }
         var chunk;
         if ((segment instanceof ArrayBuffer)) {
             chunk = new Uint8Array(segment);
         }
         else {
             chunk = this._encoder.encode(segment);
+        }
+        // See https://github.com/stomp-js/stompjs/issues/89
+        // Remove when underlying issue is fixed.
+        //
+        // Send a NULL byte, if the last byte of a Text frame was not NULL.F
+        if (appendMissingNULLonIncoming && chunk[chunk.length - 1] !== 0) {
+            var chunkWithNull = new Uint8Array(chunk.length + 1);
+            chunkWithNull.set(chunk, 0);
+            chunkWithNull[chunk.length] = 0;
+            chunk = chunkWithNull;
         }
         // tslint:disable-next-line:prefer-for-of
         for (var i = 0; i < chunk.length; i++) {
@@ -1592,8 +1601,8 @@ var versions_1 = __webpack_require__(/*! ./versions */ "./src/versions.ts");
  */
 var StompHandler = /** @class */ (function () {
     function StompHandler(_client, _webSocket, config) {
-        if (config === void 0) { config = {}; }
         var _this = this;
+        if (config === void 0) { config = {}; }
         this._client = _client;
         this._webSocket = _webSocket;
         this._serverFrameHandlers = {
@@ -1706,17 +1715,7 @@ var StompHandler = /** @class */ (function () {
                 var rawChunkAsString = (evt.data instanceof ArrayBuffer) ? new TextDecoder().decode(evt.data) : evt.data;
                 _this.debug("<<< " + rawChunkAsString);
             }
-            parser.parseChunk(evt.data);
-            // See https://github.com/stomp-js/stompjs/issues/89
-            // Remove when underlying issue is fixed.
-            //
-            // Send a NULL byte, if the last byte of a Text frame was not NULL.
-            if (_this.appendMissingNULLonIncoming && !(evt.data instanceof ArrayBuffer)) {
-                if (evt.data[evt.data.length - 1] !== 0) {
-                    var bufferWithNull = (new Uint8Array([0])).buffer;
-                    parser.parseChunk(bufferWithNull);
-                }
-            }
+            parser.parseChunk(evt.data, _this.appendMissingNULLonIncoming);
         };
         this._webSocket.onclose = function (closeEvent) {
             _this.debug("Connection closed to " + _this._webSocket.url);
