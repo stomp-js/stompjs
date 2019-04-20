@@ -80,6 +80,7 @@ If you want to understand the code, develop, or contribute. Please visit
  * [Dillon Sellars](https://github.com/dillon-sellars)
  * [Jimi Charalampidis](https://github.com/jimic)
  * [Raul](https://github.com/rulonder)
+ * [Dimitar Georgiev](https://github.com/iMitaka)
 
 ## License
 
