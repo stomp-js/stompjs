@@ -52,7 +52,7 @@ export declare class Parser {
     private _bodyBytesRemaining;
     private _onByte;
     constructor(onFrame: (rawFrame: IRawFrameType) => void, onIncomingPing: () => void);
-    parseChunk(segment: string | ArrayBuffer): void;
+    parseChunk(segment: string | ArrayBuffer, appendMissingNULLonIncoming?: boolean): void;
     private _collectFrame;
     private _collectCommand;
     private _collectHeaders;
