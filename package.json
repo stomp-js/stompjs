@@ -1,7 +1,7 @@
 {
   "name": "@stomp/stompjs",
-  "version": "5.3.0",
-  "description": "STOMP cleint for Javascript and Typescript",
+  "version": "5.4.0",
+  "description": "STOMP client for Javascript and Typescript",
   "scripts": {
     "clean": "rm -rf bundles esm5 esm6",
     "build-tsc": "tsc -m es6 --outDir esm6",
