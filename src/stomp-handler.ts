@@ -136,18 +136,7 @@ export class StompHandler {
         this.debug(`<<< ${rawChunkAsString}`);
       }
 
-      parser.parseChunk(evt.data);
-
-      // See https://github.com/stomp-js/stompjs/issues/89
-      // Remove when underlying issue is fixed.
-      //
-      // Send a NULL byte, if the last byte of a Text frame was not NULL.
-      if (this.appendMissingNULLonIncoming && !(evt.data instanceof ArrayBuffer)) {
-        if (evt.data[evt.data.length - 1] !== 0) {
-          const bufferWithNull = (new Uint8Array([0])).buffer;
-          parser.parseChunk(bufferWithNull);
-        }
-      }
+      parser.parseChunk(evt.data, this.appendMissingNULLonIncoming);
     };
 
     this._webSocket.onclose = (closeEvent: CloseEvent): void => {
