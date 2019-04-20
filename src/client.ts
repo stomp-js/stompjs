@@ -370,6 +370,7 @@ export class Client {
       maxWebSocketChunkSize: this.maxWebSocketChunkSize,
       forceBinaryWSFrames: this.forceBinaryWSFrames,
       logRawCommunication: this.logRawCommunication,
+      appendMissingNULLonIncoming: this.appendMissingNULLonIncoming,
 
       onConnect: (frame) => {
         if (!this._active) {
