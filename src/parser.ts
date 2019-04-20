@@ -1,4 +1,4 @@
-import {IRawFrameType} from './types';
+import { IRawFrameType } from './types';
 
 /**
  * @internal
@@ -75,13 +75,24 @@ export class Parser {
     this._initState();
   }
 
-  public parseChunk(segment: string|ArrayBuffer) {
+  public parseChunk(segment: string | ArrayBuffer, appendMissingNULLonIncoming: boolean = false) {
     let chunk: Uint8Array;
 
     if ((segment instanceof ArrayBuffer)) {
       chunk = new Uint8Array(segment);
     } else {
       chunk = this._encoder.encode(segment);
+    }
+
+    // See https://github.com/stomp-js/stompjs/issues/89
+    // Remove when underlying issue is fixed.
+    //
+    // Send a NULL byte, if the last byte of a Text frame was not NULL.F
+    if (appendMissingNULLonIncoming && chunk[chunk.length - 1] !== 0) {
+      const chunkWithNull = new Uint8Array(chunk.length + 1);
+      chunkWithNull.set(chunk, 0);
+      chunkWithNull[chunk.length] = 0;
+      chunk = chunkWithNull;
     }
 
     // tslint:disable-next-line:prefer-for-of
