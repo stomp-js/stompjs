@@ -42,7 +42,7 @@
     "tslint": "^5.11.0",
     "typescript": "^3.2.1",
     "webpack": "^4.12.1",
-    "webpack-cli": "^3.0.8",
+    "webpack-cli": "^3.3.1",
     "websocket": "^1.0.26"
   },
   "esm5": "./esm5/index.js",
