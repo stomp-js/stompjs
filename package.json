@@ -41,7 +41,7 @@
     "text-encoding": "^0.7.0",
     "tslint": "^5.11.0",
     "typescript": "^3.2.1",
-    "webpack": "^4.32.0",
+    "webpack": "^4.32.2",
     "webpack-cli": "^3.3.2",
     "websocket": "^1.0.26"
   },
