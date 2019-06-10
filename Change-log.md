@@ -1,5 +1,9 @@
 # Change Log
 
+# 5.4.1 (2019-06-10)
+
+* Test cases for appendMissingNULLonIncoming.
+
 # 5.4.0 (2019-04-22)
 
 * Proper fix for [#89](https://github.com/stomp-js/stompjs/issues/89).
