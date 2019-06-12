@@ -70,7 +70,15 @@ var Stomp = /** @class */ (function () {
      * using [Client#webSocketFactory]{@link Client#webSocketFactory}.
      */
     Stomp.over = function (ws) {
-        var wsFn = typeof (ws) === 'function' ? ws : function () { return ws; };
+        var wsFn;
+        if (typeof (ws) === 'function') {
+            wsFn = ws;
+        }
+        else {
+            console.warn('Stomp.over did not receive a factory, auto reconnect will not work. ' +
+                'Please see https://stomp-js.github.io/api-docs/latest/classes/Stomp.html#over');
+            wsFn = function () { return ws; };
+        }
         return new CompatClient(wsFn);
     };
     /**

@@ -35,6 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 import { StompHandler } from './stomp-handler';
 import { Versions } from './versions';
+import { WebSocketState } from './web-socket-state';
 /**
  * STOMP Client Class.
  *
@@ -317,7 +318,8 @@ var Client = /** @class */ (function () {
      */
     Client.prototype.forceDisconnect = function () {
         if (this._webSocket) {
-            if (this._webSocket.readyState === WebSocket.CONNECTING || this._webSocket.readyState === WebSocket.OPEN) {
+            if (this._webSocket.readyState === WebSocketState.CONNECTING
+                || this._webSocket.readyState === WebSocketState.OPEN) {
                 this._webSocket.close();
             }
         }
