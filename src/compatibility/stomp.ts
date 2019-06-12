@@ -90,7 +90,15 @@ export class Stomp {
    * using [Client#webSocketFactory]{@link Client#webSocketFactory}.
    */
   public static over(ws: any): CompatClient {
-    const wsFn = typeof(ws) === 'function' ? ws : () => ws;
+    let wsFn: () => any;
+
+    if (typeof (ws) === 'function') {
+      wsFn = ws;
+    } else {
+      console.warn('Stomp.over did not receive a factory, auto reconnect will not work. ' +
+        'Please see https://stomp-js.github.io/api-docs/latest/classes/Stomp.html#over');
+      wsFn = () => ws;
+    }
 
     return new CompatClient(wsFn);
   }
