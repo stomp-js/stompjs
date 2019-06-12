@@ -1,5 +1,12 @@
 # Change Log
 
+# 5.4.2 (2019-06-12)
+
+* Some constants were used through `WebSocket` class, which failed in NodeJS.
+  Constants locally created to remove dependency.
+  Fixes [#119](https://github.com/stomp-js/stompjs/issues/119)
+* Warn if a plain socket (instead of a factory) is passed to `Stomp.over`.
+
 # 5.4.1 (2019-06-10)
 
 * Test cases for appendMissingNULLonIncoming.
