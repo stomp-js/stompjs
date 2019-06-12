@@ -10,6 +10,7 @@ __export(require("./stomp-config"));
 __export(require("./stomp-headers"));
 __export(require("./stomp-subscription"));
 __export(require("./versions"));
+__export(require("./web-socket-state"));
 // Compatibility code
 __export(require("./compatibility/compat-client"));
 __export(require("./compatibility/stomp"));

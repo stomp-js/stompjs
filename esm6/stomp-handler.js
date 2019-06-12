@@ -2,6 +2,7 @@ import { BYTE } from './byte';
 import { FrameImpl } from './frame-impl';
 import { Parser } from './parser';
 import { Versions } from './versions';
+import { WebSocketState } from './web-socket-state';
 /**
  * The STOMP protocol handler
  *
@@ -157,7 +158,7 @@ var StompHandler = /** @class */ (function () {
             var ttl = Math.max(this.heartbeatOutgoing, serverIncoming);
             this.debug("send PING every " + ttl + "ms");
             this._pinger = setInterval(function () {
-                if (_this._webSocket.readyState === WebSocket.OPEN) {
+                if (_this._webSocket.readyState === WebSocketState.OPEN) {
                     _this._webSocket.send(BYTE.LF);
                     _this.debug('>>> PING');
                 }
@@ -230,7 +231,8 @@ var StompHandler = /** @class */ (function () {
             }
         }
         else {
-            if (this._webSocket.readyState === WebSocket.CONNECTING || this._webSocket.readyState === WebSocket.OPEN) {
+            if (this._webSocket.readyState === WebSocketState.CONNECTING
+                || this._webSocket.readyState === WebSocketState.OPEN) {
                 this._webSocket.close();
             }
         }

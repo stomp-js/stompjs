@@ -37,6 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var stomp_handler_1 = require("./stomp-handler");
 var versions_1 = require("./versions");
+var web_socket_state_1 = require("./web-socket-state");
 /**
  * STOMP Client Class.
  *
@@ -319,7 +320,8 @@ var Client = /** @class */ (function () {
      */
     Client.prototype.forceDisconnect = function () {
         if (this._webSocket) {
-            if (this._webSocket.readyState === WebSocket.CONNECTING || this._webSocket.readyState === WebSocket.OPEN) {
+            if (this._webSocket.readyState === web_socket_state_1.WebSocketState.CONNECTING
+                || this._webSocket.readyState === web_socket_state_1.WebSocketState.OPEN) {
                 this._webSocket.close();
             }
         }

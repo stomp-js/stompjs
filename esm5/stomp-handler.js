@@ -4,6 +4,7 @@ var byte_1 = require("./byte");
 var frame_impl_1 = require("./frame-impl");
 var parser_1 = require("./parser");
 var versions_1 = require("./versions");
+var web_socket_state_1 = require("./web-socket-state");
 /**
  * The STOMP protocol handler
  *
@@ -159,7 +160,7 @@ var StompHandler = /** @class */ (function () {
             var ttl = Math.max(this.heartbeatOutgoing, serverIncoming);
             this.debug("send PING every " + ttl + "ms");
             this._pinger = setInterval(function () {
-                if (_this._webSocket.readyState === WebSocket.OPEN) {
+                if (_this._webSocket.readyState === web_socket_state_1.WebSocketState.OPEN) {
                     _this._webSocket.send(byte_1.BYTE.LF);
                     _this.debug('>>> PING');
                 }
@@ -232,7 +233,8 @@ var StompHandler = /** @class */ (function () {
             }
         }
         else {
-            if (this._webSocket.readyState === WebSocket.CONNECTING || this._webSocket.readyState === WebSocket.OPEN) {
+            if (this._webSocket.readyState === web_socket_state_1.WebSocketState.CONNECTING
+                || this._webSocket.readyState === web_socket_state_1.WebSocketState.OPEN) {
                 this._webSocket.close();
             }
         }

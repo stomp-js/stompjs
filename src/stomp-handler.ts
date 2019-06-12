@@ -16,6 +16,7 @@ import {
   wsErrorCallbackType
 } from './types';
 import {Versions} from './versions';
+import {WebSocketState} from './web-socket-state';
 
 /**
  * The STOMP protocol handler
@@ -237,7 +238,7 @@ export class StompHandler {
       const ttl: number = Math.max(this.heartbeatOutgoing, serverIncoming);
       this.debug(`send PING every ${ttl}ms`);
       this._pinger = setInterval(() => {
-        if (this._webSocket.readyState === WebSocket.OPEN) {
+        if (this._webSocket.readyState === WebSocketState.OPEN) {
           this._webSocket.send(BYTE.LF);
           this.debug('>>> PING');
         }
@@ -314,7 +315,8 @@ export class StompHandler {
         this.debug(`Ignoring error during disconnect ${error}`);
       }
     } else {
-      if (this._webSocket.readyState === WebSocket.CONNECTING || this._webSocket.readyState === WebSocket.OPEN) {
+      if (this._webSocket.readyState === WebSocketState.CONNECTING
+            || this._webSocket.readyState === WebSocketState.OPEN) {
         this._webSocket.close();
       }
     }
