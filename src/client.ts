@@ -12,6 +12,7 @@ import {
   wsErrorCallbackType
 } from './types';
 import {Versions} from './versions';
+import {WebSocketState} from './web-socket-state';
 
 /**
  * STOMP Client Class.
@@ -455,7 +456,8 @@ export class Client {
    */
   public forceDisconnect() {
     if (this._webSocket) {
-      if (this._webSocket.readyState === WebSocket.CONNECTING || this._webSocket.readyState === WebSocket.OPEN) {
+      if (this._webSocket.readyState === WebSocketState.CONNECTING
+              || this._webSocket.readyState === WebSocketState.OPEN) {
         this._webSocket.close();
       }
     }
