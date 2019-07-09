@@ -41,7 +41,7 @@ The API documentation is hosted as GitHub pages for entire StompJS family of lib
 You may head straight to the https://stomp-js.github.io/api-docs/latest/
 
 This library comes with detailed usage instructions. Please find it at 
-[Usage instructions](https://stomp-js.github.io/guide/stompjs/2018/06/28/using-stompjs-v5.html).
+[Usage instructions](https://stomp-js.github.io/guide/stompjs/2018/06/29/using-stompjs-v5.html).
 Check out other guides at https://stomp-js.github.io/.
 
 There are quite detailed API documentation,
