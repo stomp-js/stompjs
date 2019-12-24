@@ -1,5 +1,10 @@
 # Change Log
 
+# 5.4.3 (2020-01-23)
+
+* Allow server to not send heart-beat header with CONNECTED frame.
+  Fixes [#188](https://github.com/stomp-js/stompjs/issues/188).
+  
 # 5.4.2 (2019-06-12)
 
 * Some constants were used through `WebSocket` class, which failed in NodeJS.
