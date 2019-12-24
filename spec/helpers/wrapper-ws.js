@@ -60,7 +60,7 @@ class WrapperWS {
  * A wrapper for WebSocket.
  * By default it is a no op, i.e., exposes the underlying WebSocket without any changes.
  * However by providing alternate implementations to methods (typically send and/or onmessage)
- * several error conditions can be simulated. See ping.spec.js for examples.
+ * several error conditions can be simulated. See heart-beat.spec.js for examples.
  */
 
 WrapperWS = /** @class */ (function () {
