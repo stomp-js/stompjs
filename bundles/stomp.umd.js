@@ -133,10 +133,11 @@ exports.BYTE = {
 "use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -1749,6 +1750,11 @@ var StompHandler = /** @class */ (function () {
     StompHandler.prototype._setupHeartbeat = function (headers) {
         var _this = this;
         if ((headers.version !== versions_1.Versions.V1_1 && headers.version !== versions_1.Versions.V1_2)) {
+            return;
+        }
+        // It is valid for the server to not send this header
+        // https://stomp.github.io/stomp-specification-1.2.html#Heart-beating
+        if (!headers['heart-beat']) {
             return;
         }
         // heart-beat header received from the server looks like:
