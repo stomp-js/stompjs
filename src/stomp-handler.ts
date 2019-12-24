@@ -229,6 +229,12 @@ export class StompHandler {
       return;
     }
 
+    // It is valid for the server to not send this header
+    // https://stomp.github.io/stomp-specification-1.2.html#Heart-beating
+    if (!headers['heart-beat']) {
+      return;
+    }
+
     // heart-beat header received from the server looks like:
     //
     //     heart-beat: sx, sy

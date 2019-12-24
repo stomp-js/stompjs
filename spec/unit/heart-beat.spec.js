@@ -22,6 +22,36 @@ describe("Ping", function () {
     return typeof(data) === "string" ? data.length : data.byteLength;
   };
 
+  // See https://github.com/stomp-js/stompjs/issues/188
+  it("Should allow server to not send heartbeat header", function (done) {
+    client.webSocketFactory = () => {
+      const wrapperWS = new WrapperWS(new WebSocket(client.brokerURL));
+      let inComingFrame;
+      const onFrame = (frame) => {
+        inComingFrame = frame;
+      };
+      const onIncomingPing = () => {};
+      const parser = new StompJs.Parser(onFrame, onIncomingPing);
+
+      wrapperWS.ws.onmessage = (ev) => {
+        parser.parseChunk(ev.data);
+        if (inComingFrame.command === 'CONNECTED') {
+          const frame = StompJs.FrameImpl.fromRawFrame(inComingFrame, this._escapeHeaderValues);
+          delete frame.headers['heart-beat'];
+          ev = {data: frame.serialize()};
+        }
+        wrapperWS.onmessage(ev);
+      };
+      return wrapperWS;
+    };
+
+    client.onConnect = () => {
+      done();
+    };
+
+    client.activate();
+  });
+
   it("Should close connection when no incoming ping", function (done) {
     client.heartbeatIncoming = 1000;
     client.heartbeatOutgoing = 0;
