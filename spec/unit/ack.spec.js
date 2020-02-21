@@ -1,54 +1,114 @@
-describe("Stomp Acknowledgement", function () {
-  let client;
+describe("Stomp Acknowledgement (RabbitMQ specific queue destination)", function () {
+  let client01;
+  let client02;
 
-  beforeEach(function () {
-    client = stompClient();
+  beforeEach(function (done) {
+    client01 = stompClient();
+    client01.onConnect = () => done();
+    client01.activate();
+  });
+
+  beforeEach(function (done) {
+    client02 = stompClient();
+    client02.onConnect = () => done();
+    client02.activate();
   });
 
   afterEach(function () {
-    disconnectStomp(client);
+    disconnectStomp(client01);
+    disconnectStomp(client02);
   });
 
-  it("Subscribe using client ack mode, send a message and ack it", function (done) {
+  it("Should deliver to other client if nacked from one", function (done) {
+    const queueDestination = "/queue/test01";
+    let receivedCount = 0;
     const body = randomText();
 
-    client.onConnect = function () {
+    const setUpSubscription = function (client) {
       const onMessage = function (message) {
-        // we should receive the 2nd message outside the transaction
-        expect(message.body).toEqual(body);
-        const receipt = randomText();
-        client.onUnhandledReceipt = function (frame) {
-          expect(frame.headers['receipt-id']).toEqual(receipt);
+        if (message.body !== body) {
+          return;
+        }
 
-          done();
-        };
-        message.ack({'receipt': receipt});
+        receivedCount++;
+
+        if (receivedCount < 3) {
+          message.nack();
+          return;
+        }
+
+        message.ack();
+        done();
       };
-      const sub = client.subscribe(TEST.destination, onMessage, {'ack': 'client'});
-      client.publish({destination: TEST.destination, body: body});
+
+      client.subscribe(queueDestination, onMessage, {'ack': 'client'});
     };
 
-    client.activate();
+    setUpSubscription(client01);
+    setUpSubscription(client02);
+
+    client01.publish({destination: queueDestination, body: body});
   });
 
-  it("Subscribe using client ack mode, send a message and nack it", function (done) {
+  it("Should deliver to other client if connection drops before ack", function (done) {
+    const queueDestination = "/queue/test01";
+    let receivedCount = 0;
     const body = randomText();
 
-    client.onConnect = function () {
+    const setUpSubscription = function (client) {
       const onMessage = function (message) {
+        if (message.body !== body) {
+          return;
+        }
 
-        expect(message.body).toEqual(body);
-        const receipt = randomText();
-        client.onUnhandledReceipt = function (frame) {
-          expect(frame.headers['receipt-id']).toEqual(receipt);
-          done();
-        };
-        message.nack({'receipt': receipt});
+        receivedCount++;
+
+        if (receivedCount === 1) {
+          client.deactivate();
+          return;
+        }
+
+        message.ack();
+        done();
       };
-      const sub = client.subscribe(TEST.destination, onMessage, {'ack': 'client'});
-      client.publish({destination: TEST.destination, body: body});
+
+      client.subscribe(queueDestination, onMessage, {'ack': 'client'});
     };
 
-    client.activate();
+    setUpSubscription(client01);
+    setUpSubscription(client02);
+
+    client01.publish({destination: queueDestination, body: body});
+  });
+
+  it("Should not redeliver after ack", function (done) {
+    const queueDestination = "/queue/test01";
+    let receivedCount = 0;
+    const body = randomText();
+
+    const setUpSubscription = function (client) {
+      const onMessage = function (message) {
+        if (message.body !== body) {
+          return;
+        }
+
+        receivedCount++;
+
+        message.ack();
+        client.deactivate();
+
+        setTimeout(function () {
+          expect(receivedCount).toEqual(1);
+          done();
+        }, 100);
+      };
+
+      client.subscribe(queueDestination, onMessage, {'ack': 'client'});
+    };
+
+    setUpSubscription(client01);
+    setUpSubscription(client02);
+
+    client01.publish({destination: queueDestination, body: body});
   });
 });
