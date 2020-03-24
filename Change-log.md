@@ -1,5 +1,11 @@
 # Change Log
 
+# 5.4.4 (2020-03-24)
+
+* Improve test cases for ack/nack.
+* Defensively ignore messages before closing underlying web socket.
+  Attempt to fix [#213](https://github.com/stomp-js/stompjs/issues/213).
+
 # 5.4.3 (2020-01-23)
 
 * Allow server to not send heart-beat header with CONNECTED frame.
