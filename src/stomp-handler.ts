@@ -259,10 +259,15 @@ export class StompHandler {
         // We wait twice the TTL to be flexible on window's setInterval calls
         if (delta > (ttl * 2)) {
           this.debug(`did not receive server activity for the last ${delta}ms`);
-          this._webSocket.close();
+          this._closeWebsocket();
         }
       }, ttl);
     }
+  }
+
+  public _closeWebsocket() {
+    this._webSocket.onmessage = () => { }; // ignore messages
+    this._webSocket.close();
   }
 
   private _transmit(params: { command: string, headers?: StompHeaders,
@@ -312,7 +317,7 @@ export class StompHandler {
           disconnectHeaders.receipt = `close-${this._counter++}`;
         }
         this.watchForReceipt(disconnectHeaders.receipt, (frame) => {
-          this._webSocket.close();
+          this._closeWebsocket();
           this._cleanUp();
           this.onDisconnect(frame);
         });
@@ -323,7 +328,7 @@ export class StompHandler {
     } else {
       if (this._webSocket.readyState === WebSocketState.CONNECTING
             || this._webSocket.readyState === WebSocketState.OPEN) {
-        this._webSocket.close();
+        this._closeWebsocket();
       }
     }
   }
