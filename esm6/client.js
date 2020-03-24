@@ -321,7 +321,7 @@ var Client = /** @class */ (function () {
         if (this._webSocket) {
             if (this._webSocket.readyState === WebSocketState.CONNECTING
                 || this._webSocket.readyState === WebSocketState.OPEN) {
-                this._webSocket.close();
+                this._stompHandler._closeWebsocket();
             }
         }
     };

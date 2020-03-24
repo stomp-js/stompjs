@@ -51,6 +51,7 @@ export declare class StompHandler {
     start(): void;
     private readonly _serverFrameHandlers;
     private _setupHeartbeat;
+    _closeWebsocket(): void;
     private _transmit;
     dispose(): void;
     private _cleanUp;

@@ -177,10 +177,14 @@ var StompHandler = /** @class */ (function () {
                 // We wait twice the TTL to be flexible on window's setInterval calls
                 if (delta > (ttl_1 * 2)) {
                     _this.debug("did not receive server activity for the last " + delta + "ms");
-                    _this._webSocket.close();
+                    _this._closeWebsocket();
                 }
             }, ttl_1);
         }
+    };
+    StompHandler.prototype._closeWebsocket = function () {
+        this._webSocket.onmessage = function () { }; // ignore messages
+        this._webSocket.close();
     };
     StompHandler.prototype._transmit = function (params) {
         var command = params.command, headers = params.headers, body = params.body, binaryBody = params.binaryBody, skipContentLengthHeader = params.skipContentLengthHeader;
@@ -225,7 +229,7 @@ var StompHandler = /** @class */ (function () {
                     disconnectHeaders.receipt = "close-" + this._counter++;
                 }
                 this.watchForReceipt(disconnectHeaders.receipt, function (frame) {
-                    _this._webSocket.close();
+                    _this._closeWebsocket();
                     _this._cleanUp();
                     _this.onDisconnect(frame);
                 });
@@ -238,7 +242,7 @@ var StompHandler = /** @class */ (function () {
         else {
             if (this._webSocket.readyState === WebSocketState.CONNECTING
                 || this._webSocket.readyState === WebSocketState.OPEN) {
-                this._webSocket.close();
+                this._closeWebsocket();
             }
         }
     };
