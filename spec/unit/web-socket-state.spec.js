@@ -1,10 +1,10 @@
-describe('WebSocketState', function () {
+describe('StompSocketState', function () {
   it('use same constant values as WebSocket', function () {
-    const WebSocketState = StompJs.WebSocketState;
+    const StompSocketState = StompJs.StompSocketState;
 
-    expect(WebSocketState.CLOSED).toEqual(WebSocket.CLOSED);
-    expect(WebSocketState.CLOSING).toEqual(WebSocket.CLOSING);
-    expect(WebSocketState.CONNECTING).toEqual(WebSocket.CONNECTING);
-    expect(WebSocketState.OPEN).toEqual(WebSocket.OPEN);
+    expect(StompSocketState.CLOSED).toEqual(WebSocket.CLOSED);
+    expect(StompSocketState.CLOSING).toEqual(WebSocket.CLOSING);
+    expect(StompSocketState.CONNECTING).toEqual(WebSocket.CONNECTING);
+    expect(StompSocketState.OPEN).toEqual(WebSocket.OPEN);
   });
 });
