@@ -15,11 +15,6 @@ import {
 } from './types';
 import {Versions} from './versions';
 
-declare const StompSocket: {
-    prototype: IStompSocket;
-    new(url: string, protocols?: string | string[]): IStompSocket;
-};
-
 declare const WebSocket: {
     prototype: IStompSocket;
     new(url: string, protocols?: string | string[]): IStompSocket;    
@@ -425,8 +420,6 @@ export class Client {
 
     if (this.webSocketFactory) {
       webSocket = this.webSocketFactory();
-    } else if (typeof StompSocket === 'function') {
-        webSocket = new StompSocket(this.brokerURL, this.stompVersions.protocolVersions());
     } else {
       webSocket = new WebSocket(this.brokerURL, this.stompVersions.protocolVersions());
     }
