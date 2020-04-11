@@ -29,7 +29,7 @@ export type frameCallbackType = (receipt: IFrame) => void;
  *
  * Part of `@stomp/stompjs`.
  */
-export type closeEventCallbackType = (evt: CloseEvent) => void;
+export type closeEventCallbackType<T = any> = (evt: T) => void;
 
 /**
  * This callback will receive an [Event]{@link https://developer.mozilla.org/en-US/docs/Web/API/Event}
@@ -37,7 +37,7 @@ export type closeEventCallbackType = (evt: CloseEvent) => void;
  *
  * Part of `@stomp/stompjs`.
  */
-export type wsErrorCallbackType = (evt: Event) => void;
+export type wsErrorCallbackType<T = any> = (evt: T) => void;
 
 /**
  * Parameters for [Client#publish]{@link Client#publish}.
@@ -91,3 +91,44 @@ export type RawHeaderType = [string, string];
  * @internal
  */
 export interface IRawFrameType { command: string; headers: RawHeaderType[]; binaryBody: Uint8Array; }
+
+export interface IStompSocketMessageEvent {
+    data?: string | ArrayBuffer
+}
+export interface IStompSocket {
+  onclose: ((this: IStompSocket, ev?: any) => any) | null;
+  onerror: ((this: IStompSocket, ev: any) => any) | null;
+  onmessage: ((this: IStompSocket, ev: IStompSocketMessageEvent) => any) | null;
+  onopen: ((this: IStompSocket, ev?: any) => any) | null;
+
+  /**
+   * Returns a string that indicates how binary data from the socket is exposed to scripts:
+   * We support only 'arraybuffer'.
+   */
+  binaryType: 'arraybuffer';
+
+  /**
+   * Returns the state of the socket connection. It can have the values of StompSocketState.
+   */
+  readonly readyState: number;
+
+  /**
+   * Closes the connection.
+   */
+  close(): void;
+  /**
+   * Transmits data using the connection. data can be a string or an ArrayBuffer.
+   */
+  send(data: string | ArrayBuffer): void;
+}
+
+/**
+ * Possible states for the IStompSocket
+ *
+ */
+export enum StompSocketState {
+  CONNECTING,
+  OPEN,
+  CLOSING,
+  CLOSED
+}

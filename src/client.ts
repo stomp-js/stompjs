@@ -9,10 +9,21 @@ import {
   frameCallbackType,
   IPublishParams,
   messageCallbackType,
-  wsErrorCallbackType
+  wsErrorCallbackType,
+  IStompSocket,
+  StompSocketState
 } from './types';
 import {Versions} from './versions';
-import {WebSocketState} from './web-socket-state';
+
+declare const StompSocket: {
+    prototype: IStompSocket;
+    new(url: string, protocols?: string | string[]): IStompSocket;
+};
+
+declare const WebSocket: {
+    prototype: IStompSocket;
+    new(url: string, protocols?: string | string[]): IStompSocket;    
+};
 
 /**
  * STOMP Client Class.
@@ -41,7 +52,7 @@ export class Client {
   public stompVersions = Versions.default;
 
   /**
-   * This function should return a WebSocket or a similar (e.g. SockJS) object.
+   * This function should return a IStompSocket or a similar (e.g. SockJS) object.
    * If your STOMP Broker supports WebSockets, prefer setting [Client#brokerURL]{@link Client#brokerURL}.
    *
    * If both this and [Client#brokerURL]{@link Client#brokerURL} are set, this will be used.
@@ -59,7 +70,7 @@ export class Client {
    *        };
    * ```
    */
-  public webSocketFactory: () => WebSocket;
+  public webSocketFactory: () => IStompSocket;
 
   /**
    *  automatically reconnect with delay in milliseconds, set to 0 to disable.
@@ -122,14 +133,14 @@ export class Client {
   /**
    * Underlying WebSocket instance, READONLY.
    */
-  get webSocket(): WebSocket {
+  get webSocket(): IStompSocket {
     return this._webSocket;
   }
   /**
-   * Underlying WebSocket instance
+   * Underlying IStompSocket instance
    * @internal
    */
-  protected _webSocket: WebSocket;
+  protected _webSocket: IStompSocket;
 
   /**
    * Connection headers, important keys - `login`, `passcode`, `host`.
@@ -409,11 +420,13 @@ export class Client {
     this._stompHandler.start();
   }
 
-  private _createWebSocket() {
-    let webSocket: WebSocket;
+  private _createWebSocket(): IStompSocket {
+    let webSocket: IStompSocket;
 
     if (this.webSocketFactory) {
       webSocket = this.webSocketFactory();
+    } else if (typeof StompSocket === 'function') {
+        webSocket = new StompSocket(this.brokerURL, this.stompVersions.protocolVersions());
     } else {
       webSocket = new WebSocket(this.brokerURL, this.stompVersions.protocolVersions());
     }
@@ -456,8 +469,8 @@ export class Client {
    */
   public forceDisconnect() {
     if (this._webSocket) {
-      if (this._webSocket.readyState === WebSocketState.CONNECTING
-              || this._webSocket.readyState === WebSocketState.OPEN) {
+      if (this._webSocket.readyState === StompSocketState.CONNECTING
+              || this._webSocket.readyState === StompSocketState.OPEN) {
         this._stompHandler._closeWebsocket();
       }
     }

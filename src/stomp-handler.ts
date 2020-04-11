@@ -13,10 +13,12 @@ import {
   frameCallbackType,
   IPublishParams,
   messageCallbackType,
-  wsErrorCallbackType
+  wsErrorCallbackType,
+  IStompSocket,
+  StompSocketState,
+  IStompSocketMessageEvent,
 } from './types';
 import {Versions} from './versions';
-import {WebSocketState} from './web-socket-state';
 
 /**
  * The STOMP protocol handler
@@ -84,7 +86,7 @@ export class StompHandler {
   private _ponger: any;
   private _lastServerActivityTS: number;
 
-  constructor(private _client: Client, private _webSocket: WebSocket, config: StompConfig = {}) {
+  constructor(private _client: Client, private _webSocket: IStompSocket, config: StompConfig = {}) {
     // used to index subscribers
     this._counter = 0;
 
@@ -128,7 +130,7 @@ export class StompHandler {
       }
     );
 
-    this._webSocket.onmessage = (evt: any) => {
+    this._webSocket.onmessage = (evt: IStompSocketMessageEvent) => {
       this.debug('Received data');
       this._lastServerActivityTS = Date.now();
 
@@ -140,13 +142,13 @@ export class StompHandler {
       parser.parseChunk(evt.data, this.appendMissingNULLonIncoming);
     };
 
-    this._webSocket.onclose = (closeEvent: CloseEvent): void => {
-      this.debug(`Connection closed to ${this._webSocket.url}`);
+    this._webSocket.onclose = (closeEvent): void => {
+      this.debug(`Connection closed to ${this._client.brokerURL}`);
       this.onWebSocketClose(closeEvent);
       this._cleanUp();
     };
 
-    this._webSocket.onerror = (errorEvent: Event): void => {
+    this._webSocket.onerror = (errorEvent): void => {
       this.onWebSocketError(errorEvent);
     };
 
@@ -244,7 +246,7 @@ export class StompHandler {
       const ttl: number = Math.max(this.heartbeatOutgoing, serverIncoming);
       this.debug(`send PING every ${ttl}ms`);
       this._pinger = setInterval(() => {
-        if (this._webSocket.readyState === WebSocketState.OPEN) {
+        if (this._webSocket.readyState === StompSocketState.OPEN) {
           this._webSocket.send(BYTE.LF);
           this.debug('>>> PING');
         }
@@ -326,8 +328,8 @@ export class StompHandler {
         this.debug(`Ignoring error during disconnect ${error}`);
       }
     } else {
-      if (this._webSocket.readyState === WebSocketState.CONNECTING
-            || this._webSocket.readyState === WebSocketState.OPEN) {
+      if (this._webSocket.readyState === StompSocketState.CONNECTING
+            || this._webSocket.readyState === StompSocketState.OPEN) {
         this._closeWebsocket();
       }
     }
