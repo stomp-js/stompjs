@@ -1,5 +1,11 @@
 import {Versions} from '../versions';
 import {CompatClient} from './compat-client';
+import { IStompSocket } from '../types';
+
+declare const WebSocket: {
+    prototype: IStompSocket;
+    new(url: string, protocols?: string | string[]): IStompSocket;    
+};
 
 /**
  * STOMP Class, acts like a factory to create {@link Client}.
