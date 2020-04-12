@@ -32,6 +32,9 @@ export class Client {
    *
    * Only one of this or [Client#webSocketFactory]{@link Client#webSocketFactory} need to be set.
    * If both are set, [Client#webSocketFactory]{@link Client#webSocketFactory} will be used.
+   *
+   * If your environment does not support WebSockets natively, please refer to
+   * [Polyfills]{@link https://stomp-js.github.io/guide/stompjs/rx-stomp/ng2-stompjs/pollyfils-for-stompjs-v5.html}.
    */
   public brokerURL: string;
 
@@ -47,7 +50,9 @@ export class Client {
   public stompVersions = Versions.default;
 
   /**
-   * This function should return a IStompSocket or a similar (e.g. SockJS) object.
+   * This function should return a WebSocket or a similar (e.g. SockJS) object.
+   * If your environment does not support WebSockets natively, please refer to
+   * [Polyfills]{@link https://stomp-js.github.io/guide/stompjs/rx-stomp/ng2-stompjs/pollyfils-for-stompjs-v5.html}.
    * If your STOMP Broker supports WebSockets, prefer setting [Client#brokerURL]{@link Client#brokerURL}.
    *
    * If both this and [Client#brokerURL]{@link Client#brokerURL} are set, this will be used.
@@ -132,7 +137,7 @@ export class Client {
     return this._webSocket;
   }
   /**
-   * Underlying IStompSocket instance
+   * Underlying IStompSocket (typically WebSocket) instance
    * @internal
    */
   protected _webSocket: IStompSocket;
