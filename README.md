@@ -76,11 +76,12 @@ If you want to understand the code, develop, or contribute. Please visit
  * [Jeff Lindsay](http://github.com/progrium)
  * [Vanessa Williams](http://github.com/fridgebuzz)
  * [Deepak Kumar](https://github.com/kum-deepak)
- * Astha Deep
+ * [Astha Deep](https://github.com/astha183)
  * [Dillon Sellars](https://github.com/dillon-sellars)
  * [Jimi Charalampidis](https://github.com/jimic)
  * [Raul](https://github.com/rulonder)
  * [Dimitar Georgiev](https://github.com/iMitaka)
+ * [Genadi](https://github.com/genadis)
 
 ## License
 
