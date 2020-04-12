@@ -17,7 +17,7 @@ import {Versions} from './versions';
 
 declare const WebSocket: {
     prototype: IStompSocket;
-    new(url: string, protocols?: string | string[]): IStompSocket;    
+    new(url: string, protocols?: string | string[]): IStompSocket;
 };
 
 /**
