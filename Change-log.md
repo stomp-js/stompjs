@@ -1,5 +1,10 @@
 # Change Log
 
+# 6.0.0 (TBD)
+
+* Remove dom lib dependency for usage with NodeJS/Typescript.
+  See [#224](https://github.com/stomp-js/stompjs/pull/224).
+
 # 5.4.4 (2020-03-24)
 
 * Improve test cases for ack/nack.
