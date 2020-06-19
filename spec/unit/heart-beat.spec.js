@@ -52,7 +52,7 @@ describe("Ping", function () {
     client.activate();
   });
 
-  it("Should close connection when no incoming ping", function (done) {
+  const incomingPingTest = function (done) {
     client.heartbeatIncoming = 1000;
     client.heartbeatOutgoing = 0;
 
@@ -74,6 +74,16 @@ describe("Ping", function () {
     };
 
     client.activate();
+  };
+
+  it("Should close connection when no incoming ping", incomingPingTest);
+
+  describe('With discardWebsocketOnCommFailure', function() {
+    beforeEach(function () {
+      client.discardWebsocketOnCommFailure = true;
+    });
+
+    it("Should close connection when no incoming ping", incomingPingTest);
   });
 
   it("Should close connection when no outgoing ping", function (done) {

@@ -130,4 +130,10 @@ export class StompConfig {
    * See [Client#debug]{@link Client#debug}.
    */
   public debug?: debugFnType;
+
+  /**
+   * See [Client#discardWebsocketOnCommFailure]{@link Client#discardWebsocketOnCommFailure}.
+   */
+  public discardWebsocketOnCommFailure?: boolean;
+
 }

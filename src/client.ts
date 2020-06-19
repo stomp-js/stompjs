@@ -286,6 +286,14 @@ export class Client {
   public debug: debugFnType;
 
   /**
+   * Browsers do not immediately close WebSockets when `.close` is issued.
+   * This may cause reconnection to take a longer on certain type of failures.
+   * In case of incoming heartbeat failure, this experimental flag instructs the library
+   * to discard the socket immediately (even before it is actually closed).
+   */
+  public discardWebsocketOnCommFailure: boolean;
+
+  /**
    * version of STOMP protocol negotiated with the server, READONLY
    */
   get connectedVersion(): string {
@@ -380,6 +388,7 @@ export class Client {
       forceBinaryWSFrames: this.forceBinaryWSFrames,
       logRawCommunication: this.logRawCommunication,
       appendMissingNULLonIncoming: this.appendMissingNULLonIncoming,
+      discardWebsocketOnCommFailure: this.discardWebsocketOnCommFailure,
 
       onConnect: (frame) => {
         if (!this._active) {
