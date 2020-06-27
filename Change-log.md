@@ -5,6 +5,8 @@
 * Remove dom lib dependency for usage with NodeJS/Typescript.
   See [#224](https://github.com/stomp-js/stompjs/pull/224).
 * Drop ES5 module output, target ES2017 instead of ES6 for modules.
+* Concept of `discardWebsocketOnCommFailure`.
+  See: [#247](https://github.com/stomp-js/stompjs/issues/247).
 
 # 5.4.4 (2020-03-24)
 
