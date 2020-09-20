@@ -3,7 +3,7 @@ import { ITransaction } from './i-transaction';
 import { StompConfig } from './stomp-config';
 import { StompHeaders } from './stomp-headers';
 import { StompSubscription } from './stomp-subscription';
-import { closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, messageCallbackType, wsErrorCallbackType } from './types';
+import { closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, IStompSocket, messageCallbackType, wsErrorCallbackType } from './types';
 import { Versions } from './versions';
 /**
  * The STOMP protocol handler
@@ -34,6 +34,7 @@ export declare class StompHandler {
     maxWebSocketChunkSize: number;
     forceBinaryWSFrames: boolean;
     appendMissingNULLonIncoming: boolean;
+    discardWebsocketOnCommFailure: boolean;
     readonly connectedVersion: string;
     private _connectedVersion;
     readonly connected: boolean;
@@ -46,12 +47,14 @@ export declare class StompHandler {
     private _pinger;
     private _ponger;
     private _lastServerActivityTS;
-    constructor(_client: Client, _webSocket: WebSocket, config?: StompConfig);
+    private _onclose;
+    constructor(_client: Client, _webSocket: IStompSocket, config?: StompConfig);
     configure(conf: StompConfig): void;
     start(): void;
     private readonly _serverFrameHandlers;
     private _setupHeartbeat;
     _closeWebsocket(): void;
+    private _discardWebsocket;
     private _transmit;
     dispose(): void;
     private _cleanUp;

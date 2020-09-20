@@ -9,9 +9,7 @@ import { CompatClient } from './compat-client';
  *
  * It will be removed in next major version. Please switch to {@link Client}.
  */
-var Stomp = /** @class */ (function () {
-    function Stomp() {
-    }
+export class Stomp {
     /**
      * This method creates a WebSocket client that is connected to
      * the STOMP server located at the url.
@@ -26,7 +24,7 @@ var Stomp = /** @class */ (function () {
      * It will be removed in next major version. Please switch to {@link Client}
      * using [Client#brokerURL]{@link Client#brokerURL}.
      */
-    Stomp.client = function (url, protocols) {
+    static client(url, protocols) {
         // This is a hack to allow another implementation than the standard
         // HTML5 WebSocket class.
         //
@@ -42,12 +40,12 @@ var Stomp = /** @class */ (function () {
         if (protocols == null) {
             protocols = Versions.default.protocolVersions();
         }
-        var wsFn = function () {
-            var klass = Stomp.WebSocketClass || WebSocket;
+        const wsFn = () => {
+            const klass = Stomp.WebSocketClass || WebSocket;
             return new klass(url, protocols);
         };
         return new CompatClient(wsFn);
-    };
+    }
     /**
      * This method is an alternative to [Stomp#client]{@link Stomp#client} to let the user
      * specify the WebSocket to use (either a standard HTML5 WebSocket or
@@ -69,38 +67,36 @@ var Stomp = /** @class */ (function () {
      * It will be removed in next major version. Please switch to {@link Client}
      * using [Client#webSocketFactory]{@link Client#webSocketFactory}.
      */
-    Stomp.over = function (ws) {
-        var wsFn;
+    static over(ws) {
+        let wsFn;
         if (typeof (ws) === 'function') {
             wsFn = ws;
         }
         else {
             console.warn('Stomp.over did not receive a factory, auto reconnect will not work. ' +
                 'Please see https://stomp-js.github.io/api-docs/latest/classes/Stomp.html#over');
-            wsFn = function () { return ws; };
+            wsFn = () => ws;
         }
         return new CompatClient(wsFn);
-    };
-    /**
-     * In case you need to use a non standard class for WebSocket.
-     *
-     * For example when using within NodeJS environment:
-     *
-     * ```javascript
-     *        StompJs = require('../../esm5/');
-     *        Stomp = StompJs.Stomp;
-     *        Stomp.WebSocketClass = require('websocket').w3cwebsocket;
-     * ```
-     *
-     * **Deprecated**
-     *
-     *
-     * It will be removed in next major version. Please switch to {@link Client}
-     * using [Client#webSocketFactory]{@link Client#webSocketFactory}.
-     */
-    // tslint:disable-next-line:variable-name
-    Stomp.WebSocketClass = null;
-    return Stomp;
-}());
-export { Stomp };
+    }
+}
+/**
+ * In case you need to use a non standard class for WebSocket.
+ *
+ * For example when using within NodeJS environment:
+ *
+ * ```javascript
+ *        StompJs = require('../../esm5/');
+ *        Stomp = StompJs.Stomp;
+ *        Stomp.WebSocketClass = require('websocket').w3cwebsocket;
+ * ```
+ *
+ * **Deprecated**
+ *
+ *
+ * It will be removed in next major version. Please switch to {@link Client}
+ * using [Client#webSocketFactory]{@link Client#webSocketFactory}.
+ */
+// tslint:disable-next-line:variable-name
+Stomp.WebSocketClass = null;
 //# sourceMappingURL=stomp.js.map

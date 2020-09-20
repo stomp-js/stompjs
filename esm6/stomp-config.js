@@ -5,10 +5,6 @@
  *
  * Part of `@stomp/stompjs`.
  */
-var StompConfig = /** @class */ (function () {
-    function StompConfig() {
-    }
-    return StompConfig;
-}());
-export { StompConfig };
+export class StompConfig {
+}
 //# sourceMappingURL=stomp-config.js.map

@@ -2,7 +2,7 @@ import { ITransaction } from './i-transaction';
 import { StompConfig } from './stomp-config';
 import { StompHeaders } from './stomp-headers';
 import { StompSubscription } from './stomp-subscription';
-import { closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, messageCallbackType, wsErrorCallbackType } from './types';
+import { closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, messageCallbackType, wsErrorCallbackType, IStompSocket } from './types';
 import { Versions } from './versions';
 /**
  * STOMP Client Class.
@@ -16,6 +16,9 @@ export declare class Client {
      *
      * Only one of this or [Client#webSocketFactory]{@link Client#webSocketFactory} need to be set.
      * If both are set, [Client#webSocketFactory]{@link Client#webSocketFactory} will be used.
+     *
+     * If your environment does not support WebSockets natively, please refer to
+     * [Polyfills]{@link https://stomp-js.github.io/guide/stompjs/rx-stomp/ng2-stompjs/pollyfils-for-stompjs-v5.html}.
      */
     brokerURL: string;
     /**
@@ -30,6 +33,8 @@ export declare class Client {
     stompVersions: Versions;
     /**
      * This function should return a WebSocket or a similar (e.g. SockJS) object.
+     * If your environment does not support WebSockets natively, please refer to
+     * [Polyfills]{@link https://stomp-js.github.io/guide/stompjs/rx-stomp/ng2-stompjs/pollyfils-for-stompjs-v5.html}.
      * If your STOMP Broker supports WebSockets, prefer setting [Client#brokerURL]{@link Client#brokerURL}.
      *
      * If both this and [Client#brokerURL]{@link Client#brokerURL} are set, this will be used.
@@ -47,7 +52,7 @@ export declare class Client {
      *        };
      * ```
      */
-    webSocketFactory: () => WebSocket;
+    webSocketFactory: () => IStompSocket;
     /**
      *  automatically reconnect with delay in milliseconds, set to 0 to disable.
      */
@@ -102,12 +107,12 @@ export declare class Client {
     /**
      * Underlying WebSocket instance, READONLY.
      */
-    readonly webSocket: WebSocket;
+    readonly webSocket: IStompSocket;
     /**
-     * Underlying WebSocket instance
+     * Underlying IStompSocket (typically WebSocket) instance
      * @internal
      */
-    protected _webSocket: WebSocket;
+    protected _webSocket: IStompSocket;
     /**
      * Connection headers, important keys - `login`, `passcode`, `host`.
      * Though STOMP 1.2 standard marks these keys to be present, check your broker documentation for
@@ -226,6 +231,13 @@ export declare class Client {
      * and may contain sensitive information (like passwords, tokens etc.).
      */
     debug: debugFnType;
+    /**
+     * Browsers do not immediately close WebSockets when `.close` is issued.
+     * This may cause reconnection to take a longer on certain type of failures.
+     * In case of incoming heartbeat failure, this experimental flag instructs the library
+     * to discard the socket immediately (even before it is actually closed).
+     */
+    discardWebsocketOnCommFailure: boolean;
     /**
      * version of STOMP protocol negotiated with the server, READONLY
      */

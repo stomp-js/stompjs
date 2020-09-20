@@ -1,53 +1,16 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 import { StompHandler } from './stomp-handler';
+import { StompSocketState } from './types';
 import { Versions } from './versions';
-import { WebSocketState } from './web-socket-state';
 /**
  * STOMP Client Class.
  *
  * Part of `@stomp/stompjs`.
  */
-var Client = /** @class */ (function () {
+export class Client {
     /**
      * Create an instance.
      */
-    function Client(conf) {
-        if (conf === void 0) { conf = {}; }
+    constructor(conf = {}) {
         /**
          * STOMP versions to attempt during STOMP handshake. By default versions `1.0`, `1.1`, and `1.2` are attempted.
          *
@@ -111,7 +74,7 @@ var Client = /** @class */ (function () {
         this.appendMissingNULLonIncoming = false;
         this._active = false;
         // Dummy callbacks
-        var noOp = function () { };
+        const noOp = () => { };
         this.debug = noOp;
         this.beforeConnect = noOp;
         this.onConnect = noOp;
@@ -129,69 +92,49 @@ var Client = /** @class */ (function () {
         // Apply configuration
         this.configure(conf);
     }
-    Object.defineProperty(Client.prototype, "webSocket", {
-        /**
-         * Underlying WebSocket instance, READONLY.
-         */
-        get: function () {
-            return this._webSocket;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Client.prototype, "disconnectHeaders", {
-        /**
-         * Disconnection headers.
-         */
-        get: function () {
-            return this._disconnectHeaders;
-        },
-        set: function (value) {
-            this._disconnectHeaders = value;
-            if (this._stompHandler) {
-                this._stompHandler.disconnectHeaders = this._disconnectHeaders;
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Client.prototype, "connected", {
-        /**
-         * `true` if there is a active connection with STOMP Broker
-         */
-        get: function () {
-            return (!!this._stompHandler) && this._stompHandler.connected;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Client.prototype, "connectedVersion", {
-        /**
-         * version of STOMP protocol negotiated with the server, READONLY
-         */
-        get: function () {
-            return this._stompHandler ? this._stompHandler.connectedVersion : undefined;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Client.prototype, "active", {
-        /**
-         * if the client is active (connected or going to reconnect)
-         */
-        get: function () {
-            return this._active;
-        },
-        enumerable: true,
-        configurable: true
-    });
+    /**
+     * Underlying WebSocket instance, READONLY.
+     */
+    get webSocket() {
+        return this._webSocket;
+    }
+    /**
+     * Disconnection headers.
+     */
+    get disconnectHeaders() {
+        return this._disconnectHeaders;
+    }
+    set disconnectHeaders(value) {
+        this._disconnectHeaders = value;
+        if (this._stompHandler) {
+            this._stompHandler.disconnectHeaders = this._disconnectHeaders;
+        }
+    }
+    /**
+     * `true` if there is a active connection with STOMP Broker
+     */
+    get connected() {
+        return (!!this._stompHandler) && this._stompHandler.connected;
+    }
+    /**
+     * version of STOMP protocol negotiated with the server, READONLY
+     */
+    get connectedVersion() {
+        return this._stompHandler ? this._stompHandler.connectedVersion : undefined;
+    }
+    /**
+     * if the client is active (connected or going to reconnect)
+     */
+    get active() {
+        return this._active;
+    }
     /**
      * Update configuration.
      */
-    Client.prototype.configure = function (conf) {
+    configure(conf) {
         // bulk assign all properties to this
         Object.assign(this, conf);
-    };
+    }
     /**
      * Initiate the connection with the broker.
      * If the connection breaks, as per [Client#reconnectDelay]{@link Client#reconnectDelay},
@@ -199,85 +142,75 @@ var Client = /** @class */ (function () {
      *
      * Call [Client#deactivate]{@link Client#deactivate} to disconnect and stop reconnection attempts.
      */
-    Client.prototype.activate = function () {
+    activate() {
         this._active = true;
         this._connect();
-    };
-    Client.prototype._connect = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (this.connected) {
-                            this.debug('STOMP: already connected, nothing to do');
-                            return [2 /*return*/];
-                        }
-                        return [4 /*yield*/, this.beforeConnect()];
-                    case 1:
-                        _a.sent();
-                        if (!this._active) {
-                            this.debug('Client has been marked inactive, will not attempt to connect');
-                            return [2 /*return*/];
-                        }
-                        this.debug('Opening Web Socket...');
-                        // Get the actual WebSocket (or a similar object)
-                        this._webSocket = this._createWebSocket();
-                        this._stompHandler = new StompHandler(this, this._webSocket, {
-                            debug: this.debug,
-                            stompVersions: this.stompVersions,
-                            connectHeaders: this.connectHeaders,
-                            disconnectHeaders: this._disconnectHeaders,
-                            heartbeatIncoming: this.heartbeatIncoming,
-                            heartbeatOutgoing: this.heartbeatOutgoing,
-                            splitLargeFrames: this.splitLargeFrames,
-                            maxWebSocketChunkSize: this.maxWebSocketChunkSize,
-                            forceBinaryWSFrames: this.forceBinaryWSFrames,
-                            logRawCommunication: this.logRawCommunication,
-                            appendMissingNULLonIncoming: this.appendMissingNULLonIncoming,
-                            onConnect: function (frame) {
-                                if (!_this._active) {
-                                    _this.debug('STOMP got connected while deactivate was issued, will disconnect now');
-                                    _this._disposeStompHandler();
-                                    return;
-                                }
-                                _this.onConnect(frame);
-                            },
-                            onDisconnect: function (frame) {
-                                _this.onDisconnect(frame);
-                            },
-                            onStompError: function (frame) {
-                                _this.onStompError(frame);
-                            },
-                            onWebSocketClose: function (evt) {
-                                _this.onWebSocketClose(evt);
-                                // The callback is called before attempting to reconnect, this would allow the client
-                                // to be `deactivated` in the callback.
-                                if (_this._active) {
-                                    _this._schedule_reconnect();
-                                }
-                            },
-                            onWebSocketError: function (evt) {
-                                _this.onWebSocketError(evt);
-                            },
-                            onUnhandledMessage: function (message) {
-                                _this.onUnhandledMessage(message);
-                            },
-                            onUnhandledReceipt: function (frame) {
-                                _this.onUnhandledReceipt(frame);
-                            },
-                            onUnhandledFrame: function (frame) {
-                                _this.onUnhandledFrame(frame);
-                            }
-                        });
-                        this._stompHandler.start();
-                        return [2 /*return*/];
+    }
+    async _connect() {
+        if (this.connected) {
+            this.debug('STOMP: already connected, nothing to do');
+            return;
+        }
+        await this.beforeConnect();
+        if (!this._active) {
+            this.debug('Client has been marked inactive, will not attempt to connect');
+            return;
+        }
+        this.debug('Opening Web Socket...');
+        // Get the actual WebSocket (or a similar object)
+        this._webSocket = this._createWebSocket();
+        this._stompHandler = new StompHandler(this, this._webSocket, {
+            debug: this.debug,
+            stompVersions: this.stompVersions,
+            connectHeaders: this.connectHeaders,
+            disconnectHeaders: this._disconnectHeaders,
+            heartbeatIncoming: this.heartbeatIncoming,
+            heartbeatOutgoing: this.heartbeatOutgoing,
+            splitLargeFrames: this.splitLargeFrames,
+            maxWebSocketChunkSize: this.maxWebSocketChunkSize,
+            forceBinaryWSFrames: this.forceBinaryWSFrames,
+            logRawCommunication: this.logRawCommunication,
+            appendMissingNULLonIncoming: this.appendMissingNULLonIncoming,
+            discardWebsocketOnCommFailure: this.discardWebsocketOnCommFailure,
+            onConnect: (frame) => {
+                if (!this._active) {
+                    this.debug('STOMP got connected while deactivate was issued, will disconnect now');
+                    this._disposeStompHandler();
+                    return;
                 }
-            });
+                this.onConnect(frame);
+            },
+            onDisconnect: (frame) => {
+                this.onDisconnect(frame);
+            },
+            onStompError: (frame) => {
+                this.onStompError(frame);
+            },
+            onWebSocketClose: (evt) => {
+                this.onWebSocketClose(evt);
+                // The callback is called before attempting to reconnect, this would allow the client
+                // to be `deactivated` in the callback.
+                if (this._active) {
+                    this._schedule_reconnect();
+                }
+            },
+            onWebSocketError: (evt) => {
+                this.onWebSocketError(evt);
+            },
+            onUnhandledMessage: (message) => {
+                this.onUnhandledMessage(message);
+            },
+            onUnhandledReceipt: (frame) => {
+                this.onUnhandledReceipt(frame);
+            },
+            onUnhandledFrame: (frame) => {
+                this.onUnhandledFrame(frame);
+            }
         });
-    };
-    Client.prototype._createWebSocket = function () {
-        var webSocket;
+        this._stompHandler.start();
+    }
+    _createWebSocket() {
+        let webSocket;
         if (this.webSocketFactory) {
             webSocket = this.webSocketFactory();
         }
@@ -286,23 +219,22 @@ var Client = /** @class */ (function () {
         }
         webSocket.binaryType = 'arraybuffer';
         return webSocket;
-    };
-    Client.prototype._schedule_reconnect = function () {
-        var _this = this;
+    }
+    _schedule_reconnect() {
         if (this.reconnectDelay > 0) {
-            this.debug("STOMP: scheduling reconnection in " + this.reconnectDelay + "ms");
-            this._reconnector = setTimeout(function () {
-                _this._connect();
+            this.debug(`STOMP: scheduling reconnection in ${this.reconnectDelay}ms`);
+            this._reconnector = setTimeout(() => {
+                this._connect();
             }, this.reconnectDelay);
         }
-    };
+    }
     /**
      * Disconnect if connected and stop auto reconnect loop.
      * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
      *
      * To reactivate you can call [Client#activate]{@link Client#activate}.
      */
-    Client.prototype.deactivate = function () {
+    deactivate() {
         // indicate that auto reconnect loop should terminate
         this._active = false;
         // Clear if a reconnection was scheduled
@@ -310,28 +242,28 @@ var Client = /** @class */ (function () {
             clearTimeout(this._reconnector);
         }
         this._disposeStompHandler();
-    };
+    }
     /**
      * Force disconnect if there is an active connection by directly closing the underlying WebSocket.
      * This is different than a normal disconnect where a DISCONNECT sequence is carried out with the broker.
      * After forcing disconnect, automatic reconnect will be attempted.
      * To stop further reconnects call [Client#deactivate]{@link Client#deactivate} as well.
      */
-    Client.prototype.forceDisconnect = function () {
+    forceDisconnect() {
         if (this._webSocket) {
-            if (this._webSocket.readyState === WebSocketState.CONNECTING
-                || this._webSocket.readyState === WebSocketState.OPEN) {
+            if (this._webSocket.readyState === StompSocketState.CONNECTING
+                || this._webSocket.readyState === StompSocketState.OPEN) {
                 this._stompHandler._closeWebsocket();
             }
         }
-    };
-    Client.prototype._disposeStompHandler = function () {
+    }
+    _disposeStompHandler() {
         // Dispose STOMP Handler
         if (this._stompHandler) {
             this._stompHandler.dispose();
             this._stompHandler = null;
         }
-    };
+    }
     /**
      * Send a message to a named destination. Refer to your STOMP broker documentation for types
      * and naming of destinations.
@@ -368,9 +300,9 @@ var Client = /** @class */ (function () {
      *                         headers: {'content-type': 'application/octet-stream'}});
      * ```
      */
-    Client.prototype.publish = function (params) {
+    publish(params) {
         this._stompHandler.publish(params);
-    };
+    }
     /**
      * STOMP brokers may carry out operation asynchronously and allow requesting for acknowledgement.
      * To request an acknowledgement, a `receipt` header needs to be sent with the actual request.
@@ -406,9 +338,9 @@ var Client = /** @class */ (function () {
      *        client.publish({destination: TEST.destination, headers: {receipt: receiptId}, body: msg});
      * ```
      */
-    Client.prototype.watchForReceipt = function (receiptId, callback) {
+    watchForReceipt(receiptId, callback) {
         this._stompHandler.watchForReceipt(receiptId, callback);
-    };
+    }
     /**
      * Subscribe to a STOMP Broker location. The callback will be invoked for each received message with
      * the {@link IMessage} as argument.
@@ -433,10 +365,9 @@ var Client = /** @class */ (function () {
      *        var subscription = client.subscribe(destination, callback, { id: mySubId });
      * ```
      */
-    Client.prototype.subscribe = function (destination, callback, headers) {
-        if (headers === void 0) { headers = {}; }
+    subscribe(destination, callback, headers = {}) {
         return this._stompHandler.subscribe(destination, callback, headers);
-    };
+    }
     /**
      * It is preferable to unsubscribe from a subscription by calling
      * `unsubscribe()` directly on {@link StompSubscription} returned by `client.subscribe()`:
@@ -449,19 +380,18 @@ var Client = /** @class */ (function () {
      *
      * See: http://stomp.github.com/stomp-specification-1.2.html#UNSUBSCRIBE UNSUBSCRIBE Frame
      */
-    Client.prototype.unsubscribe = function (id, headers) {
-        if (headers === void 0) { headers = {}; }
+    unsubscribe(id, headers = {}) {
         this._stompHandler.unsubscribe(id, headers);
-    };
+    }
     /**
      * Start a transaction, the returned {@link ITransaction} has methods - [commit]{@link ITransaction#commit}
      * and [abort]{@link ITransaction#abort}.
      *
      * `transactionId` is optional, if not passed the library will generate it internally.
      */
-    Client.prototype.begin = function (transactionId) {
+    begin(transactionId) {
         return this._stompHandler.begin(transactionId);
-    };
+    }
     /**
      * Commit a transaction.
      *
@@ -474,9 +404,9 @@ var Client = /** @class */ (function () {
      *        tx.commit();
      * ```
      */
-    Client.prototype.commit = function (transactionId) {
+    commit(transactionId) {
         this._stompHandler.commit(transactionId);
-    };
+    }
     /**
      * Abort a transaction.
      * It is preferable to abort a transaction by calling [abort]{@link ITransaction#abort} directly on
@@ -488,9 +418,9 @@ var Client = /** @class */ (function () {
      *        tx.abort();
      * ```
      */
-    Client.prototype.abort = function (transactionId) {
+    abort(transactionId) {
         this._stompHandler.abort(transactionId);
-    };
+    }
     /**
      * ACK a message. It is preferable to acknowledge a message by calling [ack]{@link IMessage#ack} directly
      * on the {@link IMessage} handled by a subscription callback:
@@ -504,10 +434,9 @@ var Client = /** @class */ (function () {
      *        client.subscribe(destination, callback, {'ack': 'client'});
      * ```
      */
-    Client.prototype.ack = function (messageId, subscriptionId, headers) {
-        if (headers === void 0) { headers = {}; }
+    ack(messageId, subscriptionId, headers = {}) {
         this._stompHandler.ack(messageId, subscriptionId, headers);
-    };
+    }
     /**
      * NACK a message. It is preferable to acknowledge a message by calling [nack]{@link IMessage#nack} directly
      * on the {@link IMessage} handled by a subscription callback:
@@ -521,11 +450,8 @@ var Client = /** @class */ (function () {
      *        client.subscribe(destination, callback, {'ack': 'client'});
      * ```
      */
-    Client.prototype.nack = function (messageId, subscriptionId, headers) {
-        if (headers === void 0) { headers = {}; }
+    nack(messageId, subscriptionId, headers = {}) {
         this._stompHandler.nack(messageId, subscriptionId, headers);
-    };
-    return Client;
-}());
-export { Client };
+    }
+}
 //# sourceMappingURL=client.js.map

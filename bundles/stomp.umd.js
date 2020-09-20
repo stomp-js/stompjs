@@ -170,8 +170,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var stomp_handler_1 = __webpack_require__(/*! ./stomp-handler */ "./src/stomp-handler.ts");
+var types_1 = __webpack_require__(/*! ./types */ "./src/types.ts");
 var versions_1 = __webpack_require__(/*! ./versions */ "./src/versions.ts");
-var web_socket_state_1 = __webpack_require__(/*! ./web-socket-state */ "./src/web-socket-state.ts");
 /**
  * STOMP Client Class.
  *
@@ -370,6 +370,7 @@ var Client = /** @class */ (function () {
                             forceBinaryWSFrames: this.forceBinaryWSFrames,
                             logRawCommunication: this.logRawCommunication,
                             appendMissingNULLonIncoming: this.appendMissingNULLonIncoming,
+                            discardWebsocketOnCommFailure: this.discardWebsocketOnCommFailure,
                             onConnect: function (frame) {
                                 if (!_this._active) {
                                     _this.debug('STOMP got connected while deactivate was issued, will disconnect now');
@@ -454,8 +455,8 @@ var Client = /** @class */ (function () {
      */
     Client.prototype.forceDisconnect = function () {
         if (this._webSocket) {
-            if (this._webSocket.readyState === web_socket_state_1.WebSocketState.CONNECTING
-                || this._webSocket.readyState === web_socket_state_1.WebSocketState.OPEN) {
+            if (this._webSocket.readyState === types_1.StompSocketState.CONNECTING
+                || this._webSocket.readyState === types_1.StompSocketState.OPEN) {
                 this._stompHandler._closeWebsocket();
             }
         }
@@ -1330,8 +1331,8 @@ __export(__webpack_require__(/*! ./parser */ "./src/parser.ts"));
 __export(__webpack_require__(/*! ./stomp-config */ "./src/stomp-config.ts"));
 __export(__webpack_require__(/*! ./stomp-headers */ "./src/stomp-headers.ts"));
 __export(__webpack_require__(/*! ./stomp-subscription */ "./src/stomp-subscription.ts"));
+__export(__webpack_require__(/*! ./types */ "./src/types.ts"));
 __export(__webpack_require__(/*! ./versions */ "./src/versions.ts"));
-__export(__webpack_require__(/*! ./web-socket-state */ "./src/web-socket-state.ts"));
 // Compatibility code
 __export(__webpack_require__(/*! ./compatibility/compat-client */ "./src/compatibility/compat-client.ts"));
 __export(__webpack_require__(/*! ./compatibility/stomp */ "./src/compatibility/stomp.ts"));
@@ -1603,8 +1604,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var byte_1 = __webpack_require__(/*! ./byte */ "./src/byte.ts");
 var frame_impl_1 = __webpack_require__(/*! ./frame-impl */ "./src/frame-impl.ts");
 var parser_1 = __webpack_require__(/*! ./parser */ "./src/parser.ts");
+var types_1 = __webpack_require__(/*! ./types */ "./src/types.ts");
 var versions_1 = __webpack_require__(/*! ./versions */ "./src/versions.ts");
-var web_socket_state_1 = __webpack_require__(/*! ./web-socket-state */ "./src/web-socket-state.ts");
 /**
  * The STOMP protocol handler
  *
@@ -1730,11 +1731,12 @@ var StompHandler = /** @class */ (function () {
             }
             parser.parseChunk(evt.data, _this.appendMissingNULLonIncoming);
         };
-        this._webSocket.onclose = function (closeEvent) {
-            _this.debug("Connection closed to " + _this._webSocket.url);
+        this._onclose = function (closeEvent) {
+            _this.debug("Connection closed to " + _this._client.brokerURL);
             _this.onWebSocketClose(closeEvent);
             _this._cleanUp();
         };
+        this._webSocket.onclose = this._onclose;
         this._webSocket.onerror = function (errorEvent) {
             _this.onWebSocketError(errorEvent);
         };
@@ -1765,7 +1767,7 @@ var StompHandler = /** @class */ (function () {
             var ttl = Math.max(this.heartbeatOutgoing, serverIncoming);
             this.debug("send PING every " + ttl + "ms");
             this._pinger = setInterval(function () {
-                if (_this._webSocket.readyState === web_socket_state_1.WebSocketState.OPEN) {
+                if (_this._webSocket.readyState === types_1.StompSocketState.OPEN) {
                     _this._webSocket.send(byte_1.BYTE.LF);
                     _this.debug('>>> PING');
                 }
@@ -1779,7 +1781,14 @@ var StompHandler = /** @class */ (function () {
                 // We wait twice the TTL to be flexible on window's setInterval calls
                 if (delta > (ttl_1 * 2)) {
                     _this.debug("did not receive server activity for the last " + delta + "ms");
-                    _this._closeWebsocket();
+                    if (_this.discardWebsocketOnCommFailure) {
+                        _this.debug('Discarding websocket, the underlying socket may linger for a while');
+                        _this._discardWebsocket();
+                    }
+                    else {
+                        _this.debug('Issuing close on the websocket');
+                        _this._closeWebsocket();
+                    }
                 }
             }, ttl_1);
         }
@@ -1787,6 +1796,27 @@ var StompHandler = /** @class */ (function () {
     StompHandler.prototype._closeWebsocket = function () {
         this._webSocket.onmessage = function () { }; // ignore messages
         this._webSocket.close();
+    };
+    StompHandler.prototype._discardWebsocket = function () {
+        var _this = this;
+        var noOp = function () { };
+        // set all callbacks to no op
+        this._webSocket.onerror = noOp;
+        this._webSocket.onmessage = noOp;
+        this._webSocket.onopen = noOp;
+        var ts = new Date();
+        // Track delay in actual closure of the socket
+        this._webSocket.onclose = function (closeEvent) {
+            var delay = (new Date()).getTime() - ts.getTime();
+            _this.debug("Discarded socket closed after " + delay + "ms, with code/reason: " + closeEvent.code + "/" + closeEvent.reason);
+        };
+        this._webSocket.close();
+        var customCloseEvent = {
+            code: 4001,
+            reason: 'Heartbeat failure, discarding the socket',
+            wasClean: false
+        };
+        this._onclose(customCloseEvent);
     };
     StompHandler.prototype._transmit = function (params) {
         var command = params.command, headers = params.headers, body = params.body, binaryBody = params.binaryBody, skipContentLengthHeader = params.skipContentLengthHeader;
@@ -1842,8 +1872,8 @@ var StompHandler = /** @class */ (function () {
             }
         }
         else {
-            if (this._webSocket.readyState === web_socket_state_1.WebSocketState.CONNECTING
-                || this._webSocket.readyState === web_socket_state_1.WebSocketState.OPEN) {
+            if (this._webSocket.readyState === types_1.StompSocketState.CONNECTING
+                || this._webSocket.readyState === types_1.StompSocketState.OPEN) {
                 this._closeWebsocket();
             }
         }
@@ -2012,6 +2042,31 @@ exports.StompSubscription = StompSubscription;
 
 /***/ }),
 
+/***/ "./src/types.ts":
+/*!**********************!*\
+  !*** ./src/types.ts ***!
+  \**********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Possible states for the IStompSocket
+ *
+ */
+var StompSocketState;
+(function (StompSocketState) {
+    StompSocketState[StompSocketState["CONNECTING"] = 0] = "CONNECTING";
+    StompSocketState[StompSocketState["OPEN"] = 1] = "OPEN";
+    StompSocketState[StompSocketState["CLOSING"] = 2] = "CLOSING";
+    StompSocketState[StompSocketState["CLOSED"] = 3] = "CLOSED";
+})(StompSocketState = exports.StompSocketState || (exports.StompSocketState = {}));
+
+
+/***/ }),
+
 /***/ "./src/versions.ts":
 /*!*************************!*\
   !*** ./src/versions.ts ***!
@@ -2068,34 +2123,6 @@ var Versions = /** @class */ (function () {
     return Versions;
 }());
 exports.Versions = Versions;
-
-
-/***/ }),
-
-/***/ "./src/web-socket-state.ts":
-/*!*********************************!*\
-  !*** ./src/web-socket-state.ts ***!
-  \*********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * Possible states for the WebSocket, copied here to avoid dependency on WebSocket class
- *
- * Part of `@stomp/rx-stomp`
- *
- * @internal
- */
-var WebSocketState;
-(function (WebSocketState) {
-    WebSocketState[WebSocketState["CONNECTING"] = 0] = "CONNECTING";
-    WebSocketState[WebSocketState["OPEN"] = 1] = "OPEN";
-    WebSocketState[WebSocketState["CLOSING"] = 2] = "CLOSING";
-    WebSocketState[WebSocketState["CLOSED"] = 3] = "CLOSED";
-})(WebSocketState = exports.WebSocketState || (exports.WebSocketState = {}));
 
 
 /***/ }),

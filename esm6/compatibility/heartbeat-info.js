@@ -3,31 +3,21 @@
  *
  * @internal
  */
-var HeartbeatInfo = /** @class */ (function () {
-    function HeartbeatInfo(client) {
+export class HeartbeatInfo {
+    constructor(client) {
         this.client = client;
     }
-    Object.defineProperty(HeartbeatInfo.prototype, "outgoing", {
-        get: function () {
-            return this.client.heartbeatOutgoing;
-        },
-        set: function (value) {
-            this.client.heartbeatOutgoing = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HeartbeatInfo.prototype, "incoming", {
-        get: function () {
-            return this.client.heartbeatIncoming;
-        },
-        set: function (value) {
-            this.client.heartbeatIncoming = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return HeartbeatInfo;
-}());
-export { HeartbeatInfo };
+    get outgoing() {
+        return this.client.heartbeatOutgoing;
+    }
+    set outgoing(value) {
+        this.client.heartbeatOutgoing = value;
+    }
+    get incoming() {
+        return this.client.heartbeatIncoming;
+    }
+    set incoming(value) {
+        this.client.heartbeatIncoming = value;
+    }
+}
 //# sourceMappingURL=heartbeat-info.js.map

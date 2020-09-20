@@ -1,19 +1,19 @@
 /**
  * @internal
  */
-var NULL = 0;
+const NULL = 0;
 /**
  * @internal
  */
-var LF = 10;
+const LF = 10;
 /**
  * @internal
  */
-var CR = 13;
+const CR = 13;
 /**
  * @internal
  */
-var COLON = 58;
+const COLON = 58;
 /**
  * This is an evented, rec descent parser.
  * A stream of Octets can be passed and whenever it recognizes
@@ -56,8 +56,8 @@ var COLON = 58;
  *
  * @internal
  */
-var Parser = /** @class */ (function () {
-    function Parser(onFrame, onIncomingPing) {
+export class Parser {
+    constructor(onFrame, onIncomingPing) {
         this.onFrame = onFrame;
         this.onIncomingPing = onIncomingPing;
         this._encoder = new TextEncoder();
@@ -65,9 +65,8 @@ var Parser = /** @class */ (function () {
         this._token = [];
         this._initState();
     }
-    Parser.prototype.parseChunk = function (segment, appendMissingNULLonIncoming) {
-        if (appendMissingNULLonIncoming === void 0) { appendMissingNULLonIncoming = false; }
-        var chunk;
+    parseChunk(segment, appendMissingNULLonIncoming = false) {
+        let chunk;
         if ((segment instanceof ArrayBuffer)) {
             chunk = new Uint8Array(segment);
         }
@@ -79,20 +78,20 @@ var Parser = /** @class */ (function () {
         //
         // Send a NULL byte, if the last byte of a Text frame was not NULL.F
         if (appendMissingNULLonIncoming && chunk[chunk.length - 1] !== 0) {
-            var chunkWithNull = new Uint8Array(chunk.length + 1);
+            const chunkWithNull = new Uint8Array(chunk.length + 1);
             chunkWithNull.set(chunk, 0);
             chunkWithNull[chunk.length] = 0;
             chunk = chunkWithNull;
         }
         // tslint:disable-next-line:prefer-for-of
-        for (var i = 0; i < chunk.length; i++) {
-            var byte = chunk[i];
+        for (let i = 0; i < chunk.length; i++) {
+            const byte = chunk[i];
             this._onByte(byte);
         }
-    };
+    }
     // The following implements a simple Rec Descent Parser.
     // The grammar is simple and just one byte tells what should be the next state
-    Parser.prototype._collectFrame = function (byte) {
+    _collectFrame(byte) {
         if (byte === NULL) { // Ignore
             return;
         }
@@ -105,8 +104,8 @@ var Parser = /** @class */ (function () {
         }
         this._onByte = this._collectCommand;
         this._reinjectByte(byte);
-    };
-    Parser.prototype._collectCommand = function (byte) {
+    }
+    _collectCommand(byte) {
         if (byte === CR) { // Ignore CR
             return;
         }
@@ -116,8 +115,8 @@ var Parser = /** @class */ (function () {
             return;
         }
         this._consumeByte(byte);
-    };
-    Parser.prototype._collectHeaders = function (byte) {
+    }
+    _collectHeaders(byte) {
         if (byte === CR) { // Ignore CR
             return;
         }
@@ -127,19 +126,19 @@ var Parser = /** @class */ (function () {
         }
         this._onByte = this._collectHeaderKey;
         this._reinjectByte(byte);
-    };
-    Parser.prototype._reinjectByte = function (byte) {
+    }
+    _reinjectByte(byte) {
         this._onByte(byte);
-    };
-    Parser.prototype._collectHeaderKey = function (byte) {
+    }
+    _collectHeaderKey(byte) {
         if (byte === COLON) {
             this._headerKey = this._consumeTokenAsUTF8();
             this._onByte = this._collectHeaderValue;
             return;
         }
         this._consumeByte(byte);
-    };
-    Parser.prototype._collectHeaderValue = function (byte) {
+    }
+    _collectHeaderValue(byte) {
         if (byte === CR) { // Ignore CR
             return;
         }
@@ -150,9 +149,9 @@ var Parser = /** @class */ (function () {
             return;
         }
         this._consumeByte(byte);
-    };
-    Parser.prototype._setupCollectBody = function () {
-        var contentLengthHeader = this._results.headers.filter(function (header) {
+    }
+    _setupCollectBody() {
+        const contentLengthHeader = this._results.headers.filter((header) => {
             return header[0] === 'content-length';
         })[0];
         if (contentLengthHeader) {
@@ -162,40 +161,40 @@ var Parser = /** @class */ (function () {
         else {
             this._onByte = this._collectBodyNullTerminated;
         }
-    };
-    Parser.prototype._collectBodyNullTerminated = function (byte) {
+    }
+    _collectBodyNullTerminated(byte) {
         if (byte === NULL) {
             this._retrievedBody();
             return;
         }
         this._consumeByte(byte);
-    };
-    Parser.prototype._collectBodyFixedSize = function (byte) {
+    }
+    _collectBodyFixedSize(byte) {
         // It is post decrement, so that we discard the trailing NULL octet
         if (this._bodyBytesRemaining-- === 0) {
             this._retrievedBody();
             return;
         }
         this._consumeByte(byte);
-    };
-    Parser.prototype._retrievedBody = function () {
+    }
+    _retrievedBody() {
         this._results.binaryBody = this._consumeTokenAsRaw();
         this.onFrame(this._results);
         this._initState();
-    };
+    }
     // Rec Descent Parser helpers
-    Parser.prototype._consumeByte = function (byte) {
+    _consumeByte(byte) {
         this._token.push(byte);
-    };
-    Parser.prototype._consumeTokenAsUTF8 = function () {
+    }
+    _consumeTokenAsUTF8() {
         return this._decoder.decode(this._consumeTokenAsRaw());
-    };
-    Parser.prototype._consumeTokenAsRaw = function () {
-        var rawResult = new Uint8Array(this._token);
+    }
+    _consumeTokenAsRaw() {
+        const rawResult = new Uint8Array(this._token);
         this._token = [];
         return rawResult;
-    };
-    Parser.prototype._initState = function () {
+    }
+    _initState() {
         this._results = {
             command: undefined,
             headers: [],
@@ -204,8 +203,6 @@ var Parser = /** @class */ (function () {
         this._token = [];
         this._headerKey = undefined;
         this._onByte = this._collectFrame;
-    };
-    return Parser;
-}());
-export { Parser };
+    }
+}
 //# sourceMappingURL=parser.js.map

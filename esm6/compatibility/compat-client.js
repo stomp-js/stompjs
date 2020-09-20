@@ -1,16 +1,3 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import { Client } from '../client';
 import { HeartbeatInfo } from './heartbeat-info';
 /**
@@ -22,8 +9,7 @@ import { HeartbeatInfo } from './heartbeat-info';
  *
  * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
  */
-var CompatClient = /** @class */ (function (_super) {
-    __extends(CompatClient, _super);
+export class CompatClient extends Client {
     /**
      * Available for backward compatibility, please shift to using {@link Client}
      * and [Client#webSocketFactory]{@link Client#webSocketFactory}.
@@ -32,51 +18,42 @@ var CompatClient = /** @class */ (function (_super) {
      *
      * @internal
      */
-    function CompatClient(webSocketFactory) {
-        var _this = _super.call(this) || this;
+    constructor(webSocketFactory) {
+        super();
         /**
          * It is no op now. No longer needed. Large packets work out of the box.
          */
-        _this.maxWebSocketFrameSize = 16 * 1024;
-        _this._heartbeatInfo = new HeartbeatInfo(_this);
-        _this.reconnect_delay = 0;
-        _this.webSocketFactory = webSocketFactory;
+        this.maxWebSocketFrameSize = 16 * 1024;
+        this._heartbeatInfo = new HeartbeatInfo(this);
+        this.reconnect_delay = 0;
+        this.webSocketFactory = webSocketFactory;
         // Default from previous version
-        _this.debug = function () {
-            var message = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                message[_i] = arguments[_i];
-            }
-            console.log.apply(console, message);
+        this.debug = (...message) => {
+            console.log(...message);
         };
-        return _this;
     }
-    CompatClient.prototype._parseConnect = function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        var closeEventCallback;
-        var connectCallback;
-        var errorCallback;
-        var headers = {};
+    _parseConnect(...args) {
+        let closeEventCallback;
+        let connectCallback;
+        let errorCallback;
+        let headers = {};
         if (args.length < 2) {
             throw new Error(('Connect requires at least 2 arguments'));
         }
         if (typeof (args[1]) === 'function') {
-            headers = args[0], connectCallback = args[1], errorCallback = args[2], closeEventCallback = args[3];
+            [headers, connectCallback, errorCallback, closeEventCallback] = args;
         }
         else {
             switch (args.length) {
                 case 6:
-                    headers.login = args[0], headers.passcode = args[1], connectCallback = args[2], errorCallback = args[3], closeEventCallback = args[4], headers.host = args[5];
+                    [headers.login, headers.passcode, connectCallback, errorCallback, closeEventCallback, headers.host] = args;
                     break;
                 default:
-                    headers.login = args[0], headers.passcode = args[1], connectCallback = args[2], errorCallback = args[3], closeEventCallback = args[4];
+                    [headers.login, headers.passcode, connectCallback, errorCallback, closeEventCallback] = args;
             }
         }
         return [headers, connectCallback, errorCallback, closeEventCallback];
-    };
+    }
     /**
      * Available for backward compatibility, please shift to using [Client#activate]{@link Client#activate}.
      *
@@ -104,12 +81,8 @@ var CompatClient = /** @class */ (function (_super) {
      *
      * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
      */
-    CompatClient.prototype.connect = function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        var out = this._parseConnect.apply(this, args);
+    connect(...args) {
+        const out = this._parseConnect(...args);
         if (out[0]) {
             this.connectHeaders = out[0];
         }
@@ -122,8 +95,8 @@ var CompatClient = /** @class */ (function (_super) {
         if (out[3]) {
             this.onWebSocketClose = out[3];
         }
-        _super.prototype.activate.call(this);
-    };
+        super.activate();
+    }
     /**
      * Available for backward compatibility, please shift to using [Client#deactivate]{@link Client#deactivate}.
      *
@@ -135,14 +108,13 @@ var CompatClient = /** @class */ (function (_super) {
      *
      * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
      */
-    CompatClient.prototype.disconnect = function (disconnectCallback, headers) {
-        if (headers === void 0) { headers = {}; }
+    disconnect(disconnectCallback, headers = {}) {
         if (disconnectCallback) {
             this.onDisconnect = disconnectCallback;
         }
         this.disconnectHeaders = headers;
-        _super.prototype.deactivate.call(this);
-    };
+        super.deactivate();
+    }
     /**
      * Available for backward compatibility, use [Client#publish]{@link Client#publish}.
      *
@@ -163,122 +135,94 @@ var CompatClient = /** @class */ (function (_super) {
      *
      * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
      */
-    CompatClient.prototype.send = function (destination, headers, body) {
-        if (headers === void 0) { headers = {}; }
-        if (body === void 0) { body = ''; }
+    send(destination, headers = {}, body = '') {
         headers = Object.assign({}, headers);
-        var skipContentLengthHeader = (headers['content-length'] === false);
+        const skipContentLengthHeader = (headers['content-length'] === false);
         if (skipContentLengthHeader) {
             delete headers['content-length'];
         }
         this.publish({
-            destination: destination,
+            destination,
             headers: headers,
-            body: body,
-            skipContentLengthHeader: skipContentLengthHeader
+            body,
+            skipContentLengthHeader
         });
-    };
-    Object.defineProperty(CompatClient.prototype, "reconnect_delay", {
-        /**
-         * Available for backward compatibility, renamed to [Client#reconnectDelay]{@link Client#reconnectDelay}.
-         *
-         * **Deprecated**
-         */
-        set: function (value) {
-            this.reconnectDelay = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CompatClient.prototype, "ws", {
-        /**
-         * Available for backward compatibility, renamed to [Client#webSocket]{@link Client#webSocket}.
-         *
-         * **Deprecated**
-         */
-        get: function () {
-            return this._webSocket;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CompatClient.prototype, "version", {
-        /**
-         * Available for backward compatibility, renamed to [Client#connectedVersion]{@link Client#connectedVersion}.
-         *
-         * **Deprecated**
-         */
-        get: function () {
-            return this.connectedVersion;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CompatClient.prototype, "onreceive", {
-        /**
-         * Available for backward compatibility, renamed to [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
-         *
-         * **Deprecated**
-         */
-        get: function () {
-            return this.onUnhandledMessage;
-        },
-        /**
-         * Available for backward compatibility, renamed to [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
-         *
-         * **Deprecated**
-         */
-        set: function (value) {
-            this.onUnhandledMessage = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CompatClient.prototype, "onreceipt", {
-        /**
-         * Available for backward compatibility, renamed to [Client#onUnhandledReceipt]{@link Client#onUnhandledReceipt}.
-         * Prefer using [Client#watchForReceipt]{@link Client#watchForReceipt}.
-         *
-         * **Deprecated**
-         */
-        get: function () {
-            return this.onUnhandledReceipt;
-        },
-        /**
-         * Available for backward compatibility, renamed to [Client#onUnhandledReceipt]{@link Client#onUnhandledReceipt}.
-         *
-         * **Deprecated**
-         */
-        set: function (value) {
-            this.onUnhandledReceipt = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CompatClient.prototype, "heartbeat", {
-        /**
-         * Available for backward compatibility, renamed to [Client#heartbeatIncoming]{@link Client#heartbeatIncoming}
-         * [Client#heartbeatOutgoing]{@link Client#heartbeatOutgoing}.
-         *
-         * **Deprecated**
-         */
-        get: function () {
-            return this._heartbeatInfo;
-        },
-        /**
-         * Available for backward compatibility, renamed to [Client#heartbeatIncoming]{@link Client#heartbeatIncoming}
-         * [Client#heartbeatOutgoing]{@link Client#heartbeatOutgoing}.
-         *
-         * **Deprecated**
-         */
-        set: function (value) {
-            this.heartbeatIncoming = value.incoming;
-            this.heartbeatOutgoing = value.outgoing;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return CompatClient;
-}(Client));
-export { CompatClient };
+    }
+    /**
+     * Available for backward compatibility, renamed to [Client#reconnectDelay]{@link Client#reconnectDelay}.
+     *
+     * **Deprecated**
+     */
+    set reconnect_delay(value) {
+        this.reconnectDelay = value;
+    }
+    /**
+     * Available for backward compatibility, renamed to [Client#webSocket]{@link Client#webSocket}.
+     *
+     * **Deprecated**
+     */
+    get ws() {
+        return this._webSocket;
+    }
+    /**
+     * Available for backward compatibility, renamed to [Client#connectedVersion]{@link Client#connectedVersion}.
+     *
+     * **Deprecated**
+     */
+    get version() {
+        return this.connectedVersion;
+    }
+    /**
+     * Available for backward compatibility, renamed to [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
+     *
+     * **Deprecated**
+     */
+    get onreceive() {
+        return this.onUnhandledMessage;
+    }
+    /**
+     * Available for backward compatibility, renamed to [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
+     *
+     * **Deprecated**
+     */
+    set onreceive(value) {
+        this.onUnhandledMessage = value;
+    }
+    /**
+     * Available for backward compatibility, renamed to [Client#onUnhandledReceipt]{@link Client#onUnhandledReceipt}.
+     * Prefer using [Client#watchForReceipt]{@link Client#watchForReceipt}.
+     *
+     * **Deprecated**
+     */
+    get onreceipt() {
+        return this.onUnhandledReceipt;
+    }
+    /**
+     * Available for backward compatibility, renamed to [Client#onUnhandledReceipt]{@link Client#onUnhandledReceipt}.
+     *
+     * **Deprecated**
+     */
+    set onreceipt(value) {
+        this.onUnhandledReceipt = value;
+    }
+    /**
+     * Available for backward compatibility, renamed to [Client#heartbeatIncoming]{@link Client#heartbeatIncoming}
+     * [Client#heartbeatOutgoing]{@link Client#heartbeatOutgoing}.
+     *
+     * **Deprecated**
+     */
+    get heartbeat() {
+        return this._heartbeatInfo;
+    }
+    /**
+     * Available for backward compatibility, renamed to [Client#heartbeatIncoming]{@link Client#heartbeatIncoming}
+     * [Client#heartbeatOutgoing]{@link Client#heartbeatOutgoing}.
+     *
+     * **Deprecated**
+     */
+    set heartbeat(value) {
+        this.heartbeatIncoming = value.incoming;
+        this.heartbeatOutgoing = value.outgoing;
+    }
+}
 //# sourceMappingURL=compat-client.js.map

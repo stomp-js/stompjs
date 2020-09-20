@@ -7,10 +7,6 @@
  *
  * Part of `@stomp/stompjs`.
  */
-var StompHeaders = /** @class */ (function () {
-    function StompHeaders() {
-    }
-    return StompHeaders;
-}());
-export { StompHeaders };
+export class StompHeaders {
+}
 //# sourceMappingURL=stomp-headers.js.map

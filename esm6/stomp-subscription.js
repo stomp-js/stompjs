@@ -3,10 +3,6 @@
  *
  * Part of `@stomp/stompjs`.
  */
-var StompSubscription = /** @class */ (function () {
-    function StompSubscription() {
-    }
-    return StompSubscription;
-}());
-export { StompSubscription };
+export class StompSubscription {
+}
 //# sourceMappingURL=stomp-subscription.js.map
