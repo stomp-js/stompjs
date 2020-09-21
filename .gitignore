@@ -6,3 +6,4 @@ node_modules
 
 # Temporary build files
 tmp
+*.tgz
