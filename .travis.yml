@@ -12,10 +12,8 @@ before_install:
 
 before_script:
   - docker exec rabbitmq rabbitmqctl status
-  - npm run build
 
 script:
-  - npm run lint && npm run test && npm run karma
-  - npm pack
-  - git clone --depth 1 https://github.com/stomp-js/rx-stomp.git && cd rx-stomp && npm ci && npm i ../stomp-stompjs-*.tgz && npm run karma && npm pack && cd ..
-  - git clone --depth 1 https://github.com/stomp-js/ng2-stompjs.git && cd ng2-stompjs && npm ci && npm i ../stomp-stompjs-*.tgz ../rx-stomp/stomp-rx-stomp-*.tgz --save-dev && ng test && cd ..
+  - bin/ci.sh
+  - bin/rx-stomp.sh
+  - bin/ng2-stompjs.sh

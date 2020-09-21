@@ -3,3 +3,6 @@
 
 # Installed dependencies
 node_modules
+
+# Temporary build files
+tmp
