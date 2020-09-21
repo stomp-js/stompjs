@@ -1,6 +1,6 @@
-import {IFrame} from './i-frame';
-import {IMessage} from './i-message';
-import {StompHeaders} from './stomp-headers';
+import { IFrame } from './i-frame';
+import { IMessage } from './i-message';
+import { StompHeaders } from './stomp-headers';
 
 /**
  * This callback will receive a `string` as parameter.
@@ -90,10 +90,14 @@ export type RawHeaderType = [string, string];
  *
  * @internal
  */
-export interface IRawFrameType { command: string; headers: RawHeaderType[]; binaryBody: Uint8Array; }
+export interface IRawFrameType {
+  command: string;
+  headers: RawHeaderType[];
+  binaryBody: Uint8Array;
+}
 
 export interface IStompSocketMessageEvent {
-    data?: string | ArrayBuffer
+  data?: string | ArrayBuffer;
 }
 export interface IStompSocket {
   onclose: ((this: IStompSocket, ev?: any) => any) | null;
@@ -130,5 +134,5 @@ export enum StompSocketState {
   CONNECTING,
   OPEN,
   CLOSING,
-  CLOSED
+  CLOSED,
 }

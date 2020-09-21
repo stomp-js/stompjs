@@ -1,5 +1,4 @@
-describe("Stomp Receipts", function () {
-
+describe('Stomp Receipts', function () {
   let client;
 
   beforeEach(function () {
@@ -10,39 +9,44 @@ describe("Stomp Receipts", function () {
     disconnectStomp(client);
   });
 
-  it("Should confirm subscription using receipt", function (done) {
-
+  it('Should confirm subscription using receipt', function (done) {
     const msg = 'Is anybody out there?';
 
     client.onConnect = function () {
       const receiptId = randomText();
 
-      client.watchForReceipt(receiptId, function() {
-        client.publish({destination: TEST.destination, body: msg});
+      client.watchForReceipt(receiptId, function () {
+        client.publish({ destination: TEST.destination, body: msg });
       });
 
-      client.subscribe(TEST.destination, function (frame) {
-        expect(frame.body).toEqual(msg);
+      client.subscribe(
+        TEST.destination,
+        function (frame) {
+          expect(frame.body).toEqual(msg);
 
-        done();
-      }, {receipt: receiptId});
+          done();
+        },
+        { receipt: receiptId }
+      );
     };
     client.activate();
   });
 
-  it("Should confirm send using receipt", function (done) {
-
+  it('Should confirm send using receipt', function (done) {
     const msg = 'Is anybody out there?';
 
     client.onConnect = function () {
       const receiptId = randomText();
 
-      client.watchForReceipt(receiptId, function() {
+      client.watchForReceipt(receiptId, function () {
         done();
       });
-      client.publish({destination: TEST.destination, headers: {receipt: receiptId}, body: msg});
+      client.publish({
+        destination: TEST.destination,
+        headers: { receipt: receiptId },
+        body: msg,
+      });
     };
     client.activate();
   });
-
 });

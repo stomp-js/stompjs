@@ -1,12 +1,12 @@
-import {StompHeaders} from './stomp-headers';
+import { StompHeaders } from './stomp-headers';
 import {
   closeEventCallbackType,
   debugFnType,
   frameCallbackType,
   messageCallbackType,
-  wsErrorCallbackType
+  wsErrorCallbackType,
 } from './types';
-import {Versions} from './versions';
+import { Versions } from './versions';
 
 /**
  * Configuration options for STOMP Client, each key corresponds to
@@ -94,7 +94,7 @@ export class StompConfig {
   /**
    * See [Client#beforeConnect]{@link Client#beforeConnect}.
    */
-  public beforeConnect?: () => void|Promise<void>;
+  public beforeConnect?: () => void | Promise<void>;
 
   /**
    * See [Client#onConnect]{@link Client#onConnect}.
@@ -135,5 +135,4 @@ export class StompConfig {
    * See [Client#discardWebsocketOnCommFailure]{@link Client#discardWebsocketOnCommFailure}.
    */
   public discardWebsocketOnCommFailure?: boolean;
-
 }

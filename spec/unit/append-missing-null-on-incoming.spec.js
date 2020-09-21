@@ -1,4 +1,4 @@
-describe("appendMissingNULLonIncoming", function () {
+describe('appendMissingNULLonIncoming', function () {
   let client;
 
   beforeEach(function () {
@@ -7,16 +7,16 @@ describe("appendMissingNULLonIncoming", function () {
     // Simulate incorrect behavior in React Native (see https://github.com/stomp-js/stompjs/issues/89)
     client.webSocketFactory = () => {
       const wrapperWS = new WrapperWS(new WebSocket(client.brokerURL));
-      wrapperWS.ws.onmessage = (ev) => {
+      wrapperWS.ws.onmessage = ev => {
         // Convert incoming data to string if not already string
         let data = ev.data;
-        if (typeof data !== "string") {
+        if (typeof data !== 'string') {
           data = new TextDecoder().decode(data);
         }
 
         // chop everything after '\0'
         data = data.replace(/\0.*/, '');
-        wrapperWS.onmessage(Object.assign({}, ev.data, {data: data}));
+        wrapperWS.onmessage(Object.assign({}, ev.data, { data: data }));
       };
       return wrapperWS;
     };
@@ -27,12 +27,11 @@ describe("appendMissingNULLonIncoming", function () {
   });
 
   // Find length -
-  const length = (data) => {
-    return typeof(data) === "string" ? data.length : data.byteLength;
+  const length = data => {
+    return typeof data === 'string' ? data.length : data.byteLength;
   };
 
-  it("Should append missing null in incoming frames (bypass bug in React Native)", function (done) {
-
+  it('Should append missing null in incoming frames (bypass bug in React Native)', function (done) {
     client.appendMissingNULLonIncoming = true;
 
     const body = randomText();
@@ -44,9 +43,8 @@ describe("appendMissingNULLonIncoming", function () {
         done();
       });
 
-      client.publish({destination: TEST.destination, body: body});
+      client.publish({ destination: TEST.destination, body: body });
     };
     client.activate();
   });
-
 });

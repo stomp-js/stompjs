@@ -6,7 +6,7 @@
   So, altogether, these tests will each take slightly more than 2000ms each.
  */
 
-describe("Ping", function () {
+describe('Ping', function () {
   let client;
 
   beforeEach(function () {
@@ -18,27 +18,30 @@ describe("Ping", function () {
   });
 
   // Find length -
-  const length = (data) => {
-    return typeof(data) === "string" ? data.length : data.byteLength;
+  const length = data => {
+    return typeof data === 'string' ? data.length : data.byteLength;
   };
 
   // See https://github.com/stomp-js/stompjs/issues/188
-  it("Should allow server to not send heartbeat header", function (done) {
+  it('Should allow server to not send heartbeat header', function (done) {
     client.webSocketFactory = () => {
       const wrapperWS = new WrapperWS(new WebSocket(client.brokerURL));
       let inComingFrame;
-      const onFrame = (frame) => {
+      const onFrame = frame => {
         inComingFrame = frame;
       };
       const onIncomingPing = () => {};
       const parser = new StompJs.Parser(onFrame, onIncomingPing);
 
-      wrapperWS.ws.onmessage = (ev) => {
+      wrapperWS.ws.onmessage = ev => {
         parser.parseChunk(ev.data);
         if (inComingFrame.command === 'CONNECTED') {
-          const frame = StompJs.FrameImpl.fromRawFrame(inComingFrame, this._escapeHeaderValues);
+          const frame = StompJs.FrameImpl.fromRawFrame(
+            inComingFrame,
+            this._escapeHeaderValues
+          );
           delete frame.headers['heart-beat'];
-          ev = {data: frame.serialize()};
+          ev = { data: frame.serialize() };
         }
         wrapperWS.onmessage(ev);
       };
@@ -58,10 +61,10 @@ describe("Ping", function () {
 
     client.webSocketFactory = () => {
       const wrapperWS = new WrapperWS(new WebSocket(client.brokerURL));
-      wrapperWS.ws.onmessage = (ev) => {
+      wrapperWS.ws.onmessage = ev => {
         // Eat away incoming ping
         if (length(ev.data) === 1) {
-          console.log("Eating incoming ping");
+          console.log('Eating incoming ping');
           return;
         }
         wrapperWS.onmessage(ev);
@@ -69,33 +72,33 @@ describe("Ping", function () {
       return wrapperWS;
     };
 
-    client.onWebSocketClose = (ev) => {
+    client.onWebSocketClose = ev => {
       done();
     };
 
     client.activate();
   };
 
-  it("Should close connection when no incoming ping", incomingPingTest);
+  it('Should close connection when no incoming ping', incomingPingTest);
 
-  describe('With discardWebsocketOnCommFailure', function() {
+  describe('With discardWebsocketOnCommFailure', function () {
     beforeEach(function () {
       client.discardWebsocketOnCommFailure = true;
     });
 
-    it("Should close connection when no incoming ping", incomingPingTest);
+    it('Should close connection when no incoming ping', incomingPingTest);
   });
 
-  it("Should close connection when no outgoing ping", function (done) {
+  it('Should close connection when no outgoing ping', function (done) {
     client.heartbeatIncoming = 0;
     client.heartbeatOutgoing = 1000;
 
     client.webSocketFactory = () => {
       const wrapperWS = new WrapperWS(new WebSocket(client.brokerURL));
-      wrapperWS.send = (data) => {
+      wrapperWS.send = data => {
         // Eat away outgoing ping
         if (length(data) === 1) {
-          console.log("Eating outgoing ping");
+          console.log('Eating outgoing ping');
           return;
         }
         wrapperWS.ws.send(data);
@@ -103,11 +106,10 @@ describe("Ping", function () {
       return wrapperWS;
     };
 
-    client.onWebSocketClose = (ev) => {
+    client.onWebSocketClose = ev => {
       done();
     };
 
     client.activate();
   });
-
 });

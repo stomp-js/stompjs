@@ -1,4 +1,4 @@
-describe("Stomp Acknowledgement (RabbitMQ specific queue destination)", function () {
+describe('Stomp Acknowledgement (RabbitMQ specific queue destination)', function () {
   let client01;
   let client02;
 
@@ -19,8 +19,8 @@ describe("Stomp Acknowledgement (RabbitMQ specific queue destination)", function
     disconnectStomp(client02);
   });
 
-  it("Should deliver to other client if nacked from one", function (done) {
-    const queueDestination = "/queue/test01";
+  it('Should deliver to other client if nacked from one', function (done) {
+    const queueDestination = '/queue/test01';
     let receivedCount = 0;
     const body = randomText();
 
@@ -41,17 +41,17 @@ describe("Stomp Acknowledgement (RabbitMQ specific queue destination)", function
         done();
       };
 
-      client.subscribe(queueDestination, onMessage, {'ack': 'client'});
+      client.subscribe(queueDestination, onMessage, { ack: 'client' });
     };
 
     setUpSubscription(client01);
     setUpSubscription(client02);
 
-    client01.publish({destination: queueDestination, body: body});
+    client01.publish({ destination: queueDestination, body: body });
   });
 
-  it("Should deliver to other client if connection drops before ack", function (done) {
-    const queueDestination = "/queue/test01";
+  it('Should deliver to other client if connection drops before ack', function (done) {
+    const queueDestination = '/queue/test01';
     let receivedCount = 0;
     const body = randomText();
 
@@ -72,17 +72,17 @@ describe("Stomp Acknowledgement (RabbitMQ specific queue destination)", function
         done();
       };
 
-      client.subscribe(queueDestination, onMessage, {'ack': 'client'});
+      client.subscribe(queueDestination, onMessage, { ack: 'client' });
     };
 
     setUpSubscription(client01);
     setUpSubscription(client02);
 
-    client01.publish({destination: queueDestination, body: body});
+    client01.publish({ destination: queueDestination, body: body });
   });
 
-  it("Should not redeliver after ack", function (done) {
-    const queueDestination = "/queue/test01";
+  it('Should not redeliver after ack', function (done) {
+    const queueDestination = '/queue/test01';
     let receivedCount = 0;
     const body = randomText();
 
@@ -103,12 +103,12 @@ describe("Stomp Acknowledgement (RabbitMQ specific queue destination)", function
         }, 100);
       };
 
-      client.subscribe(queueDestination, onMessage, {'ack': 'client'});
+      client.subscribe(queueDestination, onMessage, { ack: 'client' });
     };
 
     setUpSubscription(client01);
     setUpSubscription(client02);
 
-    client01.publish({destination: queueDestination, body: body});
+    client01.publish({ destination: queueDestination, body: body });
   });
 });

@@ -1,5 +1,5 @@
 const path = require('path');
-const webpack = require("webpack");
+const webpack = require('webpack');
 
 const PATHS = {
   entryPoint: path.resolve(__dirname, 'src/index.ts'),
@@ -12,7 +12,7 @@ const config = {
   // the name to filter the second entry point for applying code
   // minification via UglifyJS
   entry: {
-    'stomp': [PATHS.entryPoint]
+    stomp: [PATHS.entryPoint],
   },
   // The output defines how and where we want the bundles. The special
   // value `[name]` in `filename` tell Webpack to use the name we defined above.
@@ -24,13 +24,13 @@ const config = {
     libraryTarget: 'umd',
     library: 'StompJs',
     globalObject: `typeof self !== 'undefined' ? self : this`,
-    umdNamedDefine: true
+    umdNamedDefine: true,
   },
   mode: 'development',
   // Add resolve for `tsx` and `ts` files, otherwise Webpack would
   // only look for common JavaScript file extension (.js)
   resolve: {
-    extensions: ['.ts', '.tsx', '.js']
+    extensions: ['.ts', '.tsx', '.js'],
   },
   // Activate source maps for the bundles in order to preserve the original
   // source when the user debugs the application
@@ -43,12 +43,11 @@ const config = {
         exclude: /node_modules/,
         query: {
           declaration: false,
-        }
+        },
       },
-      {enforce: "pre", test: /\.js$/, loader: "source-map-loader"}
-    ]
-  }
-
+      { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
+    ],
+  },
 };
 
 module.exports = config;

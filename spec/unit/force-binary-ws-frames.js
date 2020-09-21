@@ -1,10 +1,10 @@
-describe("forceBinaryWSFrames", function () {
+describe('forceBinaryWSFrames', function () {
   let client;
 
   beforeEach(function () {
     client = stompClient();
     client.configure({
-      forceBinaryWSFrames: true
+      forceBinaryWSFrames: true,
     });
   });
 
@@ -12,10 +12,13 @@ describe("forceBinaryWSFrames", function () {
     disconnectStomp(client);
   });
 
-  it("all binary packets", function (done) {
+  it('all binary packets', function (done) {
     const body = randomText();
     client.onConnect = function () {
-      const spyWebSocketSend = spyOn(client.webSocket, 'send').and.callThrough();
+      const spyWebSocketSend = spyOn(
+        client.webSocket,
+        'send'
+      ).and.callThrough();
 
       client.subscribe(TEST.destination, function (message) {
         expect(message.body).toEqual(body);
@@ -30,7 +33,7 @@ describe("forceBinaryWSFrames", function () {
         done();
       });
 
-      client.publish({destination: TEST.destination, body: body});
+      client.publish({ destination: TEST.destination, body: body });
     };
     client.activate();
   });

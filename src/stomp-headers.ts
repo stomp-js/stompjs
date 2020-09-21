@@ -7,4 +7,6 @@
  *
  * Part of `@stomp/stompjs`.
  */
-export class StompHeaders { [key: string]: string }
+export class StompHeaders {
+  [key: string]: string;
+}

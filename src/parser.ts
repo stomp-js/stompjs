@@ -71,14 +71,20 @@ export class Parser {
 
   private _onByte: (byte: number) => void;
 
-  public constructor(public onFrame: (rawFrame: IRawFrameType) => void, public onIncomingPing: () => void) {
+  public constructor(
+    public onFrame: (rawFrame: IRawFrameType) => void,
+    public onIncomingPing: () => void
+  ) {
     this._initState();
   }
 
-  public parseChunk(segment: string | ArrayBuffer, appendMissingNULLonIncoming: boolean = false) {
+  public parseChunk(
+    segment: string | ArrayBuffer,
+    appendMissingNULLonIncoming: boolean = false
+  ) {
     let chunk: Uint8Array;
 
-    if ((segment instanceof ArrayBuffer)) {
+    if (segment instanceof ArrayBuffer) {
       chunk = new Uint8Array(segment);
     } else {
       chunk = this._encoder.encode(segment);
@@ -106,13 +112,16 @@ export class Parser {
   // The grammar is simple and just one byte tells what should be the next state
 
   private _collectFrame(byte: number): void {
-    if (byte === NULL) { // Ignore
+    if (byte === NULL) {
+      // Ignore
       return;
     }
-    if (byte === CR) { // Ignore CR
+    if (byte === CR) {
+      // Ignore CR
       return;
     }
-    if (byte === LF) { // Incoming Ping
+    if (byte === LF) {
+      // Incoming Ping
       this.onIncomingPing();
       return;
     }
@@ -122,7 +131,8 @@ export class Parser {
   }
 
   private _collectCommand(byte: number): void {
-    if (byte === CR) { // Ignore CR
+    if (byte === CR) {
+      // Ignore CR
       return;
     }
     if (byte === LF) {
@@ -135,7 +145,8 @@ export class Parser {
   }
 
   private _collectHeaders(byte: number): void {
-    if (byte === CR) { // Ignore CR
+    if (byte === CR) {
+      // Ignore CR
       return;
     }
     if (byte === LF) {
@@ -160,7 +171,8 @@ export class Parser {
   }
 
   private _collectHeaderValue(byte: number): void {
-    if (byte === CR) { // Ignore CR
+    if (byte === CR) {
+      // Ignore CR
       return;
     }
     if (byte === LF) {
@@ -173,9 +185,11 @@ export class Parser {
   }
 
   private _setupCollectBody() {
-    const contentLengthHeader = this._results.headers.filter((header: [string, string]) => {
-      return header[0] === 'content-length';
-    })[0];
+    const contentLengthHeader = this._results.headers.filter(
+      (header: [string, string]) => {
+        return header[0] === 'content-length';
+      }
+    )[0];
 
     if (contentLengthHeader) {
       this._bodyBytesRemaining = parseInt(contentLengthHeader[1], 10);
@@ -230,7 +244,7 @@ export class Parser {
     this._results = {
       command: undefined,
       headers: [],
-      binaryBody: undefined
+      binaryBody: undefined,
     };
 
     this._token = [];
@@ -238,5 +252,4 @@ export class Parser {
 
     this._onByte = this._collectFrame;
   }
-
 }

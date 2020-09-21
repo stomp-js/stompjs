@@ -1,18 +1,18 @@
 id = 0;
 
 stompClient = function () {
-  const myId= ++id;
+  const myId = ++id;
 
   const stompConfig = {
     connectHeaders: {
       login: TEST.login,
-      passcode: TEST.password
+      passcode: TEST.password,
     },
     brokerURL: TEST.url,
     debug: function (str) {
       console.log('CLIENT ' + myId + ': ' + str);
     },
-    reconnectDelay: 0
+    reconnectDelay: 0,
   };
   return new StompJs.Client(stompConfig);
 };

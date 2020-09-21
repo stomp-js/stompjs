@@ -1,4 +1,4 @@
-describe("Stomp Transaction", function () {
+describe('Stomp Transaction', function () {
   let client;
 
   beforeEach(function () {
@@ -9,7 +9,7 @@ describe("Stomp Transaction", function () {
     disconnectStomp(client);
   });
 
-  it("Send a message in a transaction and abort", function (done) {
+  it('Send a message in a transaction and abort', function (done) {
     const body = randomText();
     const body2 = randomText();
 
@@ -21,15 +21,19 @@ describe("Stomp Transaction", function () {
         done();
       });
 
-      const tx = client.begin("txid_" + Math.random());
-      client.publish({destination: TEST.destination, headers: {transaction: tx.id}, body: body});
+      const tx = client.begin('txid_' + Math.random());
+      client.publish({
+        destination: TEST.destination,
+        headers: { transaction: tx.id },
+        body: body,
+      });
       tx.abort();
-      client.publish({destination: TEST.destination, body: body2});
+      client.publish({ destination: TEST.destination, body: body2 });
     };
     client.activate();
   });
 
-  it("Send a message in a transaction and commit", function (done) {
+  it('Send a message in a transaction and commit', function (done) {
     const body = randomText();
 
     client.onConnect = function () {
@@ -39,13 +43,17 @@ describe("Stomp Transaction", function () {
         done();
       });
       const tx = client.begin();
-      client.publish({destination: TEST.destination, headers: {transaction: tx.id}, body: body});
+      client.publish({
+        destination: TEST.destination,
+        headers: { transaction: tx.id },
+        body: body,
+      });
       tx.commit();
     };
     client.activate();
   });
 
-  it("Send a message outside a transaction and abort", function (done) {
+  it('Send a message outside a transaction and abort', function (done) {
     const body = randomText();
 
     client.onConnect = function () {
@@ -57,10 +65,9 @@ describe("Stomp Transaction", function () {
       });
 
       const tx = client.begin();
-      client.publish({destination: TEST.destination, body: body});
+      client.publish({ destination: TEST.destination, body: body });
       tx.abort();
     };
     client.activate();
   });
-
 });

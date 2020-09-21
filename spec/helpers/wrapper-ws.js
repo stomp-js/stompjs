@@ -67,7 +67,7 @@ WrapperWS = /** @class */ (function () {
   function WrapperWS(ws) {
     var _this = this;
     this.ws = ws;
-    var noOp = function () { };
+    var noOp = function () {};
     this.onclose = noOp;
     this.onerror = noOp;
     this.onmessage = noOp;
@@ -91,28 +91,28 @@ WrapperWS = /** @class */ (function () {
       _this.ws.send(data);
     };
   }
-  Object.defineProperty(WrapperWS.prototype, "url", {
+  Object.defineProperty(WrapperWS.prototype, 'url', {
     get: function () {
       return this.ws.url;
     },
     enumerable: true,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(WrapperWS.prototype, "readyState", {
+  Object.defineProperty(WrapperWS.prototype, 'readyState', {
     get: function () {
       return this.ws.readyState;
     },
     enumerable: true,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(WrapperWS.prototype, "protocol", {
+  Object.defineProperty(WrapperWS.prototype, 'protocol', {
     get: function () {
       return this.ws.protocol;
     },
     enumerable: true,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(WrapperWS.prototype, "binaryType", {
+  Object.defineProperty(WrapperWS.prototype, 'binaryType', {
     get: function () {
       return this.ws.binaryType;
     },
@@ -120,7 +120,7 @@ WrapperWS = /** @class */ (function () {
       this.ws.binaryType = value;
     },
     enumerable: true,
-    configurable: true
+    configurable: true,
   });
   return WrapperWS;
-}());
+})();

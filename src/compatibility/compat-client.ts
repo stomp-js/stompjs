@@ -1,7 +1,7 @@
-import {Client} from '../client';
-import {StompHeaders} from '../stomp-headers';
-import {frameCallbackType, messageCallbackType} from '../types';
-import {HeartbeatInfo} from './heartbeat-info';
+import { Client } from '../client';
+import { StompHeaders } from '../stomp-headers';
+import { frameCallbackType, messageCallbackType } from '../types';
+import { HeartbeatInfo } from './heartbeat-info';
 
 /**
  * Available for backward compatibility, please shift to using {@link Client}.
@@ -13,7 +13,6 @@ import {HeartbeatInfo} from './heartbeat-info';
  * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
  */
 export class CompatClient extends Client {
-
   /**
    * It is no op now. No longer needed. Large packets work out of the box.
    */
@@ -43,17 +42,30 @@ export class CompatClient extends Client {
     let errorCallback;
     let headers: StompHeaders = {};
     if (args.length < 2) {
-      throw new Error(('Connect requires at least 2 arguments'));
+      throw new Error('Connect requires at least 2 arguments');
     }
-    if (typeof(args[1]) === 'function') {
+    if (typeof args[1] === 'function') {
       [headers, connectCallback, errorCallback, closeEventCallback] = args;
     } else {
       switch (args.length) {
         case 6:
-          [headers.login, headers.passcode, connectCallback, errorCallback, closeEventCallback, headers.host] = args;
+          [
+            headers.login,
+            headers.passcode,
+            connectCallback,
+            errorCallback,
+            closeEventCallback,
+            headers.host,
+          ] = args;
           break;
         default:
-          [headers.login, headers.passcode, connectCallback, errorCallback, closeEventCallback] = args;
+          [
+            headers.login,
+            headers.passcode,
+            connectCallback,
+            errorCallback,
+            closeEventCallback,
+          ] = args;
       }
     }
 
@@ -90,10 +102,18 @@ export class CompatClient extends Client {
   public connect(...args: any[]): void {
     const out = this._parseConnect(...args);
 
-    if (out[0]) { this.connectHeaders = out[0]; }
-    if (out[1]) { this.onConnect = out[1]; }
-    if (out[2]) { this.onStompError = out[2]; }
-    if (out[3]) { this.onWebSocketClose = out[3]; }
+    if (out[0]) {
+      this.connectHeaders = out[0];
+    }
+    if (out[1]) {
+      this.onConnect = out[1];
+    }
+    if (out[2]) {
+      this.onStompError = out[2];
+    }
+    if (out[3]) {
+      this.onWebSocketClose = out[3];
+    }
 
     super.activate();
   }
@@ -109,7 +129,10 @@ export class CompatClient extends Client {
    *
    * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
    */
-  public disconnect(disconnectCallback?: any, headers: StompHeaders = {}): void {
+  public disconnect(
+    disconnectCallback?: any,
+    headers: StompHeaders = {}
+  ): void {
     if (disconnectCallback) {
       this.onDisconnect = disconnectCallback;
     }
@@ -138,10 +161,14 @@ export class CompatClient extends Client {
    *
    * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
    */
-  public send(destination: string, headers: {[key: string]: any} = {}, body: string = ''): void {
+  public send(
+    destination: string,
+    headers: { [key: string]: any } = {},
+    body: string = ''
+  ): void {
     headers = (Object as any).assign({}, headers);
 
-    const skipContentLengthHeader = (headers['content-length'] === false);
+    const skipContentLengthHeader = headers['content-length'] === false;
     if (skipContentLengthHeader) {
       delete headers['content-length'];
     }
@@ -149,7 +176,7 @@ export class CompatClient extends Client {
       destination,
       headers: headers as StompHeaders,
       body,
-      skipContentLengthHeader
+      skipContentLengthHeader,
     });
   }
 
@@ -235,7 +262,7 @@ export class CompatClient extends Client {
    *
    * **Deprecated**
    */
-  set heartbeat(value: {incoming: number, outgoing: number}) {
+  set heartbeat(value: { incoming: number; outgoing: number }) {
     this.heartbeatIncoming = value.incoming;
     this.heartbeatOutgoing = value.outgoing;
   }

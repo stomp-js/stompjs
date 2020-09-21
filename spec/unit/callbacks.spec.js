@@ -1,4 +1,4 @@
-describe("Callbacks", function () {
+describe('Callbacks', function () {
   let client;
 
   beforeEach(function () {
@@ -11,7 +11,12 @@ describe("Callbacks", function () {
 
   describe('invokes in sequence', function () {
     it('during regular connect/disconnect', function (done) {
-      const expectedSeq = ['before connect', 'on connect', 'on disconnect', 'websocket close'];
+      const expectedSeq = [
+        'before connect',
+        'on connect',
+        'on disconnect',
+        'websocket close',
+      ];
       let seq = [];
 
       client.onConnect = function () {
@@ -66,8 +71,15 @@ describe("Callbacks", function () {
     });
 
     it('during auto reconnect', function (done) {
-      const expectedSeq = ['before connect', 'on connect', 'websocket close', // first cycle
-                           'before connect', 'on connect', 'on disconnect', 'websocket close']; // send cycle
+      const expectedSeq = [
+        'before connect',
+        'on connect',
+        'websocket close', // first cycle
+        'before connect',
+        'on connect',
+        'on disconnect',
+        'websocket close',
+      ]; // send cycle
       let seq = [];
       let count = 0;
 
@@ -102,6 +114,5 @@ describe("Callbacks", function () {
 
       client.activate();
     });
-
   });
 });

@@ -23,7 +23,7 @@ export class Versions {
      * Used while creating a WebSocket
      */
     protocolVersions() {
-        return this.versions.map((x) => `v${x.replace('.', '')}.stomp`);
+        return this.versions.map(x => `v${x.replace('.', '')}.stomp`);
     }
 }
 /**
@@ -41,5 +41,9 @@ Versions.V1_2 = '1.2';
 /**
  * @internal
  */
-Versions.default = new Versions([Versions.V1_0, Versions.V1_1, Versions.V1_2]);
+Versions.default = new Versions([
+    Versions.V1_0,
+    Versions.V1_1,
+    Versions.V1_2,
+]);
 //# sourceMappingURL=versions.js.map

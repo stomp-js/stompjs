@@ -1,36 +1,12 @@
 {
   "defaultSeverity": "error",
-  "extends": [
-    "tslint:recommended"
-  ],
+  "extends": ["tslint:recommended", "tslint-config-prettier"],
   "jsRules": {},
   "rules": {
-    "member-ordering": [
-      false
-    ],
+    "member-ordering": [false],
     "no-console": false,
-    "no-empty": [
-      true,
-      "allow-empty-catch",
-      "allow-empty-functions"
-    ],
+    "no-empty": [true, "allow-empty-catch", "allow-empty-functions"],
     "object-literal-sort-keys": false,
-    "quotemark": [
-      true,
-      "single"
-    ],
-    "trailing-comma": [
-      true,
-      {
-        "multiline": {
-          "objects": "never",
-          "arrays": "never",
-          "functions": "never",
-          "typeLiterals": "ignore"
-        },
-        "esSpecCompliant": true
-      }
-    ],
     "variable-name": [
       true,
       "ban-keywords",

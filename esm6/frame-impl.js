@@ -11,7 +11,7 @@ export class FrameImpl {
      * @internal
      */
     constructor(params) {
-        const { command, headers, body, binaryBody, escapeHeaderValues, skipContentLengthHeader } = params;
+        const { command, headers, body, binaryBody, escapeHeaderValues, skipContentLengthHeader, } = params;
         this.command = command;
         this.headers = Object.assign({}, headers || {});
         if (binaryBody) {
@@ -56,7 +56,9 @@ export class FrameImpl {
             const idx = header.indexOf(':');
             const key = trim(header[0]);
             let value = trim(header[1]);
-            if (escapeHeaderValues && (rawFrame.command !== 'CONNECT') && (rawFrame.command !== 'CONNECTED')) {
+            if (escapeHeaderValues &&
+                rawFrame.command !== 'CONNECT' &&
+                rawFrame.command !== 'CONNECTED') {
                 value = FrameImpl.hdrValueUnEscape(value);
             }
             headers[key] = value;
@@ -65,7 +67,7 @@ export class FrameImpl {
             command: rawFrame.command,
             headers,
             binaryBody: rawFrame.binaryBody,
-            escapeHeaderValues
+            escapeHeaderValues,
         });
     }
     /**
@@ -97,14 +99,17 @@ export class FrameImpl {
         }
         for (const name of Object.keys(this.headers || {})) {
             const value = this.headers[name];
-            if (this.escapeHeaderValues && (this.command !== 'CONNECT') && (this.command !== 'CONNECTED')) {
+            if (this.escapeHeaderValues &&
+                this.command !== 'CONNECT' &&
+                this.command !== 'CONNECTED') {
                 lines.push(`${name}:${FrameImpl.hdrValueEscape(`${value}`)}`);
             }
             else {
                 lines.push(`${name}:${value}`);
             }
         }
-        if (this.isBinaryBody || (!this.isBodyEmpty() && !this.skipContentLengthHeader)) {
+        if (this.isBinaryBody ||
+            (!this.isBodyEmpty() && !this.skipContentLengthHeader)) {
             lines.push(`content-length:${this.bodyLength()}`);
         }
         return lines.join(BYTE.LF) + BYTE.LF + BYTE.LF;
@@ -145,13 +150,21 @@ export class FrameImpl {
      *  Escape header values
      */
     static hdrValueEscape(str) {
-        return str.replace(/\\/g, '\\\\').replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/:/g, '\\c');
+        return str
+            .replace(/\\/g, '\\\\')
+            .replace(/\r/g, '\\r')
+            .replace(/\n/g, '\\n')
+            .replace(/:/g, '\\c');
     }
     /**
      * UnEscape header values
      */
     static hdrValueUnEscape(str) {
-        return str.replace(/\\r/g, '\r').replace(/\\n/g, '\n').replace(/\\c/g, ':').replace(/\\\\/g, '\\');
+        return str
+            .replace(/\\r/g, '\r')
+            .replace(/\\n/g, '\n')
+            .replace(/\\c/g, ':')
+            .replace(/\\\\/g, '\\');
     }
 }
 //# sourceMappingURL=frame-impl.js.map

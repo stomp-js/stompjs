@@ -1,4 +1,4 @@
-describe("Stomp Message", function () {
+describe('Stomp Message', function () {
   let client;
 
   beforeEach(function () {
@@ -9,7 +9,7 @@ describe("Stomp Message", function () {
     disconnectStomp(client);
   });
 
-  it("Send and receive a message", function (done) {
+  it('Send and receive a message', function (done) {
     const body = randomText();
     client.onConnect = function () {
       client.subscribe(TEST.destination, function (message) {
@@ -19,14 +19,14 @@ describe("Stomp Message", function () {
         done();
       });
 
-      client.publish({destination: TEST.destination, body: body});
+      client.publish({ destination: TEST.destination, body: body });
     };
     client.activate();
   });
 
-  it("Send and receive non-ASCII UTF8 text", function (done) {
+  it('Send and receive non-ASCII UTF8 text', function (done) {
     // Text picked up from https://github.com/stomp-js/stomp-websocket/pull/46
-    const body = "Älä sinä yhtään and السابق";
+    const body = 'Älä sinä yhtään and السابق';
     client.onConnect = function () {
       client.subscribe(TEST.destination, function (message) {
         expect(message.body).toEqual(body);
@@ -35,14 +35,14 @@ describe("Stomp Message", function () {
         done();
       });
 
-      client.publish({destination: TEST.destination, body: body});
+      client.publish({ destination: TEST.destination, body: body });
     };
     client.activate();
   });
 
-  it("Logs raw communication", function (done) {
+  it('Logs raw communication', function (done) {
     // Text picked up from https://github.com/stomp-js/stomp-websocket/pull/46
-    const body = "Älä sinä yhtään and السابق";
+    const body = 'Älä sinä yhtään and السابق';
     client.logRawCommunication = true;
 
     client.debug = jasmine.createSpy('debug');
@@ -58,14 +58,16 @@ describe("Stomp Message", function () {
         done();
       });
 
-      client.publish({destination: TEST.destination, body: body});
+      client.publish({ destination: TEST.destination, body: body });
       expect(client.debug.calls.mostRecent().args[0]).toEqual(
-        ">>> SEND\ndestination:/topic/chat.general\ncontent-length:37\n\nÄlä sinä yhtään and السابق" + "\0");
+        '>>> SEND\ndestination:/topic/chat.general\ncontent-length:37\n\nÄlä sinä yhtään and السابق' +
+          '\0'
+      );
     };
     client.activate();
   });
 
-  it("Send and receive binary message", function (done) {
+  it('Send and receive binary message', function (done) {
     const binaryBody = generateBinaryData(1);
     client.onConnect = function () {
       client.subscribe(TEST.destination, function (message) {
@@ -75,19 +77,20 @@ describe("Stomp Message", function () {
         done();
       });
 
-      client.publish({destination: TEST.destination, binaryBody: binaryBody});
+      client.publish({ destination: TEST.destination, binaryBody: binaryBody });
     };
     client.activate();
   });
 
-  it("Send and receive text/binary messages", function (done) {
+  it('Send and receive text/binary messages', function (done) {
     const binaryData = generateBinaryData(1);
     const textData = 'Hello World';
     let numCalls = 0;
 
     client.onConnect = function () {
       client.subscribe(TEST.destination, function (message) {
-        if(++numCalls === 1) { // First message should be binary
+        if (++numCalls === 1) {
+          // First message should be binary
           expect(message.binaryBody.toString()).toEqual(binaryData.toString());
           return;
         }
@@ -103,19 +106,19 @@ describe("Stomp Message", function () {
       client.publish({
         destination: TEST.destination,
         binaryBody: binaryData,
-        headers: {'content-type': 'application/octet-stream'}
+        headers: { 'content-type': 'application/octet-stream' },
       });
 
       // Followed by a text message with a little gap
       setTimeout(() => {
-        client.publish({destination: TEST.destination, body: textData});
+        client.publish({ destination: TEST.destination, body: textData });
       }, 20);
     };
     client.activate();
   });
 
-  it("Send and receive a message with a JSON body", function (done) {
-    const payload = {text: "hello", bool: true, value: randomText()};
+  it('Send and receive a message with a JSON body', function (done) {
+    const payload = { text: 'hello', bool: true, value: randomText() };
     client.onConnect = function () {
       client.subscribe(TEST.destination, function (message) {
         const res = JSON.parse(message.body);
@@ -127,12 +130,15 @@ describe("Stomp Message", function () {
         done();
       });
 
-      client.publish({destination: TEST.destination, body: JSON.stringify(payload)});
+      client.publish({
+        destination: TEST.destination,
+        body: JSON.stringify(payload),
+      });
     };
     client.activate();
   });
 
-  it("Should allow skipping content length header", function (done) {
+  it('Should allow skipping content length header', function (done) {
     const body = 'Hello, world';
 
     client.onConnect = function () {
@@ -143,9 +149,13 @@ describe("Stomp Message", function () {
         done();
       });
 
-      const spy= spyOn(client._webSocket, 'send').and.callThrough();
+      const spy = spyOn(client._webSocket, 'send').and.callThrough();
 
-      client.publish({destination: TEST.destination, body: body, skipContentLengthHeader: true});
+      client.publish({
+        destination: TEST.destination,
+        body: body,
+        skipContentLengthHeader: true,
+      });
 
       const rawChunk = spy.calls.first().args[0];
       expect(rawChunk).not.toMatch('content-length');
@@ -153,7 +163,7 @@ describe("Stomp Message", function () {
     client.activate();
   });
 
-  it("Should always add content length header for binary messages", function (done) {
+  it('Should always add content length header for binary messages', function (done) {
     const binaryBody = new Uint8Array([0]);
 
     client.onConnect = function () {
@@ -163,9 +173,13 @@ describe("Stomp Message", function () {
         done();
       });
 
-      const spy= spyOn(client._webSocket, 'send').and.callThrough();
+      const spy = spyOn(client._webSocket, 'send').and.callThrough();
 
-      client.publish({destination: TEST.destination, binaryBody: binaryBody, skipContentLengthHeader: true});
+      client.publish({
+        destination: TEST.destination,
+        binaryBody: binaryBody,
+        skipContentLengthHeader: true,
+      });
 
       const rawChunk = spy.calls.first().args[0];
       // The frame is binary so needs to be converted to String before RegEx can be used
@@ -175,8 +189,8 @@ describe("Stomp Message", function () {
     client.activate();
   });
 
-  describe("Large data", function () {
-    it("Large text message", function (done) {
+  describe('Large data', function () {
+    it('Large text message', function (done) {
       const body = generateTextData(TEST.largeMessageSize);
       client.debug = function () {}; // disable for this test
       client.onConnect = function () {
@@ -187,12 +201,12 @@ describe("Stomp Message", function () {
           done();
         });
 
-        client.publish({destination: TEST.destination, body: body});
+        client.publish({ destination: TEST.destination, body: body });
       };
       client.activate();
     });
 
-    it("Large binary message", function (done) {
+    it('Large binary message', function (done) {
       const binaryBody = generateBinaryData(TEST.largeMessageSize);
       client.onConnect = function () {
         client.subscribe(TEST.destination, function (message) {
@@ -202,7 +216,10 @@ describe("Stomp Message", function () {
           done();
         });
 
-        client.publish({destination: TEST.destination, binaryBody: binaryBody});
+        client.publish({
+          destination: TEST.destination,
+          binaryBody: binaryBody,
+        });
       };
       client.activate();
     });

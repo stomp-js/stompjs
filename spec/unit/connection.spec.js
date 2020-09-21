@@ -1,18 +1,18 @@
-describe("Stomp Connection", function () {
+describe('Stomp Connection', function () {
   let client;
 
   afterEach(function () {
     disconnectStomp(client);
   });
 
-  it("Should trigger WebSocket error while connecting to an invalid Stomp server", function (done) {
+  it('Should trigger WebSocket error while connecting to an invalid Stomp server', function (done) {
     client = badStompClient();
     client.onConnect = function () {
       expect(false).toBe(true);
       done();
     };
 
-    const onWebSocketError= jasmine.createSpy('onWebSocketError');
+    const onWebSocketError = jasmine.createSpy('onWebSocketError');
     client.onWebSocketError = onWebSocketError;
 
     client.onWebSocketClose = function (evt) {
@@ -22,18 +22,18 @@ describe("Stomp Connection", function () {
     client.activate();
   });
 
-  it("Connect to a valid Stomp server", function (done) {
+  it('Connect to a valid Stomp server', function (done) {
     client = stompClient();
     client.onConnect = function () {
       done();
     };
-    client.activate()
+    client.activate();
   });
 
-  it("Should not connect with invalid credentials", function (done) {
+  it('Should not connect with invalid credentials', function (done) {
     client = stompClient();
     client.configure({
-      connectHeaders: {login: TEST.login, passcode: "bad-passcode"},
+      connectHeaders: { login: TEST.login, passcode: 'bad-passcode' },
       onConnect: function () {
         expect(false).toBe(true);
         done();
@@ -41,12 +41,12 @@ describe("Stomp Connection", function () {
       onStompError: function (frame) {
         expect(typeof frame.body).toEqual('string');
         done();
-      }
+      },
     });
     client.activate();
   });
 
-  it("Deactivates", function (done) {
+  it('Deactivates', function (done) {
     client = stompClient();
     client.configure({
       onConnect: function () {
@@ -55,13 +55,13 @@ describe("Stomp Connection", function () {
       },
       onDisconnect: function () {
         done();
-      }
+      },
     });
 
     client.activate();
   });
 
-  it("Deactivates in before connect", function (done) {
+  it('Deactivates in before connect', function (done) {
     client = stompClient();
     client.configure({
       onConnect: function () {
@@ -74,7 +74,7 @@ describe("Stomp Connection", function () {
       onDisconnect: function () {
         // should not be called
         expect(false).toBe(true);
-      }
+      },
     });
 
     client.activate();
@@ -82,11 +82,11 @@ describe("Stomp Connection", function () {
       expect(client.connected).toBe(false);
       expect(client.active).toBe(false);
 
-      done()
+      done();
     }, 50);
   });
 
-  it("async beforeConnect", function (done) {
+  it('async beforeConnect', function (done) {
     // To test async beforeConnect, we set onConnect
     // handler in beforeConnect asynchronously after a wait
     // If the newly set onConnect is invoked we can conclude that
@@ -100,15 +100,15 @@ describe("Stomp Connection", function () {
               done();
             };
             resolve();
-          }, 200)
+          }, 200);
         });
-      }
+      },
     });
 
     client.activate();
   });
 
-  it("Activates following a deactivate", function (done) {
+  it('Activates following a deactivate', function (done) {
     client = stompClient();
     client.configure({
       onConnect: function () {
@@ -121,13 +121,13 @@ describe("Stomp Connection", function () {
           done();
         };
         client.activate();
-      }
+      },
     });
 
     client.activate();
   });
 
-  it("Activates immediately following a deactivate", function (done) {
+  it('Activates immediately following a deactivate', function (done) {
     client = stompClient();
     client.configure({
       onConnect: function () {
@@ -138,14 +138,13 @@ describe("Stomp Connection", function () {
         };
         client.activate();
       },
-      onDisconnect: function () {
-      }
+      onDisconnect: function () {},
     });
 
     client.activate();
   });
 
-  it("Force disconnects", function (done) {
+  it('Force disconnects', function (done) {
     client = stompClient();
     client.configure({
       onConnect: function () {
@@ -158,13 +157,13 @@ describe("Stomp Connection", function () {
       },
       onWebSocketClose: function () {
         done();
-      }
+      },
     });
 
     client.activate();
   });
 
-  it("Force disconnect handles non connected states", function (done) {
+  it('Force disconnect handles non connected states', function (done) {
     client = stompClient();
     client.configure({
       onConnect: function () {
@@ -183,10 +182,9 @@ describe("Stomp Connection", function () {
         client.forceDisconnect();
 
         done();
-      }
+      },
     });
 
     client.activate();
   });
-
 });

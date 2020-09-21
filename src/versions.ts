@@ -20,7 +20,11 @@ export class Versions {
   /**
    * @internal
    */
-  public static default = new Versions([Versions.V1_0, Versions.V1_1, Versions.V1_2]);
+  public static default = new Versions([
+    Versions.V1_0,
+    Versions.V1_1,
+    Versions.V1_2,
+  ]);
 
   /**
    * Takes an array of string of versions, typical elements '1.0', '1.1', or '1.2'
@@ -28,8 +32,7 @@ export class Versions {
    * You will an instance if this class if you want to override supported versions to be declared during
    * STOMP handshake.
    */
-  constructor(public versions: string[]) {
-  }
+  constructor(public versions: string[]) {}
 
   /**
    * Used as part of CONNECT STOMP Frame
@@ -42,6 +45,6 @@ export class Versions {
    * Used while creating a WebSocket
    */
   public protocolVersions() {
-    return this.versions.map((x) => `v${x.replace('.', '')}.stomp`);
+    return this.versions.map(x => `v${x.replace('.', '')}.stomp`);
   }
 }

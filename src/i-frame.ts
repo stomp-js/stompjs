@@ -1,4 +1,4 @@
-import {StompHeaders} from './stomp-headers';
+import { StompHeaders } from './stomp-headers';
 
 /**
  * It represents a STOMP frame. Many of the callbacks pass an IFrame received from

@@ -1,8 +1,8 @@
-import {ITransaction} from './i-transaction';
-import {StompConfig} from './stomp-config';
-import {StompHandler} from './stomp-handler';
-import {StompHeaders} from './stomp-headers';
-import {StompSubscription} from './stomp-subscription';
+import { ITransaction } from './i-transaction';
+import { StompConfig } from './stomp-config';
+import { StompHandler } from './stomp-handler';
+import { StompHeaders } from './stomp-headers';
+import { StompSubscription } from './stomp-subscription';
 import {
   closeEventCallbackType,
   debugFnType,
@@ -11,13 +11,13 @@ import {
   messageCallbackType,
   wsErrorCallbackType,
   IStompSocket,
-  StompSocketState
+  StompSocketState,
 } from './types';
-import {Versions} from './versions';
+import { Versions } from './versions';
 
 declare const WebSocket: {
-    prototype: IStompSocket;
-    new(url: string, protocols?: string | string[]): IStompSocket;
+  prototype: IStompSocket;
+  new (url: string, protocols?: string | string[]): IStompSocket;
 };
 
 /**
@@ -196,7 +196,7 @@ export class Client {
    * `true` if there is a active connection with STOMP Broker
    */
   get connected(): boolean {
-    return (!!this._stompHandler) && this._stompHandler.connected;
+    return !!this._stompHandler && this._stompHandler.connected;
   }
 
   /**
@@ -213,7 +213,7 @@ export class Client {
    * This can be used to reliably fetch credentials, access token etc. from some other service
    * in an asynchronous way.
    */
-  public beforeConnect: () => void|Promise<void>;
+  public beforeConnect: () => void | Promise<void>;
 
   /**
    * Callback, invoked on every successful connection to the STOMP broker.
@@ -367,7 +367,9 @@ export class Client {
     await this.beforeConnect();
 
     if (!this._active) {
-      this.debug('Client has been marked inactive, will not attempt to connect');
+      this.debug(
+        'Client has been marked inactive, will not attempt to connect'
+      );
       return;
     }
 
@@ -390,21 +392,23 @@ export class Client {
       appendMissingNULLonIncoming: this.appendMissingNULLonIncoming,
       discardWebsocketOnCommFailure: this.discardWebsocketOnCommFailure,
 
-      onConnect: (frame) => {
+      onConnect: frame => {
         if (!this._active) {
-          this.debug('STOMP got connected while deactivate was issued, will disconnect now');
+          this.debug(
+            'STOMP got connected while deactivate was issued, will disconnect now'
+          );
           this._disposeStompHandler();
           return;
         }
         this.onConnect(frame);
       },
-      onDisconnect: (frame) => {
+      onDisconnect: frame => {
         this.onDisconnect(frame);
       },
-      onStompError: (frame) => {
+      onStompError: frame => {
         this.onStompError(frame);
       },
-      onWebSocketClose: (evt) => {
+      onWebSocketClose: evt => {
         this.onWebSocketClose(evt);
         // The callback is called before attempting to reconnect, this would allow the client
         // to be `deactivated` in the callback.
@@ -412,18 +416,18 @@ export class Client {
           this._schedule_reconnect();
         }
       },
-      onWebSocketError: (evt) => {
+      onWebSocketError: evt => {
         this.onWebSocketError(evt);
       },
-      onUnhandledMessage: (message) => {
+      onUnhandledMessage: message => {
         this.onUnhandledMessage(message);
       },
-      onUnhandledReceipt: (frame) => {
+      onUnhandledReceipt: frame => {
         this.onUnhandledReceipt(frame);
       },
-      onUnhandledFrame: (frame) => {
+      onUnhandledFrame: frame => {
         this.onUnhandledFrame(frame);
-      }
+      },
     });
 
     this._stompHandler.start();
@@ -435,7 +439,10 @@ export class Client {
     if (this.webSocketFactory) {
       webSocket = this.webSocketFactory();
     } else {
-      webSocket = new WebSocket(this.brokerURL, this.stompVersions.protocolVersions());
+      webSocket = new WebSocket(
+        this.brokerURL,
+        this.stompVersions.protocolVersions()
+      );
     }
     webSocket.binaryType = 'arraybuffer';
     return webSocket;
@@ -476,8 +483,10 @@ export class Client {
    */
   public forceDisconnect() {
     if (this._webSocket) {
-      if (this._webSocket.readyState === StompSocketState.CONNECTING
-              || this._webSocket.readyState === StompSocketState.OPEN) {
+      if (
+        this._webSocket.readyState === StompSocketState.CONNECTING ||
+        this._webSocket.readyState === StompSocketState.OPEN
+      ) {
         this._stompHandler._closeWebsocket();
       }
     }
@@ -594,7 +603,11 @@ export class Client {
    *        var subscription = client.subscribe(destination, callback, { id: mySubId });
    * ```
    */
-  public subscribe(destination: string, callback: messageCallbackType, headers: StompHeaders = {}): StompSubscription {
+  public subscribe(
+    destination: string,
+    callback: messageCallbackType,
+    headers: StompHeaders = {}
+  ): StompSubscription {
     return this._stompHandler.subscribe(destination, callback, headers);
   }
 
@@ -668,7 +681,11 @@ export class Client {
    *        client.subscribe(destination, callback, {'ack': 'client'});
    * ```
    */
-  public ack(messageId: string, subscriptionId: string, headers: StompHeaders = {}): void {
+  public ack(
+    messageId: string,
+    subscriptionId: string,
+    headers: StompHeaders = {}
+  ): void {
     this._stompHandler.ack(messageId, subscriptionId, headers);
   }
 
@@ -685,7 +702,11 @@ export class Client {
    *        client.subscribe(destination, callback, {'ack': 'client'});
    * ```
    */
-  public nack(messageId: string, subscriptionId: string, headers: StompHeaders = {}): void {
+  public nack(
+    messageId: string,
+    subscriptionId: string,
+    headers: StompHeaders = {}
+  ): void {
     this._stompHandler.nack(messageId, subscriptionId, headers);
   }
 }

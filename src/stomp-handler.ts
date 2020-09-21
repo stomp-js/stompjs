@@ -1,12 +1,12 @@
-import {BYTE} from './byte';
-import {Client} from './client';
-import {FrameImpl} from './frame-impl';
-import {IMessage} from './i-message';
-import {ITransaction} from './i-transaction';
-import {Parser} from './parser';
-import {StompConfig} from './stomp-config';
-import {StompHeaders} from './stomp-headers';
-import {StompSubscription} from './stomp-subscription';
+import { BYTE } from './byte';
+import { Client } from './client';
+import { FrameImpl } from './frame-impl';
+import { IMessage } from './i-message';
+import { ITransaction } from './i-transaction';
+import { Parser } from './parser';
+import { StompConfig } from './stomp-config';
+import { StompHeaders } from './stomp-headers';
+import { StompSubscription } from './stomp-subscription';
 import {
   closeEventCallbackType,
   debugFnType,
@@ -18,7 +18,7 @@ import {
   StompSocketState,
   wsErrorCallbackType,
 } from './types';
-import {Versions} from './versions';
+import { Versions } from './versions';
 
 /**
  * The STOMP protocol handler
@@ -90,7 +90,11 @@ export class StompHandler {
 
   private _onclose: (closeEvent: any) => void;
 
-  constructor(private _client: Client, private _webSocket: IStompSocket, config: StompConfig = {}) {
+  constructor(
+    private _client: Client,
+    private _webSocket: IStompSocket,
+    config: StompConfig = {}
+  ) {
     // used to index subscribers
     this._counter = 0;
 
@@ -117,15 +121,19 @@ export class StompHandler {
   public start(): void {
     const parser = new Parser(
       // On Frame
-      (rawFrame) => {
-        const frame = FrameImpl.fromRawFrame(rawFrame, this._escapeHeaderValues);
+      rawFrame => {
+        const frame = FrameImpl.fromRawFrame(
+          rawFrame,
+          this._escapeHeaderValues
+        );
 
         // if this.logRawCommunication is set, the rawChunk is logged at this._webSocket.onmessage
         if (!this.logRawCommunication) {
           this.debug(`<<< ${frame}`);
         }
 
-        const serverFrameHandler = this._serverFrameHandlers[frame.command] || this.onUnhandledFrame;
+        const serverFrameHandler =
+          this._serverFrameHandlers[frame.command] || this.onUnhandledFrame;
         serverFrameHandler(frame);
       },
       // On Incoming Ping
@@ -139,7 +147,10 @@ export class StompHandler {
       this._lastServerActivityTS = Date.now();
 
       if (this.logRawCommunication) {
-        const rawChunkAsString = (evt.data instanceof ArrayBuffer) ? new TextDecoder().decode(evt.data) : evt.data;
+        const rawChunkAsString =
+          evt.data instanceof ArrayBuffer
+            ? new TextDecoder().decode(evt.data)
+            : evt.data;
         this.debug(`<<< ${rawChunkAsString}`);
       }
 
@@ -164,15 +175,19 @@ export class StompHandler {
 
       this.debug('Web Socket Opened...');
       connectHeaders['accept-version'] = this.stompVersions.supportedVersions();
-      connectHeaders['heart-beat'] = [this.heartbeatOutgoing, this.heartbeatIncoming].join(',');
-      this._transmit({command: 'CONNECT', headers: connectHeaders});
+      connectHeaders['heart-beat'] = [
+        this.heartbeatOutgoing,
+        this.heartbeatIncoming,
+      ].join(',');
+      this._transmit({ command: 'CONNECT', headers: connectHeaders });
     };
   }
 
-  private readonly _serverFrameHandlers: { [key: string]: frameCallbackType } = {
-
+  private readonly _serverFrameHandlers: {
+    [key: string]: frameCallbackType;
+  } = {
     // [CONNECTED Frame](http://stomp.github.com/stomp-specification-1.2.html#CONNECTED_Frame)
-    CONNECTED: (frame) => {
+    CONNECTED: frame => {
       this.debug(`connected to server ${frame.headers.server}`);
       this._connected = true;
       this._connectedVersion = frame.headers.version;
@@ -186,7 +201,7 @@ export class StompHandler {
     },
 
     // [MESSAGE Frame](http://stomp.github.com/stomp-specification-1.2.html#MESSAGE)
-    MESSAGE: (frame) => {
+    MESSAGE: frame => {
       // the callback is registered when the client calls
       // `subscribe()`.
       // If there is no registered subscription for the received message,
@@ -195,13 +210,17 @@ export class StompHandler {
       // on the browser side (e.g. [RabbitMQ's temporary
       // queues](http://www.rabbitmq.com/stomp.html)).
       const subscription = frame.headers.subscription;
-      const onReceive = this._subscriptions[subscription] || this.onUnhandledMessage;
+      const onReceive =
+        this._subscriptions[subscription] || this.onUnhandledMessage;
 
       // bless the frame to be a Message
       const message = frame as IMessage;
 
       const client = this;
-      const messageId = this._connectedVersion === Versions.V1_2 ? message.headers.ack : message.headers['message-id'];
+      const messageId =
+        this._connectedVersion === Versions.V1_2
+          ? message.headers.ack
+          : message.headers['message-id'];
 
       // add `ack()` and `nack()` methods directly to the returned frame
       // so that a simple call to `message.ack()` can acknowledge the message.
@@ -215,7 +234,7 @@ export class StompHandler {
     },
 
     // [RECEIPT Frame](http://stomp.github.com/stomp-specification-1.2.html#RECEIPT)
-    RECEIPT: (frame) => {
+    RECEIPT: frame => {
       const callback = this._receiptWatchers[frame.headers['receipt-id']];
       if (callback) {
         callback(frame);
@@ -227,13 +246,16 @@ export class StompHandler {
     },
 
     // [ERROR Frame](http://stomp.github.com/stomp-specification-1.2.html#ERROR)
-    ERROR: (frame) => {
+    ERROR: frame => {
       this.onStompError(frame);
-    }
+    },
   };
 
   private _setupHeartbeat(headers: StompHeaders): void {
-    if ((headers.version !== Versions.V1_1 && headers.version !== Versions.V1_2)) {
+    if (
+      headers.version !== Versions.V1_1 &&
+      headers.version !== Versions.V1_2
+    ) {
       return;
     }
 
@@ -246,9 +268,11 @@ export class StompHandler {
     // heart-beat header received from the server looks like:
     //
     //     heart-beat: sx, sy
-    const [serverOutgoing, serverIncoming] = (headers['heart-beat']).split(',').map((v: string) => parseInt(v, 10));
+    const [serverOutgoing, serverIncoming] = headers['heart-beat']
+      .split(',')
+      .map((v: string) => parseInt(v, 10));
 
-    if ((this.heartbeatOutgoing !== 0) && (serverIncoming !== 0)) {
+    if (this.heartbeatOutgoing !== 0 && serverIncoming !== 0) {
       const ttl: number = Math.max(this.heartbeatOutgoing, serverIncoming);
       this.debug(`send PING every ${ttl}ms`);
       this._pinger = setInterval(() => {
@@ -259,16 +283,18 @@ export class StompHandler {
       }, ttl);
     }
 
-    if ((this.heartbeatIncoming !== 0) && (serverOutgoing !== 0)) {
+    if (this.heartbeatIncoming !== 0 && serverOutgoing !== 0) {
       const ttl: number = Math.max(this.heartbeatIncoming, serverOutgoing);
       this.debug(`check PONG every ${ttl}ms`);
       this._ponger = setInterval(() => {
         const delta = Date.now() - this._lastServerActivityTS;
         // We wait twice the TTL to be flexible on window's setInterval calls
-        if (delta > (ttl * 2)) {
+        if (delta > ttl * 2) {
           this.debug(`did not receive server activity for the last ${delta}ms`);
           if (this.discardWebsocketOnCommFailure) {
-            this.debug('Discarding websocket, the underlying socket may linger for a while');
+            this.debug(
+              'Discarding websocket, the underlying socket may linger for a while'
+            );
             this._discardWebsocket();
           } else {
             this.debug('Issuing close on the websocket');
@@ -280,12 +306,12 @@ export class StompHandler {
   }
 
   public _closeWebsocket() {
-    this._webSocket.onmessage = () => { }; // ignore messages
+    this._webSocket.onmessage = () => {}; // ignore messages
     this._webSocket.close();
   }
 
   private _discardWebsocket() {
-    const noOp = () => { };
+    const noOp = () => {};
 
     // set all callbacks to no op
     this._webSocket.onerror = noOp;
@@ -295,9 +321,11 @@ export class StompHandler {
     const ts = new Date();
 
     // Track delay in actual closure of the socket
-    this._webSocket.onclose = (closeEvent) => {
-      const delay = (new Date()).getTime() - ts.getTime();
-      this.debug(`Discarded socket closed after ${delay}ms, with code/reason: ${closeEvent.code}/${closeEvent.reason}`);
+    this._webSocket.onclose = closeEvent => {
+      const delay = new Date().getTime() - ts.getTime();
+      this.debug(
+        `Discarded socket closed after ${delay}ms, with code/reason: ${closeEvent.code}/${closeEvent.reason}`
+      );
     };
 
     this._webSocket.close();
@@ -305,22 +333,33 @@ export class StompHandler {
     const customCloseEvent = {
       code: 4001,
       reason: 'Heartbeat failure, discarding the socket',
-      wasClean: false
-    }
+      wasClean: false,
+    };
 
     this._onclose(customCloseEvent);
   }
 
-  private _transmit(params: { command: string, headers?: StompHeaders,
-                              body?: string, binaryBody?: Uint8Array, skipContentLengthHeader?: boolean }): void {
-    const {command, headers, body, binaryBody, skipContentLengthHeader} = params;
+  private _transmit(params: {
+    command: string;
+    headers?: StompHeaders;
+    body?: string;
+    binaryBody?: Uint8Array;
+    skipContentLengthHeader?: boolean;
+  }): void {
+    const {
+      command,
+      headers,
+      body,
+      binaryBody,
+      skipContentLengthHeader,
+    } = params;
     const frame = new FrameImpl({
       command,
       headers,
       body,
       binaryBody,
       escapeHeaderValues: this._escapeHeaderValues,
-      skipContentLengthHeader
+      skipContentLengthHeader,
     });
 
     let rawChunk = frame.serialize();
@@ -352,23 +391,28 @@ export class StompHandler {
     if (this.connected) {
       try {
         // clone before updating
-        const disconnectHeaders = (Object as any).assign({}, this.disconnectHeaders);
+        const disconnectHeaders = (Object as any).assign(
+          {},
+          this.disconnectHeaders
+        );
 
         if (!disconnectHeaders.receipt) {
           disconnectHeaders.receipt = `close-${this._counter++}`;
         }
-        this.watchForReceipt(disconnectHeaders.receipt, (frame) => {
+        this.watchForReceipt(disconnectHeaders.receipt, frame => {
           this._closeWebsocket();
           this._cleanUp();
           this.onDisconnect(frame);
         });
-        this._transmit({command: 'DISCONNECT', headers: disconnectHeaders});
+        this._transmit({ command: 'DISCONNECT', headers: disconnectHeaders });
       } catch (error) {
         this.debug(`Ignoring error during disconnect ${error}`);
       }
     } else {
-      if (this._webSocket.readyState === StompSocketState.CONNECTING
-            || this._webSocket.readyState === StompSocketState.OPEN) {
+      if (
+        this._webSocket.readyState === StompSocketState.CONNECTING ||
+        this._webSocket.readyState === StompSocketState.OPEN
+      ) {
         this._closeWebsocket();
       }
     }
@@ -386,14 +430,20 @@ export class StompHandler {
   }
 
   public publish(params: IPublishParams): void {
-    const {destination, headers, body, binaryBody, skipContentLengthHeader} = params;
-    const hdrs: StompHeaders = (Object as any).assign({destination}, headers);
+    const {
+      destination,
+      headers,
+      body,
+      binaryBody,
+      skipContentLengthHeader,
+    } = params;
+    const hdrs: StompHeaders = (Object as any).assign({ destination }, headers);
     this._transmit({
       command: 'SEND',
       headers: hdrs,
       body,
       binaryBody,
-      skipContentLengthHeader
+      skipContentLengthHeader,
     });
   }
 
@@ -401,7 +451,11 @@ export class StompHandler {
     this._receiptWatchers[receiptId] = callback;
   }
 
-  public subscribe(destination: string, callback: messageCallbackType, headers: StompHeaders = {}): StompSubscription {
+  public subscribe(
+    destination: string,
+    callback: messageCallbackType,
+    headers: StompHeaders = {}
+  ): StompSubscription {
     headers = (Object as any).assign({}, headers);
 
     if (!headers.id) {
@@ -409,14 +463,14 @@ export class StompHandler {
     }
     headers.destination = destination;
     this._subscriptions[headers.id] = callback;
-    this._transmit({command: 'SUBSCRIBE', headers});
+    this._transmit({ command: 'SUBSCRIBE', headers });
     const client = this;
     return {
       id: headers.id,
 
       unsubscribe(hdrs) {
         return client.unsubscribe(headers.id, hdrs);
-      }
+      },
     };
   }
 
@@ -425,15 +479,16 @@ export class StompHandler {
 
     delete this._subscriptions[id];
     headers.id = id;
-    this._transmit({command: 'UNSUBSCRIBE', headers});
+    this._transmit({ command: 'UNSUBSCRIBE', headers });
   }
 
   public begin(transactionId: string): ITransaction {
-    const txId = transactionId || (`tx-${this._counter++}`);
+    const txId = transactionId || `tx-${this._counter++}`;
     this._transmit({
-      command: 'BEGIN', headers: {
-        transaction: txId
-      }
+      command: 'BEGIN',
+      headers: {
+        transaction: txId,
+      },
     });
     const client = this;
     return {
@@ -443,27 +498,33 @@ export class StompHandler {
       },
       abort(): void {
         client.abort(txId);
-      }
+      },
     };
   }
 
   public commit(transactionId: string): void {
     this._transmit({
-      command: 'COMMIT', headers: {
-        transaction: transactionId
-      }
+      command: 'COMMIT',
+      headers: {
+        transaction: transactionId,
+      },
     });
   }
 
   public abort(transactionId: string): void {
     this._transmit({
-      command: 'ABORT', headers: {
-        transaction: transactionId
-      }
+      command: 'ABORT',
+      headers: {
+        transaction: transactionId,
+      },
     });
   }
 
-  public ack(messageId: string, subscriptionId: string, headers: StompHeaders = {}): void {
+  public ack(
+    messageId: string,
+    subscriptionId: string,
+    headers: StompHeaders = {}
+  ): void {
     headers = (Object as any).assign({}, headers);
 
     if (this._connectedVersion === Versions.V1_2) {
@@ -472,10 +533,14 @@ export class StompHandler {
       headers['message-id'] = messageId;
     }
     headers.subscription = subscriptionId;
-    this._transmit({command: 'ACK', headers});
+    this._transmit({ command: 'ACK', headers });
   }
 
-  public nack(messageId: string, subscriptionId: string, headers: StompHeaders = {}): void {
+  public nack(
+    messageId: string,
+    subscriptionId: string,
+    headers: StompHeaders = {}
+  ): void {
     headers = (Object as any).assign({}, headers);
 
     if (this._connectedVersion === Versions.V1_2) {
@@ -484,7 +549,6 @@ export class StompHandler {
       headers['message-id'] = messageId;
     }
     headers.subscription = subscriptionId;
-    return this._transmit({command: 'NACK', headers});
+    return this._transmit({ command: 'NACK', headers });
   }
-
 }

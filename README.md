@@ -40,7 +40,7 @@ to your code. Head to
 The API documentation is hosted as GitHub pages for entire StompJS family of libraries.
 You may head straight to the https://stomp-js.github.io/api-docs/latest/
 
-This library comes with detailed usage instructions. Please find it at 
+This library comes with detailed usage instructions. Please find it at
 [Usage instructions](https://stomp-js.github.io/guide/stompjs/2018/06/29/using-stompjs-v5.html).
 Check out other guides at https://stomp-js.github.io/.
 
@@ -54,7 +54,7 @@ offered by this library as rxjs Observables.
 
 ## Usage with Angular2/4/5/6/7
 
-https://github.com/stomp-js/ng2-stompjs is based on https://github.com/stomp-js/rx-stomp 
+https://github.com/stomp-js/ng2-stompjs is based on https://github.com/stomp-js/rx-stomp
 and exposes key classes as Angular Injectable Services.
 
 ## TypeScript definitions
@@ -68,20 +68,20 @@ Please visit [Change Log](Change-log.md).
 ## Contributing
 
 If you want to understand the code, develop, or contribute. Please visit
-[How to contribute](Contribute.md). 
+[How to contribute](Contribute.md).
 
 ## Authors
 
- * [Jeff Mesnil](http://jmesnil.net/)
- * [Jeff Lindsay](http://github.com/progrium)
- * [Vanessa Williams](http://github.com/fridgebuzz)
- * [Deepak Kumar](https://github.com/kum-deepak)
- * [Astha Deep](https://github.com/astha183)
- * [Dillon Sellars](https://github.com/dillon-sellars)
- * [Jimi Charalampidis](https://github.com/jimic)
- * [Raul](https://github.com/rulonder)
- * [Dimitar Georgiev](https://github.com/iMitaka)
- * [Genadi](https://github.com/genadis)
+- [Jeff Mesnil](http://jmesnil.net/)
+- [Jeff Lindsay](http://github.com/progrium)
+- [Vanessa Williams](http://github.com/fridgebuzz)
+- [Deepak Kumar](https://github.com/kum-deepak)
+- [Astha Deep](https://github.com/astha183)
+- [Dillon Sellars](https://github.com/dillon-sellars)
+- [Jimi Charalampidis](https://github.com/jimic)
+- [Raul](https://github.com/rulonder)
+- [Dimitar Georgiev](https://github.com/iMitaka)
+- [Genadi](https://github.com/genadis)
 
 ## License
 

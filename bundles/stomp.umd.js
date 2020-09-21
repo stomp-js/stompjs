@@ -117,7 +117,7 @@ exports.BYTE = {
     // LINEFEED byte (octet 10)
     LF: '\x0A',
     // NULL byte (octet 0)
-    NULL: '\x00'
+    NULL: '\x00',
 };
 
 
@@ -295,7 +295,7 @@ var Client = /** @class */ (function () {
          * `true` if there is a active connection with STOMP Broker
          */
         get: function () {
-            return (!!this._stompHandler) && this._stompHandler.connected;
+            return !!this._stompHandler && this._stompHandler.connected;
         },
         enumerable: true,
         configurable: true
@@ -404,7 +404,7 @@ var Client = /** @class */ (function () {
                             },
                             onUnhandledFrame: function (frame) {
                                 _this.onUnhandledFrame(frame);
-                            }
+                            },
                         });
                         this._stompHandler.start();
                         return [2 /*return*/];
@@ -455,8 +455,8 @@ var Client = /** @class */ (function () {
      */
     Client.prototype.forceDisconnect = function () {
         if (this._webSocket) {
-            if (this._webSocket.readyState === types_1.StompSocketState.CONNECTING
-                || this._webSocket.readyState === types_1.StompSocketState.OPEN) {
+            if (this._webSocket.readyState === types_1.StompSocketState.CONNECTING ||
+                this._webSocket.readyState === types_1.StompSocketState.OPEN) {
                 this._stompHandler._closeWebsocket();
             }
         }
@@ -741,9 +741,9 @@ var CompatClient = /** @class */ (function (_super) {
         var errorCallback;
         var headers = {};
         if (args.length < 2) {
-            throw new Error(('Connect requires at least 2 arguments'));
+            throw new Error('Connect requires at least 2 arguments');
         }
-        if (typeof (args[1]) === 'function') {
+        if (typeof args[1] === 'function') {
             headers = args[0], connectCallback = args[1], errorCallback = args[2], closeEventCallback = args[3];
         }
         else {
@@ -847,7 +847,7 @@ var CompatClient = /** @class */ (function (_super) {
         if (headers === void 0) { headers = {}; }
         if (body === void 0) { body = ''; }
         headers = Object.assign({}, headers);
-        var skipContentLengthHeader = (headers['content-length'] === false);
+        var skipContentLengthHeader = headers['content-length'] === false;
         if (skipContentLengthHeader) {
             delete headers['content-length'];
         }
@@ -855,7 +855,7 @@ var CompatClient = /** @class */ (function (_super) {
             destination: destination,
             headers: headers,
             body: body,
-            skipContentLengthHeader: skipContentLengthHeader
+            skipContentLengthHeader: skipContentLengthHeader,
         });
     };
     Object.defineProperty(CompatClient.prototype, "reconnect_delay", {
@@ -1094,7 +1094,7 @@ var Stomp = /** @class */ (function () {
      */
     Stomp.over = function (ws) {
         var wsFn;
-        if (typeof (ws) === 'function') {
+        if (typeof ws === 'function') {
             wsFn = ws;
         }
         else {
@@ -1207,7 +1207,9 @@ var FrameImpl = /** @class */ (function () {
             var idx = header.indexOf(':');
             var key = trim(header[0]);
             var value = trim(header[1]);
-            if (escapeHeaderValues && (rawFrame.command !== 'CONNECT') && (rawFrame.command !== 'CONNECTED')) {
+            if (escapeHeaderValues &&
+                rawFrame.command !== 'CONNECT' &&
+                rawFrame.command !== 'CONNECTED') {
                 value = FrameImpl.hdrValueUnEscape(value);
             }
             headers[key] = value;
@@ -1216,7 +1218,7 @@ var FrameImpl = /** @class */ (function () {
             command: rawFrame.command,
             headers: headers,
             binaryBody: rawFrame.binaryBody,
-            escapeHeaderValues: escapeHeaderValues
+            escapeHeaderValues: escapeHeaderValues,
         });
     };
     /**
@@ -1249,14 +1251,17 @@ var FrameImpl = /** @class */ (function () {
         for (var _i = 0, _a = Object.keys(this.headers || {}); _i < _a.length; _i++) {
             var name_1 = _a[_i];
             var value = this.headers[name_1];
-            if (this.escapeHeaderValues && (this.command !== 'CONNECT') && (this.command !== 'CONNECTED')) {
+            if (this.escapeHeaderValues &&
+                this.command !== 'CONNECT' &&
+                this.command !== 'CONNECTED') {
                 lines.push(name_1 + ":" + FrameImpl.hdrValueEscape("" + value));
             }
             else {
                 lines.push(name_1 + ":" + value);
             }
         }
-        if (this.isBinaryBody || (!this.isBodyEmpty() && !this.skipContentLengthHeader)) {
+        if (this.isBinaryBody ||
+            (!this.isBodyEmpty() && !this.skipContentLengthHeader)) {
             lines.push("content-length:" + this.bodyLength());
         }
         return lines.join(byte_1.BYTE.LF) + byte_1.BYTE.LF + byte_1.BYTE.LF;
@@ -1297,13 +1302,21 @@ var FrameImpl = /** @class */ (function () {
      *  Escape header values
      */
     FrameImpl.hdrValueEscape = function (str) {
-        return str.replace(/\\/g, '\\\\').replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/:/g, '\\c');
+        return str
+            .replace(/\\/g, '\\\\')
+            .replace(/\r/g, '\\r')
+            .replace(/\n/g, '\\n')
+            .replace(/:/g, '\\c');
     };
     /**
      * UnEscape header values
      */
     FrameImpl.hdrValueUnEscape = function (str) {
-        return str.replace(/\\r/g, '\r').replace(/\\n/g, '\n').replace(/\\c/g, ':').replace(/\\\\/g, '\\');
+        return str
+            .replace(/\\r/g, '\r')
+            .replace(/\\n/g, '\n')
+            .replace(/\\c/g, ':')
+            .replace(/\\\\/g, '\\');
     };
     return FrameImpl;
 }());
@@ -1420,7 +1433,7 @@ var Parser = /** @class */ (function () {
     Parser.prototype.parseChunk = function (segment, appendMissingNULLonIncoming) {
         if (appendMissingNULLonIncoming === void 0) { appendMissingNULLonIncoming = false; }
         var chunk;
-        if ((segment instanceof ArrayBuffer)) {
+        if (segment instanceof ArrayBuffer) {
             chunk = new Uint8Array(segment);
         }
         else {
@@ -1445,13 +1458,16 @@ var Parser = /** @class */ (function () {
     // The following implements a simple Rec Descent Parser.
     // The grammar is simple and just one byte tells what should be the next state
     Parser.prototype._collectFrame = function (byte) {
-        if (byte === NULL) { // Ignore
+        if (byte === NULL) {
+            // Ignore
             return;
         }
-        if (byte === CR) { // Ignore CR
+        if (byte === CR) {
+            // Ignore CR
             return;
         }
-        if (byte === LF) { // Incoming Ping
+        if (byte === LF) {
+            // Incoming Ping
             this.onIncomingPing();
             return;
         }
@@ -1459,7 +1475,8 @@ var Parser = /** @class */ (function () {
         this._reinjectByte(byte);
     };
     Parser.prototype._collectCommand = function (byte) {
-        if (byte === CR) { // Ignore CR
+        if (byte === CR) {
+            // Ignore CR
             return;
         }
         if (byte === LF) {
@@ -1470,7 +1487,8 @@ var Parser = /** @class */ (function () {
         this._consumeByte(byte);
     };
     Parser.prototype._collectHeaders = function (byte) {
-        if (byte === CR) { // Ignore CR
+        if (byte === CR) {
+            // Ignore CR
             return;
         }
         if (byte === LF) {
@@ -1492,7 +1510,8 @@ var Parser = /** @class */ (function () {
         this._consumeByte(byte);
     };
     Parser.prototype._collectHeaderValue = function (byte) {
-        if (byte === CR) { // Ignore CR
+        if (byte === CR) {
+            // Ignore CR
             return;
         }
         if (byte === LF) {
@@ -1551,7 +1570,7 @@ var Parser = /** @class */ (function () {
         this._results = {
             command: undefined,
             headers: [],
-            binaryBody: undefined
+            binaryBody: undefined,
         };
         this._token = [];
         this._headerKey = undefined;
@@ -1646,7 +1665,9 @@ var StompHandler = /** @class */ (function () {
                 // bless the frame to be a Message
                 var message = frame;
                 var client = _this;
-                var messageId = _this._connectedVersion === versions_1.Versions.V1_2 ? message.headers.ack : message.headers['message-id'];
+                var messageId = _this._connectedVersion === versions_1.Versions.V1_2
+                    ? message.headers.ack
+                    : message.headers['message-id'];
                 // add `ack()` and `nack()` methods directly to the returned frame
                 // so that a simple call to `message.ack()` can acknowledge the message.
                 message.ack = function (headers) {
@@ -1674,7 +1695,7 @@ var StompHandler = /** @class */ (function () {
             // [ERROR Frame](http://stomp.github.com/stomp-specification-1.2.html#ERROR)
             ERROR: function (frame) {
                 _this.onStompError(frame);
-            }
+            },
         };
         // used to index subscribers
         this._counter = 0;
@@ -1726,7 +1747,9 @@ var StompHandler = /** @class */ (function () {
             _this.debug('Received data');
             _this._lastServerActivityTS = Date.now();
             if (_this.logRawCommunication) {
-                var rawChunkAsString = (evt.data instanceof ArrayBuffer) ? new TextDecoder().decode(evt.data) : evt.data;
+                var rawChunkAsString = evt.data instanceof ArrayBuffer
+                    ? new TextDecoder().decode(evt.data)
+                    : evt.data;
                 _this.debug("<<< " + rawChunkAsString);
             }
             parser.parseChunk(evt.data, _this.appendMissingNULLonIncoming);
@@ -1745,13 +1768,17 @@ var StompHandler = /** @class */ (function () {
             var connectHeaders = Object.assign({}, _this.connectHeaders);
             _this.debug('Web Socket Opened...');
             connectHeaders['accept-version'] = _this.stompVersions.supportedVersions();
-            connectHeaders['heart-beat'] = [_this.heartbeatOutgoing, _this.heartbeatIncoming].join(',');
+            connectHeaders['heart-beat'] = [
+                _this.heartbeatOutgoing,
+                _this.heartbeatIncoming,
+            ].join(',');
             _this._transmit({ command: 'CONNECT', headers: connectHeaders });
         };
     };
     StompHandler.prototype._setupHeartbeat = function (headers) {
         var _this = this;
-        if ((headers.version !== versions_1.Versions.V1_1 && headers.version !== versions_1.Versions.V1_2)) {
+        if (headers.version !== versions_1.Versions.V1_1 &&
+            headers.version !== versions_1.Versions.V1_2) {
             return;
         }
         // It is valid for the server to not send this header
@@ -1762,8 +1789,10 @@ var StompHandler = /** @class */ (function () {
         // heart-beat header received from the server looks like:
         //
         //     heart-beat: sx, sy
-        var _a = (headers['heart-beat']).split(',').map(function (v) { return parseInt(v, 10); }), serverOutgoing = _a[0], serverIncoming = _a[1];
-        if ((this.heartbeatOutgoing !== 0) && (serverIncoming !== 0)) {
+        var _a = headers['heart-beat']
+            .split(',')
+            .map(function (v) { return parseInt(v, 10); }), serverOutgoing = _a[0], serverIncoming = _a[1];
+        if (this.heartbeatOutgoing !== 0 && serverIncoming !== 0) {
             var ttl = Math.max(this.heartbeatOutgoing, serverIncoming);
             this.debug("send PING every " + ttl + "ms");
             this._pinger = setInterval(function () {
@@ -1773,13 +1802,13 @@ var StompHandler = /** @class */ (function () {
                 }
             }, ttl);
         }
-        if ((this.heartbeatIncoming !== 0) && (serverOutgoing !== 0)) {
+        if (this.heartbeatIncoming !== 0 && serverOutgoing !== 0) {
             var ttl_1 = Math.max(this.heartbeatIncoming, serverOutgoing);
             this.debug("check PONG every " + ttl_1 + "ms");
             this._ponger = setInterval(function () {
                 var delta = Date.now() - _this._lastServerActivityTS;
                 // We wait twice the TTL to be flexible on window's setInterval calls
-                if (delta > (ttl_1 * 2)) {
+                if (delta > ttl_1 * 2) {
                     _this.debug("did not receive server activity for the last " + delta + "ms");
                     if (_this.discardWebsocketOnCommFailure) {
                         _this.debug('Discarding websocket, the underlying socket may linger for a while');
@@ -1807,14 +1836,14 @@ var StompHandler = /** @class */ (function () {
         var ts = new Date();
         // Track delay in actual closure of the socket
         this._webSocket.onclose = function (closeEvent) {
-            var delay = (new Date()).getTime() - ts.getTime();
+            var delay = new Date().getTime() - ts.getTime();
             _this.debug("Discarded socket closed after " + delay + "ms, with code/reason: " + closeEvent.code + "/" + closeEvent.reason);
         };
         this._webSocket.close();
         var customCloseEvent = {
             code: 4001,
             reason: 'Heartbeat failure, discarding the socket',
-            wasClean: false
+            wasClean: false,
         };
         this._onclose(customCloseEvent);
     };
@@ -1826,7 +1855,7 @@ var StompHandler = /** @class */ (function () {
             body: body,
             binaryBody: binaryBody,
             escapeHeaderValues: this._escapeHeaderValues,
-            skipContentLengthHeader: skipContentLengthHeader
+            skipContentLengthHeader: skipContentLengthHeader,
         });
         var rawChunk = frame.serialize();
         if (this.logRawCommunication) {
@@ -1872,8 +1901,8 @@ var StompHandler = /** @class */ (function () {
             }
         }
         else {
-            if (this._webSocket.readyState === types_1.StompSocketState.CONNECTING
-                || this._webSocket.readyState === types_1.StompSocketState.OPEN) {
+            if (this._webSocket.readyState === types_1.StompSocketState.CONNECTING ||
+                this._webSocket.readyState === types_1.StompSocketState.OPEN) {
                 this._closeWebsocket();
             }
         }
@@ -1895,7 +1924,7 @@ var StompHandler = /** @class */ (function () {
             headers: hdrs,
             body: body,
             binaryBody: binaryBody,
-            skipContentLengthHeader: skipContentLengthHeader
+            skipContentLengthHeader: skipContentLengthHeader,
         });
     };
     StompHandler.prototype.watchForReceipt = function (receiptId, callback) {
@@ -1915,7 +1944,7 @@ var StompHandler = /** @class */ (function () {
             id: headers.id,
             unsubscribe: function (hdrs) {
                 return client.unsubscribe(headers.id, hdrs);
-            }
+            },
         };
     };
     StompHandler.prototype.unsubscribe = function (id, headers) {
@@ -1926,11 +1955,12 @@ var StompHandler = /** @class */ (function () {
         this._transmit({ command: 'UNSUBSCRIBE', headers: headers });
     };
     StompHandler.prototype.begin = function (transactionId) {
-        var txId = transactionId || ("tx-" + this._counter++);
+        var txId = transactionId || "tx-" + this._counter++;
         this._transmit({
-            command: 'BEGIN', headers: {
-                transaction: txId
-            }
+            command: 'BEGIN',
+            headers: {
+                transaction: txId,
+            },
         });
         var client = this;
         return {
@@ -1940,21 +1970,23 @@ var StompHandler = /** @class */ (function () {
             },
             abort: function () {
                 client.abort(txId);
-            }
+            },
         };
     };
     StompHandler.prototype.commit = function (transactionId) {
         this._transmit({
-            command: 'COMMIT', headers: {
-                transaction: transactionId
-            }
+            command: 'COMMIT',
+            headers: {
+                transaction: transactionId,
+            },
         });
     };
     StompHandler.prototype.abort = function (transactionId) {
         this._transmit({
-            command: 'ABORT', headers: {
-                transaction: transactionId
-            }
+            command: 'ABORT',
+            headers: {
+                transaction: transactionId,
+            },
         });
     };
     StompHandler.prototype.ack = function (messageId, subscriptionId, headers) {
@@ -2119,7 +2151,11 @@ var Versions = /** @class */ (function () {
     /**
      * @internal
      */
-    Versions.default = new Versions([Versions.V1_0, Versions.V1_1, Versions.V1_2]);
+    Versions.default = new Versions([
+        Versions.V1_0,
+        Versions.V1_1,
+        Versions.V1_2,
+    ]);
     return Versions;
 }());
 exports.Versions = Versions;

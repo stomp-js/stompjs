@@ -1,5 +1,5 @@
 import { StompHandler } from './stomp-handler';
-import { StompSocketState } from './types';
+import { StompSocketState, } from './types';
 import { Versions } from './versions';
 /**
  * STOMP Client Class.
@@ -114,7 +114,7 @@ export class Client {
      * `true` if there is a active connection with STOMP Broker
      */
     get connected() {
-        return (!!this._stompHandler) && this._stompHandler.connected;
+        return !!this._stompHandler && this._stompHandler.connected;
     }
     /**
      * version of STOMP protocol negotiated with the server, READONLY
@@ -172,7 +172,7 @@ export class Client {
             logRawCommunication: this.logRawCommunication,
             appendMissingNULLonIncoming: this.appendMissingNULLonIncoming,
             discardWebsocketOnCommFailure: this.discardWebsocketOnCommFailure,
-            onConnect: (frame) => {
+            onConnect: frame => {
                 if (!this._active) {
                     this.debug('STOMP got connected while deactivate was issued, will disconnect now');
                     this._disposeStompHandler();
@@ -180,13 +180,13 @@ export class Client {
                 }
                 this.onConnect(frame);
             },
-            onDisconnect: (frame) => {
+            onDisconnect: frame => {
                 this.onDisconnect(frame);
             },
-            onStompError: (frame) => {
+            onStompError: frame => {
                 this.onStompError(frame);
             },
-            onWebSocketClose: (evt) => {
+            onWebSocketClose: evt => {
                 this.onWebSocketClose(evt);
                 // The callback is called before attempting to reconnect, this would allow the client
                 // to be `deactivated` in the callback.
@@ -194,18 +194,18 @@ export class Client {
                     this._schedule_reconnect();
                 }
             },
-            onWebSocketError: (evt) => {
+            onWebSocketError: evt => {
                 this.onWebSocketError(evt);
             },
-            onUnhandledMessage: (message) => {
+            onUnhandledMessage: message => {
                 this.onUnhandledMessage(message);
             },
-            onUnhandledReceipt: (frame) => {
+            onUnhandledReceipt: frame => {
                 this.onUnhandledReceipt(frame);
             },
-            onUnhandledFrame: (frame) => {
+            onUnhandledFrame: frame => {
                 this.onUnhandledFrame(frame);
-            }
+            },
         });
         this._stompHandler.start();
     }
@@ -251,8 +251,8 @@ export class Client {
      */
     forceDisconnect() {
         if (this._webSocket) {
-            if (this._webSocket.readyState === StompSocketState.CONNECTING
-                || this._webSocket.readyState === StompSocketState.OPEN) {
+            if (this._webSocket.readyState === StompSocketState.CONNECTING ||
+                this._webSocket.readyState === StompSocketState.OPEN) {
                 this._stompHandler._closeWebsocket();
             }
         }

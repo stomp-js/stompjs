@@ -38,18 +38,31 @@ export class CompatClient extends Client {
         let errorCallback;
         let headers = {};
         if (args.length < 2) {
-            throw new Error(('Connect requires at least 2 arguments'));
+            throw new Error('Connect requires at least 2 arguments');
         }
-        if (typeof (args[1]) === 'function') {
+        if (typeof args[1] === 'function') {
             [headers, connectCallback, errorCallback, closeEventCallback] = args;
         }
         else {
             switch (args.length) {
                 case 6:
-                    [headers.login, headers.passcode, connectCallback, errorCallback, closeEventCallback, headers.host] = args;
+                    [
+                        headers.login,
+                        headers.passcode,
+                        connectCallback,
+                        errorCallback,
+                        closeEventCallback,
+                        headers.host,
+                    ] = args;
                     break;
                 default:
-                    [headers.login, headers.passcode, connectCallback, errorCallback, closeEventCallback] = args;
+                    [
+                        headers.login,
+                        headers.passcode,
+                        connectCallback,
+                        errorCallback,
+                        closeEventCallback,
+                    ] = args;
             }
         }
         return [headers, connectCallback, errorCallback, closeEventCallback];
@@ -137,7 +150,7 @@ export class CompatClient extends Client {
      */
     send(destination, headers = {}, body = '') {
         headers = Object.assign({}, headers);
-        const skipContentLengthHeader = (headers['content-length'] === false);
+        const skipContentLengthHeader = headers['content-length'] === false;
         if (skipContentLengthHeader) {
             delete headers['content-length'];
         }
@@ -145,7 +158,7 @@ export class CompatClient extends Client {
             destination,
             headers: headers,
             body,
-            skipContentLengthHeader
+            skipContentLengthHeader,
         });
     }
     /**

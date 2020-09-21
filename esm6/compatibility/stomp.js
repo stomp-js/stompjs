@@ -69,7 +69,7 @@ export class Stomp {
      */
     static over(ws) {
         let wsFn;
-        if (typeof (ws) === 'function') {
+        if (typeof ws === 'function') {
             wsFn = ws;
         }
         else {

@@ -1,4 +1,4 @@
-describe("Compat Stomp Message", function () {
+describe('Compat Stomp Message', function () {
   let client;
 
   beforeEach(function () {
@@ -9,59 +9,56 @@ describe("Compat Stomp Message", function () {
     disconnectStomp(client);
   });
 
-  it("Send and receive a message", function (done) {
+  it('Send and receive a message', function (done) {
     const body = randomText();
 
-    client.connect(TEST.login, TEST.password,
-      function () {
-        client.subscribe(TEST.destination, function (message) {
-          expect(message.body).toEqual(body);
-          client.disconnect();
+    client.connect(TEST.login, TEST.password, function () {
+      client.subscribe(TEST.destination, function (message) {
+        expect(message.body).toEqual(body);
+        client.disconnect();
 
-          done();
-        });
-
-        client.send(TEST.destination, {}, body);
+        done();
       });
+
+      client.send(TEST.destination, {}, body);
+    });
   });
 
-  it("Send and receive a message with a JSON body", function (done) {
-    const payload = {text: "hello", bool: true, value: randomText()};
+  it('Send and receive a message with a JSON body', function (done) {
+    const payload = { text: 'hello', bool: true, value: randomText() };
 
-    client.connect(TEST.login, TEST.password,
-      function () {
-        client.subscribe(TEST.destination, function (message) {
-          const res = JSON.parse(message.body);
-          expect(res.text).toEqual(payload.text);
-          expect(res.bool).toEqual(payload.bool);
-          expect(res.value).toEqual(payload.value);
-          client.disconnect();
+    client.connect(TEST.login, TEST.password, function () {
+      client.subscribe(TEST.destination, function (message) {
+        const res = JSON.parse(message.body);
+        expect(res.text).toEqual(payload.text);
+        expect(res.bool).toEqual(payload.bool);
+        expect(res.value).toEqual(payload.value);
+        client.disconnect();
 
-          done();
-        });
-
-        client.send(TEST.destination, {}, JSON.stringify(payload));
+        done();
       });
+
+      client.send(TEST.destination, {}, JSON.stringify(payload));
+    });
   });
 
-  it("Should allow skipping content length header", function(done) {
+  it('Should allow skipping content length header', function (done) {
     const body = 'Hello, world';
 
-    client.connect(TEST.login, TEST.password,
-      function () {
-        client.subscribe(TEST.destination, function (message) {
-          expect(message.body).toEqual(body);
-          client.disconnect();
+    client.connect(TEST.login, TEST.password, function () {
+      client.subscribe(TEST.destination, function (message) {
+        expect(message.body).toEqual(body);
+        client.disconnect();
 
-          done();
-        });
-
-        const spy= spyOn(client._webSocket, 'send').and.callThrough();
-
-        client.send(TEST.destination, {'content-length': false}, body);
-
-        const rawChunk = spy.calls.first().args[0];
-        expect(rawChunk).not.toMatch('content-length');
+        done();
       });
+
+      const spy = spyOn(client._webSocket, 'send').and.callThrough();
+
+      client.send(TEST.destination, { 'content-length': false }, body);
+
+      const rawChunk = spy.calls.first().args[0];
+      expect(rawChunk).not.toMatch('content-length');
+    });
   });
 });

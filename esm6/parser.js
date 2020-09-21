@@ -67,7 +67,7 @@ export class Parser {
     }
     parseChunk(segment, appendMissingNULLonIncoming = false) {
         let chunk;
-        if ((segment instanceof ArrayBuffer)) {
+        if (segment instanceof ArrayBuffer) {
             chunk = new Uint8Array(segment);
         }
         else {
@@ -92,13 +92,16 @@ export class Parser {
     // The following implements a simple Rec Descent Parser.
     // The grammar is simple and just one byte tells what should be the next state
     _collectFrame(byte) {
-        if (byte === NULL) { // Ignore
+        if (byte === NULL) {
+            // Ignore
             return;
         }
-        if (byte === CR) { // Ignore CR
+        if (byte === CR) {
+            // Ignore CR
             return;
         }
-        if (byte === LF) { // Incoming Ping
+        if (byte === LF) {
+            // Incoming Ping
             this.onIncomingPing();
             return;
         }
@@ -106,7 +109,8 @@ export class Parser {
         this._reinjectByte(byte);
     }
     _collectCommand(byte) {
-        if (byte === CR) { // Ignore CR
+        if (byte === CR) {
+            // Ignore CR
             return;
         }
         if (byte === LF) {
@@ -117,7 +121,8 @@ export class Parser {
         this._consumeByte(byte);
     }
     _collectHeaders(byte) {
-        if (byte === CR) { // Ignore CR
+        if (byte === CR) {
+            // Ignore CR
             return;
         }
         if (byte === LF) {
@@ -139,7 +144,8 @@ export class Parser {
         this._consumeByte(byte);
     }
     _collectHeaderValue(byte) {
-        if (byte === CR) { // Ignore CR
+        if (byte === CR) {
+            // Ignore CR
             return;
         }
         if (byte === LF) {
@@ -198,7 +204,7 @@ export class Parser {
         this._results = {
             command: undefined,
             headers: [],
-            binaryBody: undefined
+            binaryBody: undefined,
         };
         this._token = [];
         this._headerKey = undefined;

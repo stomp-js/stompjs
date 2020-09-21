@@ -1,10 +1,10 @@
-import {Versions} from '../versions';
-import {CompatClient} from './compat-client';
+import { Versions } from '../versions';
+import { CompatClient } from './compat-client';
 import { IStompSocket } from '../types';
 
 declare const WebSocket: {
-    prototype: IStompSocket;
-    new(url: string, protocols?: string | string[]): IStompSocket;
+  prototype: IStompSocket;
+  new (url: string, protocols?: string | string[]): IStompSocket;
 };
 
 /**
@@ -65,7 +65,9 @@ export class Stomp {
     // instead.
 
     // See remarks on the function Stomp.over
-    if (protocols == null) { protocols = Versions.default.protocolVersions(); }
+    if (protocols == null) {
+      protocols = Versions.default.protocolVersions();
+    }
     const wsFn = () => {
       const klass = Stomp.WebSocketClass || WebSocket;
       return new klass(url, protocols);
@@ -98,11 +100,13 @@ export class Stomp {
   public static over(ws: any): CompatClient {
     let wsFn: () => any;
 
-    if (typeof (ws) === 'function') {
+    if (typeof ws === 'function') {
       wsFn = ws;
     } else {
-      console.warn('Stomp.over did not receive a factory, auto reconnect will not work. ' +
-        'Please see https://stomp-js.github.io/api-docs/latest/classes/Stomp.html#over');
+      console.warn(
+        'Stomp.over did not receive a factory, auto reconnect will not work. ' +
+          'Please see https://stomp-js.github.io/api-docs/latest/classes/Stomp.html#over'
+      );
       wsFn = () => ws;
     }
 

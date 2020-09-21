@@ -1,5 +1,5 @@
-import {IFrame} from './i-frame';
-import {StompHeaders} from './stomp-headers';
+import { IFrame } from './i-frame';
+import { StompHeaders } from './stomp-headers';
 
 /**
  * Instance of Message will be passed to [subscription callback]{@link Client#subscribe}

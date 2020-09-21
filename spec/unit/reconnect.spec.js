@@ -1,4 +1,4 @@
-describe("Stomp Reconnect", function () {
+describe('Stomp Reconnect', function () {
   let client;
 
   beforeEach(function () {
@@ -13,7 +13,7 @@ describe("Stomp Reconnect", function () {
    * disconnect by closing the underlying Websocket. We expect the reconnection logic to come into
    * force and reconnect.
    */
-  it("Reconnect", function (done) {
+  it('Reconnect', function (done) {
     let num_try = 1;
 
     client.reconnectDelay = 300;
@@ -43,10 +43,9 @@ describe("Stomp Reconnect", function () {
 
       done();
     }, 1000);
-
   });
 
-  it("Should allow disconnecting when auto reconnection is on", function (done) {
+  it('Should allow disconnecting when auto reconnection is on', function (done) {
     const num_try = 1;
 
     let disconnectCallbackCalled = false;
@@ -61,7 +60,7 @@ describe("Stomp Reconnect", function () {
       onDisconnect: function () {
         expect(client.connected).toBe(false);
         disconnectCallbackCalled = true;
-      }
+      },
     });
 
     client.activate();
@@ -74,8 +73,7 @@ describe("Stomp Reconnect", function () {
     }, 500);
   });
 
-
-  it("Should allow disconnecting while waiting to reconnect", function (done) {
+  it('Should allow disconnecting while waiting to reconnect', function (done) {
     let num_try = 1;
 
     client.configure({
@@ -90,10 +88,10 @@ describe("Stomp Reconnect", function () {
 
         num_try++;
       },
-      onDisconnect: function() {
+      onDisconnect: function () {
         // Disconnect callback should not be called if client is disconnected
         expect(false).toBe(true);
-      }
+      },
     });
 
     client.activate();
@@ -110,6 +108,5 @@ describe("Stomp Reconnect", function () {
       expect(client.connected).toBeFalsy();
       done();
     }, 450);
-
   });
 });

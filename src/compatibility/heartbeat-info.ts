@@ -1,4 +1,4 @@
-import {CompatClient} from './compat-client';
+import { CompatClient } from './compat-client';
 
 /**
  * Part of `@stomp/stompjs`.
@@ -6,8 +6,7 @@ import {CompatClient} from './compat-client';
  * @internal
  */
 export class HeartbeatInfo {
-  constructor(private client: CompatClient) {
-  }
+  constructor(private client: CompatClient) {}
 
   get outgoing(): number {
     return this.client.heartbeatOutgoing;

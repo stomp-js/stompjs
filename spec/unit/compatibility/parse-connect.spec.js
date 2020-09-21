@@ -1,4 +1,4 @@
-describe("Compat Parse connect method arguments", function () {
+describe('Compat Parse connect method arguments', function () {
   // prepare something for all following tests
   const myConnectCallback = function () {
     // called back when the client is connected to STOMP broker
@@ -12,7 +12,13 @@ describe("Compat Parse connect method arguments", function () {
     // called back if the connection was closed
   };
 
-  function checkArgs(args, expectedHeaders, expectedConnectCallback, expectedErrorCallback, expectedCloseEventCallback) {
+  function checkArgs(
+    args,
+    expectedHeaders,
+    expectedConnectCallback,
+    expectedErrorCallback,
+    expectedCloseEventCallback
+  ) {
     const headers = args[0];
     const connectCallback = args[1];
     const errorCallback = args[2];
@@ -30,64 +36,87 @@ describe("Compat Parse connect method arguments", function () {
     client = StompJs.Stomp.client();
   });
 
-  it("connect(login, passcode, connectCallback)", function () {
+  it('connect(login, passcode, connectCallback)', function () {
     checkArgs(
-      client._parseConnect("jmesnil", "wombats", myConnectCallback),
+      client._parseConnect('jmesnil', 'wombats', myConnectCallback),
 
-      {login: 'jmesnil', passcode: 'wombats'},
+      { login: 'jmesnil', passcode: 'wombats' },
       myConnectCallback,
-      undefined);
+      undefined
+    );
   });
 
-  it("connect(login, passcode, connectCallback, errorCallback)", function () {
+  it('connect(login, passcode, connectCallback, errorCallback)', function () {
     checkArgs(
-      client._parseConnect("jmesnil", "wombats", myConnectCallback, myErrorCallback),
+      client._parseConnect(
+        'jmesnil',
+        'wombats',
+        myConnectCallback,
+        myErrorCallback
+      ),
 
-      {login: 'jmesnil', passcode: 'wombats'},
+      { login: 'jmesnil', passcode: 'wombats' },
       myConnectCallback,
-      myErrorCallback);
+      myErrorCallback
+    );
   });
 
-  it("connect(login, passcode, connectCallback, errorCallback, closeEventCallback)", function () {
+  it('connect(login, passcode, connectCallback, errorCallback, closeEventCallback)', function () {
     checkArgs(
-      client._parseConnect("jmesnil", "wombats", myConnectCallback, myErrorCallback, myCloseEventCallback),
+      client._parseConnect(
+        'jmesnil',
+        'wombats',
+        myConnectCallback,
+        myErrorCallback,
+        myCloseEventCallback
+      ),
 
-      {login: 'jmesnil', passcode: 'wombats'},
+      { login: 'jmesnil', passcode: 'wombats' },
       myConnectCallback,
       myErrorCallback,
-      myCloseEventCallback);
+      myCloseEventCallback
+    );
   });
 
-  it("connect(login, passcode, connectCallback, errorCallback, vhost)", function () {
+  it('connect(login, passcode, connectCallback, errorCallback, vhost)', function () {
     checkArgs(
-      client._parseConnect("jmesnil", "wombats", myConnectCallback, myErrorCallback, myCloseEventCallback, "myvhost"),
+      client._parseConnect(
+        'jmesnil',
+        'wombats',
+        myConnectCallback,
+        myErrorCallback,
+        myCloseEventCallback,
+        'myvhost'
+      ),
 
-      {login: 'jmesnil', passcode: 'wombats', host: 'myvhost'},
+      { login: 'jmesnil', passcode: 'wombats', host: 'myvhost' },
       myConnectCallback,
       myErrorCallback,
-      myCloseEventCallback);
+      myCloseEventCallback
+    );
   });
 
-  it("connect(headers, connectCallback)", function () {
-    const headers = {login: 'jmesnil', passcode: 'wombats', host: 'myvhost'};
+  it('connect(headers, connectCallback)', function () {
+    const headers = { login: 'jmesnil', passcode: 'wombats', host: 'myvhost' };
 
     checkArgs(
       client._parseConnect(headers, myConnectCallback),
 
       headers,
       myConnectCallback,
-      undefined);
+      undefined
+    );
   });
 
-  it("connect(headers, connectCallback, errorCallback)", function () {
-    const headers = {login: 'jmesnil', passcode: 'wombats', host: 'myvhost'};
+  it('connect(headers, connectCallback, errorCallback)', function () {
+    const headers = { login: 'jmesnil', passcode: 'wombats', host: 'myvhost' };
 
     checkArgs(
       client._parseConnect(headers, myConnectCallback, myErrorCallback),
 
       headers,
       myConnectCallback,
-      myErrorCallback);
+      myErrorCallback
+    );
   });
-
 });
