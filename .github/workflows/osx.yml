@@ -13,8 +13,8 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - run: bin/osx/setup-rabbit.sh
     - uses: actions/checkout@v2
+    - run: bin/osx/setup-rabbit.sh
     - name: Use Node.js
       uses: actions/setup-node@v1
       with:
