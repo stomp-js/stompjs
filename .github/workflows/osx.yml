@@ -13,16 +13,11 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - run: brew install rabbitmq
-    - run: /usr/local/sbin/rabbitmq-plugins enable --offline rabbitmq_web_stomp
-    - run: echo 'web_stomp.ws_frame = binary' >> /usr/local/etc/rabbitmq/rabbitmq.conf
-    - run: brew services run rabbitmq
-    - run: sleep 10
-    - run: brew services list
+    - run: bin/osx/setup-rabbit.sh
     - uses: actions/checkout@v2
     - name: Use Node.js
       uses: actions/setup-node@v1
       with:
-        node-version: '12.x'
+        node-version: '10.x'
     - run: npm ci
-    - run: bin/ci.sh
+    - run: bin/osx/ci.sh
