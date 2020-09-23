@@ -1,6 +1,6 @@
 # This is a basic workflow that is manually triggered
 
-name: OSX Test
+name: Linux Test
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -9,17 +9,17 @@ on: [push, pull_request]
 jobs:
   build:
     # The type of runner that the job will run on
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
-      - run: bin/osx/setup-rabbit.sh
+      - run: bin/setup-rabbit.sh
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
           node-version: '12.x'
       - run: npm ci
       - run: npm run build
-      - run: npx karma start --single-run --browsers=Safari
-      - run: npx karma start --single-run --browsers=EdgeHeadless
+      - run: npx karma start --single-run --browsers=ChromeNoSandboxHeadless
+      - run: npx karma start --single-run --browsers=FirefoxHeadless
