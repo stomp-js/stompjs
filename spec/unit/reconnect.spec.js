@@ -48,7 +48,7 @@ describe('Stomp Reconnect', function () {
   it('Should allow disconnecting when auto reconnection is on', function (done) {
     const num_try = 1;
 
-    let disconnectCallbackCalled = false;
+    let connectionClosed = false;
 
     client.configure({
       reconnectDelay: 300,
@@ -58,15 +58,17 @@ describe('Stomp Reconnect', function () {
         client.deactivate();
       },
       onDisconnect: function () {
-        expect(client.connected).toBe(false);
-        disconnectCallbackCalled = true;
+        console.log('Optional callback, not every broker will acknowledge DISCONNECT');
       },
+      onWebSocketClose: function () {
+        connectionClosed = true;
+      }
     });
 
     client.activate();
 
     setTimeout(function () {
-      expect(disconnectCallbackCalled).toBe(true);
+      expect(connectionClosed).toBe(true);
       expect(client.connected).toBe(false);
 
       done();
