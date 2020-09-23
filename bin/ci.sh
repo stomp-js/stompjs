@@ -11,5 +11,3 @@ npm run karma
 
 # Create a package
 npm pack
-
-# Test ng2-stompjs
