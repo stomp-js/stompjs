@@ -58,11 +58,13 @@ describe('Stomp Reconnect', function () {
         client.deactivate();
       },
       onDisconnect: function () {
-        console.log('Optional callback, not every broker will acknowledge DISCONNECT');
+        console.log(
+          'Optional callback, not every broker will acknowledge DISCONNECT'
+        );
       },
       onWebSocketClose: function () {
         connectionClosed = true;
-      }
+      },
     });
 
     client.activate();
