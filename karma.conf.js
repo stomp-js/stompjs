@@ -11,6 +11,7 @@ module.exports = function (config) {
     frameworks: ['jasmine'],
 
     plugins: [
+      require('@chiragrupani/karma-chromium-edge-launcher'),
       require('karma-chrome-launcher'),
       require('karma-firefox-launcher'),
       require('karma-jasmine'),

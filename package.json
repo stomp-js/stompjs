@@ -33,6 +33,7 @@
   },
   "homepage": "https://github.com/stomp-js/stompjs#readme",
   "devDependencies": {
+    "@chiragrupani/karma-chromium-edge-launcher": "^2.0.0",
     "awesome-typescript-loader": "^5.2.0",
     "jasmine": "^3.1.0",
     "karma": "^5.0.3",

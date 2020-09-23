@@ -21,5 +21,5 @@ jobs:
         node-version: '10.x'
     - run: npm ci
     - run: npm run build
-    - run: npx karma start --single-run --browsers=FirefoxHeadless
     - run: npx karma start --single-run --browsers=Safari
+    - run: npx karma start --single-run --browsers=EdgeHeadless
