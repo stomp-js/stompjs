@@ -12,6 +12,8 @@
 - Refactor Travis setup.
 - Use Node 10 & 12 at Travis.
 - Start using RabbitMQ 3.8.8 to Travis.
+- Configure Github actions - test Safari and Edge on OSX,
+  test Firefox and Chrome on Linux.
 
 # 5.4.4 (2020-03-24)
 
