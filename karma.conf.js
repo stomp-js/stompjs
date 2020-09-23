@@ -10,6 +10,14 @@ module.exports = function (config) {
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['jasmine'],
 
+    plugins: [
+      require('karma-chrome-launcher'),
+      require('karma-firefox-launcher'),
+      require('karma-jasmine'),
+      require('karma-safari-launcher'),
+      require('karma-summary-reporter'),
+    ],
+
     // list of files / patterns to load in the browser
     files: [
       'bundles/stomp.umd.js',
@@ -59,6 +67,10 @@ module.exports = function (config) {
           // Without a remote debugging port, Google Chrome exits immediately.
           ' --remote-debugging-port=9222',
         ],
+      },
+      FirefoxHeadless: {
+        base: 'Firefox',
+        flags: ['-headless'],
       },
     },
 

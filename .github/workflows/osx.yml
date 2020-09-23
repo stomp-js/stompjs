@@ -20,4 +20,6 @@ jobs:
       with:
         node-version: '10.x'
     - run: npm ci
-    - run: bin/osx/ci.sh
+    - run: npm run build
+    - run: npx karma start --single-run --browsers=FirefoxHeadless
+    - run: npx karma start --single-run --browsers=Safari
