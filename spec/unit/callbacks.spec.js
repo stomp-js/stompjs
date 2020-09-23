@@ -14,7 +14,6 @@ describe('Callbacks', function () {
       const expectedSeq = [
         'before connect',
         'on connect',
-        'on disconnect',
         'websocket close',
       ];
       let seq = [];
@@ -27,7 +26,8 @@ describe('Callbacks', function () {
         seq.push('before connect');
       };
       client.onDisconnect = function () {
-        seq.push('on disconnect');
+        console.log('Optional callback, not every broker will acknowledge DISCONNECT');
+        // seq.push('on disconnect');
       };
       client.onWebSocketClose = function () {
         seq.push('websocket close');
@@ -77,7 +77,6 @@ describe('Callbacks', function () {
         'websocket close', // first cycle
         'before connect',
         'on connect',
-        'on disconnect',
         'websocket close',
       ]; // send cycle
       let seq = [];
@@ -97,7 +96,8 @@ describe('Callbacks', function () {
         seq.push('before connect');
       };
       client.onDisconnect = function () {
-        seq.push('on disconnect');
+        console.log('Optional callback, not every broker will acknowledge DISCONNECT');
+        // seq.push('on disconnect');
       };
       client.onWebSocketClose = function () {
         seq.push('websocket close');

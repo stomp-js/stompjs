@@ -26,7 +26,7 @@ describe('Configuration', function () {
           disconnectHeaders: {
             myheader: headerAfterConnect,
           },
-          onDisconnect: function () {
+          onWebSocketClose: function () {
             const rawChunk = spy.calls.first().args[0];
             expect(rawChunk).not.toMatch(headerBeforeConnect);
             expect(rawChunk).toMatch(headerAfterConnect);
@@ -68,7 +68,7 @@ describe('Configuration', function () {
       onConnect: function () {
         client.deactivate();
       },
-      onDisconnect: function () {
+      onWebSocketClose: function () {
         expect(disconnectHeaders).toEqual(disconnectHeadersOrig);
         done();
       },

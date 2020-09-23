@@ -53,7 +53,7 @@ describe('Stomp Connection', function () {
         // once connected, we disconnect
         client.deactivate();
       },
-      onDisconnect: function () {
+      onWebSocketClose: function () {
         done();
       },
     });
@@ -115,8 +115,8 @@ describe('Stomp Connection', function () {
         // once connected, we disconnect
         client.deactivate();
       },
-      onDisconnect: function () {
-        client.onDisconnect = function () {};
+      onWebSocketClose: function () {
+        client.onWebSocketClose = function () {};
         client.onConnect = function () {
           done();
         };
