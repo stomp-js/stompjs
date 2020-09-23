@@ -6,14 +6,8 @@ node_js:
 services:
   - docker
 
-before_install:
-  - docker build -t rabbitmq:official-alpine-with-webstomp rabbitmq/
-  - docker run -d --hostname rabbitmq --name rabbitmq -p 15674:15674 rabbitmq:official-alpine-with-webstomp
-
-before_script:
-  - docker exec rabbitmq rabbitmqctl status
-
 script:
+  - bin/setup-rabbit.sh
   - bin/ci.sh
   - bin/rx-stomp.sh
   - bin/ng2-stompjs.sh
