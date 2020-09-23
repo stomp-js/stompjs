@@ -7,6 +7,11 @@
 - Drop ES5 module output, target ES2017 instead of ES6 for modules.
 - Concept of `discardWebsocketOnCommFailure`.
   See: [#247](https://github.com/stomp-js/stompjs/issues/247).
+- Test cases pass with RabbitMQ 3.8.8.
+  See: [#280](https://github.com/stomp-js/stompjs/pull/280).
+- Refactor Travis setup.
+- Use Node 10 & 12 at Travis.
+- Start using RabbitMQ 3.8.8 to Travis.
 
 # 5.4.4 (2020-03-24)
 
