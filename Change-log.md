@@ -2,6 +2,12 @@
 
 # 6.0.0 (TBD)
 
+## beta-2
+
+- Use es2017 as output target for both esm6 and UMD bundle.
+
+## beta-1
+
 - Remove dom lib dependency for usage with NodeJS/Typescript.
   See [#224](https://github.com/stomp-js/stompjs/pull/224).
 - Drop ES5 module output, target ES2017 instead of ES6 for modules.
