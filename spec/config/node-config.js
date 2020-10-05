@@ -9,7 +9,7 @@ TEST = {
 };
 
 WebSocket = require('websocket').w3cwebsocket;
-StompJs = require('../../bundles/stomp.umd.js');
+StompJs = require('../..');
 Stomp = StompJs.Stomp;
 
 if (typeof TextEncoder !== 'function') {
