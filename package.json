@@ -4,9 +4,8 @@
   "description": "STOMP client for Javascript and Typescript",
   "scripts": {
     "clean": "rm -rf bundles esm6",
-    "build-tsc": "tsc -t es2017 -m es6 --outDir esm6",
     "build-webpack": "webpack && webpack --mode=production --output-filename=stomp.umd.min.js",
-    "build": "npm run clean && npm run build-tsc && npm run build-webpack",
+    "build": "npm run clean && npx tsc && npm run build-webpack",
     "test": "jasmine",
     "karma": "karma start --single-run",
     "lint": "tslint 'src/**/*.ts'",
