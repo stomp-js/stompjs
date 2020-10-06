@@ -5,6 +5,7 @@
 ## beta-2
 
 - Use es2017 as output target for both esm6 and UMD bundle.
+- Use Node 14 for few of the tests.
 
 ## beta-1
 
