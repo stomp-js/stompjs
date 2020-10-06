@@ -5,8 +5,8 @@ describe('Compat Stomp Message', function () {
     client = StompJs.Stomp.client(TEST.url);
   });
 
-  afterEach(function () {
-    disconnectStomp(client);
+  afterEach(async function () {
+    await disconnectStomp(client);
   });
 
   it('Send and receive a message', function (done) {

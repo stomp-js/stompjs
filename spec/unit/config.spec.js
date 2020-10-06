@@ -5,8 +5,8 @@ describe('Configuration', function () {
     client = stompClient();
   });
 
-  afterEach(function () {
-    disconnectStomp(client);
+  afterEach(async function () {
+    await disconnectStomp(client);
   });
 
   it('Updating disconnectHeaders should take effect from subsequent disconnect', function (done) {

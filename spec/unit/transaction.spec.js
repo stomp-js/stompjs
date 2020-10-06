@@ -5,8 +5,8 @@ describe('Stomp Transaction', function () {
     client = stompClient();
   });
 
-  afterEach(function () {
-    disconnectStomp(client);
+  afterEach(async function () {
+    await disconnectStomp(client);
   });
 
   it('Send a message in a transaction and abort', function (done) {

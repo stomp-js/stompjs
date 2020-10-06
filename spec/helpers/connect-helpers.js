@@ -26,9 +26,8 @@ badStompClient = function () {
   return client;
 };
 
-disconnectStomp = function (client) {
+disconnectStomp = async function (client) {
   if (client) {
-    client.deactivate();
-    client = null;
+    await client.deactivate();
   }
 };

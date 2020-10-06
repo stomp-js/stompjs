@@ -5,8 +5,8 @@ describe('Callbacks', function () {
     client = stompClient();
   });
 
-  afterEach(function () {
-    disconnectStomp(client);
+  afterEach(async function () {
+    await disconnectStomp(client);
   });
 
   describe('invokes in sequence', function () {
