@@ -22,8 +22,8 @@ describe('appendMissingNULLonIncoming', function () {
     };
   });
 
-  afterEach(function () {
-    disconnectStomp(client);
+  afterEach(async function () {
+    await disconnectStomp(client);
   });
 
   // Find length -

@@ -1,8 +1,8 @@
 describe('Stomp Connection', function () {
   let client;
 
-  afterEach(function () {
-    disconnectStomp(client);
+  afterEach(async function () {
+    await disconnectStomp(client);
   });
 
   it('Should trigger WebSocket error while connecting to an invalid Stomp server', function (done) {
@@ -54,6 +54,7 @@ describe('Stomp Connection', function () {
         client.deactivate();
       },
       onWebSocketClose: function () {
+        expect(client.state).toEqual(StompJs.ActivationState.INACTIVE);
         done();
       },
     });
@@ -80,7 +81,7 @@ describe('Stomp Connection', function () {
     client.activate();
     setTimeout(() => {
       expect(client.connected).toBe(false);
-      expect(client.active).toBe(false);
+      expect(client.state).toEqual(StompJs.ActivationState.INACTIVE);
 
       done();
     }, 50);
@@ -116,6 +117,7 @@ describe('Stomp Connection', function () {
         client.deactivate();
       },
       onWebSocketClose: function () {
+        expect(client.state).toEqual(StompJs.ActivationState.INACTIVE);
         client.onWebSocketClose = function () {};
         client.onConnect = function () {
           done();
@@ -127,18 +129,61 @@ describe('Stomp Connection', function () {
     client.activate();
   });
 
+  it('Throws while trying to activate immediately following a deactivate', function (done) {
+    client = stompClient();
+    client.configure({
+      onConnect: function () {
+        // once connected, we disconnect
+        client.onConnect = function () {};
+        client.deactivate();
+        expect(() => {
+          client.activate();
+        }).toThrow();
+        done();
+      },
+    });
+
+    client.activate();
+  });
+
   it('Activates immediately following a deactivate', function (done) {
     client = stompClient();
     client.configure({
       onConnect: function () {
         // once connected, we disconnect
-        client.deactivate();
         client.onConnect = function () {
           done();
         };
-        client.activate();
+        client.deactivate().then(() => {
+          client.activate();
+        });
       },
-      onDisconnect: function () {},
+    });
+
+    client.activate();
+  });
+
+  it('When the underlying socket was closed, activates immediately following a deactivate', function (done) {
+    client = stompClient();
+    client.configure({
+      onConnect: function () {
+        // once connected, we force disconnect
+        client.forceDisconnect();
+      },
+      onWebSocketClose: () => {
+        client.onConnect = function () {
+          done();
+        };
+        client.onWebSocketClose = () => {};
+
+        // Check that client is till Active, i.e., would attempt reconnection
+        expect(client.state).toEqual(StompJs.ActivationState.ACTIVE);
+
+        client.deactivate().then(() => {
+          expect(client.state).toEqual(StompJs.ActivationState.INACTIVE);
+          client.activate();
+        });
+      },
     });
 
     client.activate();

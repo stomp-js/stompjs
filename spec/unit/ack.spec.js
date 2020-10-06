@@ -14,9 +14,9 @@ describe('Stomp Acknowledgement (RabbitMQ specific queue destination)', function
     client02.activate();
   });
 
-  afterEach(function () {
-    disconnectStomp(client01);
-    disconnectStomp(client02);
+  afterEach(async function () {
+    await disconnectStomp(client01);
+    await disconnectStomp(client02);
   });
 
   it('Should deliver to other client if nacked from one', function (done) {

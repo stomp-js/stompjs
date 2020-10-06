@@ -1,8 +1,8 @@
 describe('Compat Stomp Connection', function () {
   let client;
 
-  afterEach(function () {
-    disconnectStomp(client);
+  afterEach(async function () {
+    await disconnectStomp(client);
   });
 
   it('Connect to a valid Stomp server using URL', function (done) {

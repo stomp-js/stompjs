@@ -322,6 +322,9 @@ export class Client {
     this.onChangeState(state);
   }
 
+  // This will mark deactivate to complete, to be called after Websocket is closed
+  private _resolveSocketClose: (value?: PromiseLike<void> | void) => void;
+
   /**
    * Activation state.
    *
@@ -375,6 +378,16 @@ export class Client {
    * Call [Client#deactivate]{@link Client#deactivate} to disconnect and stop reconnection attempts.
    */
   public activate(): void {
+    if (this.state === ActivationState.DEACTIVATING) {
+      this.debug('Still DEACTIVATING, please await call to deactivate before trying to re-activate');
+      throw new Error('Still DEACTIVATING, can not activate now');
+    }
+
+    if (this.active) {
+      this.debug('Already ACTIVE, ignoring request to activate');
+      return;
+    }
+
     this._changeState(ActivationState.ACTIVE);
 
     this._connect();
@@ -431,6 +444,15 @@ export class Client {
         this.onStompError(frame);
       },
       onWebSocketClose: evt => {
+        this._stompHandler = undefined; // a new one will be created in case of a reconnect
+
+        if (this.state === ActivationState.DEACTIVATING) {
+          // Mark deactivation complete
+          this._resolveSocketClose();
+          this._resolveSocketClose = undefined;
+          this._changeState(ActivationState.INACTIVE);
+        }
+
         this.onWebSocketClose(evt);
         // The callback is called before attempting to reconnect, this would allow the client
         // to be `deactivated` in the callback.
@@ -486,15 +508,40 @@ export class Client {
    *
    * To reactivate you can call [Client#activate]{@link Client#activate}.
    */
-  public deactivate(): void {
-    // indicate that auto reconnect loop should terminate
-    this._changeState(ActivationState.INACTIVE);
+  public async deactivate(): Promise<void> {
+    let retPromise: Promise<void>;
+
+    if (this.state !== ActivationState.ACTIVE) {
+      this.debug(
+        `Already ${ActivationState[this.state]}, ignoring call to deactivate`
+      );
+      return Promise.resolve();
+    }
+
+    this._changeState(ActivationState.DEACTIVATING);
 
     // Clear if a reconnection was scheduled
     if (this._reconnector) {
       clearTimeout(this._reconnector);
     }
+
+    if (
+      this._stompHandler &&
+      this._webSocket.readyState !== StompSocketState.CLOSED
+    ) {
+      // we need to wait for underlying websocket to close
+      retPromise = new Promise<void>((resolve, reject) => {
+        this._resolveSocketClose = resolve;
+      });
+    } else {
+      // indicate that auto reconnect loop should terminate
+      this._changeState(ActivationState.INACTIVE);
+      return Promise.resolve();
+    }
+
     this._disposeStompHandler();
+
+    return retPromise;
   }
 
   /**

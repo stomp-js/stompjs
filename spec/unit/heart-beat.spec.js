@@ -13,8 +13,8 @@ describe('Ping', function () {
     client = stompClient();
   });
 
-  afterEach(function () {
-    disconnectStomp(client);
+  afterEach(async function () {
+    await disconnectStomp(client);
   });
 
   // Find length -
@@ -73,6 +73,7 @@ describe('Ping', function () {
     };
 
     client.onWebSocketClose = ev => {
+      console.log('here');
       done();
     };
 

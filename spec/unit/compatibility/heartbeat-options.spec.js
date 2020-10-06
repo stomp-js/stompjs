@@ -5,8 +5,8 @@ describe('Compat mode', function () {
     client = StompJs.Stomp.client();
   });
 
-  afterEach(function () {
-    disconnectStomp(client);
+  afterEach(async function () {
+    await disconnectStomp(client);
   });
 
   it('Should set incoming heartbeat interval', function () {

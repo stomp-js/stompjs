@@ -5,8 +5,8 @@ describe('Stomp Subscription', function () {
     client = stompClient();
   });
 
-  afterEach(function () {
-    disconnectStomp(client);
+  afterEach(async function () {
+    await disconnectStomp(client);
   });
 
   it('Should receive messages sent to destination after subscribing', function (done) {

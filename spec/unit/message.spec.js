@@ -5,8 +5,8 @@ describe('Stomp Message', function () {
     client = stompClient();
   });
 
-  afterEach(function () {
-    disconnectStomp(client);
+  afterEach(async function () {
+    await disconnectStomp(client);
   });
 
   it('Send and receive a message', function (done) {

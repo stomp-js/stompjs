@@ -9,8 +9,8 @@ describe('splitLargeFrames', function () {
     });
   });
 
-  afterEach(function () {
-    disconnectStomp(client);
+  afterEach(async function () {
+    await disconnectStomp(client);
   });
 
   /*

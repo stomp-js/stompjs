@@ -5,8 +5,8 @@ describe('Stomp Receipts', function () {
     client = stompClient();
   });
 
-  afterEach(function () {
-    disconnectStomp(client);
+  afterEach(async function () {
+    await disconnectStomp(client);
   });
 
   it('Should confirm subscription using receipt', function (done) {

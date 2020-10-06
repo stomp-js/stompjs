@@ -5,8 +5,8 @@ describe('Stomp Reconnect', function () {
     client = stompClient();
   });
 
-  afterEach(function () {
-    disconnectStomp(client);
+  afterEach(async function () {
+    await disconnectStomp(client);
   });
 
   /* During this test, as soon as Stomp connection is established for the first time, we force

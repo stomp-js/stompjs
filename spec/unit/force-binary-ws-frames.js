@@ -8,8 +8,8 @@ describe('forceBinaryWSFrames', function () {
     });
   });
 
-  afterEach(function () {
-    disconnectStomp(client);
+  afterEach(async function () {
+    await disconnectStomp(client);
   });
 
   it('all binary packets', function (done) {
