@@ -26,6 +26,8 @@ badStompClient = function () {
   return client;
 };
 
+// This itself is important, if for some reason, deactivate does not complete, the jasmine test will timeout
+// Ensure this is called as await in an async function.
 disconnectStomp = async function (client) {
   if (client) {
     await client.deactivate();
