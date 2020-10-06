@@ -4,14 +4,15 @@ import { StompHandler } from './stomp-handler';
 import { StompHeaders } from './stomp-headers';
 import { StompSubscription } from './stomp-subscription';
 import {
+  ActivationState,
   closeEventCallbackType,
   debugFnType,
   frameCallbackType,
   IPublishParams,
-  messageCallbackType,
-  wsErrorCallbackType,
   IStompSocket,
+  messageCallbackType,
   StompSocketState,
+  wsErrorCallbackType,
 } from './types';
 import { Versions } from './versions';
 
@@ -306,9 +307,29 @@ export class Client {
    * if the client is active (connected or going to reconnect)
    */
   get active(): boolean {
-    return this._active;
+    return this.state === ActivationState.ACTIVE;
   }
-  private _active: boolean = false;
+
+  /**
+   * It will be called on state change.
+   *
+   * When deactivating it may go from ACTIVE to INACTIVE without entering DEACTIVATING.
+   */
+  public onChangeState: (state: ActivationState) => void;
+
+  private _changeState(state: ActivationState) {
+    this.state = state;
+    this.onChangeState(state);
+  }
+
+  /**
+   * Activation state.
+   *
+   * It will usually be ACTIVE or INACTIVE.
+   * When deactivating it may go from ACTIVE to INACTIVE without entering DEACTIVATING.
+   */
+  public state: ActivationState = ActivationState.INACTIVE;
+
   private _reconnector: any;
 
   /**
@@ -328,6 +349,7 @@ export class Client {
     this.onWebSocketClose = noOp;
     this.onWebSocketError = noOp;
     this.logRawCommunication = false;
+    this.onChangeState = noOp;
 
     // These parameters would typically get proper values before connect is called
     this.connectHeaders = {};
@@ -353,7 +375,7 @@ export class Client {
    * Call [Client#deactivate]{@link Client#deactivate} to disconnect and stop reconnection attempts.
    */
   public activate(): void {
-    this._active = true;
+    this._changeState(ActivationState.ACTIVE);
 
     this._connect();
   }
@@ -366,7 +388,7 @@ export class Client {
 
     await this.beforeConnect();
 
-    if (!this._active) {
+    if (!this.active) {
       this.debug(
         'Client has been marked inactive, will not attempt to connect'
       );
@@ -393,7 +415,7 @@ export class Client {
       discardWebsocketOnCommFailure: this.discardWebsocketOnCommFailure,
 
       onConnect: frame => {
-        if (!this._active) {
+        if (!this.active) {
           this.debug(
             'STOMP got connected while deactivate was issued, will disconnect now'
           );
@@ -412,7 +434,7 @@ export class Client {
         this.onWebSocketClose(evt);
         // The callback is called before attempting to reconnect, this would allow the client
         // to be `deactivated` in the callback.
-        if (this._active) {
+        if (this.active) {
           this._schedule_reconnect();
         }
       },
@@ -466,7 +488,7 @@ export class Client {
    */
   public deactivate(): void {
     // indicate that auto reconnect loop should terminate
-    this._active = false;
+    this._changeState(ActivationState.INACTIVE);
 
     // Clear if a reconnection was scheduled
     if (this._reconnector) {

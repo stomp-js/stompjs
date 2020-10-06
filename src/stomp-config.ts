@@ -1,5 +1,6 @@
 import { StompHeaders } from './stomp-headers';
 import {
+  ActivationState,
   closeEventCallbackType,
   debugFnType,
   frameCallbackType,
@@ -135,4 +136,9 @@ export class StompConfig {
    * See [Client#discardWebsocketOnCommFailure]{@link Client#discardWebsocketOnCommFailure}.
    */
   public discardWebsocketOnCommFailure?: boolean;
+
+  /**
+   * See [Client#onChangeState]{@link Client#onChangeState}.
+   */
+  public onChangeState?: (state: ActivationState) => void;
 }

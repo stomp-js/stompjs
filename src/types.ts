@@ -136,3 +136,12 @@ export enum StompSocketState {
   CLOSING,
   CLOSED,
 }
+
+/**
+ * Possible activation state
+ */
+export enum ActivationState {
+  ACTIVE,
+  DEACTIVATING,
+  INACTIVE,
+}
