@@ -506,6 +506,9 @@ export class Client {
    * Disconnect if connected and stop auto reconnect loop.
    * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
    *
+   * This call is async, it will resolve immediately if there is no underlying active websocket,
+   * otherwise, it will resolve after underlying websocket is properly disposed.
+   *
    * To reactivate you can call [Client#activate]{@link Client#activate}.
    */
   public async deactivate(): Promise<void> {
