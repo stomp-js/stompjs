@@ -7,6 +7,7 @@
 - Use es2017 as output target for both esm6 and UMD bundle.
 - Use Node 14 for few of the tests.
 - Make `Client#deactivate` async. Removes potential race cases.
+- Concept of `onSocketDiscard`.
 
 ## beta-1
 
