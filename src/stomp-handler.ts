@@ -92,7 +92,7 @@ export class StompHandler {
 
   constructor(
     private _client: Client,
-    private _webSocket: IStompSocket,
+    public _webSocket: IStompSocket,
     config: StompConfig = {}
   ) {
     // used to index subscribers
@@ -302,6 +302,17 @@ export class StompHandler {
           }
         }
       }, ttl);
+    }
+  }
+
+  public forceDisconnect() {
+    if (this._webSocket) {
+      if (
+        this._webSocket.readyState === StompSocketState.CONNECTING ||
+        this._webSocket.readyState === StompSocketState.OPEN
+      ) {
+        this._closeWebsocket();
+      }
     }
   }
 

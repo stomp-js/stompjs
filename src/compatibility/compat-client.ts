@@ -195,7 +195,7 @@ export class CompatClient extends Client {
    * **Deprecated**
    */
   get ws(): any {
-    return this._webSocket;
+    return this.webSocket;
   }
 
   /**

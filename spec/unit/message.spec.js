@@ -149,7 +149,7 @@ describe('Stomp Message', function () {
         done();
       });
 
-      const spy = spyOn(client._webSocket, 'send').and.callThrough();
+      const spy = spyOn(client.webSocket, 'send').and.callThrough();
 
       client.publish({
         destination: TEST.destination,
@@ -173,7 +173,7 @@ describe('Stomp Message', function () {
         done();
       });
 
-      const spy = spyOn(client._webSocket, 'send').and.callThrough();
+      const spy = spyOn(client.webSocket, 'send').and.callThrough();
 
       client.publish({
         destination: TEST.destination,

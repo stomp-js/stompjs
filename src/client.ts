@@ -135,13 +135,8 @@ export class Client {
    * Underlying WebSocket instance, READONLY.
    */
   get webSocket(): IStompSocket {
-    return this._webSocket;
+    return this._stompHandler ? this._stompHandler._webSocket : undefined;
   }
-  /**
-   * Underlying IStompSocket (typically WebSocket) instance
-   * @internal
-   */
-  protected _webSocket: IStompSocket;
 
   /**
    * Connection headers, important keys - `login`, `passcode`, `host`.
@@ -411,9 +406,9 @@ export class Client {
     this.debug('Opening Web Socket...');
 
     // Get the actual WebSocket (or a similar object)
-    this._webSocket = this._createWebSocket();
+    const webSocket = this._createWebSocket();
 
-    this._stompHandler = new StompHandler(this, this._webSocket, {
+    this._stompHandler = new StompHandler(this, webSocket, {
       debug: this.debug,
       stompVersions: this.stompVersions,
       connectHeaders: this.connectHeaders,
@@ -530,7 +525,7 @@ export class Client {
 
     if (
       this._stompHandler &&
-      this._webSocket.readyState !== StompSocketState.CLOSED
+      this.webSocket.readyState !== StompSocketState.CLOSED
     ) {
       // we need to wait for underlying websocket to close
       retPromise = new Promise<void>((resolve, reject) => {
@@ -554,13 +549,8 @@ export class Client {
    * To stop further reconnects call [Client#deactivate]{@link Client#deactivate} as well.
    */
   public forceDisconnect() {
-    if (this._webSocket) {
-      if (
-        this._webSocket.readyState === StompSocketState.CONNECTING ||
-        this._webSocket.readyState === StompSocketState.OPEN
-      ) {
-        this._stompHandler._closeWebsocket();
-      }
+    if (this._stompHandler) {
+      this._stompHandler.forceDisconnect();
     }
   }
 

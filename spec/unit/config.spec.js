@@ -20,7 +20,7 @@ describe('Configuration', function () {
         myheader: headerBeforeConnect,
       },
       onConnect: function () {
-        const spy = spyOn(client._webSocket, 'send').and.callThrough();
+        const spy = spyOn(client.webSocket, 'send').and.callThrough();
 
         client.configure({
           disconnectHeaders: {

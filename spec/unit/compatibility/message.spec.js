@@ -53,7 +53,7 @@ describe('Compat Stomp Message', function () {
         done();
       });
 
-      const spy = spyOn(client._webSocket, 'send').and.callThrough();
+      const spy = spyOn(client.webSocket, 'send').and.callThrough();
 
       client.send(TEST.destination, { 'content-length': false }, body);
 
