@@ -232,4 +232,74 @@ describe('Stomp Connection', function () {
 
     client.activate();
   });
+
+  describe('CONNECTED fame eaten', () => {
+    it('handles connect timeout', done => {
+      client = stompClient();
+      client.connectionTimeout = 300;
+      client.reconnectDelay = 10;
+
+      let eatConnectFrame = true;
+
+      client.webSocketFactory = () => {
+        const wrapperWS = new WrapperWS(new WebSocket(client.brokerURL));
+
+        wrapperWS.ws.onmessage = ev => {
+          if (eatConnectFrame) {
+            const frame = parseFrame(ev.data);
+            if (frame.command === 'CONNECTED') {
+              client.debug('Ate CONNECTED frame');
+              // Do not eat the next one
+              eatConnectFrame = false;
+              return;
+            }
+          }
+          wrapperWS.onmessage(ev);
+        };
+
+        return wrapperWS;
+      };
+      client.onConnect = () => {
+        done();
+      };
+      client.activate();
+    });
+
+    it('does not connect with connectionTimeout disabled', done => {
+      client = stompClient();
+      client.connectionTimeout = 0;
+      client.reconnectDelay = 10;
+
+      let eatConnectFrame = true;
+
+      client.webSocketFactory = () => {
+        const wrapperWS = new WrapperWS(new WebSocket(client.brokerURL));
+
+        wrapperWS.ws.onmessage = ev => {
+          if (eatConnectFrame) {
+            const frame = parseFrame(ev.data);
+            if (frame.command === 'CONNECTED') {
+              client.debug('Ate CONNECTED frame');
+              // Do not eat the next one
+              eatConnectFrame = false;
+              return;
+            }
+          }
+          wrapperWS.onmessage(ev);
+        };
+
+        return wrapperWS;
+      };
+      client.onConnect = () => {
+        // Should not come here
+        expect(true).toEqual(false);
+      };
+      client.activate();
+
+      setTimeout(() => {
+        expect(client.connected).toBeFalsy();
+        done();
+      }, 1000);
+    });
+  });
 });

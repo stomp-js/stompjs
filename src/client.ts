@@ -74,6 +74,14 @@ export class Client {
   public webSocketFactory: () => IStompSocket;
 
   /**
+   * Will retry if Stomp connection is not established in specified milliseconds.
+   * Default 10,000ms, set to 0 to wait for ever.
+   */
+  public connectionTimeout: number = 10000;
+
+  private _connectionWatcher: number; // Timer
+
+  /**
    *  automatically reconnect with delay in milliseconds, set to 0 to disable.
    */
   public reconnectDelay: number = 5000;
@@ -403,6 +411,18 @@ export class Client {
       return;
     }
 
+    // setup connection watcher
+    if (this.connectionTimeout > 0) {
+      this._connectionWatcher = setTimeout(() => {
+        // Connection not established, close the underlying socket
+        // a reconnection will be attempted
+        this.debug(
+          `Connection not established in ${this.connectionTimeout}ms, closing socket`
+        );
+        this.forceDisconnect();
+      }, this.connectionTimeout);
+    }
+
     this.debug('Opening Web Socket...');
 
     // Get the actual WebSocket (or a similar object)
@@ -423,6 +443,12 @@ export class Client {
       discardWebsocketOnCommFailure: this.discardWebsocketOnCommFailure,
 
       onConnect: frame => {
+        // Successfully connected, stop the connection watcher
+        if (this._connectionWatcher) {
+          clearTimeout(this._connectionWatcher);
+          this._connectionWatcher = undefined;
+        }
+
         if (!this.active) {
           this.debug(
             'STOMP got connected while deactivate was issued, will disconnect now'
