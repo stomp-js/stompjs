@@ -62,65 +62,46 @@ class WrapperWS {
  * However by providing alternate implementations to methods (typically send and/or onmessage)
  * several error conditions can be simulated. See heart-beat.spec.js for examples.
  */
-
-WrapperWS = /** @class */ (function () {
-  function WrapperWS(ws) {
-    var _this = this;
+class WrapperWS {
+  constructor(ws) {
     this.ws = ws;
-    var noOp = function () {};
+    const noOp = () => { };
     this.onclose = noOp;
     this.onerror = noOp;
     this.onmessage = noOp;
     this.onopen = noOp;
-    this.ws.onclose = function (ev) {
-      _this.onclose(ev);
+    this.ws.onclose = (ev) => {
+      this.onclose(ev);
     };
-    this.ws.onerror = function (ev) {
-      _this.onerror(ev);
+    this.ws.onerror = (ev) => {
+      this.onerror(ev);
     };
-    this.ws.onmessage = function (ev) {
-      _this.onmessage(ev);
+    this.ws.onmessage = (ev) => {
+      this.onmessage(ev);
     };
-    this.ws.onopen = function (ev) {
-      _this.onopen(ev);
+    this.ws.onopen = (ev) => {
+      this.onopen(ev);
     };
-    this.close = function (code, reason) {
-      _this.ws.close(code, reason);
+    this.close = (code, reason) => {
+      this.ws.close(code, reason);
     };
-    this.send = function (data) {
-      _this.ws.send(data);
+    this.send = (data) => {
+      this.ws.send(data);
     };
   }
-  Object.defineProperty(WrapperWS.prototype, 'url', {
-    get: function () {
-      return this.ws.url;
-    },
-    enumerable: true,
-    configurable: true,
-  });
-  Object.defineProperty(WrapperWS.prototype, 'readyState', {
-    get: function () {
-      return this.ws.readyState;
-    },
-    enumerable: true,
-    configurable: true,
-  });
-  Object.defineProperty(WrapperWS.prototype, 'protocol', {
-    get: function () {
-      return this.ws.protocol;
-    },
-    enumerable: true,
-    configurable: true,
-  });
-  Object.defineProperty(WrapperWS.prototype, 'binaryType', {
-    get: function () {
-      return this.ws.binaryType;
-    },
-    set: function (value) {
-      this.ws.binaryType = value;
-    },
-    enumerable: true,
-    configurable: true,
-  });
-  return WrapperWS;
-})();
+  get url() {
+    return this.ws.url;
+  }
+  get readyState() {
+    return this.ws.readyState;
+  }
+  get protocol() {
+    return this.ws.protocol;
+  }
+  get binaryType() {
+    return this.ws.binaryType;
+  }
+  set binaryType(value) {
+    this.ws.binaryType = value;
+  }
+}
