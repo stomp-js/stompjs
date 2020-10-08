@@ -1,4 +1,4 @@
-function parseFrame(chunk) {
+parseFrame = function (chunk) {
   let frame;
 
   // ignore
@@ -11,4 +11,4 @@ function parseFrame(chunk) {
   parser.parseChunk(chunk);
 
   return frame;
-}
+};

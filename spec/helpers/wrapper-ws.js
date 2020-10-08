@@ -62,30 +62,30 @@ class WrapperWS {
  * However by providing alternate implementations to methods (typically send and/or onmessage)
  * several error conditions can be simulated. See heart-beat.spec.js for examples.
  */
-class WrapperWS {
+WrapperWS = class {
   constructor(ws) {
     this.ws = ws;
-    const noOp = () => { };
+    const noOp = () => {};
     this.onclose = noOp;
     this.onerror = noOp;
     this.onmessage = noOp;
     this.onopen = noOp;
-    this.ws.onclose = (ev) => {
+    this.ws.onclose = ev => {
       this.onclose(ev);
     };
-    this.ws.onerror = (ev) => {
+    this.ws.onerror = ev => {
       this.onerror(ev);
     };
-    this.ws.onmessage = (ev) => {
+    this.ws.onmessage = ev => {
       this.onmessage(ev);
     };
-    this.ws.onopen = (ev) => {
+    this.ws.onopen = ev => {
       this.onopen(ev);
     };
     this.close = (code, reason) => {
       this.ws.close(code, reason);
     };
-    this.send = (data) => {
+    this.send = data => {
       this.ws.send(data);
     };
   }
@@ -104,4 +104,4 @@ class WrapperWS {
   set binaryType(value) {
     this.ws.binaryType = value;
   }
-}
+};
