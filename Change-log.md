@@ -8,6 +8,10 @@
 - Use Node 14 for few of the tests.
 - Make `Client#deactivate` async. Removes potential race cases.
 - Concept of `onSocketDiscard`.
+- New configuration option `connectionTimeout`.
+  The client will retry to connect if the connection is not established
+  before `connectionTimeout`.
+  See [#165](https://github.com/stomp-js/stompjs/issues/165).
 
 ## beta-1
 

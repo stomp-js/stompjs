@@ -82,6 +82,7 @@ If you want to understand the code, develop, or contribute. Please visit
 - [Raul](https://github.com/rulonder)
 - [Dimitar Georgiev](https://github.com/iMitaka)
 - [Genadi](https://github.com/genadis)
+- [Bobohuochai](https://github.com/bobohuochai)
 
 ## License
 
