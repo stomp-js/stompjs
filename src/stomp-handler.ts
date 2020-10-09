@@ -292,17 +292,21 @@ export class StompHandler {
         // We wait twice the TTL to be flexible on window's setInterval calls
         if (delta > ttl * 2) {
           this.debug(`did not receive server activity for the last ${delta}ms`);
-          if (this.discardWebsocketOnCommFailure) {
-            this.debug(
-              'Discarding websocket, the underlying socket may linger for a while'
-            );
-            this._discardWebsocket();
-          } else {
-            this.debug('Issuing close on the websocket');
-            this._closeWebsocket();
-          }
+          this._closeOrDiscardWebsocket();
         }
       }, ttl);
+    }
+  }
+
+  private _closeOrDiscardWebsocket() {
+    if (this.discardWebsocketOnCommFailure) {
+      this.debug(
+        "Discarding websocket, the underlying socket may linger for a while"
+      );
+      this._discardWebsocket();
+    } else {
+      this.debug("Issuing close on the websocket");
+      this._closeWebsocket();
     }
   }
 
@@ -312,7 +316,7 @@ export class StompHandler {
         this._webSocket.readyState === StompSocketState.CONNECTING ||
         this._webSocket.readyState === StompSocketState.OPEN
       ) {
-        this._closeWebsocket();
+        this._closeOrDiscardWebsocket();
       }
     }
   }
