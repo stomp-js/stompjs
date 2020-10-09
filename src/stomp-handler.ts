@@ -19,6 +19,7 @@ import {
   wsErrorCallbackType,
 } from './types';
 import { Versions } from './versions';
+import { augmentWebsocket } from './augment-websocket';
 
 /**
  * The STOMP protocol handler
@@ -322,32 +323,11 @@ export class StompHandler {
   }
 
   private _discardWebsocket() {
-    const noOp = () => {};
+    if (!this._webSocket.terminate) {
+      augmentWebsocket(this._webSocket, (msg: string) => this.debug(msg));
+    }
 
-    // set all callbacks to no op
-    this._webSocket.onerror = noOp;
-    this._webSocket.onmessage = noOp;
-    this._webSocket.onopen = noOp;
-
-    const ts = new Date();
-
-    // Track delay in actual closure of the socket
-    this._webSocket.onclose = closeEvent => {
-      const delay = new Date().getTime() - ts.getTime();
-      this.debug(
-        `Discarded socket closed after ${delay}ms, with code/reason: ${closeEvent.code}/${closeEvent.reason}`
-      );
-    };
-
-    this._webSocket.close();
-
-    const customCloseEvent = {
-      code: 4001,
-      reason: 'Heartbeat failure, discarding the socket',
-      wasClean: false,
-    };
-
-    this._onclose(customCloseEvent);
+    this._webSocket.terminate();
   }
 
   private _transmit(params: {

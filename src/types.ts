@@ -104,6 +104,7 @@ export interface IStompSocket {
   onerror: ((this: IStompSocket, ev: any) => any) | null;
   onmessage: ((this: IStompSocket, ev: IStompSocketMessageEvent) => any) | null;
   onopen: ((this: IStompSocket, ev?: any) => any) | null;
+  terminate?: ((this: IStompSocket) => any) | null;
 
   /**
    * Returns a string that indicates how binary data from the socket is exposed to scripts:
