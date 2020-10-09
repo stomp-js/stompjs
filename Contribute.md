@@ -42,9 +42,7 @@ Instructions on setting up development environment:
 ├── bundles/                 -- Generated code browsers
 ├── docs/                    -- Generated docs, root for GitHub pages
 ├── docs-src/                -- Source for guides
-├── esm5/                    -- Generated ES5 modules
 ├── esm6/                    -- Generated ES6 modules
-├── example/
 ├── index.d.ts
 ├── karma.conf.js
 ├── package-lock.json
