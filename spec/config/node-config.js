@@ -8,7 +8,7 @@ TEST = {
   largeMessageSize: 1023, // in KB, in Node total WebSocket frames needs to be lesser than 1MB
 };
 
-WebSocket = require('websocket').w3cwebsocket;
+WebSocket = require('ws');
 StompJs = require('../..');
 Stomp = StompJs.Stomp;
 
