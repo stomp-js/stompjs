@@ -94,6 +94,7 @@ export interface IStompSocket {
     onerror: ((this: IStompSocket, ev: any) => any) | null;
     onmessage: ((this: IStompSocket, ev: IStompSocketMessageEvent) => any) | null;
     onopen: ((this: IStompSocket, ev?: any) => any) | null;
+    terminate?: ((this: IStompSocket) => any) | null;
     /**
      * Returns a string that indicates how binary data from the socket is exposed to scripts:
      * We support only 'arraybuffer'.
@@ -121,4 +122,12 @@ export declare enum StompSocketState {
     OPEN = 1,
     CLOSING = 2,
     CLOSED = 3
+}
+/**
+ * Possible activation state
+ */
+export declare enum ActivationState {
+    ACTIVE = 0,
+    DEACTIVATING = 1,
+    INACTIVE = 2
 }

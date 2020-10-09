@@ -175,7 +175,7 @@ export class CompatClient extends Client {
      * **Deprecated**
      */
     get ws() {
-        return this._webSocket;
+        return this.webSocket;
     }
     /**
      * Available for backward compatibility, renamed to [Client#connectedVersion]{@link Client#connectedVersion}.

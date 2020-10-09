@@ -1,5 +1,5 @@
 import { StompHeaders } from './stomp-headers';
-import { closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, wsErrorCallbackType } from './types';
+import { ActivationState, closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, wsErrorCallbackType } from './types';
 import { Versions } from './versions';
 /**
  * Configuration options for STOMP Client, each key corresponds to
@@ -21,6 +21,10 @@ export declare class StompConfig {
      * See [Client#webSocketFactory]{@link Client#webSocketFactory}.
      */
     webSocketFactory?: () => any;
+    /**
+     * See [Client#connectionTimeout]{@link Client#connectionTimeout}.
+     */
+    connectionTimeout?: number;
     /**
      * See [Client#reconnectDelay]{@link Client#reconnectDelay}.
      */
@@ -105,4 +109,8 @@ export declare class StompConfig {
      * See [Client#discardWebsocketOnCommFailure]{@link Client#discardWebsocketOnCommFailure}.
      */
     discardWebsocketOnCommFailure?: boolean;
+    /**
+     * See [Client#onChangeState]{@link Client#onChangeState}.
+     */
+    onChangeState?: (state: ActivationState) => void;
 }
