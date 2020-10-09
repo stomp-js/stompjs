@@ -3,6 +3,7 @@ import { FrameImpl } from './frame-impl';
 import { Parser } from './parser';
 import { StompSocketState, } from './types';
 import { Versions } from './versions';
+import { augmentWebsocket } from './augment-websocket';
 /**
  * The STOMP protocol handler
  *
@@ -121,8 +122,8 @@ export class StompHandler {
         };
         this._onclose = (closeEvent) => {
             this.debug(`Connection closed to ${this._client.brokerURL}`);
-            this.onWebSocketClose(closeEvent);
             this._cleanUp();
+            this.onWebSocketClose(closeEvent);
         };
         this._webSocket.onclose = this._onclose;
         this._webSocket.onerror = (errorEvent) => {
@@ -174,16 +175,27 @@ export class StompHandler {
                 // We wait twice the TTL to be flexible on window's setInterval calls
                 if (delta > ttl * 2) {
                     this.debug(`did not receive server activity for the last ${delta}ms`);
-                    if (this.discardWebsocketOnCommFailure) {
-                        this.debug('Discarding websocket, the underlying socket may linger for a while');
-                        this._discardWebsocket();
-                    }
-                    else {
-                        this.debug('Issuing close on the websocket');
-                        this._closeWebsocket();
-                    }
+                    this._closeOrDiscardWebsocket();
                 }
             }, ttl);
+        }
+    }
+    _closeOrDiscardWebsocket() {
+        if (this.discardWebsocketOnCommFailure) {
+            this.debug("Discarding websocket, the underlying socket may linger for a while");
+            this._discardWebsocket();
+        }
+        else {
+            this.debug("Issuing close on the websocket");
+            this._closeWebsocket();
+        }
+    }
+    forceDisconnect() {
+        if (this._webSocket) {
+            if (this._webSocket.readyState === StompSocketState.CONNECTING ||
+                this._webSocket.readyState === StompSocketState.OPEN) {
+                this._closeOrDiscardWebsocket();
+            }
         }
     }
     _closeWebsocket() {
@@ -191,24 +203,10 @@ export class StompHandler {
         this._webSocket.close();
     }
     _discardWebsocket() {
-        const noOp = () => { };
-        // set all callbacks to no op
-        this._webSocket.onerror = noOp;
-        this._webSocket.onmessage = noOp;
-        this._webSocket.onopen = noOp;
-        const ts = new Date();
-        // Track delay in actual closure of the socket
-        this._webSocket.onclose = closeEvent => {
-            const delay = new Date().getTime() - ts.getTime();
-            this.debug(`Discarded socket closed after ${delay}ms, with code/reason: ${closeEvent.code}/${closeEvent.reason}`);
-        };
-        this._webSocket.close();
-        const customCloseEvent = {
-            code: 4001,
-            reason: 'Heartbeat failure, discarding the socket',
-            wasClean: false,
-        };
-        this._onclose(customCloseEvent);
+        if (!this._webSocket.terminate) {
+            augmentWebsocket(this._webSocket, (msg) => this.debug(msg));
+        }
+        this._webSocket.terminate();
     }
     _transmit(params) {
         const { command, headers, body, binaryBody, skipContentLengthHeader, } = params;

@@ -14,7 +14,7 @@ import { Versions } from './versions';
  */
 export declare class StompHandler {
     private _client;
-    private _webSocket;
+    _webSocket: IStompSocket;
     debug: debugFnType;
     stompVersions: Versions;
     connectHeaders: StompHeaders;
@@ -53,6 +53,8 @@ export declare class StompHandler {
     start(): void;
     private readonly _serverFrameHandlers;
     private _setupHeartbeat;
+    private _closeOrDiscardWebsocket;
+    forceDisconnect(): void;
     _closeWebsocket(): void;
     private _discardWebsocket;
     private _transmit;

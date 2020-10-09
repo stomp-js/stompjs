@@ -2,7 +2,7 @@ import { ITransaction } from './i-transaction';
 import { StompConfig } from './stomp-config';
 import { StompHeaders } from './stomp-headers';
 import { StompSubscription } from './stomp-subscription';
-import { closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, messageCallbackType, wsErrorCallbackType, IStompSocket } from './types';
+import { ActivationState, closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, IStompSocket, messageCallbackType, wsErrorCallbackType } from './types';
 import { Versions } from './versions';
 /**
  * STOMP Client Class.
@@ -53,6 +53,12 @@ export declare class Client {
      * ```
      */
     webSocketFactory: () => IStompSocket;
+    /**
+     * Will retry if Stomp connection is not established in specified milliseconds.
+     * Default 10,000ms, set to 0 to wait for ever.
+     */
+    connectionTimeout: number;
+    private _connectionWatcher;
     /**
      *  automatically reconnect with delay in milliseconds, set to 0 to disable.
      */
@@ -108,11 +114,6 @@ export declare class Client {
      * Underlying WebSocket instance, READONLY.
      */
     readonly webSocket: IStompSocket;
-    /**
-     * Underlying IStompSocket (typically WebSocket) instance
-     * @internal
-     */
-    protected _webSocket: IStompSocket;
     /**
      * Connection headers, important keys - `login`, `passcode`, `host`.
      * Though STOMP 1.2 standard marks these keys to be present, check your broker documentation for
@@ -247,7 +248,21 @@ export declare class Client {
      * if the client is active (connected or going to reconnect)
      */
     readonly active: boolean;
-    private _active;
+    /**
+     * It will be called on state change.
+     *
+     * When deactivating it may go from ACTIVE to INACTIVE without entering DEACTIVATING.
+     */
+    onChangeState: (state: ActivationState) => void;
+    private _changeState;
+    private _resolveSocketClose;
+    /**
+     * Activation state.
+     *
+     * It will usually be ACTIVE or INACTIVE.
+     * When deactivating it may go from ACTIVE to INACTIVE without entering DEACTIVATING.
+     */
+    state: ActivationState;
     private _reconnector;
     /**
      * Create an instance.
@@ -272,9 +287,12 @@ export declare class Client {
      * Disconnect if connected and stop auto reconnect loop.
      * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
      *
+     * This call is async, it will resolve immediately if there is no underlying active websocket,
+     * otherwise, it will resolve after underlying websocket is properly disposed.
+     *
      * To reactivate you can call [Client#activate]{@link Client#activate}.
      */
-    deactivate(): void;
+    deactivate(): Promise<void>;
     /**
      * Force disconnect if there is an active connection by directly closing the underlying WebSocket.
      * This is different than a normal disconnect where a DISCONNECT sequence is carried out with the broker.
