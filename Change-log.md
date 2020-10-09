@@ -5,9 +5,8 @@
 ## beta-2
 
 - Use es2017 as output target for both esm6 and UMD bundle.
-- Use Node 14 for few of the tests.
+- Use Node 14 for few of the CI tests.
 - Make `Client#deactivate` async. Removes potential race cases.
-- Concept of `onSocketDiscard`.
 - New configuration option `connectionTimeout`.
   The client will retry to connect if the connection is not established
   before `connectionTimeout`.
@@ -24,7 +23,7 @@
   See: [#280](https://github.com/stomp-js/stompjs/pull/280).
 - Refactor Travis setup.
 - Use Node 10 & 12 at Travis.
-- Start using RabbitMQ 3.8.8 to Travis.
+- Start using RabbitMQ 3.8.8 at Travis.
 - Configure Github actions - test Safari and Edge on OSX,
   test Firefox and Chrome on Linux.
 
