@@ -2,6 +2,11 @@
 
 # 6.0.0 (TBD)
 
+## beta-3
+
+- Switch back to `es2015` output target.
+  Resolves [#288](https://github.com/stomp-js/stompjs/issues/288).
+
 ## beta-2
 
 - Use es2017 as output target for both esm6 and UMD bundle.
