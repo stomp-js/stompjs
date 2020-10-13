@@ -1,5 +1,8 @@
 import { IStompSocket } from './types';
 
+/**
+ * @internal
+ */
 export function augmentWebsocket(
   webSocket: IStompSocket,
   debug: (msg: string) => void

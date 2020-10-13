@@ -2,6 +2,9 @@ import { Versions } from '../versions';
 import { CompatClient } from './compat-client';
 import { IStompSocket } from '../types';
 
+/**
+ * @internal
+ */
 declare const WebSocket: {
   prototype: IStompSocket;
   new (url: string, protocols?: string | string[]): IStompSocket;

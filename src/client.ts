@@ -16,6 +16,9 @@ import {
 } from './types';
 import { Versions } from './versions';
 
+/**
+ * @internal
+ */
 declare const WebSocket: {
   prototype: IStompSocket;
   new (url: string, protocols?: string | string[]): IStompSocket;
