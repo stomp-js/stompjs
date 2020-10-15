@@ -20,4 +20,5 @@ jobs:
         with:
           workflow: API docs refresh
           repo: stomp-js/stomp-js.github.io
+          ref: master
           token: ${{ secrets.WORKLOW_TOKEN }}
