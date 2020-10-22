@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export function augmentWebsocket(webSocket, debug) {
     webSocket.terminate = function () {
         const noOp = () => { };

@@ -1,6 +1,5 @@
 /**
  * Possible states for the IStompSocket
- *
  */
 export var StompSocketState;
 (function (StompSocketState) {

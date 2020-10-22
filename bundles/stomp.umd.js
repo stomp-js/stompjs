@@ -106,6 +106,9 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "augmentWebsocket", function() { return augmentWebsocket; });
+/**
+ * @internal
+ */
 function augmentWebsocket(webSocket, debug) {
     webSocket.terminate = function () {
         const noOp = () => { };
@@ -1598,6 +1601,9 @@ __webpack_require__.r(__webpack_exports__);
  * field by the same name in {@link Client}. This can be passed to
  * the constructor of {@link Client} or to [Client#configure]{@link Client#configure}.
  *
+ * There used to be a class with the same name in `@stomp/ng2-stompjs`, which has been replaced by
+ * {@link RxStompConfig} and {@link InjectableRxStompConfig}.
+ *
  * Part of `@stomp/stompjs`.
  */
 class StompConfig {
@@ -2057,7 +2063,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ActivationState", function() { return ActivationState; });
 /**
  * Possible states for the IStompSocket
- *
  */
 var StompSocketState;
 (function (StompSocketState) {

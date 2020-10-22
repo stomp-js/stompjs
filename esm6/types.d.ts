@@ -86,9 +86,17 @@ export interface IRawFrameType {
     headers: RawHeaderType[];
     binaryBody: Uint8Array;
 }
+/**
+ * @internal
+ */
 export interface IStompSocketMessageEvent {
     data?: string | ArrayBuffer;
 }
+/**
+ * Copied from Websocket interface to avoid dom typelib dependency.
+ *
+ * @internal
+ */
 export interface IStompSocket {
     onclose: ((this: IStompSocket, ev?: any) => any) | null;
     onerror: ((this: IStompSocket, ev: any) => any) | null;
@@ -115,7 +123,6 @@ export interface IStompSocket {
 }
 /**
  * Possible states for the IStompSocket
- *
  */
 export declare enum StompSocketState {
     CONNECTING = 0,
