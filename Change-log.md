@@ -1,24 +1,15 @@
 # Change Log
 
-# 6.0.0 (TBD)
+# 6.0.0 (2020-10-22)
 
-## beta-3
-
-- Switch back to `es2015` output target.
+- Switch to `es2015` output target.
   Resolves [#288](https://github.com/stomp-js/stompjs/issues/288).
-
-## beta-2
-
-- Use es2017 as output target for both esm6 and UMD bundle.
 - Use Node 14 for few of the CI tests.
 - Make `Client#deactivate` async. Removes potential race cases.
 - New configuration option `connectionTimeout`.
   The client will retry to connect if the connection is not established
   before `connectionTimeout`.
   See [#165](https://github.com/stomp-js/stompjs/issues/165).
-
-## beta-1
-
 - Remove dom lib dependency for usage with NodeJS/Typescript.
   See [#224](https://github.com/stomp-js/stompjs/pull/224).
 - Drop ES5 module output, target ES2017 instead of ES6 for modules.
