@@ -44,7 +44,7 @@ you should start at https://stomp-js.github.io/api-docs/latest/classes/Client.ht
 
 if you were using an older version of this library, you would need to make changes
 to your code. Head to
-[Upgrading](https://stomp-js.github.io/guide/stompjs/upgrading-stompjs.html)
+[Upgrading](https://stomp-js.github.io/#upgrading).
 
 ## Usage with RxJS
 
