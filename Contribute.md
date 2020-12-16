@@ -87,7 +87,7 @@ Key npm tasks:
 clean - Remove generated built artifacts
 build-tsc - Internally used by `npm run build`
 build-webpack - Internally used by `npm run build`
-build - Build three variants - ES5, ES6, and UMD
+build - Build two variants - ES Modules and UMD
 doc - Generate docs
 doc-serve - Generate docs and watch for changes
 test - Run tests in NodeJS
