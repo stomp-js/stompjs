@@ -1,5 +1,11 @@
 # Change Log
 
+# 6.0.1 (2021-02-24)
+
+- Disable connectionTimeout by default.
+  Bypasses [rx-stomp#277](https://github.com/stomp-js/rx-stomp/issues/277)
+  and [ng2-stompjs#218](https://github.com/stomp-js/ng2-stompjs/issues/218).
+
 # 6.0.0 (2020-10-22)
 
 - Switch to `es2015` output target.
