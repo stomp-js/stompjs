@@ -32,9 +32,9 @@ export class Client {
         this.stompVersions = Versions.default;
         /**
          * Will retry if Stomp connection is not established in specified milliseconds.
-         * Default 10,000ms, set to 0 to wait for ever.
+         * Default 0, which implies wait for ever.
          */
-        this.connectionTimeout = 10000;
+        this.connectionTimeout = 0;
         /**
          *  automatically reconnect with delay in milliseconds, set to 0 to disable.
          */

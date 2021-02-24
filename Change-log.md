@@ -1,6 +1,6 @@
 # Change Log
 
-# 6.0.1 (2021-02-24)
+# 6.1.0 (2021-02-24)
 
 - Disable connectionTimeout by default.
   Bypasses [rx-stomp#277](https://github.com/stomp-js/rx-stomp/issues/277)
