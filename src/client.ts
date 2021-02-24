@@ -78,9 +78,9 @@ export class Client {
 
   /**
    * Will retry if Stomp connection is not established in specified milliseconds.
-   * Default 10,000ms, set to 0 to wait for ever.
+   * Default 0, which implies wait for ever.
    */
-  public connectionTimeout: number = 10000;
+  public connectionTimeout: number = 0;
 
   private _connectionWatcher: number; // Timer
 
