@@ -1,5 +1,9 @@
 # Change Log
 
+# 6.1.1 (TBD)
+- Bug fix in connectionTimeout. Thanks to [Sailai](https://github.com/sailai).
+  See [#368](https://github.com/stomp-js/stompjs/pull/368).
+
 # 6.1.0 (2021-02-24)
 
 - Disable connectionTimeout by default.
