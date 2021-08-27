@@ -192,7 +192,14 @@ export class Client {
             }
             // setup connection watcher
             if (this.connectionTimeout > 0) {
+                // clear first
+                if (this._connectionWatcher) {
+                    clearTimeout(this._connectionWatcher);
+                }
                 this._connectionWatcher = setTimeout(() => {
+                    if (this.connected) {
+                        return;
+                    }
                     // Connection not established, close the underlying socket
                     // a reconnection will be attempted
                     this.debug(`Connection not established in ${this.connectionTimeout}ms, closing socket`);
