@@ -1,6 +1,6 @@
 # Change Log
 
-# 6.1.1 (TBD)
+# 6.1.1 (2021-08-27)
 - Bug fix in connectionTimeout. Thanks to [Sailai](https://github.com/sailai).
   See [#368](https://github.com/stomp-js/stompjs/pull/368).
 - Exlude source map files from npm package,
