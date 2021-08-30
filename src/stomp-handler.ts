@@ -301,11 +301,11 @@ export class StompHandler {
   private _closeOrDiscardWebsocket() {
     if (this.discardWebsocketOnCommFailure) {
       this.debug(
-        "Discarding websocket, the underlying socket may linger for a while"
+        'Discarding websocket, the underlying socket may linger for a while'
       );
       this._discardWebsocket();
     } else {
-      this.debug("Issuing close on the websocket");
+      this.debug('Issuing close on the websocket');
       this._closeWebsocket();
     }
   }
@@ -341,13 +341,8 @@ export class StompHandler {
     binaryBody?: Uint8Array;
     skipContentLengthHeader?: boolean;
   }): void {
-    const {
-      command,
-      headers,
-      body,
-      binaryBody,
-      skipContentLengthHeader,
-    } = params;
+    const { command, headers, body, binaryBody, skipContentLengthHeader } =
+      params;
     const frame = new FrameImpl({
       command,
       headers,
@@ -425,13 +420,8 @@ export class StompHandler {
   }
 
   public publish(params: IPublishParams): void {
-    const {
-      destination,
-      headers,
-      body,
-      binaryBody,
-      skipContentLengthHeader,
-    } = params;
+    const { destination, headers, body, binaryBody, skipContentLengthHeader } =
+      params;
     const hdrs: StompHeaders = (Object as any).assign({ destination }, headers);
     this._transmit({
       command: 'SEND',

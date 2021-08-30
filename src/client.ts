@@ -385,7 +385,9 @@ export class Client {
    */
   public activate(): void {
     if (this.state === ActivationState.DEACTIVATING) {
-      this.debug('Still DEACTIVATING, please await call to deactivate before trying to re-activate');
+      this.debug(
+        'Still DEACTIVATING, please await call to deactivate before trying to re-activate'
+      );
       throw new Error('Still DEACTIVATING, can not activate now');
     }
 
