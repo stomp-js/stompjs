@@ -13,9 +13,7 @@ updates:
           - 6.3.0
           - 6.3.1
       - dependency-name: typescript
-        versions:
-          - 3.9.7
-          - 3.9.8
+        versions: ['3.x', '4.x']
       - dependency-name: webpack-cli
         versions:
           - 4.4.0
