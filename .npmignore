@@ -6,6 +6,4 @@
 !index.d.ts
 !package.json
 !README.md
-
-# Since spurces are not included, exclude all sourcemap files as well
-*.map
+!src/**/*
