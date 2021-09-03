@@ -1819,11 +1819,11 @@ class StompHandler {
     }
     _closeOrDiscardWebsocket() {
         if (this.discardWebsocketOnCommFailure) {
-            this.debug("Discarding websocket, the underlying socket may linger for a while");
+            this.debug('Discarding websocket, the underlying socket may linger for a while');
             this._discardWebsocket();
         }
         else {
-            this.debug("Issuing close on the websocket");
+            this.debug('Issuing close on the websocket');
             this._closeWebsocket();
         }
     }
@@ -1846,7 +1846,7 @@ class StompHandler {
         this._webSocket.terminate();
     }
     _transmit(params) {
-        const { command, headers, body, binaryBody, skipContentLengthHeader, } = params;
+        const { command, headers, body, binaryBody, skipContentLengthHeader } = params;
         const frame = new _frame_impl__WEBPACK_IMPORTED_MODULE_1__["FrameImpl"]({
             command,
             headers,
@@ -1914,7 +1914,7 @@ class StompHandler {
         }
     }
     publish(params) {
-        const { destination, headers, body, binaryBody, skipContentLengthHeader, } = params;
+        const { destination, headers, body, binaryBody, skipContentLengthHeader } = params;
         const hdrs = Object.assign({ destination }, headers);
         this._transmit({
             command: 'SEND',

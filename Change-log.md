@@ -1,5 +1,10 @@
 # Change Log
 
+# 6.1.2 (2021-09-03)
+
+- One more attempt to fix [#366](https://github.com/stomp-js/stompjs/issues/366),
+  include sourcemap and source into the npm bundle.
+
 # 6.1.1 (2021-08-27)
 
 - Bug fix in connectionTimeout. Thanks to [Sailai](https://github.com/sailai).
