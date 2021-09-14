@@ -40,7 +40,7 @@
     "karma-firefox-launcher": "^2.0.0",
     "karma-jasmine": "^4.0.0",
     "karma-safari-launcher": "git://github.com/RLovelett/karma-safari-launcher.git#safari-webdriver",
-    "karma-summary-reporter": "^2.0.2",
+    "karma-summary-reporter": "^3.0.0",
     "prettier": "^2.1.2",
     "text-encoding": "^0.7.0",
     "tslint": "^6.0.0",
