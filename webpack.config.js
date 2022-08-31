@@ -41,11 +41,7 @@ const config = {
         test: /\.tsx?$/,
         loader: 'awesome-typescript-loader',
         exclude: /node_modules/,
-        query: {
-          declaration: false,
-        },
       },
-      { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
     ],
   },
 };
