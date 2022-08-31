@@ -82,7 +82,8 @@ export class Client {
    */
   public connectionTimeout: number = 0;
 
-  private _connectionWatcher: number; // Timer
+  // As per https://stackoverflow.com/questions/45802988/typescript-use-correct-version-of-settimeout-node-vs-window/56239226#56239226
+  private _connectionWatcher: ReturnType<typeof setTimeout>; // Timer
 
   /**
    *  automatically reconnect with delay in milliseconds, set to 0 to disable.
