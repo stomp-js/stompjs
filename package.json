@@ -51,7 +51,7 @@
     "ws": "^8.2.0"
   },
   "module": "./esm6/index.js",
-  "main": "bundles/stomp.umd.js",
+  "main": "bundles/stomp.umd.min.js",
   "typings": "index.d.ts",
   "sideEffects": false
 }
