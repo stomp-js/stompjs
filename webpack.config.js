@@ -34,12 +34,12 @@ const config = {
   },
   // Activate source maps for the bundles in order to preserve the original
   // source when the user debugs the application
-  devtool: 'source-map',
+  devtool: 'inline-source-map',
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        loader: 'awesome-typescript-loader',
+        loader: 'ts-loader',
         exclude: /node_modules/,
       },
     ],

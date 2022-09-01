@@ -33,7 +33,6 @@
   "homepage": "https://github.com/stomp-js/stompjs#readme",
   "devDependencies": {
     "@chiragrupani/karma-chromium-edge-launcher": "^2.0.0",
-    "awesome-typescript-loader": "^5.2.1",
     "jasmine": "^3.1.0",
     "karma": "^5.0.3",
     "karma-chrome-launcher": "^3.0.0",
@@ -43,8 +42,9 @@
     "karma-summary-reporter": "^2.0.2",
     "prettier": "^2.1.2",
     "text-encoding": "^0.7.0",
-    "tslint": "^6.0.0",
+    "tslint": "^6.1.3",
     "tslint-config-prettier": "^1.18.0",
+    "ts-loader": "^9.3.1",
     "typescript": "^4.8.2",
     "webpack": "^5.74.0",
     "webpack-cli": "^4.10.0",
@@ -53,6 +53,5 @@
   "module": "./esm6/index.js",
   "main": "bundles/stomp.umd.js",
   "typings": "index.d.ts",
-  "sideEffects": false,
-  "dependencies": {}
+  "sideEffects": false
 }
