@@ -21,9 +21,9 @@ export class Versions {
    * @internal
    */
   public static default = new Versions([
-    Versions.V1_0,
-    Versions.V1_1,
     Versions.V1_2,
+    Versions.V1_1,
+    Versions.V1_0,
   ]);
 
   /**
