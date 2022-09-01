@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-watch 'npm run build' src
+npx onchange -i -k 'src/**/*' -- npm run build
