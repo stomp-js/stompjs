@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/stomp-js/stompjs.git"
+    "url": "https://github.com/stomp-js/stompjs.git"
   },
   "keywords": [
     "STOMP",
