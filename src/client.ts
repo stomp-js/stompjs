@@ -40,7 +40,7 @@ export class Client {
    * If your environment does not support WebSockets natively, please refer to
    * [Polyfills]{@link https://stomp-js.github.io/guide/stompjs/rx-stomp/ng2-stompjs/pollyfils-for-stompjs-v5.html}.
    */
-  public brokerURL: string;
+  public brokerURL: string | undefined;
 
   /**
    * STOMP versions to attempt during STOMP handshake. By default versions `1.0`, `1.1`, and `1.2` are attempted.
@@ -74,7 +74,7 @@ export class Client {
    *        };
    * ```
    */
-  public webSocketFactory: () => IStompSocket;
+  public webSocketFactory: (() => IStompSocket) | undefined;
 
   /**
    * Will retry if Stomp connection is not established in specified milliseconds.
@@ -83,7 +83,7 @@ export class Client {
   public connectionTimeout: number = 0;
 
   // As per https://stackoverflow.com/questions/45802988/typescript-use-correct-version-of-settimeout-node-vs-window/56239226#56239226
-  private _connectionWatcher: ReturnType<typeof setTimeout>; // Timer
+  private _connectionWatcher: ReturnType<typeof setTimeout> | undefined; // Timer
 
   /**
    *  automatically reconnect with delay in milliseconds, set to 0 to disable.
@@ -146,8 +146,8 @@ export class Client {
   /**
    * Underlying WebSocket instance, READONLY.
    */
-  get webSocket(): IStompSocket {
-    return this._stompHandler ? this._stompHandler._webSocket : undefined;
+  get webSocket(): IStompSocket | undefined {
+    return this._stompHandler?._webSocket;
   }
 
   /**
@@ -299,16 +299,16 @@ export class Client {
    * In case of incoming heartbeat failure, this experimental flag instructs the library
    * to discard the socket immediately (even before it is actually closed).
    */
-  public discardWebsocketOnCommFailure: boolean;
+  public discardWebsocketOnCommFailure: boolean = false;
 
   /**
    * version of STOMP protocol negotiated with the server, READONLY
    */
-  get connectedVersion(): string {
+  get connectedVersion(): string | undefined {
     return this._stompHandler ? this._stompHandler.connectedVersion : undefined;
   }
 
-  private _stompHandler: StompHandler;
+  private _stompHandler: StompHandler | undefined;
 
   /**
    * if the client is active (connected or going to reconnect)
@@ -330,7 +330,9 @@ export class Client {
   }
 
   // This will mark deactivate to complete, to be called after Websocket is closed
-  private _resolveSocketClose: (value?: PromiseLike<void> | void) => void;
+  private _resolveSocketClose:
+    | ((value?: PromiseLike<void> | void) => void)
+    | undefined;
 
   /**
    * Activation state.
@@ -482,8 +484,10 @@ export class Client {
 
         if (this.state === ActivationState.DEACTIVATING) {
           // Mark deactivation complete
-          this._resolveSocketClose();
-          this._resolveSocketClose = undefined;
+          if (this._resolveSocketClose) {
+            this._resolveSocketClose();
+            this._resolveSocketClose = undefined;
+          }
           this._changeState(ActivationState.INACTIVE);
         }
 
@@ -516,11 +520,13 @@ export class Client {
 
     if (this.webSocketFactory) {
       webSocket = this.webSocketFactory();
-    } else {
+    } else if (this.brokerURL) {
       webSocket = new WebSocket(
         this.brokerURL,
         this.stompVersions.protocolVersions()
       );
+    } else {
+      throw new Error('Either brokerURL or webSocketFactory must be provided');
     }
     webSocket.binaryType = 'arraybuffer';
     return webSocket;
@@ -564,6 +570,7 @@ export class Client {
 
     if (
       this._stompHandler &&
+      // @ts-ignore - if there is a _stompHandler, there is the webSocket
       this.webSocket.readyState !== StompSocketState.CLOSED
     ) {
       // we need to wait for underlying websocket to close
@@ -597,7 +604,7 @@ export class Client {
     // Dispose STOMP Handler
     if (this._stompHandler) {
       this._stompHandler.dispose();
-      this._stompHandler = null;
+      this._stompHandler = undefined;
     }
   }
 
@@ -638,7 +645,15 @@ export class Client {
    * ```
    */
   public publish(params: IPublishParams) {
+    this._checkConnection();
+    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
     this._stompHandler.publish(params);
+  }
+
+  private _checkConnection() {
+    if (!this.connected) {
+      throw new TypeError('There is no underlying STOMP connection');
+    }
   }
 
   /**
@@ -677,6 +692,8 @@ export class Client {
    * ```
    */
   public watchForReceipt(receiptId: string, callback: frameCallbackType): void {
+    this._checkConnection();
+    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
     this._stompHandler.watchForReceipt(receiptId, callback);
   }
 
@@ -709,6 +726,8 @@ export class Client {
     callback: messageCallbackType,
     headers: StompHeaders = {}
   ): StompSubscription {
+    this._checkConnection();
+    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
     return this._stompHandler.subscribe(destination, callback, headers);
   }
 
@@ -725,6 +744,8 @@ export class Client {
    * See: http://stomp.github.com/stomp-specification-1.2.html#UNSUBSCRIBE UNSUBSCRIBE Frame
    */
   public unsubscribe(id: string, headers: StompHeaders = {}): void {
+    this._checkConnection();
+    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
     this._stompHandler.unsubscribe(id, headers);
   }
 
@@ -735,6 +756,8 @@ export class Client {
    * `transactionId` is optional, if not passed the library will generate it internally.
    */
   public begin(transactionId?: string): ITransaction {
+    this._checkConnection();
+    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
     return this._stompHandler.begin(transactionId);
   }
 
@@ -751,6 +774,8 @@ export class Client {
    * ```
    */
   public commit(transactionId: string): void {
+    this._checkConnection();
+    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
     this._stompHandler.commit(transactionId);
   }
 
@@ -766,6 +791,8 @@ export class Client {
    * ```
    */
   public abort(transactionId: string): void {
+    this._checkConnection();
+    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
     this._stompHandler.abort(transactionId);
   }
 
@@ -787,6 +814,8 @@ export class Client {
     subscriptionId: string,
     headers: StompHeaders = {}
   ): void {
+    this._checkConnection();
+    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
     this._stompHandler.ack(messageId, subscriptionId, headers);
   }
 
@@ -808,6 +837,8 @@ export class Client {
     subscriptionId: string,
     headers: StompHeaders = {}
   ): void {
+    this._checkConnection();
+    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
     this._stompHandler.nack(messageId, subscriptionId, headers);
   }
 }

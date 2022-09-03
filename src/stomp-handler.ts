@@ -4,7 +4,6 @@ import { FrameImpl } from './frame-impl';
 import { IMessage } from './i-message';
 import { ITransaction } from './i-transaction';
 import { Parser } from './parser';
-import { StompConfig } from './stomp-config';
 import { StompHeaders } from './stomp-headers';
 import { StompSubscription } from './stomp-subscription';
 import {
@@ -14,6 +13,7 @@ import {
   IPublishParams,
   IStompSocket,
   IStompSocketMessageEvent,
+  IStomptHandlerConfig,
   messageCallbackType,
   StompSocketState,
   wsErrorCallbackType,
@@ -69,16 +69,16 @@ export class StompHandler {
 
   public discardWebsocketOnCommFailure: boolean;
 
-  get connectedVersion(): string {
+  get connectedVersion(): string | undefined {
     return this._connectedVersion;
   }
-  private _connectedVersion: string;
+  private _connectedVersion: string | undefined;
 
   get connected(): boolean {
     return this._connected;
   }
 
-  private _connected: boolean;
+  private _connected: boolean = false;
 
   private readonly _subscriptions: { [key: string]: messageCallbackType };
   private readonly _receiptWatchers: { [key: string]: frameCallbackType };
@@ -89,12 +89,10 @@ export class StompHandler {
   private _ponger: any;
   private _lastServerActivityTS: number;
 
-  private _onclose: (closeEvent: any) => void;
-
   constructor(
     private _client: Client,
     public _webSocket: IStompSocket,
-    config: StompConfig = {}
+    config: IStomptHandlerConfig
   ) {
     // used to index subscribers
     this._counter = 0;
@@ -111,12 +109,26 @@ export class StompHandler {
 
     this._lastServerActivityTS = Date.now();
 
-    this.configure(config);
-  }
-
-  public configure(conf: StompConfig): void {
-    // bulk assign all properties to this
-    (Object as any).assign(this, conf);
+    this.debug = config.debug;
+    this.stompVersions = config.stompVersions;
+    this.connectHeaders = config.connectHeaders;
+    this.disconnectHeaders = config.disconnectHeaders;
+    this.heartbeatIncoming = config.heartbeatIncoming;
+    this.heartbeatOutgoing = config.heartbeatOutgoing;
+    this.splitLargeFrames = config.splitLargeFrames;
+    this.maxWebSocketChunkSize = config.maxWebSocketChunkSize;
+    this.forceBinaryWSFrames = config.forceBinaryWSFrames;
+    this.logRawCommunication = config.logRawCommunication;
+    this.appendMissingNULLonIncoming = config.appendMissingNULLonIncoming;
+    this.discardWebsocketOnCommFailure = config.discardWebsocketOnCommFailure;
+    this.onConnect = config.onConnect;
+    this.onDisconnect = config.onDisconnect;
+    this.onStompError = config.onStompError;
+    this.onWebSocketClose = config.onWebSocketClose;
+    this.onWebSocketError = config.onWebSocketError;
+    this.onUnhandledMessage = config.onUnhandledMessage;
+    this.onUnhandledReceipt = config.onUnhandledReceipt;
+    this.onUnhandledFrame = config.onUnhandledFrame;
   }
 
   public start(): void {
@@ -155,16 +167,17 @@ export class StompHandler {
         this.debug(`<<< ${rawChunkAsString}`);
       }
 
-      parser.parseChunk(evt.data, this.appendMissingNULLonIncoming);
+      parser.parseChunk(
+        evt.data as string | ArrayBuffer,
+        this.appendMissingNULLonIncoming
+      );
     };
 
-    this._onclose = (closeEvent): void => {
+    this._webSocket.onclose = (closeEvent): void => {
       this.debug(`Connection closed to ${this._client.brokerURL}`);
       this._cleanUp();
       this.onWebSocketClose(closeEvent);
     };
-
-    this._webSocket.onclose = this._onclose;
 
     this._webSocket.onerror = (errorEvent): void => {
       this.onWebSocketError(errorEvent);
@@ -331,6 +344,7 @@ export class StompHandler {
       augmentWebsocket(this._webSocket, (msg: string) => this.debug(msg));
     }
 
+    // @ts-ignore - this method will be there at this stage
     this._webSocket.terminate();
   }
 

@@ -29,7 +29,7 @@ export function augmentWebsocket(
 
     this.close();
 
-    origOnClose.call(this, {
+    origOnClose?.call(webSocket, {
       code: 4001,
       reason: 'Heartbeat failure, discarding the socket',
       wasClean: false,

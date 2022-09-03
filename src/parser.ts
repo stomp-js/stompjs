@@ -63,12 +63,14 @@ export class Parser {
   private readonly _encoder = new TextEncoder();
   private readonly _decoder = new TextDecoder();
 
+  // @ts-ignore - it always has a value
   private _results: IRawFrameType;
 
   private _token: number[] = [];
-  private _headerKey: string;
-  private _bodyBytesRemaining: number;
+  private _headerKey: string | undefined;
+  private _bodyBytesRemaining: number | undefined;
 
+  // @ts-ignore - it always has a value
   private _onByte: (byte: number) => void;
 
   public constructor(
@@ -176,7 +178,10 @@ export class Parser {
       return;
     }
     if (byte === LF) {
-      this._results.headers.push([this._headerKey, this._consumeTokenAsUTF8()]);
+      this._results.headers.push([
+        this._headerKey as string,
+        this._consumeTokenAsUTF8(),
+      ]);
       this._headerKey = undefined;
       this._onByte = this._collectHeaders;
       return;
@@ -209,7 +214,7 @@ export class Parser {
 
   private _collectBodyFixedSize(byte: number): void {
     // It is post decrement, so that we discard the trailing NULL octet
-    if (this._bodyBytesRemaining-- === 0) {
+    if ((this._bodyBytesRemaining as number)-- === 0) {
       this._retrievedBody();
       return;
     }

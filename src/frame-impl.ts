@@ -31,9 +31,9 @@ export class FrameImpl implements IFrame {
     if (!this._body && this.isBinaryBody) {
       this._body = new TextDecoder().decode(this._binaryBody);
     }
-    return this._body;
+    return this._body || '';
   }
-  private _body: string;
+  private _body: string | undefined;
 
   /**
    * body as Uint8Array
@@ -42,9 +42,10 @@ export class FrameImpl implements IFrame {
     if (!this._binaryBody && !this.isBinaryBody) {
       this._binaryBody = new TextEncoder().encode(this._body);
     }
-    return this._binaryBody;
+    // At this stage it will definitely have a valid value
+    return this._binaryBody as Uint8Array;
   }
-  private _binaryBody: Uint8Array;
+  private _binaryBody: Uint8Array | undefined;
 
   private escapeHeaderValues: boolean;
   private skipContentLengthHeader: boolean;
@@ -115,7 +116,7 @@ export class FrameImpl implements IFrame {
     }
 
     return new FrameImpl({
-      command: rawFrame.command,
+      command: rawFrame.command as string,
       headers,
       binaryBody: rawFrame.binaryBody,
       escapeHeaderValues,
@@ -140,7 +141,10 @@ export class FrameImpl implements IFrame {
     const cmdAndHeaders = this.serializeCmdAndHeaders();
 
     if (this.isBinaryBody) {
-      return FrameImpl.toUnit8Array(cmdAndHeaders, this._binaryBody).buffer;
+      return FrameImpl.toUnit8Array(
+        cmdAndHeaders,
+        this._binaryBody as Uint8Array
+      ).buffer;
     } else {
       return cmdAndHeaders + this._body + BYTE.NULL;
     }

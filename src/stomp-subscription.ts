@@ -5,14 +5,14 @@ import { StompHeaders } from './stomp-headers';
  *
  * Part of `@stomp/stompjs`.
  */
-export class StompSubscription {
+export interface StompSubscription {
   /**
    * Id associated with this subscription.
    */
-  public id: string;
+  id: string;
 
   /**
    * Unsubscribe. See [Client#unsubscribe]{@link Client#unsubscribe} for an example.
    */
-  public unsubscribe: (headers?: StompHeaders) => void;
+  unsubscribe: (headers?: StompHeaders) => void;
 }
