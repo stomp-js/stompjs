@@ -1,5 +1,16 @@
 # Change Log
 
+# 7.0.0 (2022-09-xx)
+
+- Use latest dependencies and Node.
+- Upgrade Typescript to 4.8 — likely to lose backward compatibility.
+- Refresh CI setup, discontinue Travis.
+- Declare the minified version to be the default entry point.
+- Fixes Ordering of protocol versions in `Sec-Websocket-Protocol`.
+  See [#373](https://github.com/stomp-js/stompjs/issues/373)
+- Use `strictNullChecks` typescript flag.
+  Should fix [#445](https://github.com/stomp-js/stompjs/issues/445).
+
 # 6.1.2 (2021-09-03)
 
 - One more attempt to fix [#366](https://github.com/stomp-js/stompjs/issues/366),
