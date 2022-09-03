@@ -16,6 +16,7 @@ export function augmentWebsocket(
     this.onopen = noOp;
 
     const ts = new Date();
+    const id = Math.random().toString().substring(2, 8); // A simulated id
 
     const origOnClose = this.onclose;
 
@@ -23,7 +24,7 @@ export function augmentWebsocket(
     this.onclose = closeEvent => {
       const delay = new Date().getTime() - ts.getTime();
       debug(
-        `Discarded socket closed after ${delay}ms, with code/reason: ${closeEvent.code}/${closeEvent.reason}`
+        `Discarded socket (#${id})  closed after ${delay}ms, with code/reason: ${closeEvent.code}/${closeEvent.reason}`
       );
     };
 
@@ -31,7 +32,7 @@ export function augmentWebsocket(
 
     origOnClose?.call(webSocket, {
       code: 4001,
-      reason: 'Heartbeat failure, discarding the socket',
+      reason: `Quick discarding socket (#${id}) without waiting for the shutdown sequence.`,
       wasClean: false,
     });
   };
