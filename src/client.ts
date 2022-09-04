@@ -536,16 +536,30 @@ export class Client {
 
   /**
    * Disconnect if connected and stop auto reconnect loop.
-   * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
+   * Appropriate callbacks will be invoked if there is an underlying STOMP connection.
    *
-   * This call is async, it will resolve immediately if there is no underlying active websocket,
-   * otherwise, it will resolve after underlying websocket is properly disposed.
+   * This call is async. It will resolve immediately if there is no underlying active websocket,
+   * otherwise, it will resolve after the underlying websocket is properly disposed of.
    *
-   * To reactivate you can call [Client#activate]{@link Client#activate}.
+   * It is not an error to invoke this method more than once.
+   * Each of those would resolve on completion of deactivation.
+   *
+   * To reactivate, you can call [Client#activate]{@link Client#activate}.
+   *
+   * Experimental: pass `force: true` to immediately discard the underlying connection.
+   * This mode will skip both the STOMP and the Websocket shutdown sequences.
+   * In some cases, browsers take a long time in the Websocket shutdown if the underlying connection had gone stale.
+   * Using this mode can speed up.
+   * When this mode is used, the actual Websocket may linger for a while
+   * and the broker may not realize that the connection is no longer in use.
+   *
+   * It is possible to invoke this method initially without the `force` option
+   * and subsequently, say after a wait, with the `force` option.
    */
-  public async deactivate(): Promise<void> {
-    let retPromise: Promise<void>;
+  public async deactivate(options: { force?: boolean } = {}): Promise<void> {
+    const force: boolean = options.force || false;
     const needToDispose = this.active;
+    let retPromise: Promise<void>;
 
     if (this.state === ActivationState.INACTIVE) {
       this.debug(`Already INACTIVE, nothing more to do`);
@@ -580,7 +594,9 @@ export class Client {
       return Promise.resolve();
     }
 
-    if (needToDispose) {
+    if (force) {
+      this._stompHandler?.discardWebsocket();
+    } else if (needToDispose) {
       this._disposeStompHandler();
     }
 

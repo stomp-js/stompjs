@@ -316,7 +316,7 @@ export class StompHandler {
       this.debug(
         'Discarding websocket, the underlying socket may linger for a while'
       );
-      this._discardWebsocket();
+      this.discardWebsocket();
     } else {
       this.debug('Issuing close on the websocket');
       this._closeWebsocket();
@@ -339,8 +339,8 @@ export class StompHandler {
     this._webSocket.close();
   }
 
-  private _discardWebsocket() {
-    if (!this._webSocket.terminate) {
+  public discardWebsocket() {
+    if (typeof this._webSocket.terminate !== 'function') {
       augmentWebsocket(this._webSocket, (msg: string) => this.debug(msg));
     }
 

@@ -172,13 +172,13 @@ describe('Stomp Connection', function () {
 
         // Both these should resolve after the underlying STOMP connection is disconnected.
         attempt2.then(() => {
-          expect(client.active).toBe(false)
+          expect(client.active).toBe(false);
         });
         attempt1.then(() => {
-          expect(client.active).toBe(false)
+          expect(client.active).toBe(false);
         });
 
-        Promise.all([attempt1, attempt2]).then(()=> done());
+        Promise.all([attempt1, attempt2]).then(() => done());
       },
     });
 
@@ -322,6 +322,72 @@ describe('Stomp Connection', function () {
         expect(client.connected).toBeFalsy();
         done();
       }, 1000);
+    });
+  });
+
+  describe('deactive with `force`', function () {
+    it('skips onDisconnect', function (done) {
+      client = stompClient();
+      client.configure({
+        onDisconnect: function () {
+          // Should not be called
+          expect(false).toBe(true);
+        },
+        onConnect: function () {
+          client.deactivate({ force: true }).then(done);
+        },
+      });
+
+      client.activate();
+    });
+
+    it('should discard the socket', function (done) {
+      client = stompClient();
+      client.configure({
+        onWebSocketClose: function (evt) {
+          expect(evt.code).toEqual(4001);
+          expect(evt.wasClean).toBe(false);
+          done();
+        },
+        onConnect: function () {
+          client.deactivate({ force: true });
+        },
+      });
+
+      client.activate();
+    });
+
+    it('allows re-activating', function (done) {
+      client = stompClient();
+      client.configure({
+        onConnect: function () {
+          client.onConnect = () => done();
+          client.deactivate({ force: true }).then(() => {
+            client.activate();
+          });
+        },
+      });
+
+      client.activate();
+    });
+
+    it('allows deactivating when inactive', function (done) {
+      client = stompClient();
+      client.configure({
+        onConnect: function () {
+          client
+            .deactivate()
+            .then(() => client.deactivate({ force: true }))
+            .then(done);
+        },
+      });
+
+      client.activate();
+    });
+
+    it('allows deactivating before activate', function (done) {
+      client = stompClient();
+      client.deactivate({ force: true }).then(done);
     });
   });
 });
