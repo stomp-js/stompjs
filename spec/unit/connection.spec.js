@@ -163,6 +163,28 @@ describe('Stomp Connection', function () {
     client.activate();
   });
 
+  it('Allows multiple deactivate calls', function (done) {
+    client = stompClient();
+    client.configure({
+      onConnect: function () {
+        const attempt1 = client.deactivate();
+        const attempt2 = client.deactivate();
+
+        // Both these should resolve after the underlying STOMP connection is disconnected.
+        attempt2.then(() => {
+          expect(client.active).toBe(false)
+        });
+        attempt1.then(() => {
+          expect(client.active).toBe(false)
+        });
+
+        Promise.all([attempt1, attempt2]).then(()=> done());
+      },
+    });
+
+    client.activate();
+  });
+
   it('When the underlying socket was closed, activates immediately following a deactivate', function (done) {
     client = stompClient();
     client.configure({

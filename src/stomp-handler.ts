@@ -427,9 +427,11 @@ export class StompHandler {
 
     if (this._pinger) {
       clearInterval(this._pinger);
+      this._pinger = undefined;
     }
     if (this._ponger) {
       clearInterval(this._ponger);
+      this._ponger = undefined;
     }
   }
 

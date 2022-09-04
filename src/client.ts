@@ -329,11 +329,6 @@ export class Client {
     this.onChangeState(state);
   }
 
-  // This will mark deactivate to complete, to be called after Websocket is closed
-  private _resolveSocketClose:
-    | ((value?: PromiseLike<void> | void) => void)
-    | undefined;
-
   /**
    * Activation state.
    *
@@ -484,16 +479,13 @@ export class Client {
 
         if (this.state === ActivationState.DEACTIVATING) {
           // Mark deactivation complete
-          if (this._resolveSocketClose) {
-            this._resolveSocketClose();
-            this._resolveSocketClose = undefined;
-          }
           this._changeState(ActivationState.INACTIVE);
         }
 
-        this.onWebSocketClose(evt);
         // The callback is called before attempting to reconnect, this would allow the client
         // to be `deactivated` in the callback.
+        this.onWebSocketClose(evt);
+
         if (this.active) {
           this._schedule_reconnect();
         }
@@ -553,11 +545,10 @@ export class Client {
    */
   public async deactivate(): Promise<void> {
     let retPromise: Promise<void>;
+    const needToDispose = this.active;
 
-    if (this.state !== ActivationState.ACTIVE) {
-      this.debug(
-        `Already ${ActivationState[this.state]}, ignoring call to deactivate`
-      );
+    if (this.state === ActivationState.INACTIVE) {
+      this.debug(`Already INACTIVE, nothing more to do`);
       return Promise.resolve();
     }
 
@@ -566,6 +557,7 @@ export class Client {
     // Clear if a reconnection was scheduled
     if (this._reconnector) {
       clearTimeout(this._reconnector);
+      this._reconnector = undefined;
     }
 
     if (
@@ -573,9 +565,14 @@ export class Client {
       // @ts-ignore - if there is a _stompHandler, there is the webSocket
       this.webSocket.readyState !== StompSocketState.CLOSED
     ) {
-      // we need to wait for underlying websocket to close
+      const origOnWebSocketClose = this._stompHandler.onWebSocketClose;
+      // we need to wait for the underlying websocket to close
       retPromise = new Promise<void>((resolve, reject) => {
-        this._resolveSocketClose = resolve;
+        // @ts-ignore - there is a _stompHandler
+        this._stompHandler.onWebSocketClose = evt => {
+          origOnWebSocketClose(evt);
+          resolve();
+        };
       });
     } else {
       // indicate that auto reconnect loop should terminate
@@ -583,7 +580,9 @@ export class Client {
       return Promise.resolve();
     }
 
-    this._disposeStompHandler();
+    if (needToDispose) {
+      this._disposeStompHandler();
+    }
 
     return retPromise;
   }
@@ -604,7 +603,6 @@ export class Client {
     // Dispose STOMP Handler
     if (this._stompHandler) {
       this._stompHandler.dispose();
-      this._stompHandler = undefined;
     }
   }
 
