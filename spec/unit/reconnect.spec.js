@@ -14,38 +14,21 @@ describe('Stomp Reconnect', function () {
    * force and reconnect.
    */
   it('Reconnect', function (done) {
-    let num_try = 1;
-
     client.reconnectDelay = 300;
 
-    client.onConnect = function () {
-      expect(client.connected).toBe(true);
+    client.onConnect = () => {
+      // Replace the onConnect so that on reconnect the updated one is called.
+      client.onConnect = () => {
+        done();
+      };
 
-      // when connected for the first time, we close the Websocket to force disconnect
-      if (num_try === 1) {
-        client.forceDisconnect();
-      }
-
-      num_try++;
+      client.forceDisconnect();
     };
 
     client.activate();
-
-    setTimeout(function () {
-      // in 200 ms the client should be disconnected
-      expect(client.connected).toBeFalsy();
-    }, 200);
-
-    setTimeout(function () {
-      // in 1000 ms the client should be connected again
-      expect(client.connected).toBe(true);
-      client.deactivate();
-
-      done();
-    }, 1000);
   });
 
-  it('Should allow disconnecting when auto reconnection is on', function (done) {
+  it('Should allow deactivating when auto reconnection is on', function (done) {
     const num_try = 1;
 
     let connectionClosed = false;
@@ -77,40 +60,37 @@ describe('Stomp Reconnect', function () {
     }, 500);
   });
 
-  it('Should allow disconnecting while waiting to reconnect', function (done) {
-    let num_try = 1;
+  it('Should allow deactivating while waiting to reconnect', function (done) {
+    client.reconnectDelay = 300;
+
+    const shouldNotBeCalled = () => {
+      expect(false).toBe(true);
+    };
 
     client.configure({
-      reconnectDelay: 300,
-      onConnect: function () {
-        expect(client.connected).toBe(true);
-
-        // when connected for the first time, we close the WebSocket to force disconnect
-        if (num_try === 1) {
-          client.forceDisconnect();
-        }
-
-        num_try++;
+      onConnect: () => {
+        client.forceDisconnect();
       },
-      onDisconnect: function () {
-        // Disconnect callback should not be called if client is disconnected
-        expect(false).toBe(true);
-      },
+      onWebSocketClose: () => {
+        client.configure({
+          onConnect: shouldNotBeCalled,
+          onDisconnect: shouldNotBeCalled,
+          onWebSocketClose: shouldNotBeCalled,
+        });
+
+        setTimeout(() => {
+          client.deactivate();
+        }, 200);
+
+        // wait longer before declaring the test complete, in this interval
+        // it should not have reconnected
+        setTimeout(function () {
+          expect(client.connected).toBeFalsy();
+          done();
+        }, 450);
+      }
     });
 
     client.activate();
-
-    setTimeout(function () {
-      // in 200 ms the client should be disconnected
-      expect(client.connected).toBeFalsy();
-      client.deactivate();
-    }, 200);
-
-    // wait longer before declaring the test complete, in this interval
-    // it should not have reconnected
-    setTimeout(function () {
-      expect(client.connected).toBeFalsy();
-      done();
-    }, 450);
   });
 });
