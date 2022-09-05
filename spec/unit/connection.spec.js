@@ -345,7 +345,9 @@ describe('Stomp Connection', function () {
       client = stompClient();
       client.configure({
         onWebSocketClose: function (evt) {
-          expect(evt.code).toEqual(4001);
+          // Node.js environment which uses Websocket with a `terminate` option will yield 1006
+          // The Websocket augmented by this library will yield 4001
+          expect([1006, 4001]).toContain(evt.code);
           expect(evt.wasClean).toBe(false);
           done();
         },
