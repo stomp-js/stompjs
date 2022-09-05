@@ -264,23 +264,24 @@ describe('Stomp Connection', function () {
       let eatConnectFrame = true;
 
       client.webSocketFactory = () => {
-        const wrapperWS = new WrapperWS(new WebSocket(client.brokerURL));
-
-        wrapperWS.ws.onmessage = ev => {
-          if (eatConnectFrame) {
-            const frame = parseFrame(ev.data);
-            if (frame.command === 'CONNECTED') {
-              client.debug('Ate CONNECTED frame');
-              // Do not eat the next one
-              eatConnectFrame = false;
-              return;
+        class MyWrapperWS extends WrapperWS {
+          wrapOnMessage(ev) {
+            if (eatConnectFrame) {
+              const frame = parseFrame(ev.data);
+              if (frame.command === 'CONNECTED') {
+                client.debug('Ate CONNECTED frame');
+                // Do not eat the next one
+                eatConnectFrame = false;
+                return;
+              }
             }
+            super.wrapOnMessage(ev);
           }
-          wrapperWS.onmessage(ev);
-        };
+        }
 
-        return wrapperWS;
+        return new MyWrapperWS(new WebSocket(client.brokerURL));
       };
+
       client.onConnect = () => {
         done();
       };
@@ -295,23 +296,24 @@ describe('Stomp Connection', function () {
       let eatConnectFrame = true;
 
       client.webSocketFactory = () => {
-        const wrapperWS = new WrapperWS(new WebSocket(client.brokerURL));
-
-        wrapperWS.ws.onmessage = ev => {
-          if (eatConnectFrame) {
-            const frame = parseFrame(ev.data);
-            if (frame.command === 'CONNECTED') {
-              client.debug('Ate CONNECTED frame');
-              // Do not eat the next one
-              eatConnectFrame = false;
-              return;
+        class MyWrapperWS extends WrapperWS {
+          wrapOnMessage(ev) {
+            if (eatConnectFrame) {
+              const frame = parseFrame(ev.data);
+              if (frame.command === 'CONNECTED') {
+                client.debug('Ate CONNECTED frame');
+                // Do not eat the next one
+                eatConnectFrame = false;
+                return;
+              }
             }
+            super.wrapOnMessage(ev);
           }
-          wrapperWS.onmessage(ev);
-        };
+        }
 
-        return wrapperWS;
+        return new MyWrapperWS(new WebSocket(client.brokerURL));
       };
+
       client.onConnect = () => {
         // Should not come here
         expect(true).toEqual(false);

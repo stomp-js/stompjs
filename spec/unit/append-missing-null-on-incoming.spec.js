@@ -1,28 +1,32 @@
-describe('appendMissingNULLonIncoming', function () {
+describe('appendMissingNULLonIncoming', () => {
   let client;
 
-  beforeEach(function () {
+  beforeEach(() => {
     client = stompClient();
 
     // Simulate incorrect behavior in React Native (see https://github.com/stomp-js/stompjs/issues/89)
     client.webSocketFactory = () => {
-      const wrapperWS = new WrapperWS(new WebSocket(client.brokerURL));
-      wrapperWS.ws.onmessage = ev => {
-        // Convert incoming data to string if not already string
-        let data = ev.data;
-        if (typeof data !== 'string') {
-          data = new TextDecoder().decode(data);
-        }
+      class MyWrapperWS extends  WrapperWS {
+        wrapOnMessage(ev) {
+          // Convert incoming data to string if not already string
+          let data = ev.data;
+          if (typeof data !== 'string') {
+            data = new TextDecoder().decode(data);
+          }
 
-        // chop everything after '\0'
-        data = data.replace(/\0.*/, '');
-        wrapperWS.onmessage(Object.assign({}, ev.data, { data: data }));
-      };
-      return wrapperWS;
+          // chop everything after '\0'
+          data = data.replace(/\0.*/, '');
+          const updatedEv = {...ev.data, ...{ data: data }};
+
+          super.wrapOnMessage(updatedEv);
+        }
+      }
+
+      return new MyWrapperWS(new WebSocket(client.brokerURL));
     };
   });
 
-  afterEach(async function () {
+  afterEach(async () => {
     await disconnectStomp(client);
   });
 
@@ -31,12 +35,12 @@ describe('appendMissingNULLonIncoming', function () {
     return typeof data === 'string' ? data.length : data.byteLength;
   };
 
-  it('Should append missing null in incoming frames (bypass bug in React Native)', function (done) {
+  it('Should append missing null in incoming frames (bypass bug in React Native)', done => {
     client.appendMissingNULLonIncoming = true;
 
     const body = randomText();
-    client.onConnect = function () {
-      client.subscribe(TEST.destination, function (message) {
+    client.onConnect = () => {
+      client.subscribe(TEST.destination, message => {
         expect(message.body).toEqual(body);
         client.deactivate();
 
