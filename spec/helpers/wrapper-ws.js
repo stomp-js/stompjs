@@ -14,16 +14,16 @@ class WrapperWS {
         this.onmessage = noOp;
         this.onopen = noOp;
         this.ws.onclose = ev => {
-            this.onclose(ev);
+            this.wrapOnClose(ev);
         };
         this.ws.onerror = ev => {
-            this.onerror(ev);
+            this.wrapOnError(ev);
         };
         this.ws.onmessage = ev => {
-            this.onmessage(ev);
+            this.wrapOnMessage(ev);
         };
         this.ws.onopen = ev => {
-            this.onopen(ev);
+            this.wrapOnOpen(ev);
         };
     }
     get url() {
@@ -40,6 +40,18 @@ class WrapperWS {
     }
     set binaryType(value) {
         this.ws.binaryType = value;
+    }
+    wrapOnOpen(ev) {
+        this.onopen(ev);
+    }
+    wrapOnMessage(ev) {
+        this.onmessage(ev);
+    }
+    wrapOnError(ev) {
+        this.onerror(ev);
+    }
+    wrapOnClose(ev) {
+        this.onclose(ev);
     }
     close(code, reason) {
         this.ws.close(code, reason);

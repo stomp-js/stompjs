@@ -30,17 +30,33 @@ class WrapperWS {
     this.onopen = noOp;
 
     this.ws.onclose = ev => {
-      this.onclose(ev);
+      this.wrapOnClose(ev);
     };
     this.ws.onerror = ev => {
-      this.onerror(ev);
+      this.wrapOnError(ev);
     };
     this.ws.onmessage = ev => {
-      this.onmessage(ev);
+      this.wrapOnMessage(ev);
     };
     this.ws.onopen = ev => {
-      this.onopen(ev);
+      this.wrapOnOpen(ev);
     };
+  }
+
+  protected wrapOnOpen(ev: Event) {
+    this.onopen(ev);
+  }
+
+  protected wrapOnMessage(ev: MessageEvent<any>) {
+    this.onmessage(ev);
+  }
+
+  protected wrapOnError(ev: Event) {
+    this.onerror(ev);
+  }
+
+  protected wrapOnClose(ev: CloseEvent) {
+    this.onclose(ev);
   }
 
   public onclose: ((ev: CloseEvent) => any) | null;
