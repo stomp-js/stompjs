@@ -10,6 +10,7 @@
     "karma": "karma start --single-run",
     "lint": "tslint 'src/**/*.ts'",
     "prettier": "prettier --write .",
+    "test-helpers": "tsc -p spec/helpers-src/tsconfig.json",
     "prepublishOnly": "npm run lint && npm run build && npm run karma && npm run test"
   },
   "repository": {
