@@ -1,4 +1,4 @@
-import { CompatClient } from './compat-client';
+import type { CompatClient } from './compat-client';
 
 /**
  * Part of `@stomp/stompjs`.

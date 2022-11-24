@@ -1,22 +1,22 @@
 import { BYTE } from './byte';
-import { Client } from './client';
+import type { Client } from './client';
 import { FrameImpl } from './frame-impl';
-import { IMessage } from './i-message';
-import { ITransaction } from './i-transaction';
+import type { IMessage } from './i-message';
+import type { ITransaction } from './i-transaction';
 import { Parser } from './parser';
-import { StompConfig } from './stomp-config';
-import { StompHeaders } from './stomp-headers';
-import { StompSubscription } from './stomp-subscription';
+import type { StompConfig } from './stomp-config';
+import type { StompHeaders } from './stomp-headers';
+import type { StompSubscription } from './stomp-subscription';
 import {
-  closeEventCallbackType,
-  debugFnType,
-  frameCallbackType,
-  IPublishParams,
-  IStompSocket,
-  IStompSocketMessageEvent,
-  messageCallbackType,
+  type closeEventCallbackType,
+  type debugFnType,
+  type frameCallbackType,
+  type IPublishParams,
+  type IStompSocket,
+  type IStompSocketMessageEvent,
+  type messageCallbackType,
   StompSocketState,
-  wsErrorCallbackType,
+  type wsErrorCallbackType,
 } from './types';
 import { Versions } from './versions';
 import { augmentWebsocket } from './augment-websocket';
@@ -85,8 +85,8 @@ export class StompHandler {
   private _partialData: string;
   private _escapeHeaderValues: boolean;
   private _counter: number;
-  private _pinger: any;
-  private _ponger: any;
+  private _pinger: NodeJS.Timer;
+  private _ponger: NodeJS.Timer;
   private _lastServerActivityTS: number;
 
   private _onclose: (closeEvent: any) => void;
@@ -116,7 +116,7 @@ export class StompHandler {
 
   public configure(conf: StompConfig): void {
     // bulk assign all properties to this
-    (Object as any).assign(this, conf);
+    Object.assign(this, conf);
   }
 
   public start(): void {
@@ -172,7 +172,7 @@ export class StompHandler {
 
     this._webSocket.onopen = () => {
       // Clone before updating
-      const connectHeaders = (Object as any).assign({}, this.connectHeaders);
+      const connectHeaders = Object.assign({}, this.connectHeaders);
 
       this.debug('Web Socket Opened...');
       connectHeaders['accept-version'] = this.stompVersions.supportedVersions();
@@ -367,7 +367,7 @@ export class StompHandler {
     if (typeof rawChunk !== 'string' || !this.splitLargeFrames) {
       this._webSocket.send(rawChunk);
     } else {
-      let out = rawChunk as string;
+      let out = rawChunk;
       while (out.length > 0) {
         const chunk = out.substring(0, this.maxWebSocketChunkSize);
         out = out.substring(this.maxWebSocketChunkSize);
@@ -381,10 +381,7 @@ export class StompHandler {
     if (this.connected) {
       try {
         // clone before updating
-        const disconnectHeaders = (Object as any).assign(
-          {},
-          this.disconnectHeaders
-        );
+        const disconnectHeaders = Object.assign({}, this.disconnectHeaders);
 
         if (!disconnectHeaders.receipt) {
           disconnectHeaders.receipt = `close-${this._counter++}`;
@@ -422,7 +419,7 @@ export class StompHandler {
   public publish(params: IPublishParams): void {
     const { destination, headers, body, binaryBody, skipContentLengthHeader } =
       params;
-    const hdrs: StompHeaders = (Object as any).assign({ destination }, headers);
+    const hdrs: StompHeaders = Object.assign({ destination }, headers);
     this._transmit({
       command: 'SEND',
       headers: hdrs,
@@ -441,7 +438,7 @@ export class StompHandler {
     callback: messageCallbackType,
     headers: StompHeaders = {}
   ): StompSubscription {
-    headers = (Object as any).assign({}, headers);
+    headers = Object.assign({}, headers);
 
     if (!headers.id) {
       headers.id = `sub-${this._counter++}`;
@@ -460,7 +457,7 @@ export class StompHandler {
   }
 
   public unsubscribe(id: string, headers: StompHeaders = {}): void {
-    headers = (Object as any).assign({}, headers);
+    headers = Object.assign({}, headers);
 
     delete this._subscriptions[id];
     headers.id = id;
@@ -510,7 +507,7 @@ export class StompHandler {
     subscriptionId: string,
     headers: StompHeaders = {}
   ): void {
-    headers = (Object as any).assign({}, headers);
+    headers = Object.assign({}, headers);
 
     if (this._connectedVersion === Versions.V1_2) {
       headers.id = messageId;
@@ -526,7 +523,7 @@ export class StompHandler {
     subscriptionId: string,
     headers: StompHeaders = {}
   ): void {
-    headers = (Object as any).assign({}, headers);
+    headers = Object.assign({}, headers);
 
     if (this._connectedVersion === Versions.V1_2) {
       headers.id = messageId;

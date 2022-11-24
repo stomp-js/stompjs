@@ -1,6 +1,6 @@
-import { IFrame } from './i-frame';
-import { IMessage } from './i-message';
-import { StompHeaders } from './stomp-headers';
+import type { IFrame } from './i-frame';
+import type { IMessage } from './i-message';
+import type { StompHeaders } from './stomp-headers';
 
 /**
  * This callback will receive a `string` as parameter.

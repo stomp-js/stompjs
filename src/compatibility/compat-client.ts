@@ -1,6 +1,6 @@
 import { Client } from '../client';
-import { StompHeaders } from '../stomp-headers';
-import { frameCallbackType, messageCallbackType } from '../types';
+import type { StompHeaders } from '../stomp-headers';
+import type { frameCallbackType, messageCallbackType } from '../types';
 import { HeartbeatInfo } from './heartbeat-info';
 
 /**
@@ -164,9 +164,9 @@ export class CompatClient extends Client {
   public send(
     destination: string,
     headers: { [key: string]: any } = {},
-    body: string = ''
+    body = ''
   ): void {
-    headers = (Object as any).assign({}, headers);
+    headers = Object.assign({}, headers);
 
     const skipContentLengthHeader = headers['content-length'] === false;
     if (skipContentLengthHeader) {

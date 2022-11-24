@@ -1,4 +1,4 @@
-import { IRawFrameType } from './types';
+import type { IRawFrameType } from './types';
 
 /**
  * @internal
@@ -80,7 +80,7 @@ export class Parser {
 
   public parseChunk(
     segment: string | ArrayBuffer,
-    appendMissingNULLonIncoming: boolean = false
+    appendMissingNULLonIncoming = false
   ) {
     let chunk: Uint8Array;
 

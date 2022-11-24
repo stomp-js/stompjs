@@ -1,5 +1,5 @@
-import { StompHeaders } from './stomp-headers';
-import {
+import type { StompHeaders } from './stomp-headers';
+import type {
   ActivationState,
   closeEventCallbackType,
   debugFnType,
@@ -7,7 +7,7 @@ import {
   messageCallbackType,
   wsErrorCallbackType,
 } from './types';
-import { Versions } from './versions';
+import type { Versions } from './versions';
 
 /**
  * Configuration options for STOMP Client, each key corresponds to
@@ -26,7 +26,7 @@ export class StompConfig {
   public brokerURL?: string;
 
   /**
-   * See See [Client#stompVersions]{@link Client#stompVersions}.
+   * See [Client#stompVersions]{@link Client#stompVersions}.
    */
   public stompVersions?: Versions;
 

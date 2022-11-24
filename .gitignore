@@ -7,3 +7,6 @@ node_modules
 # Temporary build files
 tmp
 *.tgz
+
+esm6
+bundles

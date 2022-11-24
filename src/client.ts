@@ -1,18 +1,18 @@
-import { ITransaction } from './i-transaction';
-import { StompConfig } from './stomp-config';
+import type { ITransaction } from './i-transaction';
+import type { StompConfig } from './stomp-config';
 import { StompHandler } from './stomp-handler';
-import { StompHeaders } from './stomp-headers';
-import { StompSubscription } from './stomp-subscription';
+import type { StompHeaders } from './stomp-headers';
+import type { StompSubscription } from './stomp-subscription';
 import {
   ActivationState,
-  closeEventCallbackType,
-  debugFnType,
-  frameCallbackType,
-  IPublishParams,
-  IStompSocket,
-  messageCallbackType,
+  type closeEventCallbackType,
+  type debugFnType,
+  type frameCallbackType,
+  type IPublishParams,
+  type IStompSocket,
+  type messageCallbackType,
   StompSocketState,
-  wsErrorCallbackType,
+  type wsErrorCallbackType,
 } from './types';
 import { Versions } from './versions';
 
@@ -78,26 +78,26 @@ export class Client {
 
   /**
    * Will retry if Stomp connection is not established in specified milliseconds.
-   * Default 0, which implies wait for ever.
+   * Default 0, which implies wait forever.
    */
-  public connectionTimeout: number = 0;
+  public connectionTimeout = 0;
 
-  private _connectionWatcher: number; // Timer
+  private _connectionWatcher: NodeJS.Timeout | number; // Timer
 
   /**
    *  automatically reconnect with delay in milliseconds, set to 0 to disable.
    */
-  public reconnectDelay: number = 5000;
+  public reconnectDelay = 5000;
 
   /**
    * Incoming heartbeat interval in milliseconds. Set to 0 to disable.
    */
-  public heartbeatIncoming: number = 10000;
+  public heartbeatIncoming = 10000;
 
   /**
    * Outgoing heartbeat interval in milliseconds. Set to 0 to disable.
    */
-  public heartbeatOutgoing: number = 10000;
+  public heartbeatOutgoing = 10000;
 
   /**
    * This switches on a non standard behavior while sending WebSocket packets.
@@ -112,7 +112,7 @@ export class Client {
    *
    * Binary frames are never split.
    */
-  public splitLargeFrames: boolean = false;
+  public splitLargeFrames = false;
 
   /**
    * See [splitLargeFrames]{@link Client#splitLargeFrames}.
@@ -128,7 +128,7 @@ export class Client {
    *
    * Set this flag to force binary frames.
    */
-  public forceBinaryWSFrames: boolean = false;
+  public forceBinaryWSFrames = false;
 
   /**
    * A bug in ReactNative chops a string on occurrence of a NULL.
@@ -140,7 +140,7 @@ export class Client {
    *
    * This is not an ideal solution, but a stop gap until the underlying issue is fixed at ReactNative library.
    */
-  public appendMissingNULLonIncoming: boolean = false;
+  public appendMissingNULLonIncoming = false;
 
   /**
    * Underlying WebSocket instance, READONLY.
@@ -169,6 +169,7 @@ export class Client {
       this._stompHandler.disconnectHeaders = this._disconnectHeaders;
     }
   }
+
   private _disconnectHeaders: StompHeaders;
 
   /**
@@ -373,7 +374,7 @@ export class Client {
    */
   public configure(conf: StompConfig): void {
     // bulk assign all properties to this
-    (Object as any).assign(this, conf);
+    Object.assign(this, conf);
   }
 
   /**
@@ -422,6 +423,7 @@ export class Client {
       if (this._connectionWatcher) {
         clearTimeout(this._connectionWatcher);
       }
+
       this._connectionWatcher = setTimeout(() => {
         if (this.connected) {
           return;
@@ -566,7 +568,7 @@ export class Client {
       this.webSocket.readyState !== StompSocketState.CLOSED
     ) {
       // we need to wait for underlying websocket to close
-      retPromise = new Promise<void>((resolve, reject) => {
+      retPromise = new Promise<void>((resolve, _reject) => {
         this._resolveSocketClose = resolve;
       });
     } else {

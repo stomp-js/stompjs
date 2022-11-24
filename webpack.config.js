@@ -1,9 +1,9 @@
-const path = require('path');
-const webpack = require('webpack');
+const path = require("path");
+const webpack = require("webpack");
 
 const PATHS = {
-  entryPoint: path.resolve(__dirname, 'src/index.ts'),
-  bundles: path.resolve(__dirname, 'bundles'),
+  entryPoint: path.resolve(__dirname, "src/index.ts"),
+  bundles: path.resolve(__dirname, "bundles")
 };
 
 const config = {
@@ -12,7 +12,7 @@ const config = {
   // the name to filter the second entry point for applying code
   // minification via UglifyJS
   entry: {
-    stomp: [PATHS.entryPoint],
+    stomp: [PATHS.entryPoint]
   },
   // The output defines how and where we want the bundles. The special
   // value `[name]` in `filename` tell Webpack to use the name we defined above.
@@ -20,34 +20,36 @@ const config = {
   // it will be accessible at `window.MyLib`
   output: {
     path: PATHS.bundles,
-    filename: '[name].umd.js',
-    libraryTarget: 'umd',
-    library: 'StompJs',
+    filename: "[name].umd.js",
+    library: {
+      type: "umd",
+      name: "StompJs"
+    },
     globalObject: `typeof self !== 'undefined' ? self : this`,
-    umdNamedDefine: true,
+    umdNamedDefine: true
   },
-  mode: 'development',
+  mode: "development",
   // Add resolve for `tsx` and `ts` files, otherwise Webpack would
   // only look for common JavaScript file extension (.js)
   resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
+    extensions: [".ts", ".tsx", ".js"]
   },
   // Activate source maps for the bundles in order to preserve the original
   // source when the user debugs the application
-  devtool: 'source-map',
+  devtool: "source-map",
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        loader: 'awesome-typescript-loader',
-        exclude: /node_modules/,
-        query: {
-          declaration: false,
-        },
+        loader: "ts-loader",
+        exclude: /node_modules/
       },
-      { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
-    ],
-  },
+      {
+        enforce: "pre",
+        test: /\.js$/,
+        loader: "source-map-loader" }
+    ]
+  }
 };
 
 module.exports = config;

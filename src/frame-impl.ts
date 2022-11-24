@@ -1,7 +1,7 @@
 import { BYTE } from './byte';
-import { IFrame } from './i-frame';
-import { StompHeaders } from './stomp-headers';
-import { IRawFrameType } from './types';
+import type { IFrame } from './i-frame';
+import type { StompHeaders } from './stomp-headers';
+import type { IRawFrameType } from './types';
 
 /**
  * Frame class represents a STOMP frame.
@@ -71,7 +71,7 @@ export class FrameImpl implements IFrame {
       skipContentLengthHeader,
     } = params;
     this.command = command;
-    this.headers = (Object as any).assign({}, headers || {});
+    this.headers = Object.assign({}, headers || {});
 
     if (binaryBody) {
       this._binaryBody = binaryBody;
