@@ -26,8 +26,8 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
-      - run: npx karma start --single-run --browsers=ChromeNoSandboxHeadless
-      - run: npx karma start --single-run --browsers=FirefoxHeadless
+      - run: npx karma start spec/karma.conf.js --single-run --browsers=ChromeNoSandboxHeadless
+      - run: npx karma start spec/karma.conf.js --single-run --browsers=FirefoxHeadless
       - run: npm run test
       - run: npm pack
       - run: bin/rx-stomp.sh
