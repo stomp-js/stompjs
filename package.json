@@ -6,8 +6,8 @@
     "clean": "rm -rf bundles esm6",
     "build-webpack": "webpack && webpack --mode=production --no-devtool --output-filename=stomp.umd.min.js",
     "build": "npm run clean && npx tsc && npm run build-webpack",
-    "test": "jasmine",
-    "karma": "karma start --single-run",
+    "test": "cp bundles/stomp.umd.js spec/dist && jasmine",
+    "karma": "karma start spec/karma.conf.js --single-run",
     "lint": "tslint 'src/**/*.ts'",
     "prettier": "prettier --write .",
     "test-helpers": "tsc -p spec/helpers-src/tsconfig.json",
@@ -52,8 +52,9 @@
     "webpack-cli": "^4.10.0",
     "ws": "^8.8.1"
   },
-  "module": "./esm6/index.js",
-  "main": "bundles/stomp.umd.min.js",
+  "type": "module",
+  "exports": "./esm6/index.js",
+  "main": "./esm6/index.js",
   "typings": "index.d.ts",
   "sideEffects": false
 }
