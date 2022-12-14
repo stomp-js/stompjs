@@ -21,10 +21,10 @@ module.exports = function (config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'bundles/stomp.umd.js',
-      'spec/config/browser-config.js',
-      'spec/helpers/**/*.js',
-      'spec/unit/**/*.js',
+      '../bundles/stomp.umd.js',
+      'config/browser-config.js',
+      'helpers/**/*.js',
+      'unit/**/*.js',
     ],
 
     // list of files / patterns to exclude
@@ -37,7 +37,7 @@ module.exports = function (config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['summary'],
+    reporters: ['progress'],
 
     // web server port
     port: 9876,

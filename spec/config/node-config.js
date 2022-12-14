@@ -9,7 +9,7 @@ TEST = {
 };
 
 WebSocket = require('ws');
-StompJs = require('../..');
+StompJs = require('../dist/stomp.umd');
 Stomp = StompJs.Stomp;
 
 if (typeof TextEncoder !== 'function') {

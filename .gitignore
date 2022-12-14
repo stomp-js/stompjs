@@ -7,3 +7,6 @@ node_modules
 # Temporary build files
 tmp
 *.tgz
+
+# Temporary dist file
+spec/dist/*.js
