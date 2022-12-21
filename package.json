@@ -54,7 +54,7 @@
   },
   "type": "module",
   "exports": "./esm6/index.js",
-  "main": "./esm6/index.js",
+  "browser": "./bundles/stomp.umd.js",
   "typings": "index.d.ts",
   "sideEffects": false
 }
