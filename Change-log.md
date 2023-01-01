@@ -15,6 +15,8 @@
 - Update the package to export JavaScript modules.
 - Refactor `client.deactivate` introduce concept of `force`.
   See [#461](https://github.com/stomp-js/stompjs/issues/461).
+- Tolerate exceptions thrown by frame handlers.
+  Fixes [#481](https://github.com/stomp-js/stompjs/issues/481).
 
 # 6.1.2 (2021-09-03)
 
