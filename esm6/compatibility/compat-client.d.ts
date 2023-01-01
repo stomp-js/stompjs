@@ -93,42 +93,44 @@ export declare class CompatClient extends Client {
      *
      * **Deprecated**
      */
-    reconnect_delay: number;
+    set reconnect_delay(value: number);
     /**
      * Available for backward compatibility, renamed to [Client#webSocket]{@link Client#webSocket}.
      *
      * **Deprecated**
      */
-    readonly ws: any;
+    get ws(): any;
     /**
      * Available for backward compatibility, renamed to [Client#connectedVersion]{@link Client#connectedVersion}.
      *
      * **Deprecated**
      */
-    readonly version: string;
+    get version(): string | undefined;
     /**
      * Available for backward compatibility, renamed to [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
      *
      * **Deprecated**
      */
+    get onreceive(): messageCallbackType;
     /**
-    * Available for backward compatibility, renamed to [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
-    *
-    * **Deprecated**
-    */
-    onreceive: messageCallbackType;
+     * Available for backward compatibility, renamed to [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
+     *
+     * **Deprecated**
+     */
+    set onreceive(value: messageCallbackType);
     /**
      * Available for backward compatibility, renamed to [Client#onUnhandledReceipt]{@link Client#onUnhandledReceipt}.
      * Prefer using [Client#watchForReceipt]{@link Client#watchForReceipt}.
      *
      * **Deprecated**
      */
+    get onreceipt(): frameCallbackType;
     /**
-    * Available for backward compatibility, renamed to [Client#onUnhandledReceipt]{@link Client#onUnhandledReceipt}.
-    *
-    * **Deprecated**
-    */
-    onreceipt: frameCallbackType;
+     * Available for backward compatibility, renamed to [Client#onUnhandledReceipt]{@link Client#onUnhandledReceipt}.
+     *
+     * **Deprecated**
+     */
+    set onreceipt(value: frameCallbackType);
     private _heartbeatInfo;
     /**
      * Available for backward compatibility, renamed to [Client#heartbeatIncoming]{@link Client#heartbeatIncoming}
@@ -136,14 +138,18 @@ export declare class CompatClient extends Client {
      *
      * **Deprecated**
      */
-    /**
-    * Available for backward compatibility, renamed to [Client#heartbeatIncoming]{@link Client#heartbeatIncoming}
-    * [Client#heartbeatOutgoing]{@link Client#heartbeatOutgoing}.
-    *
-    * **Deprecated**
-    */
-    heartbeat: {
+    get heartbeat(): {
         incoming: number;
         outgoing: number;
     };
+    /**
+     * Available for backward compatibility, renamed to [Client#heartbeatIncoming]{@link Client#heartbeatIncoming}
+     * [Client#heartbeatOutgoing]{@link Client#heartbeatOutgoing}.
+     *
+     * **Deprecated**
+     */
+    set heartbeat(value: {
+        incoming: number;
+        outgoing: number;
+    });
 }

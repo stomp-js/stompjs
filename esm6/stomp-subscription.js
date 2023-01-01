@@ -1,8 +1,2 @@
-/**
- * Call [Client#subscribe]{@link Client#subscribe} to create a StompSubscription.
- *
- * Part of `@stomp/stompjs`.
- */
-export class StompSubscription {
-}
+export {};
 //# sourceMappingURL=stomp-subscription.js.map

@@ -9,16 +9,17 @@ export function augmentWebsocket(webSocket, debug) {
         this.onmessage = noOp;
         this.onopen = noOp;
         const ts = new Date();
+        const id = Math.random().toString().substring(2, 8); // A simulated id
         const origOnClose = this.onclose;
         // Track delay in actual closure of the socket
         this.onclose = closeEvent => {
             const delay = new Date().getTime() - ts.getTime();
-            debug(`Discarded socket closed after ${delay}ms, with code/reason: ${closeEvent.code}/${closeEvent.reason}`);
+            debug(`Discarded socket (#${id})  closed after ${delay}ms, with code/reason: ${closeEvent.code}/${closeEvent.reason}`);
         };
         this.close();
-        origOnClose.call(this, {
+        origOnClose === null || origOnClose === void 0 ? void 0 : origOnClose.call(webSocket, {
             code: 4001,
-            reason: 'Heartbeat failure, discarding the socket',
+            reason: `Quick discarding socket (#${id}) without waiting for the shutdown sequence.`,
             wasClean: false,
         });
     };

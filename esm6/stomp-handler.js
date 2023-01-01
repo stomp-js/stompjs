@@ -12,9 +12,10 @@ import { augmentWebsocket } from './augment-websocket';
  * @internal
  */
 export class StompHandler {
-    constructor(_client, _webSocket, config = {}) {
+    constructor(_client, _webSocket, config) {
         this._client = _client;
         this._webSocket = _webSocket;
+        this._connected = false;
         this._serverFrameHandlers = {
             // [CONNECTED Frame](http://stomp.github.com/stomp-specification-1.2.html#CONNECTED_Frame)
             CONNECTED: frame => {
@@ -81,17 +82,32 @@ export class StompHandler {
         this._partialData = '';
         this._escapeHeaderValues = false;
         this._lastServerActivityTS = Date.now();
-        this.configure(config);
+        this.debug = config.debug;
+        this.stompVersions = config.stompVersions;
+        this.connectHeaders = config.connectHeaders;
+        this.disconnectHeaders = config.disconnectHeaders;
+        this.heartbeatIncoming = config.heartbeatIncoming;
+        this.heartbeatOutgoing = config.heartbeatOutgoing;
+        this.splitLargeFrames = config.splitLargeFrames;
+        this.maxWebSocketChunkSize = config.maxWebSocketChunkSize;
+        this.forceBinaryWSFrames = config.forceBinaryWSFrames;
+        this.logRawCommunication = config.logRawCommunication;
+        this.appendMissingNULLonIncoming = config.appendMissingNULLonIncoming;
+        this.discardWebsocketOnCommFailure = config.discardWebsocketOnCommFailure;
+        this.onConnect = config.onConnect;
+        this.onDisconnect = config.onDisconnect;
+        this.onStompError = config.onStompError;
+        this.onWebSocketClose = config.onWebSocketClose;
+        this.onWebSocketError = config.onWebSocketError;
+        this.onUnhandledMessage = config.onUnhandledMessage;
+        this.onUnhandledReceipt = config.onUnhandledReceipt;
+        this.onUnhandledFrame = config.onUnhandledFrame;
     }
     get connectedVersion() {
         return this._connectedVersion;
     }
     get connected() {
         return this._connected;
-    }
-    configure(conf) {
-        // bulk assign all properties to this
-        Object.assign(this, conf);
     }
     start() {
         const parser = new Parser(
@@ -120,12 +136,11 @@ export class StompHandler {
             }
             parser.parseChunk(evt.data, this.appendMissingNULLonIncoming);
         };
-        this._onclose = (closeEvent) => {
+        this._webSocket.onclose = (closeEvent) => {
             this.debug(`Connection closed to ${this._client.brokerURL}`);
             this._cleanUp();
             this.onWebSocketClose(closeEvent);
         };
-        this._webSocket.onclose = this._onclose;
         this._webSocket.onerror = (errorEvent) => {
             this.onWebSocketError(errorEvent);
         };
@@ -183,7 +198,7 @@ export class StompHandler {
     _closeOrDiscardWebsocket() {
         if (this.discardWebsocketOnCommFailure) {
             this.debug('Discarding websocket, the underlying socket may linger for a while');
-            this._discardWebsocket();
+            this.discardWebsocket();
         }
         else {
             this.debug('Issuing close on the websocket');
@@ -202,10 +217,11 @@ export class StompHandler {
         this._webSocket.onmessage = () => { }; // ignore messages
         this._webSocket.close();
     }
-    _discardWebsocket() {
-        if (!this._webSocket.terminate) {
+    discardWebsocket() {
+        if (typeof this._webSocket.terminate !== 'function') {
             augmentWebsocket(this._webSocket, (msg) => this.debug(msg));
         }
+        // @ts-ignore - this method will be there at this stage
         this._webSocket.terminate();
     }
     _transmit(params) {
@@ -271,9 +287,11 @@ export class StompHandler {
         this._connected = false;
         if (this._pinger) {
             clearInterval(this._pinger);
+            this._pinger = undefined;
         }
         if (this._ponger) {
             clearInterval(this._ponger);
+            this._ponger = undefined;
         }
     }
     publish(params) {

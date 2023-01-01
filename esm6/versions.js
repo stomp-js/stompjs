@@ -42,8 +42,8 @@ Versions.V1_2 = '1.2';
  * @internal
  */
 Versions.default = new Versions([
-    Versions.V1_0,
-    Versions.V1_1,
     Versions.V1_2,
+    Versions.V1_1,
+    Versions.V1_0,
 ]);
 //# sourceMappingURL=versions.js.map

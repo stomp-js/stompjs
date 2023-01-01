@@ -87,6 +87,13 @@ export class Client {
          */
         this.appendMissingNULLonIncoming = false;
         /**
+         * Browsers do not immediately close WebSockets when `.close` is issued.
+         * This may cause reconnection to take a longer on certain type of failures.
+         * In case of incoming heartbeat failure, this experimental flag instructs the library
+         * to discard the socket immediately (even before it is actually closed).
+         */
+        this.discardWebsocketOnCommFailure = false;
+        /**
          * Activation state.
          *
          * It will usually be ACTIVE or INACTIVE.
@@ -117,7 +124,8 @@ export class Client {
      * Underlying WebSocket instance, READONLY.
      */
     get webSocket() {
-        return this._stompHandler ? this._stompHandler._webSocket : undefined;
+        var _a;
+        return (_a = this._stompHandler) === null || _a === void 0 ? void 0 : _a._webSocket;
     }
     /**
      * Disconnection headers.
@@ -245,13 +253,11 @@ export class Client {
                     this._stompHandler = undefined; // a new one will be created in case of a reconnect
                     if (this.state === ActivationState.DEACTIVATING) {
                         // Mark deactivation complete
-                        this._resolveSocketClose();
-                        this._resolveSocketClose = undefined;
                         this._changeState(ActivationState.INACTIVE);
                     }
-                    this.onWebSocketClose(evt);
                     // The callback is called before attempting to reconnect, this would allow the client
                     // to be `deactivated` in the callback.
+                    this.onWebSocketClose(evt);
                     if (this.active) {
                         this._schedule_reconnect();
                     }
@@ -277,8 +283,11 @@ export class Client {
         if (this.webSocketFactory) {
             webSocket = this.webSocketFactory();
         }
-        else {
+        else if (this.brokerURL) {
             webSocket = new WebSocket(this.brokerURL, this.stompVersions.protocolVersions());
+        }
+        else {
+            throw new Error('Either brokerURL or webSocketFactory must be provided');
         }
         webSocket.binaryType = 'arraybuffer';
         return webSocket;
@@ -293,30 +302,53 @@ export class Client {
     }
     /**
      * Disconnect if connected and stop auto reconnect loop.
-     * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
+     * Appropriate callbacks will be invoked if there is an underlying STOMP connection.
      *
-     * This call is async, it will resolve immediately if there is no underlying active websocket,
-     * otherwise, it will resolve after underlying websocket is properly disposed.
+     * This call is async. It will resolve immediately if there is no underlying active websocket,
+     * otherwise, it will resolve after the underlying websocket is properly disposed of.
      *
-     * To reactivate you can call [Client#activate]{@link Client#activate}.
+     * It is not an error to invoke this method more than once.
+     * Each of those would resolve on completion of deactivation.
+     *
+     * To reactivate, you can call [Client#activate]{@link Client#activate}.
+     *
+     * Experimental: pass `force: true` to immediately discard the underlying connection.
+     * This mode will skip both the STOMP and the Websocket shutdown sequences.
+     * In some cases, browsers take a long time in the Websocket shutdown if the underlying connection had gone stale.
+     * Using this mode can speed up.
+     * When this mode is used, the actual Websocket may linger for a while
+     * and the broker may not realize that the connection is no longer in use.
+     *
+     * It is possible to invoke this method initially without the `force` option
+     * and subsequently, say after a wait, with the `force` option.
      */
-    deactivate() {
+    deactivate(options = {}) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
+            const force = options.force || false;
+            const needToDispose = this.active;
             let retPromise;
-            if (this.state !== ActivationState.ACTIVE) {
-                this.debug(`Already ${ActivationState[this.state]}, ignoring call to deactivate`);
+            if (this.state === ActivationState.INACTIVE) {
+                this.debug(`Already INACTIVE, nothing more to do`);
                 return Promise.resolve();
             }
             this._changeState(ActivationState.DEACTIVATING);
             // Clear if a reconnection was scheduled
             if (this._reconnector) {
                 clearTimeout(this._reconnector);
+                this._reconnector = undefined;
             }
             if (this._stompHandler &&
+                // @ts-ignore - if there is a _stompHandler, there is the webSocket
                 this.webSocket.readyState !== StompSocketState.CLOSED) {
-                // we need to wait for underlying websocket to close
+                const origOnWebSocketClose = this._stompHandler.onWebSocketClose;
+                // we need to wait for the underlying websocket to close
                 retPromise = new Promise((resolve, reject) => {
-                    this._resolveSocketClose = resolve;
+                    // @ts-ignore - there is a _stompHandler
+                    this._stompHandler.onWebSocketClose = evt => {
+                        origOnWebSocketClose(evt);
+                        resolve();
+                    };
                 });
             }
             else {
@@ -324,7 +356,12 @@ export class Client {
                 this._changeState(ActivationState.INACTIVE);
                 return Promise.resolve();
             }
-            this._disposeStompHandler();
+            if (force) {
+                (_a = this._stompHandler) === null || _a === void 0 ? void 0 : _a.discardWebsocket();
+            }
+            else if (needToDispose) {
+                this._disposeStompHandler();
+            }
             return retPromise;
         });
     }
@@ -343,7 +380,6 @@ export class Client {
         // Dispose STOMP Handler
         if (this._stompHandler) {
             this._stompHandler.dispose();
-            this._stompHandler = null;
         }
     }
     /**
@@ -383,7 +419,14 @@ export class Client {
      * ```
      */
     publish(params) {
+        this._checkConnection();
+        // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
         this._stompHandler.publish(params);
+    }
+    _checkConnection() {
+        if (!this.connected) {
+            throw new TypeError('There is no underlying STOMP connection');
+        }
     }
     /**
      * STOMP brokers may carry out operation asynchronously and allow requesting for acknowledgement.
@@ -421,6 +464,8 @@ export class Client {
      * ```
      */
     watchForReceipt(receiptId, callback) {
+        this._checkConnection();
+        // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
         this._stompHandler.watchForReceipt(receiptId, callback);
     }
     /**
@@ -448,6 +493,8 @@ export class Client {
      * ```
      */
     subscribe(destination, callback, headers = {}) {
+        this._checkConnection();
+        // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
         return this._stompHandler.subscribe(destination, callback, headers);
     }
     /**
@@ -463,6 +510,8 @@ export class Client {
      * See: http://stomp.github.com/stomp-specification-1.2.html#UNSUBSCRIBE UNSUBSCRIBE Frame
      */
     unsubscribe(id, headers = {}) {
+        this._checkConnection();
+        // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
         this._stompHandler.unsubscribe(id, headers);
     }
     /**
@@ -472,6 +521,8 @@ export class Client {
      * `transactionId` is optional, if not passed the library will generate it internally.
      */
     begin(transactionId) {
+        this._checkConnection();
+        // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
         return this._stompHandler.begin(transactionId);
     }
     /**
@@ -487,6 +538,8 @@ export class Client {
      * ```
      */
     commit(transactionId) {
+        this._checkConnection();
+        // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
         this._stompHandler.commit(transactionId);
     }
     /**
@@ -501,6 +554,8 @@ export class Client {
      * ```
      */
     abort(transactionId) {
+        this._checkConnection();
+        // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
         this._stompHandler.abort(transactionId);
     }
     /**
@@ -517,6 +572,8 @@ export class Client {
      * ```
      */
     ack(messageId, subscriptionId, headers = {}) {
+        this._checkConnection();
+        // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
         this._stompHandler.ack(messageId, subscriptionId, headers);
     }
     /**
@@ -533,6 +590,8 @@ export class Client {
      * ```
      */
     nack(messageId, subscriptionId, headers = {}) {
+        this._checkConnection();
+        // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
         this._stompHandler.nack(messageId, subscriptionId, headers);
     }
 }

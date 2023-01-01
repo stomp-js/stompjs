@@ -7,6 +7,8 @@ import { CompatClient } from './compat-client';
 export declare class HeartbeatInfo {
     private client;
     constructor(client: CompatClient);
-    outgoing: number;
-    incoming: number;
+    get outgoing(): number;
+    set outgoing(value: number);
+    get incoming(): number;
+    set incoming(value: number);
 }

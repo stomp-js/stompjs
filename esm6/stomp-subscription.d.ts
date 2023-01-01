@@ -4,7 +4,7 @@ import { StompHeaders } from './stomp-headers';
  *
  * Part of `@stomp/stompjs`.
  */
-export declare class StompSubscription {
+export interface StompSubscription {
     /**
      * Id associated with this subscription.
      */

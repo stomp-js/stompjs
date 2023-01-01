@@ -1,6 +1,6 @@
 # Change Log
 
-# 7.0.0 (2022-09-xx)
+# 7.0.0-beta1 (2023-01-01)
 
 - Use latest dependencies and Node.
 - Upgrade Typescript to 4.8 — likely to lose backward compatibility.

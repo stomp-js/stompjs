@@ -1,9 +1,8 @@
 import { Client } from './client';
 import { ITransaction } from './i-transaction';
-import { StompConfig } from './stomp-config';
 import { StompHeaders } from './stomp-headers';
 import { StompSubscription } from './stomp-subscription';
-import { closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, IStompSocket, messageCallbackType, wsErrorCallbackType } from './types';
+import { closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, IStompSocket, IStomptHandlerConfig, messageCallbackType, wsErrorCallbackType } from './types';
 import { Versions } from './versions';
 /**
  * The STOMP protocol handler
@@ -35,9 +34,9 @@ export declare class StompHandler {
     forceBinaryWSFrames: boolean;
     appendMissingNULLonIncoming: boolean;
     discardWebsocketOnCommFailure: boolean;
-    readonly connectedVersion: string;
+    get connectedVersion(): string | undefined;
     private _connectedVersion;
-    readonly connected: boolean;
+    get connected(): boolean;
     private _connected;
     private readonly _subscriptions;
     private readonly _receiptWatchers;
@@ -47,16 +46,14 @@ export declare class StompHandler {
     private _pinger;
     private _ponger;
     private _lastServerActivityTS;
-    private _onclose;
-    constructor(_client: Client, _webSocket: IStompSocket, config?: StompConfig);
-    configure(conf: StompConfig): void;
+    constructor(_client: Client, _webSocket: IStompSocket, config: IStomptHandlerConfig);
     start(): void;
     private readonly _serverFrameHandlers;
     private _setupHeartbeat;
     private _closeOrDiscardWebsocket;
     forceDisconnect(): void;
     _closeWebsocket(): void;
-    private _discardWebsocket;
+    discardWebsocket(): void;
     private _transmit;
     dispose(): void;
     private _cleanUp;

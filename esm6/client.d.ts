@@ -20,7 +20,7 @@ export declare class Client {
      * If your environment does not support WebSockets natively, please refer to
      * [Polyfills]{@link https://stomp-js.github.io/guide/stompjs/rx-stomp/ng2-stompjs/pollyfils-for-stompjs-v5.html}.
      */
-    brokerURL: string;
+    brokerURL: string | undefined;
     /**
      * STOMP versions to attempt during STOMP handshake. By default versions `1.0`, `1.1`, and `1.2` are attempted.
      *
@@ -52,7 +52,7 @@ export declare class Client {
      *        };
      * ```
      */
-    webSocketFactory: () => IStompSocket;
+    webSocketFactory: (() => IStompSocket) | undefined;
     /**
      * Will retry if Stomp connection is not established in specified milliseconds.
      * Default 0, which implies wait for ever.
@@ -113,7 +113,7 @@ export declare class Client {
     /**
      * Underlying WebSocket instance, READONLY.
      */
-    readonly webSocket: IStompSocket;
+    get webSocket(): IStompSocket | undefined;
     /**
      * Connection headers, important keys - `login`, `passcode`, `host`.
      * Though STOMP 1.2 standard marks these keys to be present, check your broker documentation for
@@ -123,7 +123,8 @@ export declare class Client {
     /**
      * Disconnection headers.
      */
-    disconnectHeaders: StompHeaders;
+    get disconnectHeaders(): StompHeaders;
+    set disconnectHeaders(value: StompHeaders);
     private _disconnectHeaders;
     /**
      * This function will be called for any unhandled messages.
@@ -153,7 +154,7 @@ export declare class Client {
     /**
      * `true` if there is a active connection with STOMP Broker
      */
-    readonly connected: boolean;
+    get connected(): boolean;
     /**
      * Callback, invoked on before a connection connection to the STOMP broker.
      *
@@ -242,12 +243,12 @@ export declare class Client {
     /**
      * version of STOMP protocol negotiated with the server, READONLY
      */
-    readonly connectedVersion: string;
+    get connectedVersion(): string | undefined;
     private _stompHandler;
     /**
      * if the client is active (connected or going to reconnect)
      */
-    readonly active: boolean;
+    get active(): boolean;
     /**
      * It will be called on state change.
      *
@@ -255,7 +256,6 @@ export declare class Client {
      */
     onChangeState: (state: ActivationState) => void;
     private _changeState;
-    private _resolveSocketClose;
     /**
      * Activation state.
      *
@@ -285,14 +285,29 @@ export declare class Client {
     private _schedule_reconnect;
     /**
      * Disconnect if connected and stop auto reconnect loop.
-     * Appropriate callbacks will be invoked if underlying STOMP connection was connected.
+     * Appropriate callbacks will be invoked if there is an underlying STOMP connection.
      *
-     * This call is async, it will resolve immediately if there is no underlying active websocket,
-     * otherwise, it will resolve after underlying websocket is properly disposed.
+     * This call is async. It will resolve immediately if there is no underlying active websocket,
+     * otherwise, it will resolve after the underlying websocket is properly disposed of.
      *
-     * To reactivate you can call [Client#activate]{@link Client#activate}.
+     * It is not an error to invoke this method more than once.
+     * Each of those would resolve on completion of deactivation.
+     *
+     * To reactivate, you can call [Client#activate]{@link Client#activate}.
+     *
+     * Experimental: pass `force: true` to immediately discard the underlying connection.
+     * This mode will skip both the STOMP and the Websocket shutdown sequences.
+     * In some cases, browsers take a long time in the Websocket shutdown if the underlying connection had gone stale.
+     * Using this mode can speed up.
+     * When this mode is used, the actual Websocket may linger for a while
+     * and the broker may not realize that the connection is no longer in use.
+     *
+     * It is possible to invoke this method initially without the `force` option
+     * and subsequently, say after a wait, with the `force` option.
      */
-    deactivate(): Promise<void>;
+    deactivate(options?: {
+        force?: boolean;
+    }): Promise<void>;
     /**
      * Force disconnect if there is an active connection by directly closing the underlying WebSocket.
      * This is different than a normal disconnect where a DISCONNECT sequence is carried out with the broker.
@@ -338,6 +353,7 @@ export declare class Client {
      * ```
      */
     publish(params: IPublishParams): void;
+    private _checkConnection;
     /**
      * STOMP brokers may carry out operation asynchronously and allow requesting for acknowledgement.
      * To request an acknowledgement, a `receipt` header needs to be sent with the actual request.

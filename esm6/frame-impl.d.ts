@@ -22,12 +22,12 @@ export declare class FrameImpl implements IFrame {
     /**
      * body of the frame
      */
-    readonly body: string;
+    get body(): string;
     private _body;
     /**
      * body as Uint8Array
      */
-    readonly binaryBody: Uint8Array;
+    get binaryBody(): Uint8Array;
     private _binaryBody;
     private escapeHeaderValues;
     private skipContentLengthHeader;

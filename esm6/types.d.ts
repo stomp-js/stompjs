@@ -1,6 +1,7 @@
 import { IFrame } from './i-frame';
 import { IMessage } from './i-message';
 import { StompHeaders } from './stomp-headers';
+import { Versions } from './versions';
 /**
  * This callback will receive a `string` as parameter.
  *
@@ -82,9 +83,9 @@ export declare type RawHeaderType = [string, string];
  * @internal
  */
 export interface IRawFrameType {
-    command: string;
+    command: string | undefined;
     headers: RawHeaderType[];
-    binaryBody: Uint8Array;
+    binaryBody: Uint8Array | undefined;
 }
 /**
  * @internal
@@ -137,4 +138,29 @@ export declare enum ActivationState {
     ACTIVE = 0,
     DEACTIVATING = 1,
     INACTIVE = 2
+}
+/**
+ * @internal
+ */
+export interface IStomptHandlerConfig {
+    debug: debugFnType;
+    stompVersions: Versions;
+    connectHeaders: StompHeaders;
+    disconnectHeaders: StompHeaders;
+    heartbeatIncoming: number;
+    heartbeatOutgoing: number;
+    splitLargeFrames: boolean;
+    maxWebSocketChunkSize: number;
+    forceBinaryWSFrames: boolean;
+    logRawCommunication: boolean;
+    appendMissingNULLonIncoming: boolean;
+    discardWebsocketOnCommFailure: boolean;
+    onConnect: frameCallbackType;
+    onDisconnect: frameCallbackType;
+    onStompError: frameCallbackType;
+    onWebSocketClose: closeEventCallbackType;
+    onWebSocketError: wsErrorCallbackType;
+    onUnhandledMessage: messageCallbackType;
+    onUnhandledReceipt: frameCallbackType;
+    onUnhandledFrame: frameCallbackType;
 }

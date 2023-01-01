@@ -32,7 +32,7 @@ export class FrameImpl {
         if (!this._body && this.isBinaryBody) {
             this._body = new TextDecoder().decode(this._binaryBody);
         }
-        return this._body;
+        return this._body || '';
     }
     /**
      * body as Uint8Array
@@ -41,6 +41,7 @@ export class FrameImpl {
         if (!this._binaryBody && !this.isBinaryBody) {
             this._binaryBody = new TextEncoder().encode(this._body);
         }
+        // At this stage it will definitely have a valid value
         return this._binaryBody;
     }
     /**
