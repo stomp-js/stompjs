@@ -10,6 +10,11 @@
   See [#373](https://github.com/stomp-js/stompjs/issues/373)
 - Use `strictNullChecks` typescript flag.
   Should fix [#445](https://github.com/stomp-js/stompjs/issues/445).
+- Update test infrastructure and simplify test cases.
+- Introduce a build-system for test helpers.
+- Update the package to export JavaScript modules.
+- Refactor `client.deactivate` introduce concept of `force`.
+  See [#461](https://github.com/stomp-js/stompjs/issues/461).
 
 # 6.1.2 (2021-09-03)
 

@@ -24,6 +24,28 @@ describe('Stomp Subscription', function () {
     client.activate();
   });
 
+  it('Should tolerate exceptions thrown in a message handler', function (done) {
+    const msg = 'Message';
+    let numMessages = 0;
+
+    client.onConnect = function () {
+      client.subscribe(TEST.destination, function (frame) {
+        numMessages ++;
+        // cause an unhandled exception
+        throw new Error('Special Error');
+      });
+
+      client.publish({ destination: TEST.destination, body: msg });
+      client.publish({ destination: TEST.destination, body: msg });
+
+      setTimeout(() => {
+        expect(numMessages).toBe(2);
+        done();
+      }, 1000);
+    };
+    client.activate();
+  });
+
   it('Should receive messages with special chars in headers', function (done) {
     const msg = 'Is anybody out there?';
     const cust = 'f:o:o\nbar\rbaz\\foo\nbar\rbaz\\';

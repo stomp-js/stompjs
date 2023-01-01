@@ -224,7 +224,14 @@ export class Parser {
   private _retrievedBody() {
     this._results.binaryBody = this._consumeTokenAsRaw();
 
-    this.onFrame(this._results);
+    try {
+      this.onFrame(this._results);
+    } catch (e) {
+      console.log(
+        `Ignoring an exception thrown by a frame handler. Original exception: `,
+        e
+      );
+    }
 
     this._initState();
   }
