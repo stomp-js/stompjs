@@ -1,4 +1,4 @@
-import { IRawFrameType } from './types';
+import { IRawFrameType } from './types.js';
 /**
  * This is an evented, rec descent parser.
  * A stream of Octets can be passed and whenever it recognizes

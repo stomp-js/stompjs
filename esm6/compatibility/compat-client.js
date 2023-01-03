@@ -1,5 +1,5 @@
-import { Client } from '../client';
-import { HeartbeatInfo } from './heartbeat-info';
+import { Client } from '../client.js';
+import { HeartbeatInfo } from './heartbeat-info.js';
 /**
  * Available for backward compatibility, please shift to using {@link Client}.
  *

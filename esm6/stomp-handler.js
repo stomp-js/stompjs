@@ -1,9 +1,9 @@
-import { BYTE } from './byte';
-import { FrameImpl } from './frame-impl';
-import { Parser } from './parser';
-import { StompSocketState, } from './types';
-import { Versions } from './versions';
-import { augmentWebsocket } from './augment-websocket';
+import { BYTE } from './byte.js';
+import { FrameImpl } from './frame-impl.js';
+import { Parser } from './parser.js';
+import { StompSocketState, } from './types.js';
+import { Versions } from './versions.js';
+import { augmentWebsocket } from './augment-websocket.js';
 /**
  * The STOMP protocol handler
  *

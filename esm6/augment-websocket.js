@@ -17,7 +17,7 @@ export function augmentWebsocket(webSocket, debug) {
             debug(`Discarded socket (#${id})  closed after ${delay}ms, with code/reason: ${closeEvent.code}/${closeEvent.reason}`);
         };
         this.close();
-        origOnClose === null || origOnClose === void 0 ? void 0 : origOnClose.call(webSocket, {
+        origOnClose?.call(webSocket, {
             code: 4001,
             reason: `Quick discarding socket (#${id}) without waiting for the shutdown sequence.`,
             wasClean: false,

@@ -1,6 +1,6 @@
-import { StompHeaders } from './stomp-headers';
-import { ActivationState, closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, wsErrorCallbackType } from './types';
-import { Versions } from './versions';
+import { StompHeaders } from './stomp-headers.js';
+import { ActivationState, closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, wsErrorCallbackType } from './types.js';
+import { Versions } from './versions.js';
 /**
  * Configuration options for STOMP Client, each key corresponds to
  * field by the same name in {@link Client}. This can be passed to

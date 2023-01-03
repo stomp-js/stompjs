@@ -1,15 +1,6 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-import { StompHandler } from './stomp-handler';
-import { ActivationState, StompSocketState, } from './types';
-import { Versions } from './versions';
+import { StompHandler } from './stomp-handler.js';
+import { ActivationState, StompSocketState, } from './types.js';
+import { Versions } from './versions.js';
 /**
  * STOMP Client Class.
  *
@@ -124,8 +115,7 @@ export class Client {
      * Underlying WebSocket instance, READONLY.
      */
     get webSocket() {
-        var _a;
-        return (_a = this._stompHandler) === null || _a === void 0 ? void 0 : _a._webSocket;
+        return this._stompHandler?._webSocket;
     }
     /**
      * Disconnection headers.
@@ -187,96 +177,94 @@ export class Client {
         this._changeState(ActivationState.ACTIVE);
         this._connect();
     }
-    _connect() {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (this.connected) {
-                this.debug('STOMP: already connected, nothing to do');
-                return;
+    async _connect() {
+        if (this.connected) {
+            this.debug('STOMP: already connected, nothing to do');
+            return;
+        }
+        await this.beforeConnect();
+        if (!this.active) {
+            this.debug('Client has been marked inactive, will not attempt to connect');
+            return;
+        }
+        // setup connection watcher
+        if (this.connectionTimeout > 0) {
+            // clear first
+            if (this._connectionWatcher) {
+                clearTimeout(this._connectionWatcher);
             }
-            yield this.beforeConnect();
-            if (!this.active) {
-                this.debug('Client has been marked inactive, will not attempt to connect');
-                return;
-            }
-            // setup connection watcher
-            if (this.connectionTimeout > 0) {
-                // clear first
+            this._connectionWatcher = setTimeout(() => {
+                if (this.connected) {
+                    return;
+                }
+                // Connection not established, close the underlying socket
+                // a reconnection will be attempted
+                this.debug(`Connection not established in ${this.connectionTimeout}ms, closing socket`);
+                this.forceDisconnect();
+            }, this.connectionTimeout);
+        }
+        this.debug('Opening Web Socket...');
+        // Get the actual WebSocket (or a similar object)
+        const webSocket = this._createWebSocket();
+        this._stompHandler = new StompHandler(this, webSocket, {
+            debug: this.debug,
+            stompVersions: this.stompVersions,
+            connectHeaders: this.connectHeaders,
+            disconnectHeaders: this._disconnectHeaders,
+            heartbeatIncoming: this.heartbeatIncoming,
+            heartbeatOutgoing: this.heartbeatOutgoing,
+            splitLargeFrames: this.splitLargeFrames,
+            maxWebSocketChunkSize: this.maxWebSocketChunkSize,
+            forceBinaryWSFrames: this.forceBinaryWSFrames,
+            logRawCommunication: this.logRawCommunication,
+            appendMissingNULLonIncoming: this.appendMissingNULLonIncoming,
+            discardWebsocketOnCommFailure: this.discardWebsocketOnCommFailure,
+            onConnect: frame => {
+                // Successfully connected, stop the connection watcher
                 if (this._connectionWatcher) {
                     clearTimeout(this._connectionWatcher);
+                    this._connectionWatcher = undefined;
                 }
-                this._connectionWatcher = setTimeout(() => {
-                    if (this.connected) {
-                        return;
-                    }
-                    // Connection not established, close the underlying socket
-                    // a reconnection will be attempted
-                    this.debug(`Connection not established in ${this.connectionTimeout}ms, closing socket`);
-                    this.forceDisconnect();
-                }, this.connectionTimeout);
-            }
-            this.debug('Opening Web Socket...');
-            // Get the actual WebSocket (or a similar object)
-            const webSocket = this._createWebSocket();
-            this._stompHandler = new StompHandler(this, webSocket, {
-                debug: this.debug,
-                stompVersions: this.stompVersions,
-                connectHeaders: this.connectHeaders,
-                disconnectHeaders: this._disconnectHeaders,
-                heartbeatIncoming: this.heartbeatIncoming,
-                heartbeatOutgoing: this.heartbeatOutgoing,
-                splitLargeFrames: this.splitLargeFrames,
-                maxWebSocketChunkSize: this.maxWebSocketChunkSize,
-                forceBinaryWSFrames: this.forceBinaryWSFrames,
-                logRawCommunication: this.logRawCommunication,
-                appendMissingNULLonIncoming: this.appendMissingNULLonIncoming,
-                discardWebsocketOnCommFailure: this.discardWebsocketOnCommFailure,
-                onConnect: frame => {
-                    // Successfully connected, stop the connection watcher
-                    if (this._connectionWatcher) {
-                        clearTimeout(this._connectionWatcher);
-                        this._connectionWatcher = undefined;
-                    }
-                    if (!this.active) {
-                        this.debug('STOMP got connected while deactivate was issued, will disconnect now');
-                        this._disposeStompHandler();
-                        return;
-                    }
-                    this.onConnect(frame);
-                },
-                onDisconnect: frame => {
-                    this.onDisconnect(frame);
-                },
-                onStompError: frame => {
-                    this.onStompError(frame);
-                },
-                onWebSocketClose: evt => {
-                    this._stompHandler = undefined; // a new one will be created in case of a reconnect
-                    if (this.state === ActivationState.DEACTIVATING) {
-                        // Mark deactivation complete
-                        this._changeState(ActivationState.INACTIVE);
-                    }
-                    // The callback is called before attempting to reconnect, this would allow the client
-                    // to be `deactivated` in the callback.
-                    this.onWebSocketClose(evt);
-                    if (this.active) {
-                        this._schedule_reconnect();
-                    }
-                },
-                onWebSocketError: evt => {
-                    this.onWebSocketError(evt);
-                },
-                onUnhandledMessage: message => {
-                    this.onUnhandledMessage(message);
-                },
-                onUnhandledReceipt: frame => {
-                    this.onUnhandledReceipt(frame);
-                },
-                onUnhandledFrame: frame => {
-                    this.onUnhandledFrame(frame);
-                },
-            });
-            this._stompHandler.start();
+                if (!this.active) {
+                    this.debug('STOMP got connected while deactivate was issued, will disconnect now');
+                    this._disposeStompHandler();
+                    return;
+                }
+                this.onConnect(frame);
+            },
+            onDisconnect: frame => {
+                this.onDisconnect(frame);
+            },
+            onStompError: frame => {
+                this.onStompError(frame);
+            },
+            onWebSocketClose: evt => {
+                this._stompHandler = undefined; // a new one will be created in case of a reconnect
+                if (this.state === ActivationState.DEACTIVATING) {
+                    // Mark deactivation complete
+                    this._changeState(ActivationState.INACTIVE);
+                }
+                // The callback is called before attempting to reconnect, this would allow the client
+                // to be `deactivated` in the callback.
+                this.onWebSocketClose(evt);
+                if (this.active) {
+                    this._schedule_reconnect();
+                }
+            },
+            onWebSocketError: evt => {
+                this.onWebSocketError(evt);
+            },
+            onUnhandledMessage: message => {
+                this.onUnhandledMessage(message);
+            },
+            onUnhandledReceipt: frame => {
+                this.onUnhandledReceipt(frame);
+            },
+            onUnhandledFrame: frame => {
+                this.onUnhandledFrame(frame);
+            },
         });
+        this._stompHandler.start();
     }
     _createWebSocket() {
         let webSocket;
@@ -322,48 +310,45 @@ export class Client {
      * It is possible to invoke this method initially without the `force` option
      * and subsequently, say after a wait, with the `force` option.
      */
-    deactivate(options = {}) {
-        var _a;
-        return __awaiter(this, void 0, void 0, function* () {
-            const force = options.force || false;
-            const needToDispose = this.active;
-            let retPromise;
-            if (this.state === ActivationState.INACTIVE) {
-                this.debug(`Already INACTIVE, nothing more to do`);
-                return Promise.resolve();
-            }
-            this._changeState(ActivationState.DEACTIVATING);
-            // Clear if a reconnection was scheduled
-            if (this._reconnector) {
-                clearTimeout(this._reconnector);
-                this._reconnector = undefined;
-            }
-            if (this._stompHandler &&
-                // @ts-ignore - if there is a _stompHandler, there is the webSocket
-                this.webSocket.readyState !== StompSocketState.CLOSED) {
-                const origOnWebSocketClose = this._stompHandler.onWebSocketClose;
-                // we need to wait for the underlying websocket to close
-                retPromise = new Promise((resolve, reject) => {
-                    // @ts-ignore - there is a _stompHandler
-                    this._stompHandler.onWebSocketClose = evt => {
-                        origOnWebSocketClose(evt);
-                        resolve();
-                    };
-                });
-            }
-            else {
-                // indicate that auto reconnect loop should terminate
-                this._changeState(ActivationState.INACTIVE);
-                return Promise.resolve();
-            }
-            if (force) {
-                (_a = this._stompHandler) === null || _a === void 0 ? void 0 : _a.discardWebsocket();
-            }
-            else if (needToDispose) {
-                this._disposeStompHandler();
-            }
-            return retPromise;
-        });
+    async deactivate(options = {}) {
+        const force = options.force || false;
+        const needToDispose = this.active;
+        let retPromise;
+        if (this.state === ActivationState.INACTIVE) {
+            this.debug(`Already INACTIVE, nothing more to do`);
+            return Promise.resolve();
+        }
+        this._changeState(ActivationState.DEACTIVATING);
+        // Clear if a reconnection was scheduled
+        if (this._reconnector) {
+            clearTimeout(this._reconnector);
+            this._reconnector = undefined;
+        }
+        if (this._stompHandler &&
+            // @ts-ignore - if there is a _stompHandler, there is the webSocket
+            this.webSocket.readyState !== StompSocketState.CLOSED) {
+            const origOnWebSocketClose = this._stompHandler.onWebSocketClose;
+            // we need to wait for the underlying websocket to close
+            retPromise = new Promise((resolve, reject) => {
+                // @ts-ignore - there is a _stompHandler
+                this._stompHandler.onWebSocketClose = evt => {
+                    origOnWebSocketClose(evt);
+                    resolve();
+                };
+            });
+        }
+        else {
+            // indicate that auto reconnect loop should terminate
+            this._changeState(ActivationState.INACTIVE);
+            return Promise.resolve();
+        }
+        if (force) {
+            this._stompHandler?.discardWebsocket();
+        }
+        else if (needToDispose) {
+            this._disposeStompHandler();
+        }
+        return retPromise;
     }
     /**
      * Force disconnect if there is an active connection by directly closing the underlying WebSocket.

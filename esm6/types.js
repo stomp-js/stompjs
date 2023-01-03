@@ -7,7 +7,7 @@ export var StompSocketState;
     StompSocketState[StompSocketState["OPEN"] = 1] = "OPEN";
     StompSocketState[StompSocketState["CLOSING"] = 2] = "CLOSING";
     StompSocketState[StompSocketState["CLOSED"] = 3] = "CLOSED";
-})(StompSocketState || (StompSocketState = {}));
+})(StompSocketState = StompSocketState || (StompSocketState = {}));
 /**
  * Possible activation state
  */
@@ -16,5 +16,5 @@ export var ActivationState;
     ActivationState[ActivationState["ACTIVE"] = 0] = "ACTIVE";
     ActivationState[ActivationState["DEACTIVATING"] = 1] = "DEACTIVATING";
     ActivationState[ActivationState["INACTIVE"] = 2] = "INACTIVE";
-})(ActivationState || (ActivationState = {}));
+})(ActivationState = ActivationState || (ActivationState = {}));
 //# sourceMappingURL=types.js.map

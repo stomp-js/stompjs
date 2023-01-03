@@ -1,4 +1,4 @@
-import { IStompSocket } from './types';
+import { IStompSocket } from './types.js';
 /**
  * @internal
  */

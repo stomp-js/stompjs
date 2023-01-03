@@ -1,4 +1,4 @@
-import { StompHeaders } from './stomp-headers';
+import { StompHeaders } from './stomp-headers.js';
 /**
  * It represents a STOMP frame. Many of the callbacks pass an IFrame received from
  * the STOMP broker. For advanced usage you might need to access [headers]{@link IFrame#headers}.

@@ -1,9 +1,9 @@
-import { ITransaction } from './i-transaction';
-import { StompConfig } from './stomp-config';
-import { StompHeaders } from './stomp-headers';
-import { StompSubscription } from './stomp-subscription';
-import { ActivationState, closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, IStompSocket, messageCallbackType, wsErrorCallbackType } from './types';
-import { Versions } from './versions';
+import { ITransaction } from './i-transaction.js';
+import { StompConfig } from './stomp-config.js';
+import { StompHeaders } from './stomp-headers.js';
+import { StompSubscription } from './stomp-subscription.js';
+import { ActivationState, closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, IStompSocket, messageCallbackType, wsErrorCallbackType } from './types.js';
+import { Versions } from './versions.js';
 /**
  * STOMP Client Class.
  *

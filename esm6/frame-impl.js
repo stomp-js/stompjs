@@ -1,4 +1,4 @@
-import { BYTE } from './byte';
+import { BYTE } from './byte.js';
 /**
  * Frame class represents a STOMP frame.
  *

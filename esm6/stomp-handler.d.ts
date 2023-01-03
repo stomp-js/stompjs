@@ -1,9 +1,9 @@
-import { Client } from './client';
-import { ITransaction } from './i-transaction';
-import { StompHeaders } from './stomp-headers';
-import { StompSubscription } from './stomp-subscription';
-import { closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, IStompSocket, IStomptHandlerConfig, messageCallbackType, wsErrorCallbackType } from './types';
-import { Versions } from './versions';
+import { Client } from './client.js';
+import { ITransaction } from './i-transaction.js';
+import { StompHeaders } from './stomp-headers.js';
+import { StompSubscription } from './stomp-subscription.js';
+import { closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, IStompSocket, IStomptHandlerConfig, messageCallbackType, wsErrorCallbackType } from './types.js';
+import { Versions } from './versions.js';
 /**
  * The STOMP protocol handler
  *

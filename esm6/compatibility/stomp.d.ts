@@ -1,4 +1,4 @@
-import { CompatClient } from './compat-client';
+import { CompatClient } from './compat-client.js';
 /**
  * STOMP Class, acts like a factory to create {@link Client}.
  *

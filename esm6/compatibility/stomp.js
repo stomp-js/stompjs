@@ -1,5 +1,5 @@
-import { Versions } from '../versions';
-import { CompatClient } from './compat-client';
+import { Versions } from '../versions.js';
+import { CompatClient } from './compat-client.js';
 /**
  * STOMP Class, acts like a factory to create {@link Client}.
  *
