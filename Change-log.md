@@ -1,5 +1,10 @@
 # Change Log
 
+# 7.0.0-beta2 (2023-01-03)
+
+- Use and export `nodenext` modules.
+- Switch to `rollup` from `webpack`.
+
 # 7.0.0-beta1 (2023-01-01)
 
 - Use latest dependencies and Node.
