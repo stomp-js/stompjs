@@ -1,5 +1,9 @@
 # Change Log
 
+# 7.0.0 (TBD)
+
+- Update the type for frame callbacks.
+
 # 7.0.0-beta2 (2023-01-03)
 
 - Use and export `nodenext` modules.

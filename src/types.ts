@@ -22,7 +22,7 @@ export type messageCallbackType = (message: IMessage) => void;
  *
  * Part of `@stomp/stompjs`.
  */
-export type frameCallbackType = (receipt: IFrame) => void;
+export type frameCallbackType = ((frame: IFrame) => void) | (() => void);
 
 /**
  * This callback will receive a [CloseEvent]{@link https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent}
