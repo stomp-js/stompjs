@@ -1,1 +1,1 @@
-export * from './esm6/';
+export * from './esm6/index.js';

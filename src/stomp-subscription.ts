@@ -1,4 +1,4 @@
-import { StompHeaders } from './stomp-headers';
+import { StompHeaders } from './stomp-headers.js';
 
 /**
  * Call [Client#subscribe]{@link Client#subscribe} to create a StompSubscription.

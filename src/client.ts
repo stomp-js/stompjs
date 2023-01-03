@@ -1,8 +1,8 @@
-import { ITransaction } from './i-transaction';
-import { StompConfig } from './stomp-config';
-import { StompHandler } from './stomp-handler';
-import { StompHeaders } from './stomp-headers';
-import { StompSubscription } from './stomp-subscription';
+import { ITransaction } from './i-transaction.js';
+import { StompConfig } from './stomp-config.js';
+import { StompHandler } from './stomp-handler.js';
+import { StompHeaders } from './stomp-headers.js';
+import { StompSubscription } from './stomp-subscription.js';
 import {
   ActivationState,
   closeEventCallbackType,
@@ -13,8 +13,8 @@ import {
   messageCallbackType,
   StompSocketState,
   wsErrorCallbackType,
-} from './types';
-import { Versions } from './versions';
+} from './types.js';
+import { Versions } from './versions.js';
 
 /**
  * @internal

@@ -1,4 +1,4 @@
-import { StompHeaders } from './stomp-headers';
+import { StompHeaders } from './stomp-headers.js';
 import {
   ActivationState,
   closeEventCallbackType,
@@ -6,8 +6,8 @@ import {
   frameCallbackType,
   messageCallbackType,
   wsErrorCallbackType,
-} from './types';
-import { Versions } from './versions';
+} from './types.js';
+import { Versions } from './versions.js';
 
 /**
  * Configuration options for STOMP Client, each key corresponds to

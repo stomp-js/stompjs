@@ -1,7 +1,7 @@
-import { Client } from '../client';
-import { StompHeaders } from '../stomp-headers';
-import { frameCallbackType, messageCallbackType } from '../types';
-import { HeartbeatInfo } from './heartbeat-info';
+import { Client } from '../client.js';
+import { StompHeaders } from '../stomp-headers.js';
+import { frameCallbackType, messageCallbackType } from '../types.js';
+import { HeartbeatInfo } from './heartbeat-info.js';
 
 /**
  * Available for backward compatibility, please shift to using {@link Client}.

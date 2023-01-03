@@ -1,4 +1,4 @@
-import { IRawFrameType } from './types';
+import { IRawFrameType } from './types.js';
 
 /**
  * @internal

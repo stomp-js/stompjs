@@ -1,11 +1,11 @@
-import { BYTE } from './byte';
-import { Client } from './client';
-import { FrameImpl } from './frame-impl';
-import { IMessage } from './i-message';
-import { ITransaction } from './i-transaction';
-import { Parser } from './parser';
-import { StompHeaders } from './stomp-headers';
-import { StompSubscription } from './stomp-subscription';
+import { BYTE } from './byte.js';
+import { Client } from './client.js';
+import { FrameImpl } from './frame-impl.js';
+import { IMessage } from './i-message.js';
+import { ITransaction } from './i-transaction.js';
+import { Parser } from './parser.js';
+import { StompHeaders } from './stomp-headers.js';
+import { StompSubscription } from './stomp-subscription.js';
 import {
   closeEventCallbackType,
   debugFnType,
@@ -17,9 +17,9 @@ import {
   messageCallbackType,
   StompSocketState,
   wsErrorCallbackType,
-} from './types';
-import { Versions } from './versions';
-import { augmentWebsocket } from './augment-websocket';
+} from './types.js';
+import { Versions } from './versions.js';
+import { augmentWebsocket } from './augment-websocket.js';
 
 /**
  * The STOMP protocol handler

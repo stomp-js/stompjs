@@ -1,7 +1,7 @@
-import { IFrame } from './i-frame';
-import { IMessage } from './i-message';
-import { StompHeaders } from './stomp-headers';
-import { Versions } from './versions';
+import { IFrame } from './i-frame.js';
+import { IMessage } from './i-message.js';
+import { StompHeaders } from './stomp-headers.js';
+import { Versions } from './versions.js';
 
 /**
  * This callback will receive a `string` as parameter.

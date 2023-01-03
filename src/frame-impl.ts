@@ -1,7 +1,7 @@
-import { BYTE } from './byte';
-import { IFrame } from './i-frame';
-import { StompHeaders } from './stomp-headers';
-import { IRawFrameType } from './types';
+import { BYTE } from './byte.js';
+import { IFrame } from './i-frame.js';
+import { StompHeaders } from './stomp-headers.js';
+import { IRawFrameType } from './types.js';
 
 /**
  * Frame class represents a STOMP frame.

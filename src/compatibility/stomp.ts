@@ -1,6 +1,6 @@
-import { Versions } from '../versions';
-import { CompatClient } from './compat-client';
-import { IStompSocket } from '../types';
+import { Versions } from '../versions.js';
+import { CompatClient } from './compat-client.js';
+import { IStompSocket } from '../types.js';
 
 /**
  * @internal
