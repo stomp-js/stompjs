@@ -1,43 +1,40 @@
 # STOMP.js
 
-[![Build Status](https://travis-ci.org/stomp-js/stompjs.svg?branch=master)](https://travis-ci.org/stomp-js/stompjs)
+[![Linux Test](https://github.com/stomp-js/stompjs/actions/workflows/linux.yml/badge.svg?branch=develop)](https://github.com/stomp-js/stompjs/actions/workflows/linux.yml)
+[![OSX Test](https://github.com/stomp-js/stompjs/actions/workflows/osx.yml/badge.svg?branch=develop)](https://github.com/stomp-js/stompjs/actions/workflows/osx.yml)
+[![API docs refresh](https://github.com/stomp-js/stompjs/actions/workflows/docs-refresh.yml/badge.svg?branch=develop)](https://github.com/stomp-js/stompjs/actions/workflows/docs-refresh.yml)
 
 This library provides a STOMP over WebSocket client for Web browser and node.js applications.
 
-# Introduction
+Please visit https://stomp-js.github.io/ for guides, FAQs and API docs.
 
-This repository is for version 5 and above of this library.
-Lower versions are not supported any longer.
+# Introduction
 
 This library allows you to connect to a STOMP broker over WebSocket. This library
 supports complete STOMP specifications including all current protocol variants. Most
-popular messaging brokers support STOMP and STOMP over WebSockets either natively
+popular messaging brokers support STOMP and STOMP over WebSockets out-of-the-box
 or using plugins.
 
-In general JavaScript engines in browsers are not friendly to binary protocols,
+In general, JavaScript engines in browsers are not friendly to binary protocols,
 so using STOMP is a good option because it is a text-oriented protocol.
 
 This library has its roots in a version released by [Jeff Mesnil](http://jmesnil.net/).
 
 ## Current Status
 
-Version 5 of this library has been bottom-up rewritten using TypeScript (versions 3/4
-use CoffeeScript). The code has substantially changed, so, while there is a compatibility
-mode, you might need to update your code.
-
 This library is feature complete and has been used in production for many years. It
 is actively maintained. You are welcome to file issues and submit pull requests.
 
 ## Getting started
 
-The API documentation is hosted as GitHub pages for the entire StompJS family of libraries.
+The API documentation is hosted as GitHub pages for the StompJS family of libraries.
 You may head straight to the https://stomp-js.github.io/api-docs/latest/
 
 This library comes with detailed usage instructions. Please find it at
 [Usage instructions](https://stomp-js.github.io/guide/stompjs/using-stompjs-v5.html).
 Check out other guides at https://stomp-js.github.io/.
 
-There are quite detailed API documentation,
+There is quite detailed API documentation,
 you should start at https://stomp-js.github.io/api-docs/latest/classes/Client.html.
 
 ## Upgrading
@@ -51,14 +48,9 @@ to your code. Head to
 https://github.com/stomp-js/rx-stomp is based on this library and exposes the entire functionality
 offered by this library as RxJS Observables.
 
-## Usage with Angular2+
-
-https://github.com/stomp-js/ng2-stompjs is based on https://github.com/stomp-js/rx-stomp
-and exposes key classes as Angular Injectable Services.
-
 ## TypeScript definitions
 
-The npm package includes TypeScript definitions, so there is no need no install it separately.
+The npm package includes TypeScript definitions, so there is no need to install it separately.
 
 ## Change-log
 
