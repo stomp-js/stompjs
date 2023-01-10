@@ -78,7 +78,7 @@ export class Client {
 
   /**
    * Will retry if Stomp connection is not established in specified milliseconds.
-   * Default 0, which implies wait for ever.
+   * Default 0, which switches off automatic reconnection.
    */
   public connectionTimeout: number = 0;
 
@@ -101,13 +101,13 @@ export class Client {
   public heartbeatOutgoing: number = 10000;
 
   /**
-   * This switches on a non standard behavior while sending WebSocket packets.
+   * This switches on a non-standard behavior while sending WebSocket packets.
    * It splits larger (text) packets into chunks of [maxWebSocketChunkSize]{@link Client#maxWebSocketChunkSize}.
-   * Only Java Spring brokers seems to use this mode.
+   * Only Java Spring brokers seem to support this mode.
    *
    * WebSockets, by itself, split large (text) packets,
    * so it is not needed with a truly compliant STOMP/WebSocket broker.
-   * Actually setting it for such broker will cause large messages to fail.
+   * Setting it for such a broker will cause large messages to fail.
    *
    * `false` by default.
    *
@@ -201,23 +201,23 @@ export class Client {
   public onUnhandledFrame: frameCallbackType;
 
   /**
-   * `true` if there is a active connection with STOMP Broker
+   * `true` if there is an active connection to STOMP Broker
    */
   get connected(): boolean {
     return !!this._stompHandler && this._stompHandler.connected;
   }
 
   /**
-   * Callback, invoked on before a connection connection to the STOMP broker.
+   * Callback, invoked on before a connection to the STOMP broker.
    *
-   * You can change options on the client, which will impact the immediate connect.
+   * You can change options on the client, which will impact the immediate connecting.
    * It is valid to call [Client#decativate]{@link Client#deactivate} in this callback.
    *
    * As of version 5.1, this callback can be
    * [async](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)
    * (i.e., it can return a
    * [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)).
-   * In that case connect will be called only after the Promise is resolved.
+   * In that case, connect will be called only after the Promise is resolved.
    * This can be used to reliably fetch credentials, access token etc. from some other service
    * in an asynchronous way.
    */
@@ -273,7 +273,7 @@ export class Client {
    * Set it to log the actual raw communication with the broker.
    * When unset, it logs headers of the parsed frames.
    *
-   * Change in this effects from next broker reconnect.
+   * Changes effect from the next broker reconnect.
    *
    * **Caution: this assumes that frames only have valid UTF8 strings.**
    */
@@ -288,16 +288,19 @@ export class Client {
    *        };
    * ```
    *
-   * Currently this method does not support levels of log. Be aware that the output can be quite verbose
+   * Currently this method does not support levels of log. Be aware that the
+   * output can be quite verbose
    * and may contain sensitive information (like passwords, tokens etc.).
    */
   public debug: debugFnType;
 
   /**
    * Browsers do not immediately close WebSockets when `.close` is issued.
-   * This may cause reconnection to take a longer on certain type of failures.
-   * In case of incoming heartbeat failure, this experimental flag instructs the library
-   * to discard the socket immediately (even before it is actually closed).
+   * This may cause reconnection to take a significantly long time in case
+   *  of some types of failures.
+   * In case of incoming heartbeat failure, this experimental flag instructs
+   * the library to discard the socket immediately
+   * (even before it is actually closed).
    */
   public discardWebsocketOnCommFailure: boolean = false;
 
@@ -320,7 +323,7 @@ export class Client {
   /**
    * It will be called on state change.
    *
-   * When deactivating it may go from ACTIVE to INACTIVE without entering DEACTIVATING.
+   * When deactivating, it may go from ACTIVE to INACTIVE without entering DEACTIVATING.
    */
   public onChangeState: (state: ActivationState) => void;
 
@@ -333,7 +336,7 @@ export class Client {
    * Activation state.
    *
    * It will usually be ACTIVE or INACTIVE.
-   * When deactivating it may go from ACTIVE to INACTIVE without entering DEACTIVATING.
+   * When deactivating, it may go from ACTIVE to INACTIVE without entering DEACTIVATING.
    */
   public state: ActivationState = ActivationState.INACTIVE;
 
@@ -343,7 +346,7 @@ export class Client {
    * Create an instance.
    */
   constructor(conf: StompConfig = {}) {
-    // Dummy callbacks
+    // No op callbacks
     const noOp = () => {};
     this.debug = noOp;
     this.beforeConnect = noOp;
@@ -548,7 +551,8 @@ export class Client {
    *
    * Experimental: pass `force: true` to immediately discard the underlying connection.
    * This mode will skip both the STOMP and the Websocket shutdown sequences.
-   * In some cases, browsers take a long time in the Websocket shutdown if the underlying connection had gone stale.
+   * In some cases, browsers take a long time in the Websocket shutdown
+   * if the underlying connection had gone stale.
    * Using this mode can speed up.
    * When this mode is used, the actual Websocket may linger for a while
    * and the broker may not realize that the connection is no longer in use.
@@ -605,7 +609,7 @@ export class Client {
 
   /**
    * Force disconnect if there is an active connection by directly closing the underlying WebSocket.
-   * This is different than a normal disconnect where a DISCONNECT sequence is carried out with the broker.
+   * This is different from a normal disconnect where a DISCONNECT sequence is carried out with the broker.
    * After forcing disconnect, automatic reconnect will be attempted.
    * To stop further reconnects call [Client#deactivate]{@link Client#deactivate} as well.
    */
@@ -626,22 +630,22 @@ export class Client {
    * Send a message to a named destination. Refer to your STOMP broker documentation for types
    * and naming of destinations.
    *
-   * STOMP protocol specifies and suggests some headers and also allows broker specific headers.
+   * STOMP protocol specifies and suggests some headers and also allows broker-specific headers.
    *
    * `body` must be String.
    * You will need to covert the payload to string in case it is not string (e.g. JSON).
    *
-   * To send a binary message body use binaryBody parameter. It should be a
+   * To send a binary message body, use `binaryBody` parameter. It should be a
    * [Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array).
    * Sometimes brokers may not support binary frames out of the box.
    * Please check your broker documentation.
    *
    * `content-length` header is automatically added to the STOMP Frame sent to the broker.
    * Set `skipContentLengthHeader` to indicate that `content-length` header should not be added.
-   * For binary messages `content-length` header is always added.
+   * For binary messages, `content-length` header is always added.
    *
-   * Caution: The broker will, most likely, report an error and disconnect if message body has NULL octet(s)
-   * and `content-length` header is missing.
+   * Caution: The broker will, most likely, report an error and disconnect
+   * if the message body has NULL octet(s) and `content-length` header is missing.
    *
    * ```javascript
    *        client.publish({destination: "/queue/test", headers: {priority: 9}, body: "Hello, STOMP"});
@@ -673,14 +677,14 @@ export class Client {
   /**
    * STOMP brokers may carry out operation asynchronously and allow requesting for acknowledgement.
    * To request an acknowledgement, a `receipt` header needs to be sent with the actual request.
-   * The value (say receipt-id) for this header needs to be unique for each use. Typically a sequence, a UUID, a
-   * random number or a combination may be used.
+   * The value (say receipt-id) for this header needs to be unique for each use.
+   * Typically, a sequence, a UUID, a random number or a combination may be used.
    *
    * A complaint broker will send a RECEIPT frame when an operation has actually been completed.
-   * The operation needs to be matched based in the value of the receipt-id.
+   * The operation needs to be matched based on the value of the receipt-id.
    *
-   * This method allow watching for a receipt and invoke the callback
-   * when corresponding receipt has been received.
+   * This method allows watching for a receipt and invoking the callback
+   *  when the corresponding receipt has been received.
    *
    * The actual {@link IFrame} will be passed as parameter to the callback.
    *
@@ -712,11 +716,11 @@ export class Client {
   }
 
   /**
-   * Subscribe to a STOMP Broker location. The callback will be invoked for each received message with
-   * the {@link IMessage} as argument.
+   * Subscribe to a STOMP Broker location. The callback will be invoked for each
+   * received message with the {@link IMessage} as argument.
    *
-   * Note: The library will generate an unique ID if there is none provided in the headers.
-   *       To use your own ID, pass it using the headers argument.
+   * Note: The library will generate a unique ID if there is none provided in the headers.
+   *       To use your own ID, pass it using the `headers` argument.
    *
    * ```javascript
    *        callback = function(message) {

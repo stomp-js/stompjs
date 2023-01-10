@@ -4,7 +4,7 @@ import { StompHeaders } from './stomp-headers.js';
 import { Versions } from './versions.js';
 
 /**
- * This callback will receive a `string` as parameter.
+ * This callback will receive a `string` as a parameter.
  *
  * Part of `@stomp/stompjs`.
  */
@@ -64,7 +64,7 @@ export interface IPublishParams {
    */
   binaryBody?: Uint8Array;
   /**
-   * By default a `content-length` header will be added in the Frame to the broker.
+   * By default, a `content-length` header will be added in the Frame to the broker.
    * Set it to `true` for the header to be skipped.
    */
   skipContentLengthHeader?: boolean;
