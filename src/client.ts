@@ -43,12 +43,12 @@ export class Client {
   public brokerURL: string | undefined;
 
   /**
-   * STOMP versions to attempt during STOMP handshake. By default versions `1.0`, `1.1`, and `1.2` are attempted.
+   * STOMP versions to attempt during STOMP handshake. By default, versions `1.2`, `1.1`, and `1.0` are attempted.
    *
    * Example:
    * ```javascript
-   *        // Try only versions 1.0 and 1.1
-   *        client.stompVersions = new Versions(['1.0', '1.1'])
+   *        // Try only versions 1.1 and 1.0
+   *        client.stompVersions = new Versions(['1.1', '1.0'])
    * ```
    */
   public stompVersions = Versions.default;
@@ -189,12 +189,12 @@ export class Client {
    * Prefer using [Client#watchForReceipt]{@link Client#watchForReceipt}. See
    * [Client#watchForReceipt]{@link Client#watchForReceipt} for examples.
    *
-   * The actual {@link FrameImpl} will be passed as parameter to the callback.
+   * The actual {@link IFrame} will be passed as parameter to the callback.
    */
   public onUnhandledReceipt: frameCallbackType;
 
   /**
-   * Will be invoked if {@link FrameImpl} of unknown type is received from the STOMP broker.
+   * Will be invoked if {@link IFrame} of an unknown type is received from the STOMP broker.
    *
    * The actual {@link IFrame} will be passed as parameter to the callback.
    */
@@ -226,7 +226,7 @@ export class Client {
   /**
    * Callback, invoked on every successful connection to the STOMP broker.
    *
-   * The actual {@link FrameImpl} will be passed as parameter to the callback.
+   * The actual {@link IFrame} will be passed as parameter to the callback.
    * Sometimes clients will like to use headers from this frame.
    */
   public onConnect: frameCallbackType;
@@ -235,10 +235,10 @@ export class Client {
    * Callback, invoked on every successful disconnection from the STOMP broker. It will not be invoked if
    * the STOMP broker disconnected due to an error.
    *
-   * The actual Receipt {@link FrameImpl} acknowledging the DISCONNECT will be passed as parameter to the callback.
+   * The actual Receipt {@link IFrame} acknowledging the DISCONNECT will be passed as parameter to the callback.
    *
    * The way STOMP protocol is designed, the connection may close/terminate without the client
-   * receiving the Receipt {@link FrameImpl} acknowledging the DISCONNECT.
+   * receiving the Receipt {@link IFrame} acknowledging the DISCONNECT.
    * You might find [Client#onWebSocketClose]{@link Client#onWebSocketClose} more appropriate to watch
    * STOMP broker disconnects.
    */
@@ -682,7 +682,7 @@ export class Client {
    * This method allow watching for a receipt and invoke the callback
    * when corresponding receipt has been received.
    *
-   * The actual {@link FrameImpl} will be passed as parameter to the callback.
+   * The actual {@link IFrame} will be passed as parameter to the callback.
    *
    * Example:
    * ```javascript
@@ -755,7 +755,7 @@ export class Client {
    *        subscription.unsubscribe();
    * ```
    *
-   * See: http://stomp.github.com/stomp-specification-1.2.html#UNSUBSCRIBE UNSUBSCRIBE Frame
+   * See: https://stomp.github.com/stomp-specification-1.2.html#UNSUBSCRIBE UNSUBSCRIBE Frame
    */
   public unsubscribe(id: string, headers: StompHeaders = {}): void {
     this._checkConnection();
