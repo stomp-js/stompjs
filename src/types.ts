@@ -110,22 +110,22 @@ export interface IStompSocketMessageEvent {
  * @internal
  */
 export interface IStompSocket {
-  onclose: ((this: IStompSocket, ev?: any) => any) | null;
-  onerror: ((this: IStompSocket, ev: any) => any) | null;
-  onmessage: ((this: IStompSocket, ev: IStompSocketMessageEvent) => any) | null;
-  onopen: ((this: IStompSocket, ev?: any) => any) | null;
-  terminate?: ((this: IStompSocket) => any) | null;
+  onclose: ((this: IStompSocket, ev?: any) => any) | undefined | null;
+  onerror: ((this: IStompSocket, ev: any) => any) | undefined | null;
+  onmessage: ((ev: IStompSocketMessageEvent) => any) | undefined | null;
+  onopen: ((this: IStompSocket, ev?: any) => any) | undefined | null;
+  terminate?: ((this: IStompSocket) => any) | undefined | null;
 
   /**
    * Returns a string that indicates how binary data from the socket is exposed to scripts:
    * We support only 'arraybuffer'.
    */
-  binaryType: 'arraybuffer';
+  binaryType?: string;
 
   /**
    * Returns the state of the socket connection. It can have the values of StompSocketState.
    */
-  readonly readyState: number;
+  readonly readyState?: number;
 
   /**
    * Closes the connection.
