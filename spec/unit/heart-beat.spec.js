@@ -24,16 +24,14 @@ describe('Ping', () => {
 
   // See https://github.com/stomp-js/stompjs/issues/188
   it('Should allow server to not send heartbeat header', done => {
+    saveOrigFactory(client);
     client.webSocketFactory = () => {
       class MyWrapperWS extends WrapperWS {
         wrapOnMessage(ev) {
-          const inComingFrame = parseFrame(ev.data)
+          const inComingFrame = parseFrame(ev.data);
 
           if (inComingFrame.command === 'CONNECTED') {
-            const frame = StompJs.FrameImpl.fromRawFrame(
-              inComingFrame,
-              true
-            );
+            const frame = StompJs.FrameImpl.fromRawFrame(inComingFrame, true);
             delete frame.headers['heart-beat'];
             ev = { data: frame.serialize() };
           }
@@ -42,7 +40,7 @@ describe('Ping', () => {
         }
       }
 
-      return new MyWrapperWS(new WebSocket(client.brokerURL));
+      return new MyWrapperWS(client._origFactory());
     };
 
     client.onConnect = () => {
@@ -56,8 +54,9 @@ describe('Ping', () => {
     client.heartbeatIncoming = 1000;
     client.heartbeatOutgoing = 0;
 
-    client.webSocketFactory = () => {
-      class MyWrapperWS extends WrapperWS {
+    overRideFactory(
+      client,
+      class extends WrapperWS {
         wrapOnMessage(ev) {
           // Eat away incoming ping
           if (length(ev.data) === 1) {
@@ -67,9 +66,7 @@ describe('Ping', () => {
           super.wrapOnMessage(ev);
         }
       }
-
-      return new MyWrapperWS(new WebSocket(client.brokerURL));
-    };
+    );
 
     client.onWebSocketClose = ev => {
       if (client.discardWebsocketOnCommFailure) {
@@ -96,8 +93,9 @@ describe('Ping', () => {
     client.heartbeatIncoming = 0;
     client.heartbeatOutgoing = 1000;
 
-    client.webSocketFactory = () => {
-      class MyWrapperWS extends WrapperWS {
+    overRideFactory(
+      client,
+      class extends WrapperWS {
         send(data) {
           // Eat away outgoing ping
           if (length(data) === 1) {
@@ -107,9 +105,7 @@ describe('Ping', () => {
           super.send(data);
         }
       }
-
-      return new MyWrapperWS(new WebSocket(client.brokerURL));
-    };
+    );
 
     client.onWebSocketClose = ev => {
       done();

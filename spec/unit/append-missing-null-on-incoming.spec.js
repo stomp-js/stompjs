@@ -5,8 +5,9 @@ describe('appendMissingNULLonIncoming', () => {
     client = stompClient();
 
     // Simulate incorrect behavior in React Native (see https://github.com/stomp-js/stompjs/issues/89)
-    client.webSocketFactory = () => {
-      class MyWrapperWS extends  WrapperWS {
+    overRideFactory(
+      client,
+      class extends WrapperWS {
         wrapOnMessage(ev) {
           // Convert incoming data to string if not already string
           let data = ev.data;
@@ -16,14 +17,12 @@ describe('appendMissingNULLonIncoming', () => {
 
           // chop everything after '\0'
           data = data.replace(/\0.*/, '');
-          const updatedEv = {...ev.data, ...{ data: data }};
+          const updatedEv = { ...ev.data, ...{ data: data } };
 
           super.wrapOnMessage(updatedEv);
         }
       }
-
-      return new MyWrapperWS(new WebSocket(client.brokerURL));
-    };
+    );
   });
 
   afterEach(async () => {

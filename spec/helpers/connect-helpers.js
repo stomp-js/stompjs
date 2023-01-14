@@ -9,6 +9,8 @@ stompClient = function () {
       passcode: TEST.password,
     },
     brokerURL: TEST.url,
+    // To test STOMP over TCP
+    // webSocketFactory: () => new TCPWrapper('127.0.0.1', 61613),
     debug: function (str) {
       console.log('CLIENT ' + myId + ': ' + str);
     },
@@ -32,4 +34,22 @@ disconnectStomp = async function (client) {
   if (client) {
     await client.deactivate();
   }
+};
+
+saveOrigFactory = client => {
+  if (!client._origFactory) {
+    client._origFactory =
+      client.webSocketFactory ||
+      (() =>
+        new WebSocket(
+          client.brokerURL,
+          client.stompVersions.protocolVersions()
+        ));
+  }
+};
+
+overRideFactory = (client, CLS) => {
+  saveOrigFactory(client);
+
+  client.webSocketFactory = () => new CLS(client._origFactory());
 };

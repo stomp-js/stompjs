@@ -263,8 +263,9 @@ describe('Stomp Connection', function () {
 
       let eatConnectFrame = true;
 
-      client.webSocketFactory = () => {
-        class MyWrapperWS extends WrapperWS {
+      overRideFactory(
+        client,
+        class extends WrapperWS {
           wrapOnMessage(ev) {
             if (eatConnectFrame) {
               const frame = parseFrame(ev.data);
@@ -278,9 +279,7 @@ describe('Stomp Connection', function () {
             super.wrapOnMessage(ev);
           }
         }
-
-        return new MyWrapperWS(new WebSocket(client.brokerURL));
-      };
+      );
 
       client.onConnect = () => {
         done();
@@ -295,6 +294,7 @@ describe('Stomp Connection', function () {
 
       let eatConnectFrame = true;
 
+      saveOrigFactory(client);
       client.webSocketFactory = () => {
         class MyWrapperWS extends WrapperWS {
           wrapOnMessage(ev) {
@@ -311,7 +311,7 @@ describe('Stomp Connection', function () {
           }
         }
 
-        return new MyWrapperWS(new WebSocket(client.brokerURL));
+        return new MyWrapperWS(client._origFactory());
       };
 
       client.onConnect = () => {
