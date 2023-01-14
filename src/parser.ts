@@ -86,10 +86,10 @@ export class Parser {
   ) {
     let chunk: Uint8Array;
 
-    if (segment instanceof ArrayBuffer) {
-      chunk = new Uint8Array(segment);
-    } else {
+    if (typeof segment === 'string') {
       chunk = this._encoder.encode(segment);
+    } else {
+      chunk = new Uint8Array(segment);
     }
 
     // See https://github.com/stomp-js/stompjs/issues/89
