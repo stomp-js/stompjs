@@ -13,6 +13,7 @@ export class TCPWrapper implements IStompSocket {
     | null;
   public onopen: ((this: IStompSocket, ev?: any) => any) | undefined | null;
   private socket: Socket;
+  private _closeEvtOnTermination: object | undefined;
 
   constructor(host: string, port: number) {
     const noOp = () => {};
@@ -31,7 +32,11 @@ export class TCPWrapper implements IStompSocket {
 
     this.socket.on('close', hadError => {
       if (typeof this.onclose === 'function') {
-        this.onclose({ wasClean: !hadError, type: 'CloseEvent' });
+        if (this._closeEvtOnTermination) {
+          this.onclose(this._closeEvtOnTermination);
+        } else {
+          this.onclose({ wasClean: !hadError, type: 'CloseEvent', code: 1000 });
+        }
       }
     });
 
@@ -55,6 +60,11 @@ export class TCPWrapper implements IStompSocket {
   }
 
   public terminate() {
+    this._closeEvtOnTermination = {
+      wasClean: false,
+      type: 'CloseEvent',
+      code: 4001,
+    };
     this.socket.destroy();
   }
 }
