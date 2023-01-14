@@ -125,7 +125,7 @@ export interface IStompSocket {
   /**
    * Returns the state of the socket connection. It can have the values of StompSocketState.
    */
-  readonly readyState?: number;
+  readonly readyState: number;
 
   /**
    * Closes the connection.

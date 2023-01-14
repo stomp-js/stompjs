@@ -1,10 +1,11 @@
-import { Socket, createConnection } from 'net';
-import { IStompSocket, IStompSocketMessageEvent } from './types.js';
+import { createConnection, Socket } from "net";
+import { IStompSocket, IStompSocketMessageEvent, StompSocketState } from "./types.js";
 
 /**
  * Wrapper for a TCP socket to make it behave similar to the WebSocket interface
  */
 export class TCPWrapper implements IStompSocket {
+  public readyState: StompSocketState;
   public onclose: ((this: IStompSocket, ev?: any) => any) | undefined | null;
   public onerror: ((this: IStompSocket, ev: any) => any) | undefined | null;
   public onmessage:
@@ -18,8 +19,11 @@ export class TCPWrapper implements IStompSocket {
   constructor(host: string, port: number) {
     const noOp = () => {};
 
+    this.readyState = StompSocketState.CONNECTING;
+
     this.socket = createConnection(port, host, () => {
       if (typeof this.onopen === 'function') {
+        this.readyState = StompSocketState.OPEN;
         this.onopen();
       }
     });
@@ -31,6 +35,7 @@ export class TCPWrapper implements IStompSocket {
     });
 
     this.socket.on('close', hadError => {
+      this.readyState = StompSocketState.CLOSED;
       if (typeof this.onclose === 'function') {
         if (this._closeEvtOnTermination) {
           this.onclose(this._closeEvtOnTermination);
@@ -56,10 +61,12 @@ export class TCPWrapper implements IStompSocket {
   }
 
   public close(code?: number, reason?: string) {
+    this.readyState = StompSocketState.CLOSING;
     this.socket.end();
   }
 
   public terminate() {
+    this.readyState = StompSocketState.CLOSING;
     this._closeEvtOnTermination = {
       wasClean: false,
       type: 'CloseEvent',
