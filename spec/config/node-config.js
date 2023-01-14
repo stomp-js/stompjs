@@ -9,7 +9,7 @@ TEST = {
 };
 
 WebSocket = require('ws');
-StompJs = require('../dist/stomp.umd');
+StompJs = require('../../bundles/stomp.umd.js');
 Stomp = StompJs.Stomp;
 createConnection = require('net').createConnection;
 

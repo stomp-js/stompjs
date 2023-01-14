@@ -5,8 +5,8 @@
   "scripts": {
     "clean": "rm -rf bundles esm6",
     "rollup": "rollup -c && rm -rf bundles/*.d.ts bundles/compatibility/",
-    "build": "npm run clean && npx tsc && npm run rollup",
-    "test": "cp bundles/stomp.umd.js spec/dist && jasmine",
+    "build": "npm run clean && npx tsc && npm run rollup && cp spec/package.json bundles",
+    "test": "jasmine",
     "karma": "karma start spec/karma.conf.js --single-run",
     "lint": "tslint 'src/**/*.ts'",
     "prettier": "prettier --write .",
