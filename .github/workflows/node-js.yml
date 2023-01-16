@@ -1,6 +1,6 @@
 # This is a basic workflow that is manually triggered
 
-name: Linux Test
+name: NodeJS Test
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -11,6 +11,10 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        version: [16, 18]
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
@@ -18,11 +22,8 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: '18.x'
+          node-version: ${{ matrix.version }}
       - run: npm ci
-      - run: npm run lint
       - run: npm run build
-      - run: npx karma start spec/karma.conf.js --single-run --browsers=ChromeNoSandboxHeadless
-      - run: npx karma start spec/karma.conf.js --single-run --browsers=FirefoxHeadless
-      - run: npm pack
-      - run: bin/rx-stomp.sh
+      - run: npm run test
+      - run: CONN_MODE=tcp npm run test
