@@ -110,6 +110,7 @@ export interface IStompSocketMessageEvent {
  * @internal
  */
 export interface IStompSocket {
+  url: string;
   onclose: ((this: IStompSocket, ev?: any) => any) | undefined | null;
   onerror: ((this: IStompSocket, ev: any) => any) | undefined | null;
   onmessage: ((ev: IStompSocketMessageEvent) => any) | undefined | null;

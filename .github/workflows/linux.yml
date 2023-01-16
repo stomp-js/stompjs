@@ -29,5 +29,6 @@ jobs:
       - run: npx karma start spec/karma.conf.js --single-run --browsers=ChromeNoSandboxHeadless
       - run: npx karma start spec/karma.conf.js --single-run --browsers=FirefoxHeadless
       - run: npm run test
+      - run: CONN_MODE=tcp npm run test
       - run: npm pack
       - run: bin/rx-stomp.sh

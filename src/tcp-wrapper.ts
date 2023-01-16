@@ -1,11 +1,16 @@
-import { createConnection, Socket } from "net";
-import { IStompSocket, IStompSocketMessageEvent, StompSocketState } from "./types.js";
+import { createConnection, Socket } from 'net';
+import {
+  IStompSocket,
+  IStompSocketMessageEvent,
+  StompSocketState,
+} from './types.js';
 
 /**
  * Wrapper for a TCP socket to make it behave similar to the WebSocket interface
  */
 export class TCPWrapper implements IStompSocket {
   public readyState: StompSocketState;
+  public readonly url: string;
   public onclose: ((this: IStompSocket, ev?: any) => any) | undefined | null;
   public onerror: ((this: IStompSocket, ev: any) => any) | undefined | null;
   public onmessage:
@@ -19,6 +24,7 @@ export class TCPWrapper implements IStompSocket {
   constructor(host: string, port: number) {
     const noOp = () => {};
 
+    this.url = `tcp://${host}/${port}/`;
     this.readyState = StompSocketState.CONNECTING;
 
     this.socket = createConnection(port, host, () => {

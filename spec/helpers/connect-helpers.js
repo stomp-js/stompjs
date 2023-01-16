@@ -16,6 +16,12 @@ stompClient = function () {
     },
     reconnectDelay: 0,
   };
+
+  if (typeof process !== 'undefined' && process.env.CONN_MODE === 'tcp') {
+    stompConfig.debug('Using STOMP over TCP');
+    stompConfig.webSocketFactory = () => new TCPWrapper('127.0.0.1', 61613);
+  }
+
   return new StompJs.Client(stompConfig);
 };
 
