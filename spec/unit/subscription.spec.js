@@ -30,7 +30,7 @@ describe('Stomp Subscription', function () {
 
     client.onConnect = function () {
       client.subscribe(TEST.destination, function (frame) {
-        numMessages ++;
+        numMessages++;
         // cause an unhandled exception
         throw new Error('Special Error');
       });

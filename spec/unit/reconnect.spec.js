@@ -88,7 +88,7 @@ describe('Stomp Reconnect', function () {
           expect(client.connected).toBeFalsy();
           done();
         }, 450);
-      }
+      },
     });
 
     client.activate();

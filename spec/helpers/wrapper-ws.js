@@ -62,6 +62,6 @@ class WrapperWS {
 }
 if (typeof global === 'object') {
     Object.assign(global, {
-        'WrapperWS': WrapperWS,
+        WrapperWS: WrapperWS,
     });
 }
