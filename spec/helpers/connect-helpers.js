@@ -34,7 +34,7 @@ badStompClient = function () {
   return client;
 };
 
-// This itself is important, if for some reason, deactivate does not complete, the jasmine test will timeout
+// This itself is important, if for some reason, deactivate does not complete, the jasmine test will time out
 // Ensure this is called as await in an async function.
 disconnectStomp = async function (client) {
   if (client) {
@@ -54,8 +54,8 @@ saveOrigFactory = client => {
   }
 };
 
-overRideFactory = (client, CLS) => {
+overRideFactory = (client, WrapperClass) => {
   saveOrigFactory(client);
 
-  client.webSocketFactory = () => new CLS(client._origFactory());
+  client.webSocketFactory = () => new WrapperClass(client._origFactory());
 };

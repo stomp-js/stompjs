@@ -294,9 +294,9 @@ describe('Stomp Connection', function () {
 
       let eatConnectFrame = true;
 
-      saveOrigFactory(client);
-      client.webSocketFactory = () => {
-        class MyWrapperWS extends WrapperWS {
+      overRideFactory(
+        client,
+        class extends WrapperWS {
           wrapOnMessage(ev) {
             if (eatConnectFrame) {
               const frame = parseFrame(ev.data);
@@ -310,9 +310,7 @@ describe('Stomp Connection', function () {
             super.wrapOnMessage(ev);
           }
         }
-
-        return new MyWrapperWS(client._origFactory());
-      };
+      );
 
       client.onConnect = () => {
         // Should not come here

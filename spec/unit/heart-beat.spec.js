@@ -24,9 +24,9 @@ describe('Ping', () => {
 
   // See https://github.com/stomp-js/stompjs/issues/188
   it('Should allow server to not send heartbeat header', done => {
-    saveOrigFactory(client);
-    client.webSocketFactory = () => {
-      class MyWrapperWS extends WrapperWS {
+    overRideFactory(
+      client,
+      class extends WrapperWS {
         wrapOnMessage(ev) {
           const inComingFrame = parseFrame(ev.data);
 
@@ -39,9 +39,7 @@ describe('Ping', () => {
           super.wrapOnMessage(ev);
         }
       }
-
-      return new MyWrapperWS(client._origFactory());
-    };
+    );
 
     client.onConnect = () => {
       done();
