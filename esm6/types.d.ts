@@ -3,7 +3,7 @@ import { IMessage } from './i-message.js';
 import { StompHeaders } from './stomp-headers.js';
 import { Versions } from './versions.js';
 /**
- * This callback will receive a `string` as parameter.
+ * This callback will receive a `string` as a parameter.
  *
  * Part of `@stomp/stompjs`.
  */
@@ -19,7 +19,7 @@ export declare type messageCallbackType = (message: IMessage) => void;
  *
  * Part of `@stomp/stompjs`.
  */
-export declare type frameCallbackType = (receipt: IFrame) => void;
+export declare type frameCallbackType = ((frame: IFrame) => void) | (() => void);
 /**
  * This callback will receive a [CloseEvent]{@link https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent}
  * as parameter.
@@ -58,7 +58,7 @@ export interface IPublishParams {
      */
     binaryBody?: Uint8Array;
     /**
-     * By default a `content-length` header will be added in the Frame to the broker.
+     * By default, a `content-length` header will be added in the Frame to the broker.
      * Set it to `true` for the header to be skipped.
      */
     skipContentLengthHeader?: boolean;
@@ -99,16 +99,17 @@ export interface IStompSocketMessageEvent {
  * @internal
  */
 export interface IStompSocket {
-    onclose: ((this: IStompSocket, ev?: any) => any) | null;
-    onerror: ((this: IStompSocket, ev: any) => any) | null;
-    onmessage: ((this: IStompSocket, ev: IStompSocketMessageEvent) => any) | null;
-    onopen: ((this: IStompSocket, ev?: any) => any) | null;
-    terminate?: ((this: IStompSocket) => any) | null;
+    url: string;
+    onclose: ((this: IStompSocket, ev?: any) => any) | undefined | null;
+    onerror: ((this: IStompSocket, ev: any) => any) | undefined | null;
+    onmessage: ((ev: IStompSocketMessageEvent) => any) | undefined | null;
+    onopen: ((this: IStompSocket, ev?: any) => any) | undefined | null;
+    terminate?: ((this: IStompSocket) => any) | undefined | null;
     /**
      * Returns a string that indicates how binary data from the socket is exposed to scripts:
      * We support only 'arraybuffer'.
      */
-    binaryType: 'arraybuffer';
+    binaryType?: string;
     /**
      * Returns the state of the socket connection. It can have the values of StompSocketState.
      */

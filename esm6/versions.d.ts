@@ -22,10 +22,10 @@ export declare class Versions {
      */
     static default: Versions;
     /**
-     * Takes an array of string of versions, typical elements '1.0', '1.1', or '1.2'
+     * Takes an array of versions, typical elements '1.2', '1.1', or '1.0'
      *
-     * You will an instance if this class if you want to override supported versions to be declared during
-     * STOMP handshake.
+     * You will be creating an instance of this class if you want to override
+     * supported versions to be declared during STOMP handshake.
      */
     constructor(versions: string[]);
     /**

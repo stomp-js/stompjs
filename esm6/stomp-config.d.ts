@@ -6,9 +6,6 @@ import { Versions } from './versions.js';
  * field by the same name in {@link Client}. This can be passed to
  * the constructor of {@link Client} or to [Client#configure]{@link Client#configure}.
  *
- * There used to be a class with the same name in `@stomp/ng2-stompjs`, which has been replaced by
- * {@link RxStompConfig} and {@link InjectableRxStompConfig}.
- *
  * Part of `@stomp/stompjs`.
  */
 export declare class StompConfig {
@@ -17,7 +14,7 @@ export declare class StompConfig {
      */
     brokerURL?: string;
     /**
-     * See See [Client#stompVersions]{@link Client#stompVersions}.
+     * See [Client#stompVersions]{@link Client#stompVersions}.
      */
     stompVersions?: Versions;
     /**

@@ -3,8 +3,8 @@ import { StompHeaders } from './stomp-headers.js';
 /**
  * Instance of Message will be passed to [subscription callback]{@link Client#subscribe}
  * and [Client#onUnhandledMessage]{@link Client#onUnhandledMessage}.
- * Since it is an extended {@link FrameImpl}, you can access [headers]{@link FrameImpl#headers}
- * and [body]{@link FrameImpl#body} as properties.
+ * Since it is an extended {@link IFrame}, you can access [headers]{@link IFrame#headers}
+ * and [body]{@link IFrame#body} as properties.
  *
  * Part of `@stomp/stompjs`.
  *

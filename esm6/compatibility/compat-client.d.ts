@@ -8,7 +8,7 @@ import { frameCallbackType, messageCallbackType } from '../types.js';
  *
  * Part of `@stomp/stompjs`.
  *
- * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
+ * To upgrade, please follow the [Upgrade Guide](https://stomp-js.github.io/guide/stompjs/upgrading-stompjs.html)
  */
 export declare class CompatClient extends Client {
     /**

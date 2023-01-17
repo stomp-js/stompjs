@@ -7,7 +7,7 @@ import { HeartbeatInfo } from './heartbeat-info.js';
  *
  * Part of `@stomp/stompjs`.
  *
- * To upgrade, please follow the [Upgrade Guide](../additional-documentation/upgrading.html)
+ * To upgrade, please follow the [Upgrade Guide](https://stomp-js.github.io/guide/stompjs/upgrading-stompjs.html)
  */
 export class CompatClient extends Client {
     /**

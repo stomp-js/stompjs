@@ -17,7 +17,7 @@ export class StompHandler {
         this._webSocket = _webSocket;
         this._connected = false;
         this._serverFrameHandlers = {
-            // [CONNECTED Frame](http://stomp.github.com/stomp-specification-1.2.html#CONNECTED_Frame)
+            // [CONNECTED Frame](https://stomp.github.com/stomp-specification-1.2.html#CONNECTED_Frame)
             CONNECTED: frame => {
                 this.debug(`connected to server ${frame.headers.server}`);
                 this._connected = true;
@@ -29,7 +29,7 @@ export class StompHandler {
                 this._setupHeartbeat(frame.headers);
                 this.onConnect(frame);
             },
-            // [MESSAGE Frame](http://stomp.github.com/stomp-specification-1.2.html#MESSAGE)
+            // [MESSAGE Frame](https://stomp.github.com/stomp-specification-1.2.html#MESSAGE)
             MESSAGE: frame => {
                 // the callback is registered when the client calls
                 // `subscribe()`.
@@ -37,7 +37,7 @@ export class StompHandler {
                 // the default `onUnhandledMessage` callback is used that the client can set.
                 // This is useful for subscriptions that are automatically created
                 // on the browser side (e.g. [RabbitMQ's temporary
-                // queues](http://www.rabbitmq.com/stomp.html)).
+                // queues](https://www.rabbitmq.com/stomp.html)).
                 const subscription = frame.headers.subscription;
                 const onReceive = this._subscriptions[subscription] || this.onUnhandledMessage;
                 // bless the frame to be a Message
@@ -56,7 +56,7 @@ export class StompHandler {
                 };
                 onReceive(message);
             },
-            // [RECEIPT Frame](http://stomp.github.com/stomp-specification-1.2.html#RECEIPT)
+            // [RECEIPT Frame](https://stomp.github.com/stomp-specification-1.2.html#RECEIPT)
             RECEIPT: frame => {
                 const callback = this._receiptWatchers[frame.headers['receipt-id']];
                 if (callback) {
@@ -68,7 +68,7 @@ export class StompHandler {
                     this.onUnhandledReceipt(frame);
                 }
             },
-            // [ERROR Frame](http://stomp.github.com/stomp-specification-1.2.html#ERROR)
+            // [ERROR Frame](https://stomp.github.com/stomp-specification-1.2.html#ERROR)
             ERROR: frame => {
                 this.onStompError(frame);
             },
@@ -137,7 +137,7 @@ export class StompHandler {
             parser.parseChunk(evt.data, this.appendMissingNULLonIncoming);
         };
         this._webSocket.onclose = (closeEvent) => {
-            this.debug(`Connection closed to ${this._client.brokerURL}`);
+            this.debug(`Connection closed to ${this._webSocket.url}`);
             this._cleanUp();
             this.onWebSocketClose(closeEvent);
         };
