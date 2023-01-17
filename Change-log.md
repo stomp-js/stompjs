@@ -1,8 +1,13 @@
 # Change Log
 
-# 7.0.0 (TBD)
+# 7.0.0-beta3 (2023-01-17)
 
-- Update the type for frame callbacks.
+- Update the types for frame callbacks.
+- Documentation updates.
+- Updated dependencies.
+- Concept of TCPWrapper.
+  See [#500](https://github.com/stomp-js/stompjs/issues/500).
+- Refactor GitHub workflows.
 
 # 7.0.0-beta2 (2023-01-03)
 
