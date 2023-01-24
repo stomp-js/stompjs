@@ -17,18 +17,8 @@ const umdMinConf = {
 
 export default [
   {
-    input: 'src/index-web.ts',
+    input: 'src/index.ts',
     plugins: [typescript()],
     output: [umdConf, umdMinConf],
-  },
-  {
-    input: 'src/tcp-wrapper.ts',
-    plugins: [typescript()],
-    external: ['net'],
-    output: {
-      file: 'bundles/tcp-wrapper.cjs',
-      format: 'cjs',
-      sourcemap: true,
-    },
   },
 ];

@@ -18,6 +18,7 @@ stompClient = function () {
   };
 
   if (typeof process !== 'undefined' && process.env.CONN_MODE === 'tcp') {
+    const TCPWrapper = require('@stomp/tcp-wrapper').TCPWrapper;
     stompConfig.debug('Using STOMP over TCP');
     stompConfig.webSocketFactory = () => new TCPWrapper('127.0.0.1', 61613);
   }

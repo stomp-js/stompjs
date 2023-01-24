@@ -11,6 +11,5 @@ TEST = {
 WebSocket = require('ws');
 StompJs = require('../../bundles/stomp.umd.js');
 Stomp = StompJs.Stomp;
-TCPWrapper = require('../../bundles/tcp-wrapper.cjs').TCPWrapper;
 
 // For ActiveMQ "ws://localhost:61614/stomp
