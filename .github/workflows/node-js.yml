@@ -24,6 +24,7 @@ jobs:
         with:
           node-version: ${{ matrix.version }}
       - run: npm ci
+      - run: npm i stomp-js/tcp-wrapper --save-dev
       - run: npm run build
       - run: npm run test
       - run: CONN_MODE=tcp npm run test
