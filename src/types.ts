@@ -111,11 +111,11 @@ export interface IStompSocketMessageEvent {
  */
 export interface IStompSocket {
   url: string;
-  onclose: ((this: IStompSocket, ev?: any) => any) | undefined | null;
-  onerror: ((this: IStompSocket, ev: any) => any) | undefined | null;
+  onclose: ((ev?: any) => any) | undefined | null;
+  onerror: ((ev: any) => any) | undefined | null;
   onmessage: ((ev: IStompSocketMessageEvent) => any) | undefined | null;
-  onopen: ((this: IStompSocket, ev?: any) => any) | undefined | null;
-  terminate?: ((this: IStompSocket) => any) | undefined | null;
+  onopen: ((ev?: any) => any) | undefined | null;
+  terminate?: (() => any) | undefined | null;
 
   /**
    * Returns a string that indicates how binary data from the socket is exposed to scripts:
