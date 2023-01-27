@@ -1,5 +1,12 @@
 # Change Log
 
+# 7.0.0-beta4 (2023-01-27)
+
+- Move TCPWrapper to an external repo. 
+  This eliminates dependency on NodeJS `net` module.
+- Cleanup IStompSocket interface.
+- Update dependencies.
+
 # 7.0.0-beta3 (2023-01-17)
 
 - Update the types for frame callbacks.
