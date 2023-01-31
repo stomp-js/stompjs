@@ -129,21 +129,32 @@ describe('Stomp Connection', function () {
     client.activate();
   });
 
-  it('Throws while trying to activate immediately following a deactivate', function (done) {
+  it('Activates immediately without awaiting for the deactivate 01', async () => {
     client = stompClient();
-    client.configure({
-      onConnect: function () {
-        // once connected, we disconnect
-        client.onConnect = function () {};
-        client.deactivate();
-        expect(() => {
-          client.activate();
-        }).toThrow();
-        done();
-      },
-    });
-
     client.activate();
+    client.deactivate();
+    client.activate();
+  });
+
+  it('Activates immediately without awaiting for the deactivate 02', async () => {
+    client = stompClient();
+    client.activate();
+    await wait(50);
+    client.deactivate();
+    client.activate();
+  });
+
+  it('Multiple activates and deactivates', async () => {
+    client = stompClient();
+    client.activate();
+    client.deactivate();
+    client.deactivate();
+    client.activate();
+    client.activate();
+    client.deactivate();
+    client.deactivate();
+    client.activate();
+    await wait(500);
   });
 
   it('Activates immediately following a deactivate', function (done) {

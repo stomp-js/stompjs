@@ -385,21 +385,26 @@ export class Client {
    * Call [Client#deactivate]{@link Client#deactivate} to disconnect and stop reconnection attempts.
    */
   public activate(): void {
+    const _activate = () => {
+      if (this.active) {
+        this.debug('Already ACTIVE, ignoring request to activate');
+        return;
+      }
+
+      this._changeState(ActivationState.ACTIVE);
+
+      this._connect();
+    };
+
+    // if it is deactivating, wait for it to complete before activating.
     if (this.state === ActivationState.DEACTIVATING) {
-      this.debug(
-        'Still DEACTIVATING, please await call to deactivate before trying to re-activate'
-      );
-      throw new Error('Still DEACTIVATING, can not activate now');
+      this.debug('Waiting for deactivation to finish before activating');
+      this.deactivate().then(() => {
+        _activate();
+      });
+    } else {
+      _activate();
     }
-
-    if (this.active) {
-      this.debug('Already ACTIVE, ignoring request to activate');
-      return;
-    }
-
-    this._changeState(ActivationState.ACTIVE);
-
-    this._connect();
   }
 
   private async _connect(): Promise<void> {
