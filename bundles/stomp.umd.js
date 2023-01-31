@@ -1058,23 +1058,31 @@
          * Call [Client#deactivate]{@link Client#deactivate} to disconnect and stop reconnection attempts.
          */
         activate() {
+            const _activate = () => {
+                if (this.active) {
+                    this.debug('Already ACTIVE, ignoring request to activate');
+                    return;
+                }
+                this._changeState(exports.ActivationState.ACTIVE);
+                this._connect();
+            };
+            // if it is deactivating, wait for it to complete before activating.
             if (this.state === exports.ActivationState.DEACTIVATING) {
-                this.debug('Still DEACTIVATING, please await call to deactivate before trying to re-activate');
-                throw new Error('Still DEACTIVATING, can not activate now');
+                this.debug('Waiting for deactivation to finish before activating');
+                this.deactivate().then(() => {
+                    _activate();
+                });
             }
-            if (this.active) {
-                this.debug('Already ACTIVE, ignoring request to activate');
-                return;
+            else {
+                _activate();
             }
-            this._changeState(exports.ActivationState.ACTIVE);
-            this._connect();
         }
         async _connect() {
-            if (this.connected) {
-                this.debug('STOMP: already connected, nothing to do');
+            await this.beforeConnect();
+            if (this._stompHandler) {
+                this.debug('There is already a stompHandler, skipping the call to connect');
                 return;
             }
-            await this.beforeConnect();
             if (!this.active) {
                 this.debug('Client has been marked inactive, will not attempt to connect');
                 return;
