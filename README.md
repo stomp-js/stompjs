@@ -5,6 +5,9 @@
 [![NodeJS Test](https://github.com/stomp-js/stompjs/actions/workflows/node-js.yml/badge.svg?branch=develop)](https://github.com/stomp-js/stompjs/actions/workflows/node-js.yml)
 [![API docs refresh](https://github.com/stomp-js/stompjs/actions/workflows/docs-refresh.yml/badge.svg?branch=develop)](https://github.com/stomp-js/stompjs/actions/workflows/docs-refresh.yml)
 
+
+[![Verified on Openbase](https://badges.openbase.com/js/verified/@stomp/stompjs.svg?token=zqjiUL4M7rA2VDndBXG2FMeS/9PVZzs9qfhw/JI3tJ4=)](https://openbase.com/js/@stomp/stompjs?utm_source=embedded&amp;utm_medium=badge&amp;utm_campaign=rate-badge)
+
 This library provides a STOMP over WebSocket client for Web browser and node.js applications.
 
 Please visit https://stomp-js.github.io/ for guides, FAQs and API docs.
