@@ -1,5 +1,12 @@
 # Change Log
 
+# 7.0.0-beta5 (2023-01-31)
+
+- Fix: race condition.
+  When multiple activates and deactivates were called without awaiting,
+  there were more than one broker connections created.
+- Allow `activate` to be called withing awaiting the `deactivate`.
+
 # 7.0.0-beta4 (2023-01-27)
 
 - Move TCPWrapper to an external repo. 
