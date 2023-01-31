@@ -144,7 +144,7 @@ describe('Stomp Connection', function () {
     client.activate();
   });
 
-  it('Multiple activates and deactivates', async () => {
+  it('Multiple activates and deactivates - last call activate', async () => {
     client = stompClient();
     client.activate();
     client.deactivate();
@@ -154,6 +154,18 @@ describe('Stomp Connection', function () {
     client.deactivate();
     client.deactivate();
     client.activate();
+    await wait(500);
+  });
+
+  it('Multiple activates and deactivates - last call deactivate', async () => {
+    client = stompClient();
+    client.activate();
+    client.deactivate();
+    client.deactivate();
+    client.activate();
+    client.activate();
+    client.deactivate();
+    client.deactivate();
     await wait(500);
   });
 

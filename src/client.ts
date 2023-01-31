@@ -408,12 +408,12 @@ export class Client {
   }
 
   private async _connect(): Promise<void> {
-    if (this.connected) {
-      this.debug('STOMP: already connected, nothing to do');
+    await this.beforeConnect();
+
+    if (this._stompHandler) {
+      this.debug('There is already a stompHandler, skipping the call to connect');
       return;
     }
-
-    await this.beforeConnect();
 
     if (!this.active) {
       this.debug(
