@@ -1,3 +1,4 @@
+
 describe('Stomp Connection', function () {
   let client;
 
@@ -146,14 +147,28 @@ describe('Stomp Connection', function () {
 
   it('Multiple activates and deactivates - last call activate', async () => {
     client = stompClient();
+    const ActivationState = {
+      ACTIVE: 0,
+      DEACTIVATING: 1,
+      INACTIVE: 2
+    };
+
     client.activate();
+    expect(client.state === ActivationState.ACTIVE);
     client.deactivate();
+    expect(client.state === ActivationState.DEACTIVATING);
     client.deactivate();
+    expect(client.state === ActivationState.DEACTIVATING);
     client.activate();
+    expect(client.state === ActivationState.ACTIVE);
     client.activate();
+    expect(client.state === ActivationState.ACTIVE);
     client.deactivate();
+    expect(client.state === ActivationState.DEACTIVATING);
     client.deactivate();
+    expect(client.state === ActivationState.DEACTIVATING);
     client.activate();
+    expect(client.state === ActivationState.ACTIVE);
     await wait(500);
   });
 
