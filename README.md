@@ -16,17 +16,82 @@ supports complete STOMP specifications including all current protocol variants. 
 popular messaging brokers support STOMP and STOMP over WebSockets out-of-the-box
 or using plugins.
 
-In general, JavaScript engines in browsers are not friendly to binary protocols,
-so using STOMP is a good option because it is a text-oriented protocol.
+## Features
 
-This library has its roots in a version released by [Jeff Mesnil](http://jmesnil.net/).
+- Simple API to interact with the Stomp protocol
+- Support for v1.2, v1.1 and v1.0 of the Stomp protocol
+- Support for fallback options in case of WebSocket unavailable
+- Browser and Node.js support
+- Option to use STOMP over TCP
+- Binary payload support
 
-## Current Status
+## Usage
 
-This library is feature complete and has been used in production for many years. It
-is actively maintained. You are welcome to file issues and submit pull requests.
+### Browser
 
-## Getting started
+```html
+<!--
+    JSPM Generator Import Map
+    Edit URL: https://generator.jspm.io/#U2NgYGBkDM0rySzJSU1hcCguyc8t0AeTWcUO5noGega6SakliaYAYTzJAykA
+  -->
+<script type="importmap">
+  {
+    "imports": {
+      "@stomp/stompjs": "https://ga.jspm.io/npm:@stomp/stompjs@7.0.0/esm6/index.js"
+    }
+  }
+</script>
+
+<!-- ES Module Shims: Import maps polyfill for modules browsers without import maps support (all except Chrome 89+) -->
+<script
+  async
+  src="https://ga.jspm.io/npm:es-module-shims@1.5.1/dist/es-module-shims.js"
+  crossorigin="anonymous"
+></script>
+
+<script type="module">
+  import { Client } from '@stomp/stompjs';
+
+  const client = new Client({
+    brokerURL: 'ws://localhost:15674/ws',
+    onConnect: () => {
+      client.subscribe('/topic/test01', message =>
+        console.log(`Received: ${message.body}`)
+      );
+      client.publish({ destination: '/topic/test01', body: 'First Message' });
+    },
+  });
+
+  client.activate();
+</script>
+```
+
+### NodeJS
+
+```bash
+$ npm install @stomp/stompjs ws
+```
+
+```javascript
+import { Client } from '@stomp/stompjs';
+
+import { WebSocket } from 'ws';
+Object.assign(global, { WebSocket });
+
+const client = new Client({
+  brokerURL: 'ws://localhost:15674/ws',
+  onConnect: () => {
+    client.subscribe('/topic/test01', message =>
+      console.log(`Received: ${message.body}`)
+    );
+    client.publish({ destination: '/topic/test01', body: 'First Message' });
+  },
+});
+
+client.activate();
+```
+
+## Further information
 
 The API documentation is hosted as GitHub pages for the StompJS family of libraries.
 You may head straight to the https://stomp-js.github.io/api-docs/latest/

@@ -1,5 +1,7 @@
 # Change Log
 
+# 7.0.0 (2023-02-08)
+
 # 7.0.0-beta5 (2023-01-31)
 
 - Fix: race condition.
@@ -9,7 +11,7 @@
 
 # 7.0.0-beta4 (2023-01-27)
 
-- Move TCPWrapper to an external repo. 
+- Move TCPWrapper to an external repo.
   This eliminates dependency on NodeJS `net` module.
 - Cleanup IStompSocket interface.
 - Update dependencies.

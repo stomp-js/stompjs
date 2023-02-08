@@ -1,6 +1,6 @@
 {
   "name": "@stomp/stompjs",
-  "version": "7.0.0-beta5",
+  "version": "7.0.0",
   "description": "STOMP client for Javascript and Typescript",
   "scripts": {
     "clean": "rm -rf bundles esm6",
