@@ -58,6 +58,7 @@
     "import": "./esm6/index.js",
     "require": "./bundles/stomp.umd.js"
   },
+  "main": "./bundles/stomp.umd.js",
   "browser": "./bundles/stomp.umd.js",
   "typings": "index.d.ts",
   "sideEffects": false
