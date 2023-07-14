@@ -5,6 +5,33 @@
 })(this, (function (exports) { 'use strict';
 
     /**
+     * @internal
+     */
+    function augmentWebsocket(webSocket, debug) {
+        webSocket.terminate = function () {
+            const noOp = () => { };
+            // set all callbacks to no op
+            this.onerror = noOp;
+            this.onmessage = noOp;
+            this.onopen = noOp;
+            const ts = new Date();
+            const id = Math.random().toString().substring(2, 8); // A simulated id
+            const origOnClose = this.onclose;
+            // Track delay in actual closure of the socket
+            this.onclose = closeEvent => {
+                const delay = new Date().getTime() - ts.getTime();
+                debug(`Discarded socket (#${id})  closed after ${delay}ms, with code/reason: ${closeEvent.code}/${closeEvent.reason}`);
+            };
+            this.close();
+            origOnClose?.call(webSocket, {
+                code: 4001,
+                reason: `Quick discarding socket (#${id}) without waiting for the shutdown sequence.`,
+                wasClean: false,
+            });
+        };
+    }
+
+    /**
      * Some byte values, used as per STOMP specifications.
      *
      * Part of `@stomp/stompjs`.
@@ -410,6 +437,29 @@
         }
     }
 
+    class Ticker {
+        constructor(interval) {
+            this._workerScript = URL.createObjectURL(new Blob([`
+            var startTime = Date.now();
+            setInterval(function() {
+                self.postMessage(Date.now() - startTime);
+            }, ${interval});
+        `], { type: 'text/javascript' }));
+        }
+        start(tick) {
+            if (!this._worker) {
+                this._worker = new Worker(this._workerScript);
+                this._worker.onmessage = (message) => tick(message.data);
+            }
+        }
+        stop() {
+            if (this._worker) {
+                this._worker.terminate();
+                delete this._worker;
+            }
+        }
+    }
+
     /**
      * Possible states for the IStompSocket
      */
@@ -478,33 +528,6 @@
         Versions.V1_1,
         Versions.V1_0,
     ]);
-
-    /**
-     * @internal
-     */
-    function augmentWebsocket(webSocket, debug) {
-        webSocket.terminate = function () {
-            const noOp = () => { };
-            // set all callbacks to no op
-            this.onerror = noOp;
-            this.onmessage = noOp;
-            this.onopen = noOp;
-            const ts = new Date();
-            const id = Math.random().toString().substring(2, 8); // A simulated id
-            const origOnClose = this.onclose;
-            // Track delay in actual closure of the socket
-            this.onclose = closeEvent => {
-                const delay = new Date().getTime() - ts.getTime();
-                debug(`Discarded socket (#${id})  closed after ${delay}ms, with code/reason: ${closeEvent.code}/${closeEvent.reason}`);
-            };
-            this.close();
-            origOnClose?.call(webSocket, {
-                code: 4001,
-                reason: `Quick discarding socket (#${id}) without waiting for the shutdown sequence.`,
-                wasClean: false,
-            });
-        };
-    }
 
     /**
      * The STOMP protocol handler
@@ -677,12 +700,13 @@
             if (this.heartbeatOutgoing !== 0 && serverIncoming !== 0) {
                 const ttl = Math.max(this.heartbeatOutgoing, serverIncoming);
                 this.debug(`send PING every ${ttl}ms`);
-                this._pinger = setInterval(() => {
+                this._pinger = new Ticker(ttl);
+                this._pinger.start(() => {
                     if (this._webSocket.readyState === exports.StompSocketState.OPEN) {
                         this._webSocket.send(BYTE.LF);
                         this.debug('>>> PING');
                     }
-                }, ttl);
+                });
             }
             if (this.heartbeatIncoming !== 0 && serverOutgoing !== 0) {
                 const ttl = Math.max(this.heartbeatIncoming, serverOutgoing);
@@ -788,7 +812,7 @@
         _cleanUp() {
             this._connected = false;
             if (this._pinger) {
-                clearInterval(this._pinger);
+                this._pinger.stop();
                 this._pinger = undefined;
             }
             if (this._ponger) {

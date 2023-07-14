@@ -43,7 +43,7 @@ export declare class StompHandler {
     private _partialData;
     private _escapeHeaderValues;
     private _counter;
-    private _pinger;
+    private _pinger?;
     private _ponger;
     private _lastServerActivityTS;
     constructor(_client: Client, _webSocket: IStompSocket, config: IStomptHandlerConfig);

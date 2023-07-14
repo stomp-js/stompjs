@@ -1,9 +1,10 @@
+import { augmentWebsocket } from './augment-websocket.js';
 import { BYTE } from './byte.js';
 import { FrameImpl } from './frame-impl.js';
 import { Parser } from './parser.js';
+import { Ticker } from './ticker.js';
 import { StompSocketState, } from './types.js';
 import { Versions } from './versions.js';
-import { augmentWebsocket } from './augment-websocket.js';
 /**
  * The STOMP protocol handler
  *
@@ -175,12 +176,13 @@ export class StompHandler {
         if (this.heartbeatOutgoing !== 0 && serverIncoming !== 0) {
             const ttl = Math.max(this.heartbeatOutgoing, serverIncoming);
             this.debug(`send PING every ${ttl}ms`);
-            this._pinger = setInterval(() => {
+            this._pinger = new Ticker(ttl);
+            this._pinger.start(() => {
                 if (this._webSocket.readyState === StompSocketState.OPEN) {
                     this._webSocket.send(BYTE.LF);
                     this.debug('>>> PING');
                 }
-            }, ttl);
+            });
         }
         if (this.heartbeatIncoming !== 0 && serverOutgoing !== 0) {
             const ttl = Math.max(this.heartbeatIncoming, serverOutgoing);
@@ -286,7 +288,7 @@ export class StompHandler {
     _cleanUp() {
         this._connected = false;
         if (this._pinger) {
-            clearInterval(this._pinger);
+            this._pinger.stop();
             this._pinger = undefined;
         }
         if (this._ponger) {
