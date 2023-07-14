@@ -166,6 +166,14 @@ export enum ReconnectionTimeMode {
 }
 
 /**
+ * Possible ticker strategies
+ */
+export enum TickerStrategy {
+  Interval = 'interval',
+  Worker = 'worker'
+}
+
+/**
  * @internal
  */
 export interface IStomptHandlerConfig {
@@ -175,6 +183,7 @@ export interface IStomptHandlerConfig {
   disconnectHeaders: StompHeaders;
   heartbeatIncoming: number;
   heartbeatOutgoing: number;
+  heartbeatStrategy: TickerStrategy;
   splitLargeFrames: boolean;
   maxWebSocketChunkSize: number;
   forceBinaryWSFrames: boolean;
