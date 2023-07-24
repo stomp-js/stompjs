@@ -4,7 +4,7 @@
   "description": "STOMP client for Javascript and Typescript",
   "scripts": {
     "clean": "rm -rf bundles esm6",
-    "rollup": "rollup -c && rm -rf bundles/*.d.ts bundles/compatibility/",
+    "rollup": "rollup -c && rm -rf bundles/esm6/",
     "build": "npm run clean && npx tsc && npm run rollup && cp spec/package.json bundles",
     "test": "jasmine",
     "karma": "karma start spec/karma.conf.js --single-run",
