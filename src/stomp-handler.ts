@@ -291,7 +291,7 @@ export class StompHandler {
       const ttl: number = Math.max(this.heartbeatOutgoing, serverIncoming);
       this.debug(`send PING every ${ttl}ms`);
 
-      this._pinger = new Ticker(ttl);
+      this._pinger = new Ticker(ttl, this._client.heartbeatStrategy);
       this._pinger.start(() => {
         if (this._webSocket.readyState === StompSocketState.OPEN) {
           this._webSocket.send(BYTE.LF);

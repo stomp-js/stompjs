@@ -12,6 +12,7 @@ import {
   IStompSocket,
   messageCallbackType,
   StompSocketState,
+  TickerStrategy,
   wsErrorCallbackType,
 } from './types.js';
 import { Versions } from './versions.js';
@@ -99,6 +100,16 @@ export class Client {
    * Outgoing heartbeat interval in milliseconds. Set to 0 to disable.
    */
   public heartbeatOutgoing: number = 10000;
+
+  /**
+   * Outgoing heartbeat strategy.
+   * Can be worker or interval strategy, but will always use interval if the client is used in a non-browser environment.
+   * 
+   * Interval strategy can be helpful if you discover disconnects after moving the browser in the background while the client is connected.
+   * 
+   * Defaults to interval strategy.
+   */
+  public heartbeatStrategy: TickerStrategy = TickerStrategy.Interval;
 
   /**
    * This switches on a non-standard behavior while sending WebSocket packets.
@@ -453,6 +464,7 @@ export class Client {
       disconnectHeaders: this._disconnectHeaders,
       heartbeatIncoming: this.heartbeatIncoming,
       heartbeatOutgoing: this.heartbeatOutgoing,
+      heartbeatStrategy: this.heartbeatStrategy,
       splitLargeFrames: this.splitLargeFrames,
       maxWebSocketChunkSize: this.maxWebSocketChunkSize,
       forceBinaryWSFrames: this.forceBinaryWSFrames,

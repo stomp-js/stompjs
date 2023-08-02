@@ -1,6 +1,7 @@
 import { StompHeaders } from './stomp-headers.js';
 import {
   ActivationState,
+  TickerStrategy,
   closeEventCallbackType,
   debugFnType,
   frameCallbackType,
@@ -51,6 +52,11 @@ export class StompConfig {
    * See [Client#heartbeatOutgoing]{@link Client#heartbeatOutgoing}.
    */
   public heartbeatOutgoing?: number;
+
+    /**
+   * See [Client#heartbeatStrategy]{@link Client#heartbeatStrategy}.
+   */
+  public heartbeatStrategy?: TickerStrategy;
 
   /**
    * See [Client#splitLargeFrames]{@link Client#splitLargeFrames}.
