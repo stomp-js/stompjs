@@ -53,7 +53,7 @@ export class StompConfig {
    */
   public heartbeatOutgoing?: number;
 
-    /**
+  /**
    * See [Client#heartbeatStrategy]{@link Client#heartbeatStrategy}.
    */
   public heartbeatStrategy?: TickerStrategy;

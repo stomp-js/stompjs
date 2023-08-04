@@ -32,7 +32,7 @@ export class Ticker {
   }
 
   private shouldUseWorker(): boolean {
-    return !!Worker && this._strategy === TickerStrategy.Worker
+    return typeof(Worker) !== 'undefined' && this._strategy === TickerStrategy.Worker
   }
 
   private runWorker(tick: (elapsedTime: number) => void): void {
@@ -48,7 +48,7 @@ export class Ticker {
 
   private runInterval(tick: (elapsedTime: number) => void): void {
     if (!this._timer) {
-      let startTime = Date.now();
+      const startTime = Date.now();
       this._timer = setInterval(() => {
         tick(Date.now() - startTime);
       }, this._interval);
