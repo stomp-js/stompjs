@@ -1,4 +1,4 @@
-import { IFrame } from './i-frame.js';
+import type { IFrame } from './i-frame.js';
 import { StompHeaders } from './stomp-headers.js';
 /**
  * Instance of Message will be passed to [subscription callback]{@link Client#subscribe}

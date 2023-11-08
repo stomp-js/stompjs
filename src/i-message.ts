@@ -1,4 +1,4 @@
-import { IFrame } from './i-frame.js';
+import type { IFrame } from './i-frame.js';
 import { StompHeaders } from './stomp-headers.js';
 
 /**

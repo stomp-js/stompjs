@@ -1,5 +1,5 @@
-import { IFrame } from './i-frame.js';
-import { IMessage } from './i-message.js';
+import type { IFrame } from './i-frame.js';
+import type { IMessage } from './i-message.js';
 import { StompHeaders } from './stomp-headers.js';
 import { Versions } from './versions.js';
 /**
