@@ -1,7 +1,7 @@
 import { BYTE } from './byte.js';
 import { Client } from './client.js';
 import { FrameImpl } from './frame-impl.js';
-import { IMessage } from './i-message.js';
+import type { IMessage } from './i-message.js';
 import { ITransaction } from './i-transaction.js';
 import { Parser } from './parser.js';
 import { StompHeaders } from './stomp-headers.js';
