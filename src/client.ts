@@ -242,7 +242,7 @@ export class Client {
    * This can be used to reliably fetch credentials, access token etc. from some other service
    * in an asynchronous way.
    */
-  public beforeConnect: () => void | Promise<void>;
+  public beforeConnect: (client: Client) => void | Promise<void>;
 
   /**
    * Callback, invoked on every successful connection to the STOMP broker.
@@ -437,7 +437,7 @@ export class Client {
   }
 
   private async _connect(): Promise<void> {
-    await this.beforeConnect();
+    await this.beforeConnect(this);
 
     if (this._stompHandler) {
       this.debug('There is already a stompHandler, skipping the call to connect');
