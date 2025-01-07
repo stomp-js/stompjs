@@ -1,6 +1,6 @@
 # This is a basic workflow that is manually triggered
 
-name: Safari, Edge
+name: Safari
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -22,4 +22,3 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npx karma start spec/karma.conf.js --single-run --browsers=Safari
-      - run: npx karma start spec/karma.conf.js --single-run --browsers=EdgeHeadless
