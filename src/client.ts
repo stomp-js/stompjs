@@ -106,7 +106,8 @@ export class Client {
 
 
   /**
-   * Reconnection wait time mode, either linear (default) or exponential
+   * Reconnection wait time mode, either linear (default) or exponential.
+   * Note: See [Client#maxReconnectDelay]{@link Client#maxReconnectDelay} for setting the maximum delay when exponential
    */
   public reconnectTimeMode: ReconnectionTimeMode = ReconnectionTimeMode.LINEAR;
 
@@ -561,6 +562,11 @@ export class Client {
       this._reconnector = setTimeout(() => {
         if (this.reconnectTimeMode === ReconnectionTimeMode.EXPONENTIAL) {
           this._nextReconnectDelay = this._nextReconnectDelay * 2;
+
+          // Truncated exponential backoff unless disabled
+          if (this.maxReconnectDelay != 0) {
+            this._nextReconnectDelay = Math.min(this._nextReconnectDelay, this.maxReconnectDelay)
+          }
         }
 
         this._connect();

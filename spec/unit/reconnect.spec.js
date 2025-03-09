@@ -156,8 +156,9 @@ describe('Stomp Reconnect', function () {
   });
 
   it('Should ensure the reconnect delays increase in backoff mode', function(done) {
-    const reconnectDelay = 200;
+    const reconnectDelay = 400;
 
+    const expectedDelays = [400, 800, 1600, 3200]; // Each delay doubles
     const disconnectTimes = [];
     const reconnectTimes = [];
 
@@ -171,17 +172,51 @@ describe('Stomp Reconnect', function () {
         connectCount += 1;
         reconnectTimes.push(Date.now());
 
-        if (connectCount <= 4) { // sum limit 200 * 2^4 = 3200ms
+        if (connectCount <= expectedDelays.length) { // sum limit 400 * 2^4 = 6400ms
           disconnectTimes.push(Date.now());
           client.forceDisconnect();
         } else {
           for (let i = 0; i < disconnectTimes.length; i += 1) {
             const actualDelay = reconnectTimes[i+1] - disconnectTimes[i];
-            const expectedDelay = reconnectDelay * Math.pow(2, i);
-            expect(actualDelay).toBeGreaterThanOrEqual(expectedDelay);
-            expect(actualDelay).toBeLessThan(expectedDelay * 1.1); // 10% tolerance
+            expect(actualDelay).toBeGreaterThanOrEqual(expectedDelays[i]);
+            expect(actualDelay).toBeLessThan(expectedDelays[i] * 1.1); // 10% tolerance
           }
 
+          done();
+        }
+      }
+    });
+
+    client.activate();
+  }, 20000);
+
+  it('Should respect maxReconnectDelay in exponential mode', function(done) {
+    const reconnectDelay = 400;
+    const maxReconnectDelay = 1000;
+
+    const expectedDelays = [400, 800, 1000, 1000, 1000]; // Hits ceiling
+    const disconnectTimes = [];
+    const reconnectTimes = [];
+
+    let connectCount = 0;
+
+    client.configure({
+      reconnectDelay: reconnectDelay,
+      maxReconnectDelay: maxReconnectDelay,
+      reconnectTimeMode: 1, // exponential mode
+      onConnect: () => {
+        connectCount += 1;
+        reconnectTimes.push(Date.now());
+
+        if (connectCount <= expectedDelays.length) {
+          disconnectTimes.push(Date.now());
+          client.forceDisconnect();
+        } else {
+          for (let i = 0; i < disconnectTimes.length; i += 1) {
+            const actualDelay = reconnectTimes[i+1] - disconnectTimes[i];
+            expect(actualDelay).toBeGreaterThanOrEqual(expectedDelays[i]);
+            expect(actualDelay).toBeLessThan(expectedDelays[i] * 1.1); // 10% tolerance
+          }
           done();
         }
       }
