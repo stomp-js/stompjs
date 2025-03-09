@@ -158,6 +158,14 @@ export enum ActivationState {
 }
 
 /**
+ * Possible reconnection wait time modes
+ */
+export enum ReconnectionTimeMode {
+  LINEAR,
+  EXPONENTIAL
+}
+
+/**
  * @internal
  */
 export interface IStomptHandlerConfig {
