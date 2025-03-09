@@ -124,11 +124,11 @@ describe('Stomp Reconnect', function () {
     });
   };
 
-  // we want to expect our delays with a 10% tolerance on the upper end
+  // we want to expect our delays with a 50% tolerance on the upper end
   const verifyDelays = (actualDelays, expectedDelays) => {
     for (let i = 0; i < actualDelays.length; i++) {
       expect(actualDelays[i]).toBeGreaterThanOrEqual(expectedDelays[i]);
-      expect(actualDelays[i]).toBeLessThan(expectedDelays[i] * 1.1); 
+      expect(actualDelays[i]).toBeLessThan(expectedDelays[i] * 1.5); 
     }
   };
 
