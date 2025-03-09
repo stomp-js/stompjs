@@ -126,10 +126,10 @@ describe('Stomp Reconnect', function () {
 
   // we want to expect our delays with a 10% tolerance on the upper end
   const verifyDelays = (actualDelays, expectedDelays) => {
-    actualDelays.forEach((delay, i) => {
-      expect(delay).toBeGreaterThanOrEqual(expectedDelays[i]);
-      expect(delay).toBeLessThan(expectedDelays[i] * 1.1); 
-    });
+    for (let i = 0; i < expected.length; i++) {
+      expect(actualDelays[i]).toBeGreaterThanOrEqual(expectedDelays[i]);
+      expect(actualDelays[i]).toBeLessThan(expectedDelays[i] * 1.1); 
+    }
   };
 
   it('Should ensure the reconnect delays stay the same in default linear mode', async function() {
