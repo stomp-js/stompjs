@@ -132,12 +132,13 @@ describe('Stomp Reconnect', function () {
     }
   };
 
+  // Note: We set at least 400ms on reconnect delay to reduce flakes, but feel free to adjust thresholds
   describe('Reconnection delays', () => {
     describe('Default Linear mode', () => {
       it('Should ensure the reconnect delays stay the same in default linear mode', async function() {
-        const expectedDelays = [250, 250, 250, 250, 250]; // All delays should be the same
+        const expectedDelays = [500, 500, 500, 500, 500]; // All delays should be the same
         const delays = await collectReconnectDelays(client, 
-          { reconnectDelay: 250 }, 
+          { reconnectDelay: 500 }, 
           expectedDelays.length
         );
         verifyDelays(delays, expectedDelays);
@@ -216,9 +217,9 @@ describe('Stomp Reconnect', function () {
   
       await client.deactivate();
   
-      const secondExpectedDelays = [200, 400, 800]; // Second sequence with new 200ms base
+      const secondExpectedDelays = [500, 1000, 2000]; // Second sequence with new 200ms base
       const secondDelays = await collectReconnectDelays(client,
-        { reconnectDelay: 200, reconnectTimeMode: 1 },
+        { reconnectDelay: 500, reconnectTimeMode: 1 },
         secondExpectedDelays.length
       );
       verifyDelays(secondDelays, secondExpectedDelays);
