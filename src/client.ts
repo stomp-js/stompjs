@@ -92,6 +92,12 @@ export class Client {
   public reconnectDelay: number = 5000;
 
   /**
+   * tracking the time to the next reconnection. Initialized to [Client#reconnectDelay]{@link Client#reconnectDelay}'s value and it may 
+   * change depending on the [Client#reconnectTimeMode]{@link Client#reconnectTimeMode} setting
+   */
+  private _nextReconnectDelay: number = 0;
+
+  /**
    * Reconnection wait time mode, either linear (default) or exponential
    */
   public reconnectTimeMode: ReconnectionTimeMode = ReconnectionTimeMode.LINEAR;
@@ -386,7 +392,8 @@ export class Client {
   /**
    * Initiate the connection with the broker.
    * If the connection breaks, as per [Client#reconnectDelay]{@link Client#reconnectDelay},
-   * it will keep trying to reconnect.
+   * it will keep trying to reconnect. If the [Client#reconnectTimeMode]{@link Client#reconnectTimeMode} 
+   * is set to EXPONENTIAL it will increase the wait time exponentially
    *
    * Call [Client#deactivate]{@link Client#deactivate} to disconnect and stop reconnection attempts.
    */
@@ -399,6 +406,7 @@ export class Client {
 
       this._changeState(ActivationState.ACTIVE);
 
+      this._nextReconnectDelay = this.reconnectDelay;
       this._connect();
     };
 
@@ -539,12 +547,17 @@ export class Client {
   }
 
   private _schedule_reconnect(): void {
-    if (this.reconnectDelay > 0) {
-      this.debug(`STOMP: scheduling reconnection in ${this.reconnectDelay}ms`);
+    if (this._nextReconnectDelay > 0) {
+      if (this.reconnectTimeMode === ReconnectionTimeMode.EXPONENTIAL) {
+        this._nextReconnectDelay = this._nextReconnectDelay * 2;
+      }
+      // console.loggg('doesn't exist)
+
+      this.debug(`STOMP: scheduling reconnection in ${this._nextReconnectDelay}ms`);
 
       this._reconnector = setTimeout(() => {
         this._connect();
-      }, this.reconnectDelay);
+      }, this._nextReconnectDelay);
     }
   }
 
@@ -582,6 +595,9 @@ export class Client {
     }
 
     this._changeState(ActivationState.DEACTIVATING);
+
+    // Reset reconnection timer
+    this._nextReconnectDelay = 0;
 
     // Clear if a reconnection was scheduled
     if (this._reconnector) {
