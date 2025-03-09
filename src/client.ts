@@ -11,6 +11,7 @@ import {
   IPublishParams,
   IStompSocket,
   messageCallbackType,
+  ReconnectionTimeMode,
   StompSocketState,
   wsErrorCallbackType,
 } from './types.js';
@@ -89,6 +90,11 @@ export class Client {
    *  automatically reconnect with delay in milliseconds, set to 0 to disable.
    */
   public reconnectDelay: number = 5000;
+
+  /**
+   * Reconnection wait time mode, either linear (default) or exponential
+   */
+  public reconnectTimeMode: ReconnectionTimeMode = ReconnectionTimeMode.LINEAR;
 
   /**
    * Incoming heartbeat interval in milliseconds. Set to 0 to disable.
