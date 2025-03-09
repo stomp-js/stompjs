@@ -110,6 +110,7 @@ describe('Stomp Reconnect', function () {
             disconnectTimes.push(Date.now());
             client.forceDisconnect();
           } else {
+            // in the final 'loop iteration' we calcuate all the deltas and return them
             const deltas = [];
             for (let i = 0; i < disconnectTimes.length; i += 1) {
               deltas.push(reconnectTimes[i + 1] - disconnectTimes[i]);
@@ -123,7 +124,7 @@ describe('Stomp Reconnect', function () {
     });
   };
 
-  // we want to verify our delays with a 10% tolerance on the upper end
+  // we want to expect our delays with a 10% tolerance on the upper end
   const verifyDelays = (actualDelays, expectedDelays) => {
     actualDelays.forEach((delay, i) => {
       expect(delay).toBeGreaterThanOrEqual(expectedDelays[i]);
@@ -154,5 +155,41 @@ describe('Stomp Reconnect', function () {
       5
     );
     verifyDelays(delays, [400, 800, 1000, 1000, 1000]); // Hits ceiling at 1000
+  }, 20000);
+
+  it('Should use new reconnectDelay after deactivate/activate cycle', async function() {
+    const firstConfig = { 
+      reconnectDelay: 400, 
+      reconnectTimeMode: 1 
+    };
+  
+    const firstDelays = await collectReconnectDelays(client, firstConfig, 2);
+    verifyDelays(firstDelays, [400, 800, 1600]); // First sequence with 400ms base
+  
+    await client.deactivate();
+  
+    const secondConfig = {
+      reconnectDelay: 200,  // Changed base delay
+      reconnectTimeMode: 1
+    };
+    const secondDelays = await collectReconnectDelays(client, secondConfig, 2);
+    verifyDelays(secondDelays, [200, 400, 800]); // Second sequence with new 200ms base
+  }, 20000);
+
+  it('Should reset delays after deactivate', async function() {
+    const config = { 
+      reconnectDelay: 400, 
+      reconnectTimeMode: 1 
+    };
+  
+    const firstDelays = await collectReconnectDelays(client, config, 2);
+    verifyDelays(firstDelays, [400, 800, 1600]); // First sequence doubles
+  
+    await client.deactivate();
+
+    expect(client._nextReconnectDelay).toBe(0); // not strictly required but we reset to be safe
+  
+    const secondDelays = await collectReconnectDelays(client, config, 2);
+    verifyDelays(secondDelays, [400, 800, 1600]); // Second sequence starts fresh
   }, 20000);
 });
