@@ -44,7 +44,7 @@ export class StompConfig {
   public reconnectDelay?: number;
 
   /**
-   * See [Client#reconnectBackoff]{@link Client#reconnectBackoff}
+   * See [Client#reconnectTimeMode]{@link Client#reconnectTimeMode}
    */
   public reconnectTimeMode?: ReconnectionTimeMode;
 
