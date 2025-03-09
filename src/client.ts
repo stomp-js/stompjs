@@ -563,8 +563,8 @@ export class Client {
         if (this.reconnectTimeMode === ReconnectionTimeMode.EXPONENTIAL) {
           this._nextReconnectDelay = this._nextReconnectDelay * 2;
 
-          // Truncated exponential backoff unless disabled
-          if (this.maxReconnectDelay != 0) {
+          // Truncated exponential backoff with a set limit unless disabled
+          if (this.maxReconnectDelay !== 0) {
             this._nextReconnectDelay = Math.min(this._nextReconnectDelay, this.maxReconnectDelay)
           }
         }
