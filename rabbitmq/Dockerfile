@@ -1,8 +1,8 @@
 FROM rabbitmq:3.10.25-alpine
 
-run rabbitmq-plugins enable --offline rabbitmq_web_stomp
+RUN rabbitmq-plugins enable --offline rabbitmq_web_stomp
 
-run \
+RUN \
     echo 'loopback_users.guest = false' >> /etc/rabbitmq/rabbitmq.conf && \
     echo 'web_stomp.ws_frame = binary' >> /etc/rabbitmq/rabbitmq.conf
 
