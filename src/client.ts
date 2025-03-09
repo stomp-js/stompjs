@@ -609,7 +609,7 @@ export class Client {
 
     this._changeState(ActivationState.DEACTIVATING);
 
-    // Reset reconnection timer
+    // Reset reconnection timer just to be safe
     this._nextReconnectDelay = 0;
 
     // Clear if a reconnection was scheduled
