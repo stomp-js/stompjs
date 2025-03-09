@@ -93,4 +93,35 @@ describe('Stomp Reconnect', function () {
 
     client.activate();
   });
+
+  it('Should have exact reconnect delay in default linear mode', function (done) {
+    const reconnectDelay = 300;
+    let firstConnect = true;
+
+    let disconnectTime;
+    let reconnectTime;
+
+    // LINEAR by default
+    client.configure({
+      reconnectDelay: reconnectDelay,
+
+      onConnect: () => {
+        if (firstConnect) {
+          firstConnect = false;
+          disconnectTime = Date.now();
+          client.forceDisconnect();
+        } else {
+          reconnectTime = Date.now();
+          const actualDelay = reconnectTime - disconnectTime;
+
+          
+          expect(actualDelay).toBeGreaterThanOrEqual(reconnectDelay);
+          expect(actualDelay).toBeLessThan(reconnectDelay + 20); // Check within 20 ms delta
+          done();
+        }
+      }
+    });
+
+    client.activate();
+  });
 });
