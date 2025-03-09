@@ -141,6 +141,13 @@ export declare enum ActivationState {
     INACTIVE = 2
 }
 /**
+ * Possible reconnection wait time modes
+ */
+export declare enum ReconnectionTimeMode {
+    LINEAR = 0,
+    EXPONENTIAL = 1
+}
+/**
  * @internal
  */
 export interface IStomptHandlerConfig {

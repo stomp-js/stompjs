@@ -17,4 +17,12 @@ export var ActivationState;
     ActivationState[ActivationState["DEACTIVATING"] = 1] = "DEACTIVATING";
     ActivationState[ActivationState["INACTIVE"] = 2] = "INACTIVE";
 })(ActivationState = ActivationState || (ActivationState = {}));
+/**
+ * Possible reconnection wait time modes
+ */
+export var ReconnectionTimeMode;
+(function (ReconnectionTimeMode) {
+    ReconnectionTimeMode[ReconnectionTimeMode["LINEAR"] = 0] = "LINEAR";
+    ReconnectionTimeMode[ReconnectionTimeMode["EXPONENTIAL"] = 1] = "EXPONENTIAL";
+})(ReconnectionTimeMode = ReconnectionTimeMode || (ReconnectionTimeMode = {}));
 //# sourceMappingURL=types.js.map

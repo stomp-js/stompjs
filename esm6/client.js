@@ -1,5 +1,5 @@
 import { StompHandler } from './stomp-handler.js';
-import { ActivationState, StompSocketState, } from './types.js';
+import { ActivationState, ReconnectionTimeMode, StompSocketState, } from './types.js';
 import { Versions } from './versions.js';
 /**
  * STOMP Client Class.
@@ -30,6 +30,22 @@ export class Client {
          *  automatically reconnect with delay in milliseconds, set to 0 to disable.
          */
         this.reconnectDelay = 5000;
+        /**
+         * tracking the time to the next reconnection. Initialized to [Client#reconnectDelay]{@link Client#reconnectDelay}'s value and it may
+         * change depending on the [Client#reconnectTimeMode]{@link Client#reconnectTimeMode} setting
+         */
+        this._nextReconnectDelay = 0;
+        /**
+         * Maximum time to wait between reconnects, in milliseconds. Defaults to 15 minutes.
+         * Only relevant when reconnectTimeMode not LINEAR (e.g. EXPONENTIAL).
+         * Set to 0 to wait indefinitely.
+         */
+        this.maxReconnectDelay = 15 * 60 * 1000; // 15 minutes in ms
+        /**
+         * Reconnection wait time mode, either linear (default) or exponential.
+         * Note: See [Client#maxReconnectDelay]{@link Client#maxReconnectDelay} for setting the maximum delay when exponential
+         */
+        this.reconnectTimeMode = ReconnectionTimeMode.LINEAR;
         /**
          * Incoming heartbeat interval in milliseconds. Set to 0 to disable.
          */
@@ -163,7 +179,8 @@ export class Client {
     /**
      * Initiate the connection with the broker.
      * If the connection breaks, as per [Client#reconnectDelay]{@link Client#reconnectDelay},
-     * it will keep trying to reconnect.
+     * it will keep trying to reconnect. If the [Client#reconnectTimeMode]{@link Client#reconnectTimeMode}
+     * is set to EXPONENTIAL it will increase the wait time exponentially
      *
      * Call [Client#deactivate]{@link Client#deactivate} to disconnect and stop reconnection attempts.
      */
@@ -174,6 +191,7 @@ export class Client {
                 return;
             }
             this._changeState(ActivationState.ACTIVE);
+            this._nextReconnectDelay = this.reconnectDelay;
             this._connect();
         };
         // if it is deactivating, wait for it to complete before activating.
@@ -291,11 +309,18 @@ export class Client {
         return webSocket;
     }
     _schedule_reconnect() {
-        if (this.reconnectDelay > 0) {
-            this.debug(`STOMP: scheduling reconnection in ${this.reconnectDelay}ms`);
+        if (this._nextReconnectDelay > 0) {
+            this.debug(`STOMP: scheduling reconnection in ${this._nextReconnectDelay}ms`);
             this._reconnector = setTimeout(() => {
+                if (this.reconnectTimeMode === ReconnectionTimeMode.EXPONENTIAL) {
+                    this._nextReconnectDelay = this._nextReconnectDelay * 2;
+                    // Truncated exponential backoff with a set limit unless disabled
+                    if (this.maxReconnectDelay !== 0) {
+                        this._nextReconnectDelay = Math.min(this._nextReconnectDelay, this.maxReconnectDelay);
+                    }
+                }
                 this._connect();
-            }, this.reconnectDelay);
+            }, this._nextReconnectDelay);
         }
     }
     /**
@@ -330,6 +355,8 @@ export class Client {
             return Promise.resolve();
         }
         this._changeState(ActivationState.DEACTIVATING);
+        // Reset reconnection timer just to be safe
+        this._nextReconnectDelay = 0;
         // Clear if a reconnection was scheduled
         if (this._reconnector) {
             clearTimeout(this._reconnector);
