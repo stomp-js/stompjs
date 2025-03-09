@@ -429,14 +429,6 @@
         ActivationState[ActivationState["DEACTIVATING"] = 1] = "DEACTIVATING";
         ActivationState[ActivationState["INACTIVE"] = 2] = "INACTIVE";
     })(exports.ActivationState = exports.ActivationState || (exports.ActivationState = {}));
-    /**
-     * Possible reconnection wait time modes
-     */
-    exports.ReconnectionTimeMode = void 0;
-    (function (ReconnectionTimeMode) {
-        ReconnectionTimeMode[ReconnectionTimeMode["LINEAR"] = 0] = "LINEAR";
-        ReconnectionTimeMode[ReconnectionTimeMode["EXPONENTIAL"] = 1] = "EXPONENTIAL";
-    })(exports.ReconnectionTimeMode = exports.ReconnectionTimeMode || (exports.ReconnectionTimeMode = {}));
 
     /**
      * Supported STOMP versions
@@ -929,22 +921,6 @@
              */
             this.reconnectDelay = 5000;
             /**
-             * tracking the time to the next reconnection. Initialized to [Client#reconnectDelay]{@link Client#reconnectDelay}'s value and it may
-             * change depending on the [Client#reconnectTimeMode]{@link Client#reconnectTimeMode} setting
-             */
-            this._nextReconnectDelay = 0;
-            /**
-             * Maximum time to wait between reconnects, in milliseconds. Defaults to 15 minutes.
-             * Only relevant when reconnectTimeMode not LINEAR (e.g. EXPONENTIAL).
-             * Set to 0 to wait indefinitely.
-             */
-            this.maxReconnectDelay = 15 * 60 * 1000; // 15 minutes in ms
-            /**
-             * Reconnection wait time mode, either linear (default) or exponential.
-             * Note: See [Client#maxReconnectDelay]{@link Client#maxReconnectDelay} for setting the maximum delay when exponential
-             */
-            this.reconnectTimeMode = exports.ReconnectionTimeMode.LINEAR;
-            /**
              * Incoming heartbeat interval in milliseconds. Set to 0 to disable.
              */
             this.heartbeatIncoming = 10000;
@@ -1073,22 +1049,11 @@
         configure(conf) {
             // bulk assign all properties to this
             Object.assign(this, conf);
-            // Warn on incorrect maxReconnectDelay settings
-            if (this.maxReconnectDelay > 0) {
-                if (this.reconnectTimeMode === exports.ReconnectionTimeMode.LINEAR) {
-                    this.debug(`Warning: maxReconnectDelay (${this.maxReconnectDelay}ms) is set but will have no effect because reconnectTimeMode is LINEAR.`);
-                }
-                else if (this.maxReconnectDelay < this.reconnectDelay) {
-                    this.debug(`Warning: maxReconnectDelay (${this.maxReconnectDelay}ms) is less than reconnectDelay (${this.reconnectDelay}ms). Using reconnectDelay as the maxReconnectDelay delay.`);
-                    this.maxReconnectDelay = this.reconnectDelay;
-                }
-            }
         }
         /**
          * Initiate the connection with the broker.
          * If the connection breaks, as per [Client#reconnectDelay]{@link Client#reconnectDelay},
-         * it will keep trying to reconnect. If the [Client#reconnectTimeMode]{@link Client#reconnectTimeMode}
-         * is set to EXPONENTIAL it will increase the wait time exponentially
+         * it will keep trying to reconnect.
          *
          * Call [Client#deactivate]{@link Client#deactivate} to disconnect and stop reconnection attempts.
          */
@@ -1099,7 +1064,6 @@
                     return;
                 }
                 this._changeState(exports.ActivationState.ACTIVE);
-                this._nextReconnectDelay = this.reconnectDelay;
                 this._connect();
             };
             // if it is deactivating, wait for it to complete before activating.
@@ -1217,18 +1181,11 @@
             return webSocket;
         }
         _schedule_reconnect() {
-            if (this._nextReconnectDelay > 0) {
-                this.debug(`STOMP: scheduling reconnection in ${this._nextReconnectDelay}ms`);
+            if (this.reconnectDelay > 0) {
+                this.debug(`STOMP: scheduling reconnection in ${this.reconnectDelay}ms`);
                 this._reconnector = setTimeout(() => {
-                    if (this.reconnectTimeMode === exports.ReconnectionTimeMode.EXPONENTIAL) {
-                        this._nextReconnectDelay = this._nextReconnectDelay * 2;
-                        // Truncated exponential backoff with a set limit unless disabled
-                        if (this.maxReconnectDelay !== 0) {
-                            this._nextReconnectDelay = Math.min(this._nextReconnectDelay, this.maxReconnectDelay);
-                        }
-                    }
                     this._connect();
-                }, this._nextReconnectDelay);
+                }, this.reconnectDelay);
             }
         }
         /**
@@ -1263,8 +1220,6 @@
                 return Promise.resolve();
             }
             this._changeState(exports.ActivationState.DEACTIVATING);
-            // Reset reconnection timer just to be safe
-            this._nextReconnectDelay = 0;
             // Clear if a reconnection was scheduled
             if (this._reconnector) {
                 clearTimeout(this._reconnector);

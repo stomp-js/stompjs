@@ -1,5 +1,5 @@
 import { StompHeaders } from './stomp-headers.js';
-import { ActivationState, closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, ReconnectionTimeMode, wsErrorCallbackType } from './types.js';
+import { ActivationState, closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, wsErrorCallbackType } from './types.js';
 import { Versions } from './versions.js';
 /**
  * Configuration options for STOMP Client, each key corresponds to
@@ -29,14 +29,6 @@ export declare class StompConfig {
      * See [Client#reconnectDelay]{@link Client#reconnectDelay}.
      */
     reconnectDelay?: number;
-    /**
-     * See [Client#maxReconnectDelay]{@link Client#maxReconnectDelay}
-     */
-    maxReconnectDelay?: number;
-    /**
-     * See [Client#reconnectTimeMode]{@link Client#reconnectTimeMode}
-     */
-    reconnectTimeMode?: ReconnectionTimeMode;
     /**
      * See [Client#heartbeatIncoming]{@link Client#heartbeatIncoming}.
      */

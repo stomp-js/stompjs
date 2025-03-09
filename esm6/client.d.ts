@@ -2,7 +2,7 @@ import { ITransaction } from './i-transaction.js';
 import { StompConfig } from './stomp-config.js';
 import { StompHeaders } from './stomp-headers.js';
 import { StompSubscription } from './stomp-subscription.js';
-import { ActivationState, closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, IStompSocket, messageCallbackType, ReconnectionTimeMode, wsErrorCallbackType } from './types.js';
+import { ActivationState, closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, IStompSocket, messageCallbackType, wsErrorCallbackType } from './types.js';
 import { Versions } from './versions.js';
 /**
  * STOMP Client Class.
@@ -63,22 +63,6 @@ export declare class Client {
      *  automatically reconnect with delay in milliseconds, set to 0 to disable.
      */
     reconnectDelay: number;
-    /**
-     * tracking the time to the next reconnection. Initialized to [Client#reconnectDelay]{@link Client#reconnectDelay}'s value and it may
-     * change depending on the [Client#reconnectTimeMode]{@link Client#reconnectTimeMode} setting
-     */
-    private _nextReconnectDelay;
-    /**
-     * Maximum time to wait between reconnects, in milliseconds. Defaults to 15 minutes.
-     * Only relevant when reconnectTimeMode not LINEAR (e.g. EXPONENTIAL).
-     * Set to 0 to wait indefinitely.
-     */
-    maxReconnectDelay: number;
-    /**
-     * Reconnection wait time mode, either linear (default) or exponential.
-     * Note: See [Client#maxReconnectDelay]{@link Client#maxReconnectDelay} for setting the maximum delay when exponential
-     */
-    reconnectTimeMode: ReconnectionTimeMode;
     /**
      * Incoming heartbeat interval in milliseconds. Set to 0 to disable.
      */
@@ -294,8 +278,7 @@ export declare class Client {
     /**
      * Initiate the connection with the broker.
      * If the connection breaks, as per [Client#reconnectDelay]{@link Client#reconnectDelay},
-     * it will keep trying to reconnect. If the [Client#reconnectTimeMode]{@link Client#reconnectTimeMode}
-     * is set to EXPONENTIAL it will increase the wait time exponentially
+     * it will keep trying to reconnect.
      *
      * Call [Client#deactivate]{@link Client#deactivate} to disconnect and stop reconnection attempts.
      */
