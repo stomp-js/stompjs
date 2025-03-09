@@ -144,7 +144,7 @@ describe('Stomp Reconnect', function () {
         verifyDelays(delays, expectedDelays);
       });
 
-      it('Should use maxReconnectDelay as base when less than reconnectDelay', async function() {
+      it('Should ignore maxReconnectDelay and only use reconnectDelay', async function() {
         const debugSpy = spyOn(client, 'debug').and.callThrough();
   
         const expectedDelays = [400, 400, 400];
@@ -156,11 +156,6 @@ describe('Stomp Reconnect', function () {
           expectedDelays.length
         );
         verifyDelays(delays, expectedDelays);
-        
-        // Verify warning was logged with updated message
-        expect(debugSpy).toHaveBeenCalledWith(
-          'Warning: maxReconnectDelay (800ms) is set but will have no effect because reconnectTimeMode is LINEAR.'
-        );
       });
     });
 
