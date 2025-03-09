@@ -113,10 +113,9 @@ describe('Stomp Reconnect', function () {
         } else {
           reconnectTime = Date.now();
           const actualDelay = reconnectTime - disconnectTime;
-
-          
           expect(actualDelay).toBeGreaterThanOrEqual(reconnectDelay);
-          expect(actualDelay).toBeLessThan(reconnectDelay + 20); // Check within 20 ms delta
+          expect(actualDelay).toBeLessThan(reconnectDelay * 1.1); // 10% tolerance
+
           done();
         }
       }
@@ -124,4 +123,70 @@ describe('Stomp Reconnect', function () {
 
     client.activate();
   });
+
+  it('Should ensure the reconnect delays stay the same in default linear mode', function(done) {
+    const reconnectDelay = 250;
+    const disconnectTimes = [];
+    const reconnectTimes = [];
+
+    let connectCount = 0;
+
+    client.configure({
+      reconnectDelay: reconnectDelay,
+      onConnect: () => {
+        connectCount += 1;
+
+        reconnectTimes.push(Date.now());
+
+        if (connectCount <= 5) { // it all should add to 1250 ms          disconnectTimes.push(Date.now());
+          client.forceDisconnect();
+        } else {
+          for (let i = 0; i < disconnectTimes.length; i += 1) {
+            const actualDelay = reconnectTimes[i+1] - disconnectTimes[i];
+            expect(actualDelay).toBeGreaterThanOrEqual(reconnectDelay);
+            expect(actualDelay).toBeLessThan(reconnectDelay * 1.1); // 10% tolerance
+          }
+
+          done();
+        }
+      }
+    });
+
+    client.activate();
+  });
+
+  it('Should ensure the reconnect delays increase in backoff mode', function(done) {
+    const reconnectDelay = 200;
+
+    const disconnectTimes = [];
+    const reconnectTimes = [];
+
+    let connectCount = 0;
+
+    client.configure({
+      reconnectDelay: reconnectDelay,
+      reconnectTimeMode: 1, // exponential mode (can't reference enum so we're putting the number)
+
+      onConnect: () => {
+        connectCount += 1;
+        reconnectTimes.push(Date.now());
+
+        if (connectCount <= 4) { // sum limit 200 * 2^4 = 3200ms
+          disconnectTimes.push(Date.now());
+          client.forceDisconnect();
+        } else {
+          for (let i = 0; i < disconnectTimes.length; i += 1) {
+            const actualDelay = reconnectTimes[i+1] - disconnectTimes[i];
+            const expectedDelay = reconnectDelay * Math.pow(2, i);
+            expect(actualDelay).toBeGreaterThanOrEqual(expectedDelay);
+            expect(actualDelay).toBeLessThan(expectedDelay * 1.1); // 10% tolerance
+          }
+
+          done();
+        }
+      }
+    });
+
+    client.activate();
+  }, 20000);
 });
