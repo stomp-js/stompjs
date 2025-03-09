@@ -94,134 +94,65 @@ describe('Stomp Reconnect', function () {
     client.activate();
   });
 
-  it('Should have exact reconnect delay in default linear mode', function (done) {
-    const reconnectDelay = 300;
-    let firstConnect = true;
-
-    let disconnectTime;
-    let reconnectTime;
-
-    // LINEAR by default
-    client.configure({
-      reconnectDelay: reconnectDelay,
-
-      onConnect: () => {
-        if (firstConnect) {
-          firstConnect = false;
-          disconnectTime = Date.now();
-          client.forceDisconnect();
-        } else {
-          reconnectTime = Date.now();
-          const actualDelay = reconnectTime - disconnectTime;
-          expect(actualDelay).toBeGreaterThanOrEqual(reconnectDelay);
-          expect(actualDelay).toBeLessThan(reconnectDelay * 1.1); // 10% tolerance
-
-          done();
-        }
-      }
-    });
-
-    client.activate();
-  });
-
-  it('Should ensure the reconnect delays stay the same in default linear mode', function(done) {
-    const reconnectDelay = 250;
+  const collectReconnectDelays = (client, config, numDelays) => {
     const disconnectTimes = [];
     const reconnectTimes = [];
-
     let connectCount = 0;
-
-    client.configure({
-      reconnectDelay: reconnectDelay,
-      onConnect: () => {
-        connectCount += 1;
-
-        reconnectTimes.push(Date.now());
-
-        if (connectCount <= 5) { // it all should add to 1250 ms          disconnectTimes.push(Date.now());
-          client.forceDisconnect();
-        } else {
-          for (let i = 0; i < disconnectTimes.length; i += 1) {
-            const actualDelay = reconnectTimes[i+1] - disconnectTimes[i];
-            expect(actualDelay).toBeGreaterThanOrEqual(reconnectDelay);
-            expect(actualDelay).toBeLessThan(reconnectDelay * 1.1); // 10% tolerance
+  
+    return new Promise((resolve) => {
+      client.configure({
+        ...config,
+        onConnect: () => {
+          connectCount += 1;
+          reconnectTimes.push(Date.now());
+  
+          if (connectCount <= numDelays) {
+            disconnectTimes.push(Date.now());
+            client.forceDisconnect();
+          } else {
+            const deltas = [];
+            for (let i = 0; i < disconnectTimes.length; i += 1) {
+              deltas.push(reconnectTimes[i + 1] - disconnectTimes[i]);
+            }
+            resolve(deltas);
           }
-
-          done();
         }
-      }
+      });
+  
+      client.activate();
     });
+  };
 
-    client.activate();
+  // we want to verify our delays with a 10% tolerance on the upper end
+  const verifyDelays = (actualDelays, expectedDelays) => {
+    actualDelays.forEach((delay, i) => {
+      expect(delay).toBeGreaterThanOrEqual(expectedDelays[i]);
+      expect(delay).toBeLessThan(expectedDelays[i] * 1.1); 
+    });
+  };
+
+  it('Should ensure the reconnect delays stay the same in default linear mode', async function() {
+    const delays = await collectReconnectDelays(client, 
+      { reconnectDelay: 250 }, 
+      5
+    );
+    verifyDelays(delays, [250, 250, 250, 250, 250]); // All delays should be the same
   });
-
-  it('Should ensure the reconnect delays increase in backoff mode', function(done) {
-    const reconnectDelay = 400;
-
-    const expectedDelays = [400, 800, 1600, 3200]; // Each delay doubles
-    const disconnectTimes = [];
-    const reconnectTimes = [];
-
-    let connectCount = 0;
-
-    client.configure({
-      reconnectDelay: reconnectDelay,
-      reconnectTimeMode: 1, // exponential mode (can't reference enum so we're putting the number)
-
-      onConnect: () => {
-        connectCount += 1;
-        reconnectTimes.push(Date.now());
-
-        if (connectCount <= expectedDelays.length) { // sum limit 400 * 2^4 = 6400ms
-          disconnectTimes.push(Date.now());
-          client.forceDisconnect();
-        } else {
-          for (let i = 0; i < disconnectTimes.length; i += 1) {
-            const actualDelay = reconnectTimes[i+1] - disconnectTimes[i];
-            expect(actualDelay).toBeGreaterThanOrEqual(expectedDelays[i]);
-            expect(actualDelay).toBeLessThan(expectedDelays[i] * 1.1); // 10% tolerance
-          }
-
-          done();
-        }
-      }
-    });
-
-    client.activate();
+  
+  // Note: We use reconnectTimeMode: 1 as we can't directly include the EXPONENTIAL enum value
+  it('Should ensure the reconnect delays increase in backoff mode', async function() {
+    const delays = await collectReconnectDelays(client,
+      { reconnectDelay: 400, reconnectTimeMode: 1 },
+      4
+    );
+    verifyDelays(delays, [400, 800, 1600, 3200]); // Each delay doubles
   }, 20000);
-
-  it('Should respect maxReconnectDelay in exponential mode', function(done) {
-    const reconnectDelay = 400;
-    const maxReconnectDelay = 1000;
-
-    const expectedDelays = [400, 800, 1000, 1000, 1000]; // Hits ceiling
-    const disconnectTimes = [];
-    const reconnectTimes = [];
-
-    let connectCount = 0;
-
-    client.configure({
-      reconnectDelay: reconnectDelay,
-      maxReconnectDelay: maxReconnectDelay,
-      reconnectTimeMode: 1, // exponential mode
-      onConnect: () => {
-        connectCount += 1;
-        reconnectTimes.push(Date.now());
-
-        if (connectCount <= expectedDelays.length) {
-          disconnectTimes.push(Date.now());
-          client.forceDisconnect();
-        } else {
-          for (let i = 0; i < disconnectTimes.length; i += 1) {
-            const actualDelay = reconnectTimes[i+1] - disconnectTimes[i];
-            expect(actualDelay).toBeGreaterThanOrEqual(expectedDelays[i]);
-            expect(actualDelay).toBeLessThan(expectedDelays[i] * 1.1); // 10% tolerance
-          }
-          done();
-        }
-      }
-    });
-
-    client.activate();
+  
+  it('Should respect maxReconnectDelay in exponential mode', async function() {
+    const delays = await collectReconnectDelays(client,
+      { reconnectDelay: 400, maxReconnectDelay: 1000, reconnectTimeMode: 1 },
+      5
+    );
+    verifyDelays(delays, [400, 800, 1000, 1000, 1000]); // Hits ceiling at 1000
   }, 20000);
 });
