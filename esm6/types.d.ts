@@ -7,33 +7,33 @@ import { Versions } from './versions.js';
  *
  * Part of `@stomp/stompjs`.
  */
-export declare type debugFnType = (msg: string) => void;
+export type debugFnType = (msg: string) => void;
 /**
  * This callback will receive a {@link IMessage} as parameter.
  *
  * Part of `@stomp/stompjs`.
  */
-export declare type messageCallbackType = (message: IMessage) => void;
+export type messageCallbackType = (message: IMessage) => void;
 /**
  * This callback will receive a {@link IFrame} as parameter.
  *
  * Part of `@stomp/stompjs`.
  */
-export declare type frameCallbackType = ((frame: IFrame) => void) | (() => void);
+export type frameCallbackType = ((frame: IFrame) => void) | (() => void);
 /**
  * This callback will receive a [CloseEvent]{@link https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent}
  * as parameter.
  *
  * Part of `@stomp/stompjs`.
  */
-export declare type closeEventCallbackType<T = any> = (evt: T) => void;
+export type closeEventCallbackType<T = any> = (evt: T) => void;
 /**
  * This callback will receive an [Event]{@link https://developer.mozilla.org/en-US/docs/Web/API/Event}
  * as parameter.
  *
  * Part of `@stomp/stompjs`.
  */
-export declare type wsErrorCallbackType<T = any> = (evt: T) => void;
+export type wsErrorCallbackType<T = any> = (evt: T) => void;
 /**
  * Parameters for [Client#publish]{@link Client#publish}.
  * Aliased as publishParams as well.
@@ -66,7 +66,7 @@ export interface IPublishParams {
 /**
  * Backward compatibility, switch to {@link IPublishParams}.
  */
-export declare type publishParams = IPublishParams;
+export type publishParams = IPublishParams;
 /**
  * Used in {@link IRawFrameType}
  *
@@ -74,7 +74,7 @@ export declare type publishParams = IPublishParams;
  *
  * @internal
  */
-export declare type RawHeaderType = [string, string];
+export type RawHeaderType = [string, string];
 /**
  * The parser yield frames in this structure
  *

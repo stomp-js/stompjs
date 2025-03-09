@@ -8,6 +8,46 @@ import { Versions } from './versions.js';
  */
 export class Client {
     /**
+     * Underlying WebSocket instance, READONLY.
+     */
+    get webSocket() {
+        return this._stompHandler?._webSocket;
+    }
+    /**
+     * Disconnection headers.
+     */
+    get disconnectHeaders() {
+        return this._disconnectHeaders;
+    }
+    set disconnectHeaders(value) {
+        this._disconnectHeaders = value;
+        if (this._stompHandler) {
+            this._stompHandler.disconnectHeaders = this._disconnectHeaders;
+        }
+    }
+    /**
+     * `true` if there is an active connection to STOMP Broker
+     */
+    get connected() {
+        return !!this._stompHandler && this._stompHandler.connected;
+    }
+    /**
+     * version of STOMP protocol negotiated with the server, READONLY
+     */
+    get connectedVersion() {
+        return this._stompHandler ? this._stompHandler.connectedVersion : undefined;
+    }
+    /**
+     * if the client is active (connected or going to reconnect)
+     */
+    get active() {
+        return this.state === ActivationState.ACTIVE;
+    }
+    _changeState(state) {
+        this.state = state;
+        this.onChangeState(state);
+    }
+    /**
      * Create an instance.
      */
     constructor(conf = {}) {
@@ -112,46 +152,6 @@ export class Client {
         this._disconnectHeaders = {};
         // Apply configuration
         this.configure(conf);
-    }
-    /**
-     * Underlying WebSocket instance, READONLY.
-     */
-    get webSocket() {
-        return this._stompHandler?._webSocket;
-    }
-    /**
-     * Disconnection headers.
-     */
-    get disconnectHeaders() {
-        return this._disconnectHeaders;
-    }
-    set disconnectHeaders(value) {
-        this._disconnectHeaders = value;
-        if (this._stompHandler) {
-            this._stompHandler.disconnectHeaders = this._disconnectHeaders;
-        }
-    }
-    /**
-     * `true` if there is an active connection to STOMP Broker
-     */
-    get connected() {
-        return !!this._stompHandler && this._stompHandler.connected;
-    }
-    /**
-     * version of STOMP protocol negotiated with the server, READONLY
-     */
-    get connectedVersion() {
-        return this._stompHandler ? this._stompHandler.connectedVersion : undefined;
-    }
-    /**
-     * if the client is active (connected or going to reconnect)
-     */
-    get active() {
-        return this.state === ActivationState.ACTIVE;
-    }
-    _changeState(state) {
-        this.state = state;
-        this.onChangeState(state);
     }
     /**
      * Update configuration.

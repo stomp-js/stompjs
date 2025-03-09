@@ -12,6 +12,12 @@ import { augmentWebsocket } from './augment-websocket.js';
  * @internal
  */
 export class StompHandler {
+    get connectedVersion() {
+        return this._connectedVersion;
+    }
+    get connected() {
+        return this._connected;
+    }
     constructor(_client, _webSocket, config) {
         this._client = _client;
         this._webSocket = _webSocket;
@@ -102,12 +108,6 @@ export class StompHandler {
         this.onUnhandledMessage = config.onUnhandledMessage;
         this.onUnhandledReceipt = config.onUnhandledReceipt;
         this.onUnhandledFrame = config.onUnhandledFrame;
-    }
-    get connectedVersion() {
-        return this._connectedVersion;
-    }
-    get connected() {
-        return this._connected;
     }
     start() {
         const parser = new Parser(

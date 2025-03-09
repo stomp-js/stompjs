@@ -32,4 +32,4 @@ export interface IFrame {
 /**
  * Alias for {@link IFrame}
  */
-export declare type Frame = IFrame;
+export type Frame = IFrame;

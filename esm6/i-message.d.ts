@@ -29,4 +29,4 @@ export interface IMessage extends IFrame {
  *
  * Part of `@stomp/stompjs`.
  */
-export declare type Message = IMessage;
+export type Message = IMessage;

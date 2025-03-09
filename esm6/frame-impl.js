@@ -6,6 +6,25 @@ import { BYTE } from './byte.js';
  */
 export class FrameImpl {
     /**
+     * body of the frame
+     */
+    get body() {
+        if (!this._body && this.isBinaryBody) {
+            this._body = new TextDecoder().decode(this._binaryBody);
+        }
+        return this._body || '';
+    }
+    /**
+     * body as Uint8Array
+     */
+    get binaryBody() {
+        if (!this._binaryBody && !this.isBinaryBody) {
+            this._binaryBody = new TextEncoder().encode(this._body);
+        }
+        // At this stage it will definitely have a valid value
+        return this._binaryBody;
+    }
+    /**
      * Frame constructor. `command`, `headers` and `body` are available as properties.
      *
      * @internal
@@ -24,25 +43,6 @@ export class FrameImpl {
         }
         this.escapeHeaderValues = escapeHeaderValues || false;
         this.skipContentLengthHeader = skipContentLengthHeader || false;
-    }
-    /**
-     * body of the frame
-     */
-    get body() {
-        if (!this._body && this.isBinaryBody) {
-            this._body = new TextDecoder().decode(this._binaryBody);
-        }
-        return this._body || '';
-    }
-    /**
-     * body as Uint8Array
-     */
-    get binaryBody() {
-        if (!this._binaryBody && !this.isBinaryBody) {
-            this._binaryBody = new TextEncoder().encode(this._body);
-        }
-        // At this stage it will definitely have a valid value
-        return this._binaryBody;
     }
     /**
      * deserialize a STOMP Frame from raw data.
