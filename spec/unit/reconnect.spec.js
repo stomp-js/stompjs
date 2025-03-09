@@ -133,33 +133,76 @@ describe('Stomp Reconnect', function () {
   };
 
   describe('Reconnection delays', () => {
-    it('Should ensure the reconnect delays stay the same in default linear mode', async function() {
-      const expectedDelays = [250, 250, 250, 250, 250]; // All delays should be the same
-      const delays = await collectReconnectDelays(client, 
-        { reconnectDelay: 250 }, 
-        expectedDelays.length
-      );
-      verifyDelays(delays, expectedDelays);
+    describe('Default Linear mode', () => {
+      it('Should ensure the reconnect delays stay the same in default linear mode', async function() {
+        const expectedDelays = [250, 250, 250, 250, 250]; // All delays should be the same
+        const delays = await collectReconnectDelays(client, 
+          { reconnectDelay: 250 }, 
+          expectedDelays.length
+        );
+        verifyDelays(delays, expectedDelays);
+      });
+
+      it('Should use maxReconnectDelay as base when less than reconnectDelay', async function() {
+        const debugSpy = spyOn(client, 'debug').and.callThrough();
+  
+        const expectedDelays = [400, 400, 400]; // Capped at 400 as the max is lower than the typical delay
+        const delays = await collectReconnectDelays(client,
+          { 
+            reconnectDelay: 400, 
+            maxReconnectDelay: 200, // Set lower than reconnectDelay
+          },
+          expectedDelays.length
+        );
+        verifyDelays(delays, expectedDelays);
+        
+        // Verify warning was logged with updated message
+        expect(debugSpy).toHaveBeenCalledWith(
+          'Warning: maxReconnectDelay (1000ms) is set but will have no effect because reconnectTimeMode is LINEAR.'
+        );
+      });
     });
-    
+
     // Note: We use reconnectTimeMode: 1 as we can't directly include the EXPONENTIAL enum value
-    it('Should ensure the reconnect delays increase in backoff mode', async function() {
-      const expectedDelays = [400, 800, 1600, 3200]; // Each delay doubles
-      const delays = await collectReconnectDelays(client,
-        { reconnectDelay: 400, reconnectTimeMode: 1 },
-        expectedDelays.length
-      );
-      verifyDelays(delays, expectedDelays);
-    }, 20000);
-    
-    it('Should respect maxReconnectDelay in exponential mode', async function() {
-      const expectedDelays = [400, 800, 1000, 1000, 1000]; // Hits ceiling at 1000
-      const delays = await collectReconnectDelays(client,
-        { reconnectDelay: 400, maxReconnectDelay: 1000, reconnectTimeMode: 1 },
-        expectedDelays.length
-      );
-      verifyDelays(delays, expectedDelays);
-    }, 20000);
+    describe('Exponential mode', () => {
+      it('Should ensure the reconnect delays increase in backoff mode', async function() {
+        const expectedDelays = [400, 800, 1600, 3200]; // Each delay doubles
+        const delays = await collectReconnectDelays(client,
+          { reconnectDelay: 400, reconnectTimeMode: 1 },
+          expectedDelays.length
+        );
+        verifyDelays(delays, expectedDelays);
+      }, 20000);
+
+      it('Should respect maxReconnectDelay in exponential mode', async function() {
+        const expectedDelays = [400, 800, 1000, 1000, 1000]; // Hits ceiling at 1000
+        const delays = await collectReconnectDelays(client,
+          { reconnectDelay: 400, maxReconnectDelay: 1000, reconnectTimeMode: 1 },
+          expectedDelays.length
+        );
+        verifyDelays(delays, expectedDelays);
+      }, 20000);
+  
+      it('Should use maxReconnectDelay as base when less than reconnectDelay', async function() {
+        const debugSpy = spyOn(client, 'debug').and.callThrough();
+  
+        const expectedDelays = [400, 400, 400]; // Capped at 400 as the max is lower than the typical delay
+        const delays = await collectReconnectDelays(client,
+          { 
+            reconnectDelay: 400, 
+            maxReconnectDelay: 200, // Set lower than reconnectDelay
+            reconnectTimeMode: 1 
+          },
+          expectedDelays.length
+        );
+        verifyDelays(delays, expectedDelays);
+        
+        // Verify warning was logged with updated message
+        expect(debugSpy).toHaveBeenCalledWith(
+          'Warning: maxReconnectDelay (200ms) is less than reconnectDelay (400ms). Using reconnectDelay as the maxReconnectDelay delay.'
+        );
+      }, 20000);
+    });
   });
   
   describe('Recconection delay lifecycle with activation/deactivation', () => {

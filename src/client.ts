@@ -396,6 +396,16 @@ export class Client {
   public configure(conf: StompConfig): void {
     // bulk assign all properties to this
     (Object as any).assign(this, conf);
+
+    // Warn on incorrect maxReconnectDelay settings
+    if (this.maxReconnectDelay > 0) {
+      if (this.reconnectTimeMode === ReconnectionTimeMode.LINEAR) {
+        this.debug(`Warning: maxReconnectDelay (${this.maxReconnectDelay}ms) is set but will have no effect because reconnectTimeMode is LINEAR.`);
+      } else if (this.maxReconnectDelay < this.reconnectDelay) {
+        this.debug(`Warning: maxReconnectDelay (${this.maxReconnectDelay}ms) is less than reconnectDelay (${this.reconnectDelay}ms). Using reconnectDelay as the maxReconnectDelay delay.`);
+        this.maxReconnectDelay = this.reconnectDelay;
+      }
+    }
   }
 
   /**
