@@ -1,5 +1,9 @@
 # Change Log
 
+# 7.0.1 (2025-03-08)
+
+- Update all NPM devDependencies.
+
 # 7.0.0 (2023-02-08)
 
 # 7.0.0-beta5 (2023-01-31)
