@@ -98,6 +98,14 @@ export class Client {
   private _nextReconnectDelay: number = 0;
 
   /**
+   * Maximum time to wait between reconnects, in milliseconds. Defaults to 15 minutes.
+   * Only relevant when reconnectTimeMode not LINEAR (e.g. EXPONENTIAL).
+   * Set to 0 to wait indefinitely.
+   */
+  public maxReconnectDelay: number = 15 * 60 * 1000; // 15 minutes in ms
+
+
+  /**
    * Reconnection wait time mode, either linear (default) or exponential
    */
   public reconnectTimeMode: ReconnectionTimeMode = ReconnectionTimeMode.LINEAR;
@@ -554,7 +562,7 @@ export class Client {
         if (this.reconnectTimeMode === ReconnectionTimeMode.EXPONENTIAL) {
           this._nextReconnectDelay = this._nextReconnectDelay * 2;
         }
-        
+
         this._connect();
       }, this._nextReconnectDelay);
     }
