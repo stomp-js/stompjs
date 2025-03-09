@@ -11,6 +11,7 @@ import {
   IPublishParams,
   IStompSocket,
   messageCallbackType,
+  ReconnectionTimeMode,
   StompSocketState,
   wsErrorCallbackType,
 } from './types.js';
@@ -89,6 +90,26 @@ export class Client {
    *  automatically reconnect with delay in milliseconds, set to 0 to disable.
    */
   public reconnectDelay: number = 5000;
+
+  /**
+   * tracking the time to the next reconnection. Initialized to [Client#reconnectDelay]{@link Client#reconnectDelay}'s value and it may 
+   * change depending on the [Client#reconnectTimeMode]{@link Client#reconnectTimeMode} setting
+   */
+  private _nextReconnectDelay: number = 0;
+
+  /**
+   * Maximum time to wait between reconnects, in milliseconds. Defaults to 15 minutes.
+   * Only relevant when reconnectTimeMode not LINEAR (e.g. EXPONENTIAL).
+   * Set to 0 to wait indefinitely.
+   */
+  public maxReconnectDelay: number = 15 * 60 * 1000; // 15 minutes in ms
+
+
+  /**
+   * Reconnection wait time mode, either linear (default) or exponential.
+   * Note: See [Client#maxReconnectDelay]{@link Client#maxReconnectDelay} for setting the maximum delay when exponential
+   */
+  public reconnectTimeMode: ReconnectionTimeMode = ReconnectionTimeMode.LINEAR;
 
   /**
    * Incoming heartbeat interval in milliseconds. Set to 0 to disable.
@@ -375,12 +396,19 @@ export class Client {
   public configure(conf: StompConfig): void {
     // bulk assign all properties to this
     (Object as any).assign(this, conf);
+
+    // Warn on incorrect maxReconnectDelay settings
+    if (this.maxReconnectDelay > 0 && this.maxReconnectDelay < this.reconnectDelay) {
+      this.debug(`Warning: maxReconnectDelay (${this.maxReconnectDelay}ms) is less than reconnectDelay (${this.reconnectDelay}ms). Using reconnectDelay as the maxReconnectDelay delay.`);
+      this.maxReconnectDelay = this.reconnectDelay;
+    }
   }
 
   /**
    * Initiate the connection with the broker.
    * If the connection breaks, as per [Client#reconnectDelay]{@link Client#reconnectDelay},
-   * it will keep trying to reconnect.
+   * it will keep trying to reconnect. If the [Client#reconnectTimeMode]{@link Client#reconnectTimeMode} 
+   * is set to EXPONENTIAL it will increase the wait time exponentially
    *
    * Call [Client#deactivate]{@link Client#deactivate} to disconnect and stop reconnection attempts.
    */
@@ -393,6 +421,7 @@ export class Client {
 
       this._changeState(ActivationState.ACTIVE);
 
+      this._nextReconnectDelay = this.reconnectDelay;
       this._connect();
     };
 
@@ -533,12 +562,21 @@ export class Client {
   }
 
   private _schedule_reconnect(): void {
-    if (this.reconnectDelay > 0) {
-      this.debug(`STOMP: scheduling reconnection in ${this.reconnectDelay}ms`);
+    if (this._nextReconnectDelay > 0) {
+      this.debug(`STOMP: scheduling reconnection in ${this._nextReconnectDelay}ms`);
 
       this._reconnector = setTimeout(() => {
+        if (this.reconnectTimeMode === ReconnectionTimeMode.EXPONENTIAL) {
+          this._nextReconnectDelay = this._nextReconnectDelay * 2;
+
+          // Truncated exponential backoff with a set limit unless disabled
+          if (this.maxReconnectDelay !== 0) {
+            this._nextReconnectDelay = Math.min(this._nextReconnectDelay, this.maxReconnectDelay)
+          }
+        }
+
         this._connect();
-      }, this.reconnectDelay);
+      }, this._nextReconnectDelay);
     }
   }
 
@@ -576,6 +614,9 @@ export class Client {
     }
 
     this._changeState(ActivationState.DEACTIVATING);
+
+    // Reset reconnection timer just to be safe
+    this._nextReconnectDelay = 0;
 
     // Clear if a reconnection was scheduled
     if (this._reconnector) {

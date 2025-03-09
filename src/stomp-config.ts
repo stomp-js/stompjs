@@ -5,6 +5,7 @@ import {
   debugFnType,
   frameCallbackType,
   messageCallbackType,
+  ReconnectionTimeMode,
   wsErrorCallbackType,
 } from './types.js';
 import { Versions } from './versions.js';
@@ -41,6 +42,16 @@ export class StompConfig {
    * See [Client#reconnectDelay]{@link Client#reconnectDelay}.
    */
   public reconnectDelay?: number;
+
+  /**
+   * See [Client#maxReconnectDelay]{@link Client#maxReconnectDelay}
+   */
+  public maxReconnectDelay?: number;
+
+  /**
+   * See [Client#reconnectTimeMode]{@link Client#reconnectTimeMode}
+   */
+  public reconnectTimeMode?: ReconnectionTimeMode;
 
   /**
    * See [Client#heartbeatIncoming]{@link Client#heartbeatIncoming}.
