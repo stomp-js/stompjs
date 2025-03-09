@@ -548,14 +548,13 @@ export class Client {
 
   private _schedule_reconnect(): void {
     if (this._nextReconnectDelay > 0) {
-      if (this.reconnectTimeMode === ReconnectionTimeMode.EXPONENTIAL) {
-        this._nextReconnectDelay = this._nextReconnectDelay * 2;
-      }
-      // console.loggg('doesn't exist)
-
       this.debug(`STOMP: scheduling reconnection in ${this._nextReconnectDelay}ms`);
 
       this._reconnector = setTimeout(() => {
+        if (this.reconnectTimeMode === ReconnectionTimeMode.EXPONENTIAL) {
+          this._nextReconnectDelay = this._nextReconnectDelay * 2;
+        }
+        
         this._connect();
       }, this._nextReconnectDelay);
     }
