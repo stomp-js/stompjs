@@ -126,7 +126,7 @@ describe('Stomp Reconnect', function () {
 
   // we want to expect our delays with a 10% tolerance on the upper end
   const verifyDelays = (actualDelays, expectedDelays) => {
-    for (let i = 0; i < expected.length; i++) {
+    for (let i = 0; i < actualDelays.length; i++) {
       expect(actualDelays[i]).toBeGreaterThanOrEqual(expectedDelays[i]);
       expect(actualDelays[i]).toBeLessThan(expectedDelays[i] * 1.1); 
     }
@@ -134,66 +134,69 @@ describe('Stomp Reconnect', function () {
 
   describe('Reconnection delays', () => {
     it('Should ensure the reconnect delays stay the same in default linear mode', async function() {
+      const expectedDelays = [250, 250, 250, 250, 250]; // All delays should be the same
       const delays = await collectReconnectDelays(client, 
         { reconnectDelay: 250 }, 
-        5
+        expectedDelays.length
       );
-      verifyDelays(delays, [250, 250, 250, 250, 250]); // All delays should be the same
+      verifyDelays(delays, expectedDelays);
     });
     
     // Note: We use reconnectTimeMode: 1 as we can't directly include the EXPONENTIAL enum value
     it('Should ensure the reconnect delays increase in backoff mode', async function() {
+      const expectedDelays = [400, 800, 1600, 3200]; // Each delay doubles
       const delays = await collectReconnectDelays(client,
         { reconnectDelay: 400, reconnectTimeMode: 1 },
-        4
+        expectedDelays.length
       );
-      verifyDelays(delays, [400, 800, 1600, 3200]); // Each delay doubles
+      verifyDelays(delays, expectedDelays);
     }, 20000);
     
     it('Should respect maxReconnectDelay in exponential mode', async function() {
+      const expectedDelays = [400, 800, 1000, 1000, 1000]; // Hits ceiling at 1000
       const delays = await collectReconnectDelays(client,
         { reconnectDelay: 400, maxReconnectDelay: 1000, reconnectTimeMode: 1 },
-        5
+        expectedDelays.length
       );
-      verifyDelays(delays, [400, 800, 1000, 1000, 1000]); // Hits ceiling at 1000
+      verifyDelays(delays, expectedDelays);
     }, 20000);
   });
   
   describe('Recconection delay lifecycle with activation/deactivation', () => {
     it('Should use new reconnectDelay after deactivate/activate cycle', async function() {
-      const firstConfig = { 
-        reconnectDelay: 400, 
-        reconnectTimeMode: 1 
-      };
-    
-      const firstDelays = await collectReconnectDelays(client, firstConfig, 2);
-      verifyDelays(firstDelays, [400, 800, 1600]); // First sequence with 400ms base
-    
+      const firstExpectedDelays = [400, 800, 1600]; // First sequence with 400ms base
+      const firstDelays = await collectReconnectDelays(client,
+        { reconnectDelay: 400, reconnectTimeMode: 1 },
+        firstExpectedDelays.length
+      );
+      verifyDelays(firstDelays, firstExpectedDelays);
+  
       await client.deactivate();
-    
-      const secondConfig = {
-        reconnectDelay: 200,  // Changed base delay
-        reconnectTimeMode: 1
-      };
-      const secondDelays = await collectReconnectDelays(client, secondConfig, 2);
-      verifyDelays(secondDelays, [200, 400, 800]); // Second sequence with new 200ms base
+  
+      const secondExpectedDelays = [200, 400, 800]; // Second sequence with new 200ms base
+      const secondDelays = await collectReconnectDelays(client,
+        { reconnectDelay: 200, reconnectTimeMode: 1 },
+        secondExpectedDelays.length
+      );
+      verifyDelays(secondDelays, secondExpectedDelays);
     }, 20000);
   
     it('Should reset delays after deactivate', async function() {
-      const config = { 
-        reconnectDelay: 400, 
-        reconnectTimeMode: 1 
-      };
-    
-      const firstDelays = await collectReconnectDelays(client, config, 2);
-      verifyDelays(firstDelays, [400, 800, 1600]); // First sequence doubles
-    
-      await client.deactivate();
+      const expectedDelays = [400, 800, 1600]; // Sequence doubles
+      const firstDelays = await collectReconnectDelays(client,
+        { reconnectDelay: 400, reconnectTimeMode: 1 },
+        expectedDelays.length
+      );
+      verifyDelays(firstDelays, expectedDelays);
   
+      await client.deactivate();
       expect(client._nextReconnectDelay).toBe(0); // not strictly required but we reset to be safe
-    
-      const secondDelays = await collectReconnectDelays(client, config, 2);
-      verifyDelays(secondDelays, [400, 800, 1600]); // Second sequence starts fresh
+  
+      const secondDelays = await collectReconnectDelays(client,
+        { reconnectDelay: 400, reconnectTimeMode: 1 },
+        expectedDelays.length
+      );
+      verifyDelays(secondDelays, expectedDelays); // Second sequence starts fresh
     }, 20000);
   });
 });
