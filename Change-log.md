@@ -2,7 +2,8 @@
 
 # 7.1.0 (2025-03-XX)
 
-- Merge PR [#646](https://github.com/stomp-js/stompjs/pull/646). Many thanks [Harsh Deep](https://github.com/harsh183).
+- Exponential backoff during reconnect [#646](https://github.com/stomp-js/stompjs/pull/646). Many thanks [Harsh Deep](https://github.com/harsh183).
+- Pass client in beforeConnect [#636](https://github.com/stomp-js/stompjs/pull/636). Many thanks [Nikos Epping](https://github.com/Nikos410)
 
 # 7.0.1 (2025-03-08)
 
