@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rm -rf bundles esm6",
     "rollup": "rollup -c && rm -rf bundles/esm6/",
-    "build": "npm run clean && npx tsc && npm run rollup && rm -rf bundles/compatibility bundles/*.d.ts && cp spec/package.json bundles",
+    "build": "npm run clean && npx tsc && npm run rollup && rm -rf bundles/compatibility bundles/*.d.ts && cp spec/package.json bundles && date",
     "test": "jasmine",
     "karma": "karma start spec/karma.conf.js --single-run",
     "lint": "tslint 'src/**/*.ts'",
