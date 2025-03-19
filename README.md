@@ -141,6 +141,7 @@ If you want to understand the code, develop, or contribute. Please visit
 - [Genadi](https://github.com/genadis)
 - [Bobohuochai](https://github.com/bobohuochai)
 - [Sailai](https://github.com/sailai)
+- [Harsh Deep](https://github.com/harsh183)
 
 ## License
 

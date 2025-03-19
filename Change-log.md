@@ -1,5 +1,9 @@
 # Change Log
 
+# 7.1.0 (2025-03-XX)
+
+- Merge PR [#646](https://github.com/stomp-js/stompjs/pull/646). Many thanks [Harsh Deep](https://github.com/harsh183).
+
 # 7.0.1 (2025-03-08)
 
 - Update all NPM devDependencies.
