@@ -9,7 +9,7 @@ export class Ticker {
   `;
 
   private _worker?: Worker;
-  private _timer?: NodeJS.Timer;
+  private _timer?: any;
 
   constructor(
     private readonly _interval: number,
