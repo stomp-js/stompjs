@@ -93,7 +93,7 @@ export class Client {
   public reconnectDelay: number = 5000;
 
   /**
-   * tracking the time to the next reconnection. Initialized to [Client#reconnectDelay]{@link Client#reconnectDelay}'s value and it may 
+   * tracking the time to the next reconnection. Initialized to [Client#reconnectDelay]{@link Client#reconnectDelay}'s value and it may
    * change depending on the [Client#reconnectTimeMode]{@link Client#reconnectTimeMode} setting
    */
   private _nextReconnectDelay: number = 0;
@@ -104,7 +104,6 @@ export class Client {
    * Set to 0 to wait indefinitely.
    */
   public maxReconnectDelay: number = 15 * 60 * 1000; // 15 minutes in ms
-
 
   /**
    * Reconnection wait time mode, either linear (default) or exponential.
@@ -124,11 +123,18 @@ export class Client {
 
   /**
    * Outgoing heartbeat strategy.
-   * Can be worker or interval strategy, but will always use interval if the client is used in a non-browser environment.
-   * 
-   * Interval strategy can be helpful if you discover disconnects after moving the browser in the background while the client is connected.
-   * 
-   * Defaults to interval strategy.
+   * See https://github.com/stomp-js/stompjs/pull/579
+   *
+   * Can be worker or interval strategy, but will always use `interval`
+   * if web workers are unavailable, for example, in a non-browser environment.
+   *
+   * Using Web Workers may work better on long-running pages
+   * and mobile apps, as the browser may suspend Timers in the main page.
+   * Try the `Worker` mode if you discover disconnects when the browser tab is in the background.
+   *
+   * When used in a JS environment, use 'worker' or 'interval' as valid values.
+   *
+   * Defaults to `interval` strategy.
    */
   public heartbeatStrategy: TickerStrategy = TickerStrategy.Interval;
 
@@ -409,8 +415,13 @@ export class Client {
     (Object as any).assign(this, conf);
 
     // Warn on incorrect maxReconnectDelay settings
-    if (this.maxReconnectDelay > 0 && this.maxReconnectDelay < this.reconnectDelay) {
-      this.debug(`Warning: maxReconnectDelay (${this.maxReconnectDelay}ms) is less than reconnectDelay (${this.reconnectDelay}ms). Using reconnectDelay as the maxReconnectDelay delay.`);
+    if (
+      this.maxReconnectDelay > 0 &&
+      this.maxReconnectDelay < this.reconnectDelay
+    ) {
+      this.debug(
+        `Warning: maxReconnectDelay (${this.maxReconnectDelay}ms) is less than reconnectDelay (${this.reconnectDelay}ms). Using reconnectDelay as the maxReconnectDelay delay.`,
+      );
       this.maxReconnectDelay = this.reconnectDelay;
     }
   }
@@ -418,7 +429,7 @@ export class Client {
   /**
    * Initiate the connection with the broker.
    * If the connection breaks, as per [Client#reconnectDelay]{@link Client#reconnectDelay},
-   * it will keep trying to reconnect. If the [Client#reconnectTimeMode]{@link Client#reconnectTimeMode} 
+   * it will keep trying to reconnect. If the [Client#reconnectTimeMode]{@link Client#reconnectTimeMode}
    * is set to EXPONENTIAL it will increase the wait time exponentially
    *
    * Call [Client#deactivate]{@link Client#deactivate} to disconnect and stop reconnection attempts.
@@ -451,13 +462,15 @@ export class Client {
     await this.beforeConnect(this);
 
     if (this._stompHandler) {
-      this.debug('There is already a stompHandler, skipping the call to connect');
+      this.debug(
+        'There is already a stompHandler, skipping the call to connect',
+      );
       return;
     }
 
     if (!this.active) {
       this.debug(
-        'Client has been marked inactive, will not attempt to connect'
+        'Client has been marked inactive, will not attempt to connect',
       );
       return;
     }
@@ -475,7 +488,7 @@ export class Client {
         // Connection not established, close the underlying socket
         // a reconnection will be attempted
         this.debug(
-          `Connection not established in ${this.connectionTimeout}ms, closing socket`
+          `Connection not established in ${this.connectionTimeout}ms, closing socket`,
         );
         this.forceDisconnect();
       }, this.connectionTimeout);
@@ -510,7 +523,7 @@ export class Client {
 
         if (!this.active) {
           this.debug(
-            'STOMP got connected while deactivate was issued, will disconnect now'
+            'STOMP got connected while deactivate was issued, will disconnect now',
           );
           this._disposeStompHandler();
           return;
@@ -564,7 +577,7 @@ export class Client {
     } else if (this.brokerURL) {
       webSocket = new WebSocket(
         this.brokerURL,
-        this.stompVersions.protocolVersions()
+        this.stompVersions.protocolVersions(),
       );
     } else {
       throw new Error('Either brokerURL or webSocketFactory must be provided');
@@ -575,7 +588,9 @@ export class Client {
 
   private _schedule_reconnect(): void {
     if (this._nextReconnectDelay > 0) {
-      this.debug(`STOMP: scheduling reconnection in ${this._nextReconnectDelay}ms`);
+      this.debug(
+        `STOMP: scheduling reconnection in ${this._nextReconnectDelay}ms`,
+      );
 
       this._reconnector = setTimeout(() => {
         if (this.reconnectTimeMode === ReconnectionTimeMode.EXPONENTIAL) {
@@ -583,7 +598,10 @@ export class Client {
 
           // Truncated exponential backoff with a set limit unless disabled
           if (this.maxReconnectDelay !== 0) {
-            this._nextReconnectDelay = Math.min(this._nextReconnectDelay, this.maxReconnectDelay)
+            this._nextReconnectDelay = Math.min(
+              this._nextReconnectDelay,
+              this.maxReconnectDelay,
+            );
           }
         }
 
@@ -800,7 +818,7 @@ export class Client {
   public subscribe(
     destination: string,
     callback: messageCallbackType,
-    headers: StompHeaders = {}
+    headers: StompHeaders = {},
   ): StompSubscription {
     this._checkConnection();
     // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
@@ -888,7 +906,7 @@ export class Client {
   public ack(
     messageId: string,
     subscriptionId: string,
-    headers: StompHeaders = {}
+    headers: StompHeaders = {},
   ): void {
     this._checkConnection();
     // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
@@ -911,7 +929,7 @@ export class Client {
   public nack(
     messageId: string,
     subscriptionId: string,
-    headers: StompHeaders = {}
+    headers: StompHeaders = {},
   ): void {
     this._checkConnection();
     // @ts-ignore - we already checked that there is a _stompHandler, and it is connected

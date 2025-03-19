@@ -1,4 +1,4 @@
-import { TickerStrategy } from './types.js';
+import { debugFnType, TickerStrategy } from './types.js';
 
 export class Ticker {
   private readonly _workerScript = `
@@ -13,7 +13,8 @@ export class Ticker {
 
   constructor(
     private readonly _interval: number,
-    private readonly _strategy = TickerStrategy.Interval) {
+    private readonly _strategy = TickerStrategy.Interval,
+    private readonly _debug: debugFnType) {
   }
 
   public start(tick: (elapsedTime: number) => void): void {
@@ -36,6 +37,7 @@ export class Ticker {
   }
 
   private runWorker(tick: (elapsedTime: number) => void): void {
+    this._debug('Using runWorker for outgoing pings');
     if (!this._worker) {
       this._worker = new Worker(
         URL.createObjectURL(
@@ -47,6 +49,7 @@ export class Ticker {
   }
 
   private runInterval(tick: (elapsedTime: number) => void): void {
+    this._debug('Using runInterval for outgoing pings');
     if (!this._timer) {
       const startTime = Date.now();
       this._timer = setInterval(() => {
@@ -59,6 +62,7 @@ export class Ticker {
     if (this._worker) {
       this._worker.terminate();
       delete this._worker;
+      this._debug('Outgoing ping disposeWorker');
     }
   }
 
@@ -66,6 +70,7 @@ export class Ticker {
     if (this._timer) {
       clearInterval(this._timer);
       delete this._timer;
+      this._debug('Outgoing ping disposeInterval');
     }
   }
 }

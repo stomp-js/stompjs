@@ -166,7 +166,7 @@ export enum ReconnectionTimeMode {
 }
 
 /**
- * Possible ticker strategies
+ * Possible ticker strategies for outgoing heartbeat ping
  */
 export enum TickerStrategy {
   Interval = 'interval',

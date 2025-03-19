@@ -6,6 +6,7 @@ TEST = {
   badUrl: 'ws://localhost:61625',
   timeout: 2000,
   largeMessageSize: 1023, // in KB, in Node total WebSocket frames needs to be lesser than 1MB
+  testHeartBeatUsingWebWorkers: false,
 };
 
 WebSocket = require('ws');

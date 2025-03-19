@@ -6,6 +6,7 @@ TEST = {
   badUrl: 'ws://localhost:61625',
   timeout: 2000,
   largeMessageSize: 1024, // 1MB body
+  testHeartBeatUsingWebWorkers: true,
 };
 
 Stomp = StompJs.Stomp;
