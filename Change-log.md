@@ -1,9 +1,10 @@
 # Change Log
 
-# 7.1.0 (2025-03-XX)
+# 7.1.0 (2025-03-21)
 
 - Exponential backoff during reconnect [#646](https://github.com/stomp-js/stompjs/pull/646). Many thanks [Harsh Deep](https://github.com/harsh183).
-- Pass client in beforeConnect [#636](https://github.com/stomp-js/stompjs/pull/636). Many thanks [Nikos Epping](https://github.com/Nikos410)
+- Pass client in beforeConnect [#636](https://github.com/stomp-js/stompjs/pull/636). Many thanks [Nikos Epping](https://github.com/Nikos410).
+- Option for using Web Wrokers for outgoing heartbeat pings [#579](https://github.com/stomp-js/stompjs/pull/579), Many thanks [Tom Pachtner](https://github.com/tomamatics).
 
 # 7.0.1 (2025-03-08)
 
