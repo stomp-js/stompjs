@@ -2,6 +2,8 @@
 
 set -ex
 
+brew update
+
 brew install rabbitmq
 
 # Path depends on whether Apple or Intel silicon is in use, https://www.rabbitmq.com/docs/install-homebrew
