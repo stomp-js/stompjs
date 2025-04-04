@@ -117,7 +117,7 @@ export class StompConfig {
   /**
    * See [Client#beforeConnect]{@link Client#beforeConnect}.
    */
-  public beforeConnect?: () => void | Promise<void>;
+  public beforeConnect?: (client: Client) => void | Promise<void>;
 
   /**
    * See [Client#onConnect]{@link Client#onConnect}.
