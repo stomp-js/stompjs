@@ -10,6 +10,7 @@ import {
   wsErrorCallbackType,
 } from './types.js';
 import { Versions } from './versions.js';
+import { Client } from './client.js';
 
 /**
  * Configuration options for STOMP Client, each key corresponds to
