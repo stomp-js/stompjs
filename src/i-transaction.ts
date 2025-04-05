@@ -2,8 +2,6 @@
  * A Transaction is created by calling [Client#begin]{@link Client#begin}
  *
  * Part of `@stomp/stompjs`.
- *
- * TODO: Example and caveat
  */
 export interface ITransaction {
   /**

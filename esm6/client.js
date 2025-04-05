@@ -77,13 +77,21 @@ export class Client {
         this._nextReconnectDelay = 0;
         /**
          * Maximum time to wait between reconnects, in milliseconds. Defaults to 15 minutes.
-         * Only relevant when reconnectTimeMode not LINEAR (e.g. EXPONENTIAL).
-         * Set to 0 to wait indefinitely.
+         * Only relevant when [Client#reconnectTimeMode]{@link Client#reconnectTimeMode} not LINEAR (e.g., EXPONENTIAL).
+         * Set to 0 for no limit on wait time.
          */
         this.maxReconnectDelay = 15 * 60 * 1000; // 15 minutes in ms
         /**
          * Reconnection wait time mode, either linear (default) or exponential.
          * Note: See [Client#maxReconnectDelay]{@link Client#maxReconnectDelay} for setting the maximum delay when exponential
+         *
+         * ```javascript
+         * client.configure({
+         *   reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
+         *   reconnectDelay: 200, // It will wait 200, 400, 800 ms...
+         *   maxReconnectDelay: 10000, // Optional, when provided, it will not wait more that these ms
+         * })
+         * ```
          */
         this.reconnectTimeMode = ReconnectionTimeMode.LINEAR;
         /**

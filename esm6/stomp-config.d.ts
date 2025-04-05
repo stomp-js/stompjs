@@ -1,6 +1,7 @@
 import { StompHeaders } from './stomp-headers.js';
 import { ActivationState, TickerStrategy, closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, ReconnectionTimeMode, wsErrorCallbackType } from './types.js';
 import { Versions } from './versions.js';
+import { Client } from './client.js';
 /**
  * Configuration options for STOMP Client, each key corresponds to
  * field by the same name in {@link Client}. This can be passed to
@@ -88,7 +89,7 @@ export declare class StompConfig {
     /**
      * See [Client#beforeConnect]{@link Client#beforeConnect}.
      */
-    beforeConnect?: () => void | Promise<void>;
+    beforeConnect?: (client: Client) => void | Promise<void>;
     /**
      * See [Client#onConnect]{@link Client#onConnect}.
      */
