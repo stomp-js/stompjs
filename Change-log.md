@@ -1,5 +1,9 @@
 # Change Log
 
+# 7.1.1 (2025-04-05)
+
+- Fix StompConfig [#653](https://github.com/stomp-js/stompjs/pull/653). Many thanks [David Nussio](https://github.com/davidnussio).
+
 # 7.1.0 (2025-03-21)
 
 - Exponential backoff during reconnect [#646](https://github.com/stomp-js/stompjs/pull/646). Many thanks [Harsh Deep](https://github.com/harsh183).

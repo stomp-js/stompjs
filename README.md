@@ -144,6 +144,7 @@ If you want to understand the code, develop, or contribute. Please visit
 - [Harsh Deep](https://github.com/harsh183)
 - [Nikos Epping](https://github.com/Nikos410)
 - [Tom Pachtner](https://github.com/tomamatics)
+- [David Nussio](https://github.com/davidnussio)
 
 ## License
 
