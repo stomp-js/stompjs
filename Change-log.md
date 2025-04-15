@@ -8,7 +8,7 @@
 
 - Exponential backoff during reconnect [#646](https://github.com/stomp-js/stompjs/pull/646). Many thanks [Harsh Deep](https://github.com/harsh183).
 - Pass client in beforeConnect [#636](https://github.com/stomp-js/stompjs/pull/636). Many thanks [Nikos Epping](https://github.com/Nikos410).
-- Option for using Web Wrokers for outgoing heartbeat pings [#579](https://github.com/stomp-js/stompjs/pull/579), Many thanks [Tom Pachtner](https://github.com/tomamatics).
+- Option for using Web Workers for outgoing heartbeat pings [#579](https://github.com/stomp-js/stompjs/pull/579), Many thanks [Tom Pachtner](https://github.com/tomamatics).
 
 # 7.0.1 (2025-03-08)
 
@@ -71,7 +71,7 @@
 
 - Bug fix in connectionTimeout. Thanks to [Sailai](https://github.com/sailai).
   See [#368](https://github.com/stomp-js/stompjs/pull/368).
-- Exlude source map files from npm package,
+- Exclude source map files from npm package,
   See [#366](https://github.com/stomp-js/stompjs/issues/366)
 
 # 6.1.0 (2021-02-24)
