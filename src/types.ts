@@ -25,6 +25,13 @@ export type messageCallbackType = (message: IMessage) => void;
 export type frameCallbackType = ((frame: IFrame) => void) | (() => void);
 
 /**
+ * This callback is an "Event" only callback, no parameters provided.
+ *
+ * Part of `@stomp/stompjs`.
+ */
+export type emptyCallbackType = () => void;
+
+/**
  * This callback will receive a [CloseEvent]{@link https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent}
  * as parameter.
  *
@@ -198,4 +205,6 @@ export interface IStomptHandlerConfig {
   onUnhandledMessage: messageCallbackType;
   onUnhandledReceipt: frameCallbackType;
   onUnhandledFrame: frameCallbackType;
+  onHeartbeatReceived: emptyCallbackType;
+  onHeartbeatLost: emptyCallbackType;
 }

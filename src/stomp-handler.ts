@@ -11,6 +11,7 @@ import { Ticker } from './ticker.js';
 import {
   closeEventCallbackType,
   debugFnType,
+  emptyCallbackType,
   frameCallbackType,
   IPublishParams,
   IStompSocket,
@@ -47,6 +48,10 @@ export class StompHandler {
   public onUnhandledReceipt: frameCallbackType;
 
   public onUnhandledFrame: frameCallbackType;
+
+  public onHeartbeatReceived: emptyCallbackType;
+
+  public onHeartbeatLost: emptyCallbackType;
 
   public onConnect: frameCallbackType;
 
@@ -89,6 +94,7 @@ export class StompHandler {
   private _pinger?: Ticker;
   private _ponger: any;
   private _lastServerActivityTS: number;
+  private _parser: Parser | undefined;
 
   constructor(
     private _client: Client,
@@ -130,10 +136,12 @@ export class StompHandler {
     this.onUnhandledMessage = config.onUnhandledMessage;
     this.onUnhandledReceipt = config.onUnhandledReceipt;
     this.onUnhandledFrame = config.onUnhandledFrame;
+    this.onHeartbeatReceived = config.onHeartbeatReceived;
+    this.onHeartbeatLost = config.onHeartbeatLost;
   }
 
   public start(): void {
-    const parser = new Parser(
+    this._parser = new Parser(
       // On Frame
       rawFrame => {
         const frame = FrameImpl.fromRawFrame(
@@ -153,8 +161,11 @@ export class StompHandler {
       // On Incoming Ping
       () => {
         this.debug('<<< PONG');
+        this.onHeartbeatReceived();
       }
     );
+
+    const parser = this._parser;
 
     this._webSocket.onmessage = (evt: IStompSocketMessageEvent) => {
       this.debug('Received data');
@@ -308,6 +319,7 @@ export class StompHandler {
         // We wait twice the TTL to be flexible on window's setInterval calls
         if (delta > ttl * 2) {
           this.debug(`did not receive server activity for the last ${delta}ms`);
+          this.onHeartbeatLost();
           this._closeOrDiscardWebsocket();
         }
       }, ttl);
