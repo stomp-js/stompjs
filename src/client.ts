@@ -7,6 +7,7 @@ import {
   ActivationState,
   closeEventCallbackType,
   debugFnType,
+  emptyCallbackType,
   frameCallbackType,
   IPublishParams,
   IStompSocket,
@@ -256,6 +257,18 @@ export class Client {
   public onUnhandledFrame: frameCallbackType;
 
   /**
+   * Will be invoked when a heartbeat message is received from the STOMP broker.  Called on
+   * every heartbeat.
+   */
+  public onHeartbeatReceived: emptyCallbackType;
+
+  /**
+   * Will be invoked if the heartbeat interval has ellapsed without a heartbeat message from
+   * the STOMP broker, indicating some kind of communications failure.
+   */
+  public onHeartbeatLost: emptyCallbackType;
+
+  /**
    * `true` if there is an active connection to STOMP Broker
    */
   get connected(): boolean {
@@ -410,6 +423,8 @@ export class Client {
     this.onUnhandledMessage = noOp;
     this.onUnhandledReceipt = noOp;
     this.onUnhandledFrame = noOp;
+    this.onHeartbeatReceived = noOp;
+    this.onHeartbeatLost = noOp;
     this.onStompError = noOp;
     this.onWebSocketClose = noOp;
     this.onWebSocketError = noOp;
@@ -581,6 +596,12 @@ export class Client {
       },
       onUnhandledFrame: frame => {
         this.onUnhandledFrame(frame);
+      },
+      onHeartbeatReceived: () => {
+        this.onHeartbeatReceived();
+      },
+      onHeartbeatLost: () => {
+        this.onHeartbeatLost();
       },
     });
 
