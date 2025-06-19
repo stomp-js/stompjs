@@ -89,7 +89,7 @@ export class Client {
          * client.configure({
          *   reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
          *   reconnectDelay: 200, // It will wait 200, 400, 800 ms...
-         *   maxReconnectDelay: 10000, // Optional, when provided, it will not wait more that these ms
+         *   maxReconnectDelay: 10000, // Optional, when provided, it will not wait more than these ms
          * })
          * ```
          */
@@ -488,7 +488,7 @@ export class Client {
      * The value (say receipt-id) for this header needs to be unique for each use.
      * Typically, a sequence, a UUID, a random number or a combination may be used.
      *
-     * A complaint broker will send a RECEIPT frame when an operation has actually been completed.
+     * A compliant broker will send a RECEIPT frame when an operation has actually been completed.
      * The operation needs to be matched based on the value of the receipt-id.
      *
      * This method allows watching for a receipt and invoking the callback
