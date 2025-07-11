@@ -182,6 +182,7 @@ export interface IStomptHandlerConfig {
   connectHeaders: StompHeaders;
   disconnectHeaders: StompHeaders;
   heartbeatIncoming: number;
+  heartbeatGracePeriods: number;
   heartbeatOutgoing: number;
   heartbeatStrategy: TickerStrategy;
   splitLargeFrames: boolean;
