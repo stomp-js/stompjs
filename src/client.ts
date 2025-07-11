@@ -125,6 +125,11 @@ export class Client {
   public heartbeatIncoming: number = 10000;
 
   /**
+   * Incoming heartbeat grace periods. Will close connection if delta > ttl * eartbeatGracePeriods
+   */
+  public heartbeatGracePeriods: number = 2;
+
+  /**
    * Outgoing heartbeat interval in milliseconds. Set to 0 to disable.
    */
   public heartbeatOutgoing: number = 10000;
@@ -513,6 +518,7 @@ export class Client {
       connectHeaders: this.connectHeaders,
       disconnectHeaders: this._disconnectHeaders,
       heartbeatIncoming: this.heartbeatIncoming,
+      heartbeatGracePeriods: this.heartbeatGracePeriods,
       heartbeatOutgoing: this.heartbeatOutgoing,
       heartbeatStrategy: this.heartbeatStrategy,
       splitLargeFrames: this.splitLargeFrames,
