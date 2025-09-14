@@ -40,7 +40,7 @@ export class StompHandler {
 
   public heartbeatIncoming: number;
 
-  public heartbeatGracePeriods: number;
+  public heartbeatToleranceMultiplier: number;
 
   public heartbeatOutgoing: number;
 
@@ -117,7 +117,7 @@ export class StompHandler {
     this.connectHeaders = config.connectHeaders;
     this.disconnectHeaders = config.disconnectHeaders;
     this.heartbeatIncoming = config.heartbeatIncoming;
-    this.heartbeatGracePeriods = config.heartbeatGracePeriods;
+    this.heartbeatToleranceMultiplier = config.heartbeatGracePeriods;
     this.heartbeatOutgoing = config.heartbeatOutgoing;
     this.splitLargeFrames = config.splitLargeFrames;
     this.maxWebSocketChunkSize = config.maxWebSocketChunkSize;
@@ -309,7 +309,7 @@ export class StompHandler {
       this._ponger = setInterval(() => {
         const delta = Date.now() - this._lastServerActivityTS;
         // We wait multiple grace periods to be flexible on window's setInterval calls
-        if (delta > ttl * this.heartbeatGracePeriods) {
+        if (delta > ttl * this.heartbeatToleranceMultiplier) {
           this.debug(`did not receive server activity for the last ${delta}ms`);
           this._closeOrDiscardWebsocket();
         }

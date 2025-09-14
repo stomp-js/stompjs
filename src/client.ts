@@ -125,9 +125,13 @@ export class Client {
   public heartbeatIncoming: number = 10000;
 
   /**
-   * Incoming heartbeat grace periods. Will close connection if delta > ttl * eartbeatGracePeriods
+   * A multiplier used to calculate the tolerance level for heartbeat intervals.
+   * This variable determines the acceptable margin of error or flexibility when
+   * evaluating the timing of heartbeat signals.
+   *
+   * Default is 2.
    */
-  public heartbeatGracePeriods: number = 2;
+  public heartbeatToleranceMultiplier: number = 2;
 
   /**
    * Outgoing heartbeat interval in milliseconds. Set to 0 to disable.
@@ -518,7 +522,7 @@ export class Client {
       connectHeaders: this.connectHeaders,
       disconnectHeaders: this._disconnectHeaders,
       heartbeatIncoming: this.heartbeatIncoming,
-      heartbeatGracePeriods: this.heartbeatGracePeriods,
+      heartbeatGracePeriods: this.heartbeatToleranceMultiplier,
       heartbeatOutgoing: this.heartbeatOutgoing,
       heartbeatStrategy: this.heartbeatStrategy,
       splitLargeFrames: this.splitLargeFrames,

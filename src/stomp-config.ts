@@ -61,9 +61,9 @@ export class StompConfig {
   public heartbeatIncoming?: number;
 
   /**
-   * See [Client#heartbeatGracePeriods]{@link Client#heartbeatGracePeriods}.
+   * See [Client#heartbeatToleranceMultiplier]{@link Client#heartbeatToleranceMultiplier}.
    */
-  public heartbeatGracePeriods?: number;
+  public heartbeatToleranceMultiplier?: number;
 
   /**
    * See [Client#heartbeatOutgoing]{@link Client#heartbeatOutgoing}.
