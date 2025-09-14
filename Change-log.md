@@ -1,5 +1,11 @@
 # Change Log
 
+# 7.2.0 (TBD)
+
+- Fix typos in Change-log.md [#656](https://github.com/stomp-js/stompjs/pull/656). Many thanks [Camille Drapier](https://github.com/CamilleDrapier).
+- ci: Set default workflow permissions to read-only [#662](https://github.com/stomp-js/stompjs/pull/662). Many thanks [chai min](https://github.com/minchai23).
+- Fix typos in JSDoc comments across multiple functions [#672](https://github.com/stomp-js/stompjs/pull/672). Many thanks [umsungjun](https://github.com/umsungjun).
+
 # 7.1.1 (2025-04-05)
 
 - Fix StompConfig [#653](https://github.com/stomp-js/stompjs/pull/653). Many thanks [David Nussio](https://github.com/davidnussio).

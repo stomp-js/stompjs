@@ -145,6 +145,9 @@ If you want to understand the code, develop, or contribute. Please visit
 - [Nikos Epping](https://github.com/Nikos410)
 - [Tom Pachtner](https://github.com/tomamatics)
 - [David Nussio](https://github.com/davidnussio)
+- [Camille Drapier](https://github.com/CamilleDrapier)
+- [chai min](https://github.com/minchai23)
+- [umsungjun](https://github.com/umsungjun)
 
 ## License
 
