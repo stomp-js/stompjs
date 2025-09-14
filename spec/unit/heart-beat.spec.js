@@ -35,13 +35,13 @@ function executeTestCases(useWebWorkerHeartbeats, mode) {
       await disconnectStomp(client);
     });
 
-    // Find length -
+    // Find length
     const length = data => {
       return typeof data === 'string' ? data.length : data.byteLength;
     };
 
     // See https://github.com/stomp-js/stompjs/issues/188
-    it('Should allow server to not send heartbeat header', done => {
+    it('Should allow server to not send heartbeat header', async () => {
       overRideFactory(
         client,
         class extends WrapperWS {
@@ -59,14 +59,14 @@ function executeTestCases(useWebWorkerHeartbeats, mode) {
         },
       );
 
-      client.onConnect = () => {
-        done();
-      };
+      await new Promise(resolve => {
+        client.onConnect = resolve;
 
-      client.activate();
+        client.activate();
+      });
     });
 
-    const incomingPingTest = done => {
+    const incomingPingTest = async () => {
       client.heartbeatIncoming = 1000;
       client.heartbeatOutgoing = 0;
 
@@ -84,15 +84,17 @@ function executeTestCases(useWebWorkerHeartbeats, mode) {
         },
       );
 
-      client.onWebSocketClose = ev => {
-        if (client.discardWebsocketOnCommFailure) {
-          // Discarded socket is closed with a different set of codes.
-          expect([1006, 4001]).toContain(ev.code);
-        }
-        done();
-      };
+      await new Promise(resolve => {
+        client.onWebSocketClose = ev => {
+          if (client.discardWebsocketOnCommFailure) {
+            // The discarded socket is closed with a different set of codes.
+            expect([1006, 4001]).toContain(ev.code);
+          }
+          resolve();
+        };
 
-      client.activate();
+        client.activate();
+      });
     };
 
     it('Should close connection when no incoming ping', incomingPingTest);
@@ -105,7 +107,7 @@ function executeTestCases(useWebWorkerHeartbeats, mode) {
       it('Should close connection when no incoming ping', incomingPingTest);
     });
 
-    it('Should close connection when no outgoing ping', done => {
+    it('Should close connection when no outgoing ping', async () => {
       client.heartbeatIncoming = 0;
       client.heartbeatOutgoing = 1000;
 
@@ -123,11 +125,11 @@ function executeTestCases(useWebWorkerHeartbeats, mode) {
         },
       );
 
-      client.onWebSocketClose = ev => {
-        done();
-      };
+      await new Promise(resolve => {
+        client.onWebSocketClose = resolve;
 
-      client.activate();
+        client.activate();
+      });
     });
   });
 }
