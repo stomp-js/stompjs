@@ -149,6 +149,7 @@ If you want to understand the code, develop, or contribute. Please visit
 - [chai min](https://github.com/minchai23)
 - [umsungjun](https://github.com/umsungjun)
 - [tomek3e](https://github.com/tomek3e)
+- [Samuel Yinger](https://github.com/GoldenSunX)
 
 ## License
 
