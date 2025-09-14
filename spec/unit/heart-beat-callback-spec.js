@@ -58,7 +58,7 @@ describe('Client heartbeat handling (callbacks)', () => {
         setTimeout(() => {
           expect(onHeartbeatLostSpy).toHaveBeenCalled(); // Verify the callback was triggered
           resolve();
-        }, 2300); // Wait longer than the allowed tolerance period
+        }, 2300); // Wait longer than 2x the heartbeat interval
       };
 
       client.activate();
