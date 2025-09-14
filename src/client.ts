@@ -263,7 +263,7 @@ export class Client {
   public onHeartbeatReceived: emptyCallbackType;
 
   /**
-   * Will be invoked if the heartbeat interval has ellapsed without a heartbeat message from
+   * Will be invoked if the heartbeat interval has elapsed without a heartbeat message from
    * the STOMP broker, indicating some kind of communications failure.
    */
   public onHeartbeatLost: emptyCallbackType;
