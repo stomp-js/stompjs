@@ -8,6 +8,7 @@ import {
   messageCallbackType,
   ReconnectionTimeMode,
   wsErrorCallbackType,
+  emptyCallbackType,
 } from './types.js';
 import { Versions } from './versions.js';
 import { Client } from './client.js';
@@ -150,6 +151,15 @@ export class StompConfig {
    */
   public onWebSocketError?: wsErrorCallbackType;
 
+  /**
+   * See [Client#onHeartbeatReceived]{@link Client#onHeartbeatReceived}.
+   */
+  public onHeartbeatReceived?: emptyCallbackType;
+
+  /**
+   * See [Client#onHeartbeatLost]{@link Client#onHeartbeatLost}.
+   */
+  public onHeartbeatLost?: emptyCallbackType;
   /**
    * See [Client#logRawCommunication]{@link Client#logRawCommunication}.
    */
