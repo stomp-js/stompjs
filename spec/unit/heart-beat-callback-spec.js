@@ -10,11 +10,9 @@ describe('Client heartbeat handling (callbacks)', () => {
   });
 
   it('Should invoke onHeartbeatReceived callback when a heartbeat is received', async () => {
-    let heartbeatCounter = 0;
+    const onHeartbeatReceivedSpy = jasmine.createSpy('onHeartbeatReceived');
 
-    client.onHeartbeatReceived = () => {
-      heartbeatCounter++;
-    };
+    client.onHeartbeatReceived = onHeartbeatReceivedSpy;
 
     client.heartbeatIncoming = 1000; // 1 second for incoming heartbeat
     client.heartbeatOutgoing = 0; // disable outgoing heartbeat
@@ -23,7 +21,7 @@ describe('Client heartbeat handling (callbacks)', () => {
       client.onConnect = () => {
         // Allow time for multiple heartbeats to be received
         setTimeout(() => {
-          expect(heartbeatCounter).toBeGreaterThan(0);
+          expect(onHeartbeatReceivedSpy).toHaveBeenCalled();
           resolve();
         }, 1500); // Slightly longer than the heartbeat interval
       };
@@ -33,11 +31,9 @@ describe('Client heartbeat handling (callbacks)', () => {
   });
 
   it('Should invoke onHeartbeatLost callback when heartbeats are missed', async () => {
-    let heartbeatLostCounter = 0;
+    const onHeartbeatLostSpy = jasmine.createSpy('onHeartbeatLost');
 
-    client.onHeartbeatLost = () => {
-      heartbeatLostCounter++;
-    };
+    client.onHeartbeatLost = onHeartbeatLostSpy;
 
     client.heartbeatIncoming = 1000; // 1-second interval for incoming heartbeat
     client.heartbeatToleranceMultiplier = 1.5; // Tolerates 1.5x the heartbeat interval
@@ -60,7 +56,7 @@ describe('Client heartbeat handling (callbacks)', () => {
     await new Promise(resolve => {
       client.onConnect = () => {
         setTimeout(() => {
-          expect(heartbeatLostCounter).toBeGreaterThan(0); // Verify the callback was triggered
+          expect(onHeartbeatLostSpy).toHaveBeenCalled(); // Verify the callback was triggered
           resolve();
         }, 2000); // Wait longer than the allowed tolerance period
       };
@@ -70,11 +66,9 @@ describe('Client heartbeat handling (callbacks)', () => {
   });
 
   it('Should not invoke onHeartbeatLost when all heartbeats are received on time', async () => {
-    let heartbeatLostCounter = 0;
+    const onHeartbeatLostSpy = jasmine.createSpy('onHeartbeatLost');
 
-    client.onHeartbeatLost = () => {
-      heartbeatLostCounter++;
-    };
+    client.onHeartbeatLost = onHeartbeatLostSpy;
 
     client.heartbeatIncoming = 1000; // 1-second interval for incoming heartbeat
     client.heartbeatToleranceMultiplier = 1.5; // Tolerates 1.5x the heartbeat interval
@@ -83,7 +77,7 @@ describe('Client heartbeat handling (callbacks)', () => {
     await new Promise(resolve => {
       client.onConnect = () => {
         setTimeout(() => {
-          expect(heartbeatLostCounter).toBe(0); // Verify the callback was not triggered
+          expect(onHeartbeatLostSpy).not.toHaveBeenCalled(); // Verify the callback was not triggered
           resolve();
         }, 2000); // Allow enough time to confirm regular heartbeats
       };
