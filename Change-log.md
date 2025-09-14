@@ -5,6 +5,7 @@
 - Fix typos in Change-log.md [#656](https://github.com/stomp-js/stompjs/pull/656). Many thanks [Camille Drapier](https://github.com/CamilleDrapier).
 - ci: Set default workflow permissions to read-only [#662](https://github.com/stomp-js/stompjs/pull/662). Many thanks [chai min](https://github.com/minchai23).
 - Fix typos in JSDoc comments across multiple functions [#672](https://github.com/stomp-js/stompjs/pull/672). Many thanks [umsungjun](https://github.com/umsungjun).
+- Feat: configurable heartbeat grace periods [#683](https://github.com/stomp-js/stompjs/pull/683). Manay thanks [tomek3e](https://github.com/tomek3e).
 
 # 7.1.1 (2025-04-05)
 
