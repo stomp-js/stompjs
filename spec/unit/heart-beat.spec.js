@@ -35,11 +35,6 @@ function executeTestCases(useWebWorkerHeartbeats, mode) {
       await disconnectStomp(client);
     });
 
-    // Find length
-    const length = data => {
-      return typeof data === 'string' ? data.length : data.byteLength;
-    };
-
     // See https://github.com/stomp-js/stompjs/issues/188
     it('Should allow server to not send heartbeat header', async () => {
       overRideFactory(
@@ -75,7 +70,7 @@ function executeTestCases(useWebWorkerHeartbeats, mode) {
         class extends WrapperWS {
           wrapOnMessage(ev) {
             // Eat away incoming ping
-            if (length(ev.data) === 1) {
+            if (getLength(ev.data) === 1) {
               console.log('Eating incoming ping');
               return;
             }
@@ -116,7 +111,7 @@ function executeTestCases(useWebWorkerHeartbeats, mode) {
         class extends WrapperWS {
           send(data) {
             // Eat away outgoing ping
-            if (length(data) === 1) {
+            if (getLength(data) === 1) {
               console.log('Eating outgoing ping');
               return;
             }
