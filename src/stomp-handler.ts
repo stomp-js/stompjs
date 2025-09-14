@@ -96,7 +96,6 @@ export class StompHandler {
   private _pinger?: Ticker;
   private _ponger: any;
   private _lastServerActivityTS: number;
-  private _parser: Parser | undefined;
 
   constructor(
     private _client: Client,
@@ -144,7 +143,7 @@ export class StompHandler {
   }
 
   public start(): void {
-    this._parser = new Parser(
+    const parser = new Parser(
       // On Frame
       rawFrame => {
         const frame = FrameImpl.fromRawFrame(
@@ -167,8 +166,6 @@ export class StompHandler {
         this.onHeartbeatReceived();
       }
     );
-
-    const parser = this._parser;
 
     this._webSocket.onmessage = (evt: IStompSocketMessageEvent) => {
       this.debug('Received data');
