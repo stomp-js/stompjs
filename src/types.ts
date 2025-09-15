@@ -120,7 +120,7 @@ export interface IStompSocket {
   url: string;
   onclose: ((ev?: any) => any) | undefined | null;
   onerror: ((ev: any) => any) | undefined | null;
-  onmessage: ((ev: IStompSocketMessageEvent) => any) | undefined | null;
+  onmessage: ((ev: any) => any) | undefined | null;
   onopen: ((ev?: any) => any) | undefined | null;
   terminate?: (() => any) | undefined | null;
 
