@@ -75,14 +75,14 @@ export class Parser {
 
   public constructor(
     public onFrame: (rawFrame: IRawFrameType) => void,
-    public onIncomingPing: () => void
+    public onIncomingPing: () => void,
   ) {
     this._initState();
   }
 
   public parseChunk(
     segment: string | ArrayBuffer,
-    appendMissingNULLonIncoming: boolean = false
+    appendMissingNULLonIncoming: boolean = false,
   ) {
     let chunk: Uint8Array;
 
@@ -193,7 +193,7 @@ export class Parser {
     const contentLengthHeader = this._results.headers.filter(
       (header: [string, string]) => {
         return header[0] === 'content-length';
-      }
+      },
     )[0];
 
     if (contentLengthHeader) {
@@ -229,7 +229,7 @@ export class Parser {
     } catch (e) {
       console.log(
         `Ignoring an exception thrown by a frame handler. Original exception: `,
-        e
+        e,
       );
     }
 

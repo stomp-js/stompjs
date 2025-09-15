@@ -169,7 +169,7 @@ export enum ActivationState {
  */
 export enum ReconnectionTimeMode {
   LINEAR,
-  EXPONENTIAL
+  EXPONENTIAL,
 }
 
 /**
@@ -177,7 +177,7 @@ export enum ReconnectionTimeMode {
  */
 export enum TickerStrategy {
   Interval = 'interval',
-  Worker = 'worker'
+  Worker = 'worker',
 }
 
 /**

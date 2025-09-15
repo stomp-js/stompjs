@@ -5,7 +5,7 @@ import { IStompSocket } from './types.js';
  */
 export function augmentWebsocket(
   webSocket: IStompSocket,
-  debug: (msg: string) => void
+  debug: (msg: string) => void,
 ) {
   webSocket.terminate = function () {
     const noOp = () => {};
@@ -24,7 +24,7 @@ export function augmentWebsocket(
     this.onclose = closeEvent => {
       const delay = new Date().getTime() - ts.getTime();
       debug(
-        `Discarded socket (#${id})  closed after ${delay}ms, with code/reason: ${closeEvent.code}/${closeEvent.reason}`
+        `Discarded socket (#${id})  closed after ${delay}ms, with code/reason: ${closeEvent.code}/${closeEvent.reason}`,
       );
     };
 

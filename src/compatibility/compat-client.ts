@@ -131,7 +131,7 @@ export class CompatClient extends Client {
    */
   public disconnect(
     disconnectCallback?: any,
-    headers: StompHeaders = {}
+    headers: StompHeaders = {},
   ): void {
     if (disconnectCallback) {
       this.onDisconnect = disconnectCallback;
@@ -164,7 +164,7 @@ export class CompatClient extends Client {
   public send(
     destination: string,
     headers: { [key: string]: any } = {},
-    body: string = ''
+    body: string = '',
   ): void {
     headers = (Object as any).assign({}, headers);
 

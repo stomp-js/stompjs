@@ -100,7 +100,7 @@ export class StompHandler {
   constructor(
     private _client: Client,
     public _webSocket: IStompSocket,
-    config: IStomptHandlerConfig
+    config: IStomptHandlerConfig,
   ) {
     // used to index subscribers
     this._counter = 0;
@@ -148,7 +148,7 @@ export class StompHandler {
       rawFrame => {
         const frame = FrameImpl.fromRawFrame(
           rawFrame,
-          this._escapeHeaderValues
+          this._escapeHeaderValues,
         );
 
         // if this.logRawCommunication is set, the rawChunk is logged at this._webSocket.onmessage
@@ -164,7 +164,7 @@ export class StompHandler {
       () => {
         this.debug('<<< PONG');
         this.onHeartbeatReceived();
-      }
+      },
     );
 
     this._webSocket.onmessage = (evt: IStompSocketMessageEvent) => {
@@ -181,7 +181,7 @@ export class StompHandler {
 
       parser.parseChunk(
         evt.data as string | ArrayBuffer,
-        this.appendMissingNULLonIncoming
+        this.appendMissingNULLonIncoming,
       );
     };
 
@@ -302,7 +302,11 @@ export class StompHandler {
       const ttl: number = Math.max(this.heartbeatOutgoing, serverIncoming);
       this.debug(`send PING every ${ttl}ms`);
 
-      this._pinger = new Ticker(ttl, this._client.heartbeatStrategy, this.debug);
+      this._pinger = new Ticker(
+        ttl,
+        this._client.heartbeatStrategy,
+        this.debug,
+      );
       this._pinger.start(() => {
         if (this._webSocket.readyState === StompSocketState.OPEN) {
           this._webSocket.send(BYTE.LF);
@@ -329,7 +333,7 @@ export class StompHandler {
   private _closeOrDiscardWebsocket() {
     if (this.discardWebsocketOnCommFailure) {
       this.debug(
-        'Discarding websocket, the underlying socket may linger for a while'
+        'Discarding websocket, the underlying socket may linger for a while',
       );
       this.discardWebsocket();
     } else {
@@ -381,7 +385,8 @@ export class StompHandler {
       skipContentLengthHeader,
     });
 
-    let rawChunk: string | ArrayBuffer | Uint8Array<ArrayBuffer> = frame.serialize();
+    let rawChunk: string | ArrayBuffer | Uint8Array<ArrayBuffer> =
+      frame.serialize();
 
     if (this.logRawCommunication) {
       this.debug(`>>> ${rawChunk}`);
@@ -412,7 +417,7 @@ export class StompHandler {
         // clone before updating
         const disconnectHeaders = (Object as any).assign(
           {},
-          this.disconnectHeaders
+          this.disconnectHeaders,
         );
 
         if (!disconnectHeaders.receipt) {
@@ -470,7 +475,7 @@ export class StompHandler {
   public subscribe(
     destination: string,
     callback: messageCallbackType,
-    headers: StompHeaders = {}
+    headers: StompHeaders = {},
   ): StompSubscription {
     headers = (Object as any).assign({}, headers);
 
@@ -539,7 +544,7 @@ export class StompHandler {
   public ack(
     messageId: string,
     subscriptionId: string,
-    headers: StompHeaders = {}
+    headers: StompHeaders = {},
   ): void {
     headers = (Object as any).assign({}, headers);
 
@@ -555,7 +560,7 @@ export class StompHandler {
   public nack(
     messageId: string,
     subscriptionId: string,
-    headers: StompHeaders = {}
+    headers: StompHeaders = {},
   ): void {
     headers = (Object as any).assign({}, headers);
 

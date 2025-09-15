@@ -92,7 +92,7 @@ export class FrameImpl implements IFrame {
    */
   public static fromRawFrame(
     rawFrame: IRawFrameType,
-    escapeHeaderValues: boolean
+    escapeHeaderValues: boolean,
   ): FrameImpl {
     const headers: StompHeaders = {};
     const trim = (str: string): string => str.replace(/^\s+|\s+$/g, '');
@@ -143,7 +143,7 @@ export class FrameImpl implements IFrame {
     if (this.isBinaryBody) {
       return FrameImpl.toUnit8Array(
         cmdAndHeaders,
-        this._binaryBody as Uint8Array
+        this._binaryBody as Uint8Array,
       ).buffer;
     } else {
       return cmdAndHeaders + this._body + BYTE.NULL;
@@ -196,19 +196,19 @@ export class FrameImpl implements IFrame {
 
   private static toUnit8Array(
     cmdAndHeaders: string,
-    binaryBody: Uint8Array
+    binaryBody: Uint8Array,
   ): Uint8Array<ArrayBuffer> {
     const uint8CmdAndHeaders = new TextEncoder().encode(cmdAndHeaders);
     const nullTerminator = new Uint8Array([0]);
     const uint8Frame = new Uint8Array(
-      uint8CmdAndHeaders.length + binaryBody.length + nullTerminator.length
+      uint8CmdAndHeaders.length + binaryBody.length + nullTerminator.length,
     );
 
     uint8Frame.set(uint8CmdAndHeaders);
     uint8Frame.set(binaryBody, uint8CmdAndHeaders.length);
     uint8Frame.set(
       nullTerminator,
-      uint8CmdAndHeaders.length + binaryBody.length
+      uint8CmdAndHeaders.length + binaryBody.length,
     );
 
     return uint8Frame;

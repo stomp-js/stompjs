@@ -14,8 +14,8 @@ export class Ticker {
   constructor(
     private readonly _interval: number,
     private readonly _strategy = TickerStrategy.Interval,
-    private readonly _debug: debugFnType) {
-  }
+    private readonly _debug: debugFnType,
+  ) {}
 
   public start(tick: (elapsedTime: number) => void): void {
     this.stop();
@@ -33,7 +33,9 @@ export class Ticker {
   }
 
   private shouldUseWorker(): boolean {
-    return typeof(Worker) !== 'undefined' && this._strategy === TickerStrategy.Worker
+    return (
+      typeof Worker !== 'undefined' && this._strategy === TickerStrategy.Worker
+    );
   }
 
   private runWorker(tick: (elapsedTime: number) => void): void {
@@ -41,10 +43,10 @@ export class Ticker {
     if (!this._worker) {
       this._worker = new Worker(
         URL.createObjectURL(
-          new Blob([this._workerScript], { type: 'text/javascript' })
-        )
+          new Blob([this._workerScript], { type: 'text/javascript' }),
+        ),
       );
-      this._worker.onmessage = (message) => tick(message.data);
+      this._worker.onmessage = message => tick(message.data);
     }
   }
 

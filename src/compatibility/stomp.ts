@@ -108,7 +108,7 @@ export class Stomp {
     } else {
       console.warn(
         'Stomp.over did not receive a factory, auto reconnect will not work. ' +
-          'Please see https://stomp-js.github.io/api-docs/latest/classes/Stomp.html#over'
+          'Please see https://stomp-js.github.io/api-docs/latest/classes/Stomp.html#over',
       );
       wsFn = () => ws;
     }
