@@ -15,7 +15,7 @@ Following tools are getting used:
 - `TypeScript` as primary language - https://www.typescriptlang.org/
 - `Jasmine` for test cases - https://jasmine.github.io/
 - `Karma` for running test cases in browsers - http://karma-runner.github.io/
-- `webpack` for build - https://webpack.js.org/
+- `Rollup` for build - https://rollupjs.org/
 - `nodejs` during development - https://nodejs.org/
 - `npm` for dependency management, packaging and distribution - https://www.npmjs.com/
 - `git` for version control - https://git-scm.com/
@@ -63,10 +63,10 @@ Important files and folders:
 
 - A Stomp broker is used for running the tests. I have been using RabbitMQ.
 - Edit `spec/config/browser-config.js` and `spec/config/node-config.js` as per
-  your setup. Defaults should work for as RabbitMQ default setup on localhost.
+  your setup. Defaults should work for RabbitMQ default setup on localhost.
 - Please note that in RabbitMQ you will need to enable Stomp and WebStomp plugins.
-- By default RabbitMQ WebStomp will treat messages a text, you will need to tell
-  it is use binary frames:
+- By default RabbitMQ WebStomp will treat messages as text, you will need to tell
+  it to use binary frames:
   ```bash
   $ echo 'web_stomp.ws_frame = binary' >> /etc/rabbitmq/rabbitmq.conf
   ```
@@ -80,16 +80,12 @@ Important files and folders:
 
 Key npm tasks:
 
-```text
-clean - Remove generated built artifacts
-build-tsc - Internally used by `npm run build`
-build-webpack - Internally used by `npm run build`
-build - Build two variants - ES Modules and UMD
-doc - Generate docs
-doc-serve - Generate docs and watch for changes
-test - Run tests in NodeJS
-karma - Rune test in browsers
-```
+* clean - Remove generated built artifacts
+* build-tsc - Internally used by `npm run build`
+* rollup - Internally used by `npm run build`
+* build - Build two variants - ES Modules and UMD
+* test - Run tests in NodeJS
+* karma - Rune test in browsers
 
 ### Basic development workflow
 
@@ -110,9 +106,5 @@ karma - Rune test in browsers
      ```
    - _**Caution:** As both browser and nodejs use same set of test cases and same queue
      names. So, running both together may cause unexpected failures._
-1. Update documentation - do update the docs-src/Change-log.md
-1. Regenerate documentation:
-   ```bash
-   $ npm run doc
-   ```
+1. Update documentation - do update Change-log.md
 1. Please follow GitHub guidelines. Raise an issue if you are unclear.
