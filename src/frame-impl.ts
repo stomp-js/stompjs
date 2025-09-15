@@ -197,7 +197,7 @@ export class FrameImpl implements IFrame {
   private static toUnit8Array(
     cmdAndHeaders: string,
     binaryBody: Uint8Array
-  ): Uint8Array {
+  ): Uint8Array<ArrayBuffer> {
     const uint8CmdAndHeaders = new TextEncoder().encode(cmdAndHeaders);
     const nullTerminator = new Uint8Array([0]);
     const uint8Frame = new Uint8Array(

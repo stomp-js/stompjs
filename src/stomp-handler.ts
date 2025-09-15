@@ -381,7 +381,7 @@ export class StompHandler {
       skipContentLengthHeader,
     });
 
-    let rawChunk = frame.serialize();
+    let rawChunk: string | ArrayBuffer | Uint8Array<ArrayBuffer> = frame.serialize();
 
     if (this.logRawCommunication) {
       this.debug(`>>> ${rawChunk}`);

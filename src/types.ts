@@ -142,7 +142,7 @@ export interface IStompSocket {
   /**
    * Transmits data using the connection. data can be a string or an ArrayBuffer.
    */
-  send(data: string | ArrayBuffer): void;
+  send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void;
 }
 
 /**
