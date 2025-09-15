@@ -13,7 +13,6 @@
 Following tools are getting used:
 
 - `TypeScript` as primary language - https://www.typescriptlang.org/
-- `compodoc` for API documentation - https://compodoc.app/
 - `Jasmine` for test cases - https://jasmine.github.io/
 - `Karma` for running test cases in browsers - http://karma-runner.github.io/
 - `webpack` for build - https://webpack.js.org/
@@ -34,16 +33,14 @@ Instructions on setting up development environment:
 
 ## Project structure
 
+Important files and folders:
+
 ```text
 <Project Folder>
-├── LICENSE.md
+├── LICENSE
 ├── README.md
 ├── bin/                     -- Scripts invoked from `npm` tasks
-├── bundles/                 -- Generated code browsers
-├── docs/                    -- Generated docs, root for GitHub pages
-├── docs-src/                -- Source for guides
 ├── esm6/                    -- Generated ES6 modules
-├── index.d.ts
 ├── karma.conf.js
 ├── package-lock.json
 ├── package.json
@@ -59,7 +56,7 @@ Instructions on setting up development environment:
 ├── src/                     -- Typescript sources
 │   └── compatibility/       -- Code for compatibility mode
 ├── tsconfig.json
-└── webpack.config.js
+└── rollup.config.mjs
 ```
 
 ## Setup a Stomp broker
