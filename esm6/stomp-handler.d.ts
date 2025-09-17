@@ -2,7 +2,7 @@ import { Client } from './client.js';
 import { ITransaction } from './i-transaction.js';
 import { StompHeaders } from './stomp-headers.js';
 import { StompSubscription } from './stomp-subscription.js';
-import { closeEventCallbackType, debugFnType, frameCallbackType, IPublishParams, IStompSocket, IStomptHandlerConfig, messageCallbackType, wsErrorCallbackType } from './types.js';
+import { closeEventCallbackType, debugFnType, emptyCallbackType, frameCallbackType, IPublishParams, IStompSocket, IStomptHandlerConfig, messageCallbackType, wsErrorCallbackType } from './types.js';
 import { Versions } from './versions.js';
 /**
  * The STOMP protocol handler
@@ -19,10 +19,13 @@ export declare class StompHandler {
     connectHeaders: StompHeaders;
     disconnectHeaders: StompHeaders;
     heartbeatIncoming: number;
+    heartbeatToleranceMultiplier: number;
     heartbeatOutgoing: number;
     onUnhandledMessage: messageCallbackType;
     onUnhandledReceipt: frameCallbackType;
     onUnhandledFrame: frameCallbackType;
+    onHeartbeatReceived: emptyCallbackType;
+    onHeartbeatLost: emptyCallbackType;
     onConnect: frameCallbackType;
     onDisconnect: frameCallbackType;
     onStompError: frameCallbackType;

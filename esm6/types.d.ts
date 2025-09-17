@@ -21,6 +21,12 @@ export type messageCallbackType = (message: IMessage) => void;
  */
 export type frameCallbackType = ((frame: IFrame) => void) | (() => void);
 /**
+ * This callback is an "Event" only callback, no parameters provided.
+ *
+ * Part of `@stomp/stompjs`.
+ */
+export type emptyCallbackType = () => void;
+/**
  * This callback will receive a [CloseEvent]{@link https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent}
  * as parameter.
  *
@@ -102,7 +108,7 @@ export interface IStompSocket {
     url: string;
     onclose: ((ev?: any) => any) | undefined | null;
     onerror: ((ev: any) => any) | undefined | null;
-    onmessage: ((ev: IStompSocketMessageEvent) => any) | undefined | null;
+    onmessage: ((ev: any) => any) | undefined | null;
     onopen: ((ev?: any) => any) | undefined | null;
     terminate?: (() => any) | undefined | null;
     /**
@@ -121,7 +127,7 @@ export interface IStompSocket {
     /**
      * Transmits data using the connection. data can be a string or an ArrayBuffer.
      */
-    send(data: string | ArrayBuffer): void;
+    send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void;
 }
 /**
  * Possible states for the IStompSocket
@@ -163,6 +169,7 @@ export interface IStomptHandlerConfig {
     connectHeaders: StompHeaders;
     disconnectHeaders: StompHeaders;
     heartbeatIncoming: number;
+    heartbeatGracePeriods: number;
     heartbeatOutgoing: number;
     heartbeatStrategy: TickerStrategy;
     splitLargeFrames: boolean;
@@ -179,4 +186,6 @@ export interface IStomptHandlerConfig {
     onUnhandledMessage: messageCallbackType;
     onUnhandledReceipt: frameCallbackType;
     onUnhandledFrame: frameCallbackType;
+    onHeartbeatReceived: emptyCallbackType;
+    onHeartbeatLost: emptyCallbackType;
 }

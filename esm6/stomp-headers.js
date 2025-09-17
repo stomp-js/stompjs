@@ -1,5 +1,5 @@
 /**
- * STOMP headers. Many functions calls will accept headers as parameters.
+ * STOMP headers. Many function calls will accept headers as parameters.
  * The headers sent by Broker will be available as [IFrame#headers]{@link IFrame#headers}.
  *
  * `key` and `value` must be valid strings.

@@ -94,6 +94,7 @@ export class StompHandler {
         this.connectHeaders = config.connectHeaders;
         this.disconnectHeaders = config.disconnectHeaders;
         this.heartbeatIncoming = config.heartbeatIncoming;
+        this.heartbeatToleranceMultiplier = config.heartbeatGracePeriods;
         this.heartbeatOutgoing = config.heartbeatOutgoing;
         this.splitLargeFrames = config.splitLargeFrames;
         this.maxWebSocketChunkSize = config.maxWebSocketChunkSize;
@@ -109,6 +110,8 @@ export class StompHandler {
         this.onUnhandledMessage = config.onUnhandledMessage;
         this.onUnhandledReceipt = config.onUnhandledReceipt;
         this.onUnhandledFrame = config.onUnhandledFrame;
+        this.onHeartbeatReceived = config.onHeartbeatReceived;
+        this.onHeartbeatLost = config.onHeartbeatLost;
     }
     start() {
         const parser = new Parser(
@@ -125,6 +128,7 @@ export class StompHandler {
         // On Incoming Ping
         () => {
             this.debug('<<< PONG');
+            this.onHeartbeatReceived();
         });
         this._webSocket.onmessage = (evt) => {
             this.debug('Received data');
@@ -189,9 +193,10 @@ export class StompHandler {
             this.debug(`check PONG every ${ttl}ms`);
             this._ponger = setInterval(() => {
                 const delta = Date.now() - this._lastServerActivityTS;
-                // We wait twice the TTL to be flexible on window's setInterval calls
-                if (delta > ttl * 2) {
+                // We wait multiple grace periods to be flexible on window's setInterval calls
+                if (delta > ttl * this.heartbeatToleranceMultiplier) {
                     this.debug(`did not receive server activity for the last ${delta}ms`);
+                    this.onHeartbeatLost();
                     this._closeOrDiscardWebsocket();
                 }
             }, ttl);

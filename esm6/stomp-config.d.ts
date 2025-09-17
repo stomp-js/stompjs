@@ -1,5 +1,5 @@
 import { StompHeaders } from './stomp-headers.js';
-import { ActivationState, TickerStrategy, closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, ReconnectionTimeMode, wsErrorCallbackType } from './types.js';
+import { ActivationState, TickerStrategy, closeEventCallbackType, debugFnType, frameCallbackType, messageCallbackType, ReconnectionTimeMode, wsErrorCallbackType, emptyCallbackType } from './types.js';
 import { Versions } from './versions.js';
 import { Client } from './client.js';
 /**
@@ -42,6 +42,10 @@ export declare class StompConfig {
      * See [Client#heartbeatIncoming]{@link Client#heartbeatIncoming}.
      */
     heartbeatIncoming?: number;
+    /**
+     * See [Client#heartbeatToleranceMultiplier]{@link Client#heartbeatToleranceMultiplier}.
+     */
+    heartbeatToleranceMultiplier?: number;
     /**
      * See [Client#heartbeatOutgoing]{@link Client#heartbeatOutgoing}.
      */
@@ -110,6 +114,14 @@ export declare class StompConfig {
      * See [Client#onWebSocketError]{@link Client#onWebSocketError}.
      */
     onWebSocketError?: wsErrorCallbackType;
+    /**
+     * See [Client#onHeartbeatReceived]{@link Client#onHeartbeatReceived}.
+     */
+    onHeartbeatReceived?: emptyCallbackType;
+    /**
+     * See [Client#onHeartbeatLost]{@link Client#onHeartbeatLost}.
+     */
+    onHeartbeatLost?: emptyCallbackType;
     /**
      * See [Client#logRawCommunication]{@link Client#logRawCommunication}.
      */

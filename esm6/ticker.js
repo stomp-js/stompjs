@@ -25,13 +25,13 @@ export class Ticker {
         this.disposeInterval();
     }
     shouldUseWorker() {
-        return typeof (Worker) !== 'undefined' && this._strategy === TickerStrategy.Worker;
+        return (typeof Worker !== 'undefined' && this._strategy === TickerStrategy.Worker);
     }
     runWorker(tick) {
         this._debug('Using runWorker for outgoing pings');
         if (!this._worker) {
             this._worker = new Worker(URL.createObjectURL(new Blob([this._workerScript], { type: 'text/javascript' })));
-            this._worker.onmessage = (message) => tick(message.data);
+            this._worker.onmessage = message => tick(message.data);
         }
     }
     runInterval(tick) {
