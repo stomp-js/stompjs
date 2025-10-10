@@ -126,7 +126,7 @@ describe('Stomp Reconnect', function () {
   };
 
   // Note: We set at least 400 ms on reconnect delay to reduce flakes, but feel free to adjust thresholds
-  describe('Reconnection delays', () => {
+  describeSkipIf(shouldSkipTests(), 'Reconnection delays', () => {
     let reconnectionDelays;
 
     beforeEach(function () {
