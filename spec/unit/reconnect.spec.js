@@ -64,7 +64,7 @@ describe('Stomp Reconnect', function () {
     client.reconnectDelay = 300;
 
     const shouldNotBeCalled = () => {
-      expect(false).toBe(true);
+      fail('This callback should not be called');
     };
 
     client.configure({
@@ -94,7 +94,15 @@ describe('Stomp Reconnect', function () {
     client.activate();
   });
 
-  // Start with bad broker so that the connection fails, and then switch to the good broker
+  /**
+   * Collects reconnection delays by attempting to connect to a bad broker URL.
+   * After the specified number of failed attempts, switches to the good broker URL.
+   * 
+   * @param {Client} client - The STOMP client
+   * @param {Object} config - Configuration options for the client
+   * @param {number} numDelays - Number of reconnection delays to collect before switching to good broker
+   * @returns {Promise} Resolves when successfully connected
+   */
   const collectReconnectDelays = (client, config, numDelays) => {
     let connectCount = 0;
 
@@ -141,8 +149,6 @@ describe('Stomp Reconnect', function () {
       });
 
       it('Should ignore maxReconnectDelay in linear mode', async function () {
-        const debugSpy = spyOn(client, 'debug').and.callThrough();
-
         await collectReconnectDelays(
           client,
           {
