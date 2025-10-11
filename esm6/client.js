@@ -468,6 +468,8 @@ export class Client {
                     clearTimeout(this._connectionWatcher);
                     this._connectionWatcher = undefined;
                 }
+                // Reset reconnect delay after successful connection
+                this._nextReconnectDelay = this.reconnectDelay;
                 if (!this.active) {
                     this.debug('STOMP got connected while deactivate was issued, will disconnect now');
                     this._disposeStompHandler();
@@ -585,7 +587,7 @@ export class Client {
             return Promise.resolve();
         }
         this._changeState(ActivationState.DEACTIVATING);
-        // Reset reconnection timer just to be safe
+        // Clear reconnection timer just to be safe
         this._nextReconnectDelay = 0;
         // Clear if a reconnection was scheduled
         if (this._reconnector) {
