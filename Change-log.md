@@ -1,6 +1,11 @@
 # Change Log
 
-# 7.2.0 (TBD)
+# 7.2.1 (2025-10-12)
+
+- Fix: Reset reconnect delay on a successful connect, [#701](https://github.com/stomp-js/stompjs/issues/701).
+
+
+# 7.2.0 (2025-09-17)
 
 - Fix typos in Change-log.md [#656](https://github.com/stomp-js/stompjs/pull/656). Many thanks [Camille Drapier](https://github.com/CamilleDrapier).
 - ci: Set default workflow permissions to read-only [#662](https://github.com/stomp-js/stompjs/pull/662). Many thanks [chai min](https://github.com/minchai23).
