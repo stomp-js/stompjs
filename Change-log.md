@@ -1,5 +1,9 @@
 # Change Log
 
+# 7.3.0 (TBD)
+
+- Update CI for Safari tests to restrict outdated npm modules to Safari test environment.
+
 # 7.2.1 (2025-10-12)
 
 - Fix: Reset reconnect delay on a successful connect, [#701](https://github.com/stomp-js/stompjs/issues/701).

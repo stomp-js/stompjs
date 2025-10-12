@@ -23,5 +23,6 @@ jobs:
         with:
           node-version: '18.x'
       - run: npm ci
+      - run: npm install "https://github.com/RLovelett/karma-safari-launcher.git#safari-webdriver"
       - run: npm run build
       - run: npx karma start spec/karma.conf.js --single-run --browsers=Safari
