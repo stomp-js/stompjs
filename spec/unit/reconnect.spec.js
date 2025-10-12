@@ -31,8 +31,6 @@ describe('Stomp Reconnect', function () {
   it('Should allow deactivating when auto reconnection is on', function (done) {
     const num_try = 1;
 
-    let connectionClosed = false;
-
     client.configure({
       reconnectDelay: 300,
       onConnect: function () {
@@ -46,18 +44,15 @@ describe('Stomp Reconnect', function () {
         );
       },
       onWebSocketClose: function () {
-        connectionClosed = true;
+        setTimeout(function () {
+          expect(client.connected).toBe(false);
+
+          done();
+        }, 5);
       },
     });
 
     client.activate();
-
-    setTimeout(function () {
-      expect(connectionClosed).toBe(true);
-      expect(client.connected).toBe(false);
-
-      done();
-    }, 500);
   });
 
   it('Should allow deactivating while waiting to reconnect', function (done) {
