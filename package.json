@@ -53,8 +53,17 @@
   },
   "type": "module",
   "exports": {
-    "import": "./esm6/index.js",
-    "require": "./bundles/stomp.umd.js"
+    ".": {
+      "browser": "./bundles/stomp.umd.js",
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./bundles/stomp.umd.js"
+      },
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./esm6/index.js"
+      }
+    }
   },
   "main": "./bundles/stomp.umd.js",
   "browser": "./bundles/stomp.umd.js",
