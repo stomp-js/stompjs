@@ -1,5 +1,9 @@
 # Change Log
 
+# 7.2.2-beta.1 (2025-11-20)
+
+- Merge PR [#713](https://github.com/stomp-js/stompjs/pull/713), potentially fixes [#665](https://github.com/stomp-js/stompjs/issues/665).
+
 # 7.3.0 (TBD)
 
 - Update CI for Safari tests to restrict outdated npm modules to Safari test environment.

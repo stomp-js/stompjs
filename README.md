@@ -166,6 +166,7 @@ This library is made possible by these amazing contributors:
 - [umsungjun](https://github.com/umsungjun)
 - [tomek3e](https://github.com/tomek3e)
 - [Samuel Yinger](https://github.com/GoldenSunX)
+- [RokkieBrown](https://github.com/rokkie)
 
 This library is originally based on [stompjs](https://github.com/jmesnil/stomp-websocket) by [Jeff Mesnil](http://jmesnil.net/) with enhancements and bug fixes from [Jeff Lindsay](http://github.com/progrium) and [Vanessa Williams](http://github.com/fridgebuzz).
 
