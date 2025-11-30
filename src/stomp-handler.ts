@@ -195,7 +195,7 @@ export class StompHandler {
       this.onWebSocketError(errorEvent);
     };
 
-    this._webSocket.onopen = () => {
+    const onOpen = () => {
       // Clone before updating
       const connectHeaders = (Object as any).assign({}, this.connectHeaders);
 
@@ -207,6 +207,12 @@ export class StompHandler {
       ].join(',');
       this._transmit({ command: 'CONNECT', headers: connectHeaders });
     };
+
+    if (this._webSocket.readyState === StompSocketState.OPEN) {
+      onOpen();
+    } else {
+      this._webSocket.onopen = onOpen;
+    }
   }
 
   private readonly _serverFrameHandlers: {
