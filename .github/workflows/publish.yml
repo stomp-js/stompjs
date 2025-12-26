@@ -20,4 +20,15 @@ jobs:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
-      - run: npm publish
+
+      - name: Extract tag name
+        id: tag
+        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Publish with beta tag
+        if: contains(steps.tag.outputs.TAG_NAME, 'beta')
+        run: echo npm publish --tag beta
+
+      - name: Publish with latest tag
+        if: "!contains(steps.tag.outputs.TAG_NAME, 'beta')"
+        run: echo npm publish
