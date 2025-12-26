@@ -1,6 +1,6 @@
 # Change Log
 
-# 7.3.0-beta.1 (2025-12-26)
+# 7.3.0-beta.2 (2025-12-26)
 
 - Merge PR [#719](https://github.com/stomp-js/stompjs/pull/719).
 
