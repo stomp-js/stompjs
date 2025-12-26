@@ -27,8 +27,8 @@ jobs:
 
       - name: Publish with beta tag
         if: contains(steps.tag.outputs.TAG_NAME, 'beta')
-        run: echo npm publish --tag beta
+        run: npm publish --tag beta
 
       - name: Publish with latest tag
         if: "!contains(steps.tag.outputs.TAG_NAME, 'beta')"
-        run: echo npm publish
+        run: npm publish
