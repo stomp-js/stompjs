@@ -3,6 +3,7 @@
 # 7.3.0-beta.2 (2025-12-26)
 
 - Merge PR [#719](https://github.com/stomp-js/stompjs/pull/719).
+- Setup trusted publishing per [https://docs.npmjs.com/trusted-publishers](https://docs.npmjs.com/trusted-publishers).
 
 # 7.2.2-beta.1 (2025-11-20)
 
