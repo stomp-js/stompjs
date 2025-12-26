@@ -31,6 +31,38 @@ describe('Stomp Connection', function () {
     client.activate();
   });
 
+  it('Connect with a webSocketFactory', function (done) {
+    client = stompClient();
+
+    client.brokerURL = undefined;
+    client.webSocketFactory = () => new WebSocket(TEST.url);
+
+    client.onConnect = function () {
+      done();
+    };
+
+    client.activate();
+  });
+
+  it('Connect with a websocket that is already open', function (done) {
+    client = stompClient();
+
+    client.brokerURL = undefined;
+    const socket = new WebSocket(TEST.url);
+
+    client.webSocketFactory = () => socket;
+
+    client.onConnect = function () {
+      done();
+    };
+
+    socket.onopen = () => {
+      expect(socket.readyState).toEqual(WebSocket.OPEN);
+
+      client.activate();
+    }
+  })
+
   it('Should not connect with invalid credentials', function (done) {
     client = stompClient();
     client.configure({
