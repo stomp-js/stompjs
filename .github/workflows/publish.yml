@@ -19,7 +19,10 @@ jobs:
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
+
+      - run: bin/setup-rabbit.sh
       - run: npm ci
+
 
       - name: Extract tag name
         id: tag
