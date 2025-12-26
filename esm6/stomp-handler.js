@@ -149,7 +149,7 @@ export class StompHandler {
         this._webSocket.onerror = (errorEvent) => {
             this.onWebSocketError(errorEvent);
         };
-        this._webSocket.onopen = () => {
+        const onOpen = () => {
             // Clone before updating
             const connectHeaders = Object.assign({}, this.connectHeaders);
             this.debug('Web Socket Opened...');
@@ -160,6 +160,12 @@ export class StompHandler {
             ].join(',');
             this._transmit({ command: 'CONNECT', headers: connectHeaders });
         };
+        if (this._webSocket.readyState === StompSocketState.OPEN) {
+            onOpen();
+        }
+        else {
+            this._webSocket.onopen = onOpen;
+        }
     }
     _setupHeartbeat(headers) {
         if (headers.version !== Versions.V1_1 &&
