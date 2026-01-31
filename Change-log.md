@@ -1,5 +1,9 @@
 # Change Log
 
+# 7.3.0-beta.3 (2026-01-31)
+
+- Update publish workflow to support prerelease tagging and GitHub release creation.
+
 # 7.3.0-beta.2 (2025-12-26)
 
 - Merge PR [#719](https://github.com/stomp-js/stompjs/pull/719).
