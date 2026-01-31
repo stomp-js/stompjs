@@ -50,4 +50,4 @@ jobs:
         with:
           prerelease: ${{ steps.tag.outputs.IS_PRERELEASE == 'true' }}
           body: |
-            Please refer to [Change-log.md](https://github.com/${{ github.repository }}/blob/main/Change-log.md) for release notes.
+            Please refer to [Change-log.md](https://github.com/${{ github.repository }}/blob/develop/Change-log.md) for release notes.
