@@ -7,7 +7,7 @@ on:
 
 permissions:
   id-token: write  # Required for OIDC
-  contents: read
+  contents: write
 
 jobs:
   publish:
@@ -26,12 +26,28 @@ jobs:
 
       - name: Extract tag name
         id: tag
-        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
+          if [[ $TAG_NAME =~ (alpha|beta|rc) ]]; then
+            echo "IS_PRERELEASE=true" >> $GITHUB_OUTPUT
+            # Extract the keyword (alpha, beta, or rc) to use as npm tag
+            if [[ $TAG_NAME =~ alpha ]]; then echo "NPM_TAG=alpha" >> $GITHUB_OUTPUT; fi
+            if [[ $TAG_NAME =~ beta ]]; then echo "NPM_TAG=beta" >> $GITHUB_OUTPUT; fi
+            if [[ $TAG_NAME =~ rc ]]; then echo "NPM_TAG=rc" >> $GITHUB_OUTPUT; fi
+          else
+            echo "IS_PRERELEASE=false" >> $GITHUB_OUTPUT
+            echo "NPM_TAG=latest" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Publish with beta tag
-        if: contains(steps.tag.outputs.TAG_NAME, 'beta')
-        run: npm publish --tag beta
+      - name: Publish to NPM
+        run: npm publish --tag ${{ steps.tag.outputs.NPM_TAG }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish with latest tag
-        if: "!contains(steps.tag.outputs.TAG_NAME, 'beta')"
-        run: npm publish
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: ${{ steps.tag.outputs.IS_PRERELEASE == 'true' }}
+          body: |
+            Please refer to [Change-log.md](https://github.com/${{ github.repository }}/blob/main/Change-log.md) for release notes.
