@@ -1,25 +1,19 @@
 # Change Log
 
-# 7.3.0-beta.4 (2026-01-31)
+# 7.3.0 (2026-01-31)
 
 - Update changelog link in publish workflow to point to the develop branch.
-
-# 7.3.0-beta.3 (2026-01-31)
-
 - Update publish workflow to support prerelease tagging and GitHub release creation.
+- Setup trusted publishing per [https://docs.npmjs.com/trusted-publishers](https://docs.npmjs.com/trusted-publishers).
+- Update CI for Safari tests to restrict outdated npm modules to Safari test environment.
 
 # 7.3.0-beta.2 (2025-12-26)
 
 - Merge PR [#719](https://github.com/stomp-js/stompjs/pull/719).
-- Setup trusted publishing per [https://docs.npmjs.com/trusted-publishers](https://docs.npmjs.com/trusted-publishers).
 
 # 7.2.2-beta.1 (2025-11-20)
 
 - Merge PR [#713](https://github.com/stomp-js/stompjs/pull/713), potentially fixes [#665](https://github.com/stomp-js/stompjs/issues/665).
-
-# 7.3.0 (TBD)
-
-- Update CI for Safari tests to restrict outdated npm modules to Safari test environment.
 
 # 7.2.1 (2025-10-12)
 
