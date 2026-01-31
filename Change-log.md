@@ -1,5 +1,9 @@
 # Change Log
 
+# 7.3.0-beta.4 (2026-01-31)
+
+- Update changelog link in publish workflow to point to the develop branch.
+
 # 7.3.0-beta.3 (2026-01-31)
 
 - Update publish workflow to support prerelease tagging and GitHub release creation.
