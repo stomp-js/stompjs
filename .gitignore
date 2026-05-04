@@ -14,3 +14,6 @@ spec/dist/*.js
 # Build artifacts — tracked only at release time via bin/release.sh
 bundles/
 esm6/
+
+# Test results
+/test-results/
