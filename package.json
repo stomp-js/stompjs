@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/stomp-js/stompjs#readme",
   "devDependencies": {
-    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-terser": "^1.0.0",
     "@rollup/plugin-typescript": "^12.1.4",
     "jasmine": "^5.10.0",
     "karma": "^6.4.4",
