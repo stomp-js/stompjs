@@ -1,0 +1,113 @@
+import { test } from '@playwright/test';
+import {
+  expect,
+  StompJs,
+  TEST,
+  stompClient,
+  disconnectStomp,
+} from '../helpers/setup.js';
+
+const { describe, beforeEach, afterEach } = test;
+
+describe('Stomp Subscription', () => {
+  let client: any;
+
+  beforeEach(() => {
+    client = stompClient();
+  });
+
+  afterEach(async () => {
+    await disconnectStomp(client);
+  });
+
+  test('Should receive messages sent to destination after subscribing', async () => {
+    await new Promise<void>(resolve => {
+      const msg = 'Is anybody out there?';
+
+      client.onConnect = () => {
+        client.subscribe(TEST.destination, (frame: any) => {
+          expect(frame.body).toEqual(msg);
+          resolve();
+        });
+        client.publish({ destination: TEST.destination, body: msg });
+      };
+      client.activate();
+    });
+  });
+
+  test('Should tolerate exceptions thrown in a message handler', async () => {
+    await new Promise<void>(resolve => {
+      const msg = 'Message';
+      let numMessages = 0;
+
+      client.onConnect = () => {
+        client.subscribe(TEST.destination, () => {
+          numMessages++;
+          throw new Error('Special Error');
+        });
+
+        client.publish({ destination: TEST.destination, body: msg });
+        client.publish({ destination: TEST.destination, body: msg });
+
+        setTimeout(() => {
+          expect(numMessages).toBe(2);
+          resolve();
+        }, 1000);
+      };
+      client.activate();
+    });
+  });
+
+  test('Should receive messages with special chars in headers', async () => {
+    await new Promise<void>(resolve => {
+      const msg = 'Is anybody out there?';
+      const cust = 'f:o:o\nbar\rbaz\\foo\nbar\rbaz\\';
+
+      client.onConnect = () => {
+        if (client.connectedVersion !== StompJs.Versions.V1_2) {
+          client.debug(
+            `Skipping 1.2 specific test, current STOMP version: ${client.version}`
+          );
+          resolve();
+          return;
+        }
+
+        client.subscribe(TEST.destination, (frame: any) => {
+          expect(frame.body).toEqual(msg);
+          expect(frame.headers.cust).toEqual(cust);
+          resolve();
+        });
+
+        client.publish({
+          destination: TEST.destination,
+          headers: { cust: cust },
+          body: msg,
+        });
+      };
+      client.activate();
+    });
+  });
+
+  test('Should no longer receive messages after unsubscribing to destination', async () => {
+    await new Promise<void>(resolve => {
+      const msg1 = 'Calling all cars!';
+      let subscription1: any = null;
+      let subscription2: any = null;
+
+      client.onConnect = () => {
+        subscription1 = client.subscribe(TEST.destination, () => {
+          expect(false).toBe(true);
+        });
+
+        subscription2 = client.subscribe(TEST.destination, (frame: any) => {
+          expect(frame.body).toEqual(msg1);
+          resolve();
+        });
+
+        subscription1.unsubscribe();
+        client.publish({ destination: TEST.destination, body: msg1 });
+      };
+      client.activate();
+    });
+  });
+});

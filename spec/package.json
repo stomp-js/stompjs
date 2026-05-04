@@ -1,6 +1,0 @@
-{
-  "name": "spec",
-  "version": "1.0.0",
-  "description": "Just for running specs with commonjs modules",
-  "type": "commonjs"
-}
