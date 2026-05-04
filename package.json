@@ -8,7 +8,7 @@
     "build": "npm run clean && npx tsc && npm run rollup && rm -rf bundles/compatibility bundles/*.d.ts && cp spec/package.json bundles && date",
     "test": "jasmine",
     "karma": "karma start spec/karma.conf.js --single-run",
-    "lint": "tslint 'src/**/*.ts'",
+    "lint": "eslint 'src/**/*.ts'",
     "prettier": "prettier --write .",
     "test-helpers": "tsc -p spec/helpers-src/tsconfig.json",
     "prepublishOnly": "npm run lint && npm run build && npm run karma && npm run test"
@@ -33,8 +33,11 @@
   },
   "homepage": "https://github.com/stomp-js/stompjs#readme",
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@rollup/plugin-terser": "^1.0.0",
     "@rollup/plugin-typescript": "^12.1.4",
+    "eslint": "^10.3.0",
+    "eslint-config-prettier": "^10.1.8",
     "jasmine": "^5.10.0",
     "karma": "^6.4.4",
     "karma-chrome-launcher": "^3.2.0",
@@ -46,9 +49,8 @@
     "rollup": "^4.50.2",
     "text-encoding": "^0.7.0",
     "ts-loader": "^9.5.4",
-    "tslint": "^6.1.3",
-    "tslint-config-prettier": "^1.18.0",
     "typescript": "^5.9.2",
+    "typescript-eslint": "^8.59.1",
     "ws": "^8.18.3"
   },
   "type": "module",
