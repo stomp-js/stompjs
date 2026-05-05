@@ -1,24 +1,43 @@
-import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import eslintConfigPrettier from 'eslint-config-prettier';
+import prettierConfig from 'eslint-config-prettier';
 
 export default tseslint.config(
-  eslint.configs.recommended,
-  tseslint.configs.recommended,
-  eslintConfigPrettier,
+  { ignores: ['node_modules/**', 'esm6/**', 'bundles/**', 'coverage/**'] },
+  tseslint.configs.eslintRecommended,
+  ...tseslint.configs.recommended,
+  prettierConfig,
   {
     rules: {
       'no-console': 'off',
       'no-empty': ['error', { allowEmptyCatch: true }],
       '@typescript-eslint/no-empty-function': 'off',
-      // tslint:recommended had no-any: false
-      '@typescript-eslint/no-explicit-any': 'off',
-      // tslint:recommended did not include ban-ts-comment
-      '@typescript-eslint/ban-ts-comment': 'off',
-      // tslint v6 had no-unused-variable disabled (deferred to TypeScript compiler)
-      '@typescript-eslint/no-unused-vars': 'off',
-      // tslint:recommended did not include no-this-assignment
-      '@typescript-eslint/no-this-alias': 'off',
+      '@typescript-eslint/naming-convention': [
+        'error',
+        {
+          selector: 'default',
+          format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
+          leadingUnderscore: 'allow',
+        },
+        {
+          selector: 'typeLike',
+          format: ['PascalCase'],
+        },
+        {
+          // Type aliases may use camelCase (e.g. setupReplyQueueFnType is public API)
+          selector: 'typeAlias',
+          format: ['PascalCase', 'camelCase'],
+        },
+        {
+          selector: 'enumMember',
+          format: ['UPPER_CASE', 'PascalCase'],
+        },
+        {
+          // Object literal properties are often protocol/API-defined (e.g. STOMP headers
+          // like 'correlation-id', 'auto-delete') and must not be forced to camelCase.
+          selector: 'objectLiteralProperty',
+          format: null,
+        },
+      ],
     },
   },
 );
