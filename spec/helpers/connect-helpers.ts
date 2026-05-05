@@ -1,10 +1,16 @@
 import { Client, StompConfig } from '../../src/index.js';
 import { WrapperWS } from './wrapper-ws.js';
+import WebSocket from 'ws';
 
 export const LOGIN = 'guest';
 export const PASSWORD = 'guest';
 export const BROKER_URL = 'ws://localhost:15674/ws';
 export const BAD_BROKER_URL = 'ws://localhost:61625';
+
+// Set WebSocket globally only in Node.js (browsers already have it natively)
+if (typeof process !== 'undefined' && process.versions?.node) {
+  (globalThis as any).WebSocket = WebSocket;
+}
 
 let id = 0;
 
