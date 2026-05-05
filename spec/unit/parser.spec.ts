@@ -1,6 +1,7 @@
 import { test } from '@playwright/test';
 import sinon from 'sinon';
-import { expect, StompJs, generateBinaryData } from '../helpers/setup.js';
+import { Parser } from '../../src/index.js';
+import { expect, generateBinaryData } from '../helpers/setup.js';
 
 function toUint8Array(str: string): Uint8Array {
   return new TextEncoder().encode(str);
@@ -30,7 +31,7 @@ describe('Neo Parser', () => {
   beforeEach(() => {
     onFrame = sinon.spy();
     onIncomingPing = sinon.spy();
-    parser = new StompJs.Parser(onFrame, onIncomingPing);
+    parser = new Parser(onFrame, onIncomingPing);
   });
 
   describe('Basic', () => {

@@ -1,5 +1,6 @@
 import { test } from '@playwright/test';
-import { expect, StompJs } from '../../helpers/setup.js';
+import { Stomp } from '../../../src/index.js';
+import { expect } from '../../helpers/setup.js';
 
 const { describe, beforeEach } = test;
 
@@ -29,7 +30,7 @@ describe('Compat Parse connect method arguments', () => {
   let client: any;
 
   beforeEach(() => {
-    client = StompJs.Stomp.client();
+    client = Stomp.client();
   });
 
   test('connect(login, passcode, connectCallback)', () => {

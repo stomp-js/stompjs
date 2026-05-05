@@ -1,9 +1,9 @@
-import * as StompJs from '../../esm6/index.js';
+import { Parser } from '../../src/index.js';
 
 export const parseFrame = (chunk: string | ArrayBuffer): any => {
   let frame: any;
 
-  const parser = new StompJs.Parser(
+  const parser = new Parser(
     (f: any) => {
       frame = f;
     },

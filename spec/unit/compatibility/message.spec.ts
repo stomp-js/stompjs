@@ -1,8 +1,8 @@
 import { test } from '@playwright/test';
 import sinon from 'sinon';
+import { Stomp } from '../../../src/index.js';
 import {
   expect,
-  StompJs,
   TEST,
   disconnectStomp,
   randomText,
@@ -14,7 +14,7 @@ describe('Compat Stomp Message', () => {
   let client: any;
 
   beforeEach(() => {
-    client = StompJs.Stomp.client(TEST.url);
+    client = Stomp.client(TEST.url);
   });
 
   afterEach(async () => {

@@ -4,8 +4,6 @@ import {
   stompClient,
   disconnectStomp,
 } from '../helpers/setup.js';
-import type * as StompJsTypes from '../../esm6/index.js';
-
 const { describe, beforeEach, afterEach } = test;
 
 describe('Callbacks', () => {

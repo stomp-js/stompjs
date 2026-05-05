@@ -6,4 +6,3 @@ export { wait, getLength, shouldSkipTests, describeSkipIf, itSkipIf } from './ut
 export { parseFrame } from './parse-frame.js';
 export { randomText, generateBinaryData, generateTextData } from './content-helpers.js';
 export { expect } from '@playwright/test';
-export * as StompJs from '../../esm6/index.js';

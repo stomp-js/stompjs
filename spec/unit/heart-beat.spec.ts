@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
+import { Client, FrameImpl } from '../../src/index.js';
 import {
   expect,
-  StompJs,
   TEST,
   stompClient,
   disconnectStomp,
@@ -23,7 +23,7 @@ function executeTestCases(useWebWorkerHeartbeats: boolean, mode: string) {
   const { describe, beforeEach, afterEach } = test;
 
   describe(`Ping using (${mode})`, () => {
-    let client: StompJs.Client;
+    let client: Client;
 
     beforeEach(() => {
       client = stompClient();
@@ -47,7 +47,7 @@ function executeTestCases(useWebWorkerHeartbeats: boolean, mode: string) {
             const inComingFrame = parseFrame(ev.data);
 
             if (inComingFrame.command === 'CONNECTED') {
-              const frame = (StompJs.FrameImpl as any).fromRawFrame(inComingFrame, true);
+              const frame = (FrameImpl as any).fromRawFrame(inComingFrame, true);
               delete frame.headers['heart-beat'];
               ev = { data: frame.serialize() };
             }

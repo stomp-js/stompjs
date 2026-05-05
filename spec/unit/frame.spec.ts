@@ -1,6 +1,7 @@
 import { test } from '@playwright/test';
 import sinon from 'sinon';
-import { expect, StompJs } from '../helpers/setup.js';
+import { Parser, FrameImpl } from '../../src/index.js';
+import { expect } from '../helpers/setup.js';
 
 const { describe } = test;
 
@@ -9,16 +10,16 @@ describe('Stomp FrameImpl', () => {
   const unmarshall = (data: string, escapeHeaderValues?: boolean): any => {
     const onFrame = sinon.spy();
     const onIncomingPing = sinon.spy();
-    const parser = new StompJs.Parser(onFrame, onIncomingPing);
+    const parser = new Parser(onFrame, onIncomingPing);
 
     parser.parseChunk(data);
 
     const rawFrame = onFrame.firstCall.args[0];
-    return (StompJs.FrameImpl as any).fromRawFrame(rawFrame, escapeHeaderValues);
+    return (FrameImpl as any).fromRawFrame(rawFrame, escapeHeaderValues);
   };
 
   test('escape header value', () => {
-    const out = (StompJs.FrameImpl as any).hdrValueEscape(
+    const out = (FrameImpl as any).hdrValueEscape(
       'anything\\a\nb\nc\rd\re:f:\\anything\\a\nb\nc\rd\re:f:\\'
     );
     expect(out).toEqual(
@@ -28,14 +29,14 @@ describe('Stomp FrameImpl', () => {
 
   test('escapes and then unescapes header value to give original string', () => {
     const orig = 'anything\\a\nb\nc\rd\re:f:\\anything\\a\nb\nc\rd\re:f:\\';
-    const out = (StompJs.FrameImpl as any).hdrValueUnEscape(
-      (StompJs.FrameImpl as any).hdrValueEscape(orig)
+    const out = (FrameImpl as any).hdrValueUnEscape(
+      (FrameImpl as any).hdrValueEscape(orig)
     );
     expect(out).toEqual(orig);
   });
 
   test('marshall a CONNECT frame', () => {
-    const out = (StompJs.FrameImpl as any).marshall({
+    const out = (FrameImpl as any).marshall({
       command: 'CONNECT',
       headers: { login: 'jmesnil', passcode: 'wombats' },
     });
@@ -43,7 +44,7 @@ describe('Stomp FrameImpl', () => {
   });
 
   test('marshall a SEND frame', () => {
-    const out = (StompJs.FrameImpl as any).marshall({
+    const out = (FrameImpl as any).marshall({
       command: 'SEND',
       headers: { destination: '/queue/test' },
       body: 'hello, world!',
@@ -54,7 +55,7 @@ describe('Stomp FrameImpl', () => {
   });
 
   test('marshall a SEND frame without content-length', () => {
-    const out = (StompJs.FrameImpl as any).marshall({
+    const out = (FrameImpl as any).marshall({
       command: 'SEND',
       headers: { destination: '/queue/test' },
       body: 'hello, world!',
@@ -123,7 +124,7 @@ describe('Stomp FrameImpl', () => {
         '\nmessage-id:456\n\n\0';
 
     expect(
-      (StompJs.FrameImpl as any).marshall({
+      (FrameImpl as any).marshall({
         command: 'MESSAGE',
         headers: { destination: dest, 'message-id': '456' },
         body: '',
@@ -138,7 +139,7 @@ describe('Stomp FrameImpl', () => {
     const headers = { destination: dest, 'message-id': '456' };
     const body = '';
 
-    const msg = (StompJs.FrameImpl as any).marshall({
+    const msg = (FrameImpl as any).marshall({
       command: command,
       headers: headers,
       body: body,
@@ -156,11 +157,11 @@ describe('Stomp FrameImpl', () => {
   });
 
   test('Content length of UTF-8 strings', () => {
-    expect(0).toEqual((StompJs.FrameImpl as any).sizeOfUTF8());
-    expect(0).toEqual((StompJs.FrameImpl as any).sizeOfUTF8(''));
-    expect(1).toEqual((StompJs.FrameImpl as any).sizeOfUTF8('a'));
-    expect(2).toEqual((StompJs.FrameImpl as any).sizeOfUTF8('ф'));
-    expect(3).toEqual((StompJs.FrameImpl as any).sizeOfUTF8('№'));
-    expect(15).toEqual((StompJs.FrameImpl as any).sizeOfUTF8('1 a ф № @ ®'));
+    expect(0).toEqual((FrameImpl as any).sizeOfUTF8());
+    expect(0).toEqual((FrameImpl as any).sizeOfUTF8(''));
+    expect(1).toEqual((FrameImpl as any).sizeOfUTF8('a'));
+    expect(2).toEqual((FrameImpl as any).sizeOfUTF8('ф'));
+    expect(3).toEqual((FrameImpl as any).sizeOfUTF8('№'));
+    expect(15).toEqual((FrameImpl as any).sizeOfUTF8('1 a ф № @ ®'));
   });
 });

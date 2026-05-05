@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
+import { Versions } from '../../src/index.js';
 import {
   expect,
-  StompJs,
   TEST,
   stompClient,
   disconnectStomp,
@@ -64,7 +64,7 @@ describe('Stomp Subscription', () => {
       const cust = 'f:o:o\nbar\rbaz\\foo\nbar\rbaz\\';
 
       client.onConnect = () => {
-        if (client.connectedVersion !== StompJs.Versions.V1_2) {
+        if (client.connectedVersion !== Versions.V1_2) {
           client.debug(
             `Skipping 1.2 specific test, current STOMP version: ${client.version}`
           );

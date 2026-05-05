@@ -1,8 +1,8 @@
 import { test } from '@playwright/test';
 import sinon from 'sinon';
+import { ReconnectionTimeMode } from '../../src/index.js';
 import {
   expect,
-  StompJs,
   TEST,
   stompClient,
   disconnectStomp,
@@ -158,7 +158,7 @@ describe('Stomp Reconnect', () => {
           client,
           {
             reconnectDelay: 40,
-            reconnectTimeMode: StompJs.ReconnectionTimeMode.EXPONENTIAL,
+            reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
           },
           4,
         );
@@ -171,7 +171,7 @@ describe('Stomp Reconnect', () => {
           {
             reconnectDelay: 40,
             maxReconnectDelay: 100,
-            reconnectTimeMode: StompJs.ReconnectionTimeMode.EXPONENTIAL,
+            reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
           },
           5,
         );
@@ -186,7 +186,7 @@ describe('Stomp Reconnect', () => {
           {
             reconnectDelay: 40,
             maxReconnectDelay: 20,
-            reconnectTimeMode: StompJs.ReconnectionTimeMode.EXPONENTIAL,
+            reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
           },
           3,
         );
@@ -203,7 +203,7 @@ describe('Stomp Reconnect', () => {
         client,
         {
           reconnectDelay: 40,
-          reconnectTimeMode: StompJs.ReconnectionTimeMode.EXPONENTIAL,
+          reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
         },
         3,
       );
@@ -223,7 +223,7 @@ describe('Stomp Reconnect', () => {
         client,
         {
           reconnectDelay: 40,
-          reconnectTimeMode: StompJs.ReconnectionTimeMode.EXPONENTIAL,
+          reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
         },
         3,
       );
@@ -240,7 +240,7 @@ describe('Stomp Reconnect', () => {
         client,
         {
           reconnectDelay: 40,
-          reconnectTimeMode: StompJs.ReconnectionTimeMode.EXPONENTIAL,
+          reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
         },
         3,
       );
@@ -251,7 +251,7 @@ describe('Stomp Reconnect', () => {
         client,
         {
           reconnectDelay: 50,
-          reconnectTimeMode: StompJs.ReconnectionTimeMode.EXPONENTIAL,
+          reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
         },
         3,
       );

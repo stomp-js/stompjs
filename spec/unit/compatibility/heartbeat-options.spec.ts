@@ -1,5 +1,6 @@
 import { test } from '@playwright/test';
-import { expect, StompJs, disconnectStomp } from '../../helpers/setup.js';
+import { Stomp } from '../../../src/index.js';
+import { expect, disconnectStomp } from '../../helpers/setup.js';
 
 const { describe, beforeEach, afterEach } = test;
 
@@ -7,7 +8,7 @@ describe('Compat mode', () => {
   let client: any;
 
   beforeEach(() => {
-    client = StompJs.Stomp.client();
+    client = Stomp.client();
   });
 
   afterEach(async () => {

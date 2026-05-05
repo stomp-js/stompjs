@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
+import { Client, ActivationState } from '../../src/index.js';
 import {
   expect,
-  StompJs,
   TEST,
   stompClient,
   badStompClient,
@@ -15,7 +15,7 @@ import {
 const { describe, afterEach } = test;
 
 describe('Stomp Connection', () => {
-  let client: StompJs.Client;
+  let client: Client;
 
   afterEach(async () => {
     await disconnectStomp(client);
@@ -100,7 +100,7 @@ describe('Stomp Connection', () => {
           client.deactivate();
         },
         onWebSocketClose: () => {
-          expect(client.state).toEqual(StompJs.ActivationState.INACTIVE);
+          expect(client.state).toEqual(ActivationState.INACTIVE);
           resolve();
         },
       });
@@ -126,7 +126,7 @@ describe('Stomp Connection', () => {
       client.activate();
       setTimeout(() => {
         expect(client.connected).toBe(false);
-        expect(client.state).toEqual(StompJs.ActivationState.INACTIVE);
+        expect(client.state).toEqual(ActivationState.INACTIVE);
         resolve();
       }, 50);
     });
@@ -157,7 +157,7 @@ describe('Stomp Connection', () => {
           client.deactivate();
         },
         onWebSocketClose: () => {
-          expect(client.state).toEqual(StompJs.ActivationState.INACTIVE);
+          expect(client.state).toEqual(ActivationState.INACTIVE);
           client.onWebSocketClose = () => {};
           client.onConnect = () => resolve();
           client.activate();
@@ -265,10 +265,10 @@ describe('Stomp Connection', () => {
           client.onConnect = () => resolve();
           client.onWebSocketClose = () => {};
 
-          expect(client.state).toEqual(StompJs.ActivationState.ACTIVE);
+          expect(client.state).toEqual(ActivationState.ACTIVE);
 
           client.deactivate().then(() => {
-            expect(client.state).toEqual(StompJs.ActivationState.INACTIVE);
+            expect(client.state).toEqual(ActivationState.INACTIVE);
             client.activate();
           });
         },

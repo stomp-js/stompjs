@@ -1,13 +1,13 @@
 import { TEST } from './test-config.js';
-import * as StompJs from '../../esm6/index.js';
+import { Client, StompConfig } from '../../src/index.js';
 import { WrapperWS } from './wrapper-ws.js';
 
 let id = 0;
 
-export function stompClient(): StompJs.Client {
+export function stompClient(): Client {
   const myId = ++id;
 
-  const stompConfig: StompJs.StompConfig = {
+  const stompConfig: StompConfig = {
     connectHeaders: {
       login: TEST.login,
       passcode: TEST.password,
@@ -19,10 +19,10 @@ export function stompClient(): StompJs.Client {
     reconnectDelay: 0,
   };
 
-  return new StompJs.Client(stompConfig);
+  return new Client(stompConfig);
 }
 
-export function badStompClient(): StompJs.Client {
+export function badStompClient(): Client {
   const client = stompClient();
   // brokerURL is also provided, in this case webSocketFactory should get used
   client.webSocketFactory = function () {
@@ -33,13 +33,13 @@ export function badStompClient(): StompJs.Client {
 
 // This itself is important, if for some reason, deactivate does not complete, the test will time out.
 // Ensure this is called as await in an async function.
-export async function disconnectStomp(client: StompJs.Client | undefined): Promise<void> {
+export async function disconnectStomp(client: Client | undefined): Promise<void> {
   if (client) {
     await client.deactivate();
   }
 }
 
-function saveOrigFactory(client: StompJs.Client): void {
+function saveOrigFactory(client: Client): void {
   if (!(client as any)._origFactory) {
     (client as any)._origFactory =
       client.webSocketFactory ||
@@ -51,7 +51,7 @@ function saveOrigFactory(client: StompJs.Client): void {
   }
 }
 
-export function overRideFactory(client: StompJs.Client, WrapperClass: new (ws: any) => WrapperWS): void {
+export function overRideFactory(client: Client, WrapperClass: new (ws: any) => WrapperWS): void {
   saveOrigFactory(client);
 
   client.webSocketFactory = () => new WrapperClass((client as any)._origFactory());
