@@ -2,7 +2,6 @@ import { test } from '@playwright/test';
 import {
   expect,
   StompJs,
-  WebSocket,
   TEST,
   stompClient,
   badStompClient,

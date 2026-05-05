@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import { expect, StompJs, WebSocket } from '../helpers/setup.js';
+import { expect, StompJs } from '../helpers/setup.js';
 
 const { describe } = test;
 

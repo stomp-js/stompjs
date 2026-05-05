@@ -1,5 +1,5 @@
 // Single import point for all test helpers
-export { TEST, WebSocket } from './test-config.js';
+export { TEST } from './test-config.js';
 export { stompClient, badStompClient, disconnectStomp, overRideFactory } from './connect-helpers.js';
 export { WrapperWS } from './wrapper-ws.js';
 export { wait, getLength, shouldSkipTests, describeSkipIf, itSkipIf } from './utils.js';

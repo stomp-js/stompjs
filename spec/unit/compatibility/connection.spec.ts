@@ -3,7 +3,6 @@ import sinon from 'sinon';
 import {
   expect,
   StompJs,
-  WebSocket,
   TEST,
   disconnectStomp,
 } from '../../helpers/setup.js';

@@ -1,4 +1,4 @@
-import { WebSocket, TEST } from './test-config.js';
+import { TEST } from './test-config.js';
 import * as StompJs from '../../esm6/index.js';
 import { WrapperWS } from './wrapper-ws.js';
 
