@@ -185,6 +185,7 @@ export class CompatClient extends Client {
    *
    * **Deprecated**
    */
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   set reconnect_delay(value: number) {
     this.reconnectDelay = value;
   }

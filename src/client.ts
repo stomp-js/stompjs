@@ -877,7 +877,7 @@ export class Client {
         this.onWebSocketClose(evt);
 
         if (this.active) {
-          this._schedule_reconnect();
+          this.scheduleReconnect();
         }
       },
       onWebSocketError: evt => {
@@ -920,7 +920,7 @@ export class Client {
     return webSocket;
   }
 
-  private _schedule_reconnect(): void {
+  private scheduleReconnect(): void {
     if (this._nextReconnectDelay > 0) {
       this.debug(
         `STOMP: scheduling reconnection in ${this._nextReconnectDelay}ms`,

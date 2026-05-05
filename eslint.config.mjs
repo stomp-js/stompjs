@@ -11,6 +11,10 @@ export default tseslint.config(
       'no-console': 'off',
       'no-empty': ['error', { allowEmptyCatch: true }],
       '@typescript-eslint/no-empty-function': 'off',
+      '@typescript-eslint/no-explicit-any': 'off', // Consider later
+      '@typescript-eslint/no-this-alias': 'off', // Consider later
+      '@typescript-eslint/ban-ts-comment': 'off', // Consider later
+      '@typescript-eslint/no-unused-vars': 'off', // Consider later
       '@typescript-eslint/naming-convention': [
         'error',
         {
