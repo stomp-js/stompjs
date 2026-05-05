@@ -1,6 +1,5 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { Stomp } from '../../../src/index.js';
-import { expect } from '../../helpers/setup.js';
 
 const { describe, beforeEach } = test;
 

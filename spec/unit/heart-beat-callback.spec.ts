@@ -1,13 +1,8 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
-import {
-  expect,
-  stompClient,
-  disconnectStomp,
-  overRideFactory,
-  WrapperWS,
-  getLength,
-} from '../helpers/setup.js';
+import { stompClient, disconnectStomp, overRideFactory } from '../helpers/connect-helpers.js';
+import { WrapperWS } from '../helpers/wrapper-ws.js';
+import { getLength } from '../helpers/utils.js';
 
 const { describe, beforeEach, afterEach } = test;
 

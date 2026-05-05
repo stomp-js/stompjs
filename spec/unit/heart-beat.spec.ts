@@ -1,15 +1,10 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { Client, FrameImpl } from '../../src/index.js';
-import {
-  expect,
-  TEST,
-  stompClient,
-  disconnectStomp,
-  overRideFactory,
-  WrapperWS,
-  parseFrame,
-  getLength,
-} from '../helpers/setup.js';
+import { TEST } from '../helpers/test-config.js';
+import { stompClient, disconnectStomp, overRideFactory } from '../helpers/connect-helpers.js';
+import { WrapperWS } from '../helpers/wrapper-ws.js';
+import { parseFrame } from '../helpers/parse-frame.js';
+import { getLength } from '../helpers/utils.js';
 
 /*
   These tests wrap a web socket and force introduces errors.

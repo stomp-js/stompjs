@@ -1,6 +1,6 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { Stomp } from '../../../src/index.js';
-import { expect, disconnectStomp } from '../../helpers/setup.js';
+import { disconnectStomp } from '../../helpers/connect-helpers.js';
 
 const { describe, beforeEach, afterEach } = test;
 

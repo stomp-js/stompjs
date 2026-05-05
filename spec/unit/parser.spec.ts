@@ -1,7 +1,7 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
 import { Parser } from '../../src/index.js';
-import { expect, generateBinaryData } from '../helpers/setup.js';
+import { generateBinaryData } from '../helpers/content-helpers.js';
 
 function toUint8Array(str: string): Uint8Array {
   return new TextEncoder().encode(str);

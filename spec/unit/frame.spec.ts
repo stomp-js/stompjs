@@ -1,7 +1,6 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
 import { Parser, FrameImpl } from '../../src/index.js';
-import { expect } from '../helpers/setup.js';
 
 const { describe } = test;
 

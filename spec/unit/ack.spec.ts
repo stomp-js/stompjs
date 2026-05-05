@@ -1,11 +1,7 @@
-import { test } from '@playwright/test';
-import {
-  expect,
-  TEST,
-  stompClient,
-  disconnectStomp,
-  randomText,
-} from '../helpers/setup.js';
+import { test, expect } from '@playwright/test';
+import { TEST } from '../helpers/test-config.js';
+import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
+import { randomText } from '../helpers/content-helpers.js';
 
 const { describe, beforeEach, afterEach } = test;
 

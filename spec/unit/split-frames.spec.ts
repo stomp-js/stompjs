@@ -1,13 +1,8 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
-import {
-  expect,
-  TEST,
-  stompClient,
-  disconnectStomp,
-  generateBinaryData,
-  generateTextData,
-} from '../helpers/setup.js';
+import { TEST } from '../helpers/test-config.js';
+import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
+import { generateBinaryData, generateTextData } from '../helpers/content-helpers.js';
 
 const { describe, beforeEach, afterEach } = test;
 

@@ -1,13 +1,8 @@
-import { test } from '@playwright/test';
-import {
-  expect,
-  TEST,
-  stompClient,
-  disconnectStomp,
-  overRideFactory,
-  WrapperWS,
-  randomText,
-} from '../helpers/setup.js';
+import { test, expect } from '@playwright/test';
+import { TEST } from '../helpers/test-config.js';
+import { stompClient, disconnectStomp, overRideFactory } from '../helpers/connect-helpers.js';
+import { WrapperWS } from '../helpers/wrapper-ws.js';
+import { randomText } from '../helpers/content-helpers.js';
 
 const { describe, beforeEach, afterEach } = test;
 

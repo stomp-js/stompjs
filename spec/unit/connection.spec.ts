@@ -1,16 +1,10 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { Client, ActivationState } from '../../src/index.js';
-import {
-  expect,
-  TEST,
-  stompClient,
-  badStompClient,
-  disconnectStomp,
-  overRideFactory,
-  WrapperWS,
-  parseFrame,
-  wait,
-} from '../helpers/setup.js';
+import { TEST } from '../helpers/test-config.js';
+import { stompClient, badStompClient, disconnectStomp, overRideFactory } from '../helpers/connect-helpers.js';
+import { WrapperWS } from '../helpers/wrapper-ws.js';
+import { parseFrame } from '../helpers/parse-frame.js';
+import { wait } from '../helpers/utils.js';
 
 const { describe, afterEach } = test;
 

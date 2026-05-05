@@ -1,11 +1,8 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
 import { Stomp } from '../../../src/index.js';
-import {
-  expect,
-  TEST,
-  disconnectStomp,
-} from '../../helpers/setup.js';
+import { TEST } from '../../helpers/test-config.js';
+import { disconnectStomp } from '../../helpers/connect-helpers.js';
 
 const { describe, afterEach } = test;
 
