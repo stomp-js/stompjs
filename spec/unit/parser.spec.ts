@@ -1,5 +1,6 @@
 import { test } from '@playwright/test';
-import { expect, StompJs, createSpy, generateBinaryData } from '../helpers/setup.js';
+import sinon from 'sinon';
+import { expect, StompJs, generateBinaryData } from '../helpers/setup.js';
 
 function toUint8Array(str: string): Uint8Array {
   return new TextEncoder().encode(str);
@@ -27,8 +28,8 @@ describe('Neo Parser', () => {
   let parser: any;
 
   beforeEach(() => {
-    onFrame = createSpy('onFrame');
-    onIncomingPing = createSpy('onIncomingPing');
+    onFrame = sinon.spy();
+    onIncomingPing = sinon.spy();
     parser = new StompJs.Parser(onFrame, onIncomingPing);
   });
 
@@ -147,7 +148,7 @@ describe('Neo Parser', () => {
 
       parser.parseChunk(msg2);
 
-      expect(onFrame.calls.mostRecent().args[0]).toEqual({
+      expect(onFrame.lastCall.args[0]).toEqual({
         command: 'MESSAGE',
         headers: [
           ['destination', 'bar'],
@@ -163,7 +164,7 @@ describe('Neo Parser', () => {
 
       parser.parseChunk(msg + msg2);
 
-      expect(onFrame.calls.first().args[0]).toEqual({
+      expect(onFrame.firstCall.args[0]).toEqual({
         command: 'MESSAGE',
         headers: [
           ['destination', 'foo'],
@@ -172,7 +173,7 @@ describe('Neo Parser', () => {
         binaryBody: toUint8Array(''),
       });
 
-      expect(onFrame.calls.mostRecent().args[0]).toEqual({
+      expect(onFrame.lastCall.args[0]).toEqual({
         command: 'MESSAGE',
         headers: [
           ['destination', 'bar'],
@@ -194,7 +195,7 @@ describe('Neo Parser', () => {
       parser.parseChunk('\n');
       parser.parseChunk('\n');
 
-      expect(onIncomingPing.calls.count()).toBe(3);
+      expect(onIncomingPing.callCount).toBe(3);
     });
 
     test('ignores CR in incoming pings', () => {
@@ -207,7 +208,7 @@ describe('Neo Parser', () => {
       parser.parseChunk('\r\n');
       parser.parseChunk('\r\n');
 
-      expect(onIncomingPing.calls.count()).toBe(3);
+      expect(onIncomingPing.callCount).toBe(3);
     });
   });
 
@@ -286,7 +287,7 @@ describe('Neo Parser', () => {
     test('handles binary octets in body', () => {
       parser.parseChunk(rawChunk);
 
-      const rawFrame = onFrame.calls.first().args[0];
+      const rawFrame = onFrame.firstCall.args[0];
       verifyRawFrame(rawFrame);
     });
 
@@ -295,8 +296,8 @@ describe('Neo Parser', () => {
       parser.parseChunk(rawChunk);
       parser.parseChunk(rawChunk);
 
-      expect(onFrame.calls.count()).toEqual(3);
-      const rawFrame = onFrame.calls.mostRecent().args[0];
+      expect(onFrame.callCount).toEqual(3);
+      const rawFrame = onFrame.lastCall.args[0];
 
       verifyRawFrame(rawFrame);
     });
@@ -306,7 +307,7 @@ describe('Neo Parser', () => {
       parser.parseChunk(rawChunk.slice(200, 500));
       parser.parseChunk(rawChunk.slice(500, rawChunk.byteLength));
 
-      const rawFrame = onFrame.calls.first().args[0];
+      const rawFrame = onFrame.firstCall.args[0];
 
       verifyRawFrame(rawFrame);
     });
@@ -316,7 +317,7 @@ describe('Neo Parser', () => {
       parser.parseChunk(binaryBody.buffer); // Array buffer chunk, binary octets
       parser.parseChunk('\0'); // Text chunk
 
-      const rawFrame = onFrame.calls.first().args[0];
+      const rawFrame = onFrame.firstCall.args[0];
 
       verifyRawFrame(rawFrame);
     });
@@ -338,10 +339,10 @@ describe('Neo Parser', () => {
       parser.parseChunk(rawChunk);
       parser.parseChunk('\n');
 
-      expect(onFrame.calls.count()).toEqual(2);
-      expect(onIncomingPing.calls.count()).toEqual(3);
+      expect(onFrame.callCount).toEqual(2);
+      expect(onIncomingPing.callCount).toEqual(3);
 
-      const rawFrame = onFrame.calls.mostRecent().args[0];
+      const rawFrame = onFrame.lastCall.args[0];
       verifyRawFrame(rawFrame);
     });
   });

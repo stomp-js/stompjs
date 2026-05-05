@@ -1,10 +1,10 @@
 import { test } from '@playwright/test';
+import sinon from 'sinon';
 import {
   expect,
   TEST,
   stompClient,
   disconnectStomp,
-  spyOn,
   randomText,
 } from '../helpers/setup.js';
 
@@ -26,14 +26,14 @@ describe('forceBinaryWSFrames', () => {
     await new Promise<void>(resolve => {
       const body = randomText();
       client.onConnect = () => {
-        const spyWebSocketSend = spyOn(client.webSocket, 'send').and.callThrough();
+        const spyWebSocketSend = sinon.spy(client.webSocket, 'send');
 
         client.subscribe(TEST.destination, (message: any) => {
           expect(message.body).toEqual(body);
           client.deactivate();
 
           // Usually all packets should have been Text, but with this flag each packet would be binary Uint8Array
-          spyWebSocketSend.calls.allArgs().forEach((args: any[]) => {
+          spyWebSocketSend.args.forEach((args: any[]) => {
             const packet = args[0];
             expect(packet instanceof Uint8Array).toBeTruthy();
           });

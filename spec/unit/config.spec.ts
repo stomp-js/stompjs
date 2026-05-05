@@ -1,9 +1,9 @@
 import { test } from '@playwright/test';
+import sinon from 'sinon';
 import {
   expect,
   stompClient,
   disconnectStomp,
-  spyOn,
 } from '../helpers/setup.js';
 
 const { describe, beforeEach, afterEach } = test;
@@ -29,14 +29,14 @@ describe('Configuration', () => {
           myheader: headerBeforeConnect,
         },
         onConnect: () => {
-          const spy = spyOn(client.webSocket, 'send').and.callThrough();
+          const spy = sinon.spy(client.webSocket, 'send');
 
           client.configure({
             disconnectHeaders: {
               myheader: headerAfterConnect,
             },
             onWebSocketClose: () => {
-              const rawChunk = spy.calls.first().args[0];
+              const rawChunk = spy.firstCall.args[0];
               expect(rawChunk).not.toMatch(headerBeforeConnect);
               expect(rawChunk).toMatch(headerAfterConnect);
               resolve();

@@ -1,10 +1,10 @@
 import { test } from '@playwright/test';
+import sinon from 'sinon';
 import {
   expect,
   TEST,
   stompClient,
   disconnectStomp,
-  spyOn,
   generateBinaryData,
   generateTextData,
 } from '../helpers/setup.js';
@@ -33,18 +33,16 @@ describe('splitLargeFrames', () => {
       const body = generateTextData(20);
 
       client.onConnect = () => {
-        const origSend = client.webSocket.send;
-        const spyWebSocketSend = spyOn(client.webSocket, 'send');
+        const spyWebSocketSend = sinon.stub(client.webSocket, 'send');
 
         client.publish({ destination: TEST.destination, body: body });
-        expect(spyWebSocketSend.calls.count()).toBe(3);
-        expect(spyWebSocketSend.calls.first().args[0].length).toEqual(
+        expect(spyWebSocketSend.callCount).toBe(3);
+        expect(spyWebSocketSend.firstCall.args[0].length).toEqual(
           client.maxWebSocketChunkSize
         );
-        expect(spyWebSocketSend.calls.mostRecent().args[0].length).toEqual(4156);
+        expect(spyWebSocketSend.lastCall.args[0].length).toEqual(4156);
 
-        // restore original send
-        client.webSocket.send = origSend;
+        spyWebSocketSend.restore();
         resolve();
       };
       client.activate();
@@ -60,10 +58,10 @@ describe('splitLargeFrames', () => {
           resolve();
         });
 
-        const spyWebSocketSend = spyOn(client.webSocket, 'send').and.callThrough();
+        const spyWebSocketSend = sinon.spy(client.webSocket, 'send');
         client.publish({ destination: TEST.destination, binaryBody: binaryBody });
-        expect(spyWebSocketSend.calls.count()).toBe(1);
-        expect(spyWebSocketSend.calls.first().args[0].length).not.toBeLessThan(
+        expect(spyWebSocketSend.callCount).toBe(1);
+        expect(spyWebSocketSend.firstCall.args[0].length).not.toBeLessThan(
           20 * 1024
         );
       };

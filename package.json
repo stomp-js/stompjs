@@ -40,6 +40,7 @@
     "onchange": "^7.1.0",
     "prettier": "^3.6.2",
     "rollup": "^4.50.2",
+    "sinon": "^21.1.2",
     "ts-loader": "^9.5.4",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.59.1",

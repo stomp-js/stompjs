@@ -1,11 +1,11 @@
 import { test } from '@playwright/test';
+import sinon from 'sinon';
 import {
   expect,
   StompJs,
   WebSocket,
   TEST,
   disconnectStomp,
-  spyOn,
 } from '../../helpers/setup.js';
 
 const { describe, afterEach } = test;
@@ -43,10 +43,11 @@ describe('Compat Stomp Connection', () => {
   test('Should warn if factory was not supplied to Stomp.over', () => {
     const socket = new (WebSocket as any)(TEST.url);
 
-    const spy = spyOn(console, 'warn').and.callThrough();
+    const spy = sinon.spy(console, 'warn');
 
     client = StompJs.Stomp.over(socket);
 
     expect(spy).toHaveBeenCalled();
+    spy.restore();
   });
 });

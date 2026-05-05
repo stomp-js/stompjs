@@ -1,11 +1,11 @@
 import { test } from '@playwright/test';
+import sinon from 'sinon';
 import {
   expect,
   StompJs,
   TEST,
   stompClient,
   disconnectStomp,
-  spyOn,
   describeSkipIf,
   shouldSkipTests,
   wait,
@@ -179,7 +179,7 @@ describe('Stomp Reconnect', () => {
       });
 
       test('Should cap at reconnectDelay when maxReconnectDelay is lower', async () => {
-        const debugSpy = spyOn(client, 'debug').and.callThrough();
+        const debugSpy = sinon.spy(client, 'debug');
 
         await collectReconnectDelays(
           client,

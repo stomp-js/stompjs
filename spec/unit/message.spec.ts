@@ -1,11 +1,10 @@
 import { test } from '@playwright/test';
+import sinon from 'sinon';
 import {
   expect,
   TEST,
   stompClient,
   disconnectStomp,
-  spyOn,
-  createSpy,
   randomText,
   generateBinaryData,
   generateTextData,
@@ -59,17 +58,17 @@ describe('Stomp Message', () => {
       const body = 'Älä sinä yhtään and السابق';
       client.logRawCommunication = true;
 
-      client.debug = createSpy('debug');
+      client.debug = sinon.spy();
 
       client.onConnect = () => {
         client.subscribe(TEST.destination, (message: any) => {
-          expect(client.debug.calls.mostRecent().args[0]).toMatch(body);
+          expect(client.debug.lastCall.args[0]).toMatch(body);
           client.deactivate();
           resolve();
         });
 
         client.publish({ destination: TEST.destination, body: body });
-        expect(client.debug.calls.mostRecent().args[0]).toEqual(
+        expect(client.debug.lastCall.args[0]).toEqual(
           '>>> SEND\ndestination:/topic/chat.general\ncontent-length:37\n\nÄlä sinä yhtään and السابق' +
             '\0'
         );
@@ -156,7 +155,7 @@ describe('Stomp Message', () => {
           resolve();
         });
 
-        const spy = spyOn(client.webSocket, 'send').and.callThrough();
+        const spy = sinon.spy(client.webSocket, 'send');
 
         client.publish({
           destination: TEST.destination,
@@ -164,7 +163,7 @@ describe('Stomp Message', () => {
           skipContentLengthHeader: true,
         });
 
-        const rawChunk = spy.calls.first().args[0];
+        const rawChunk = spy.firstCall.args[0];
         expect(rawChunk).not.toMatch('content-length');
       };
       client.activate();
@@ -181,7 +180,7 @@ describe('Stomp Message', () => {
           resolve();
         });
 
-        const spy = spyOn(client.webSocket, 'send').and.callThrough();
+        const spy = sinon.spy(client.webSocket, 'send');
 
         client.publish({
           destination: TEST.destination,
@@ -189,7 +188,7 @@ describe('Stomp Message', () => {
           skipContentLengthHeader: true,
         });
 
-        const rawChunk = spy.calls.first().args[0];
+        const rawChunk = spy.firstCall.args[0];
         const chunkAsString = new TextDecoder().decode(rawChunk);
         expect(chunkAsString).toMatch('content-length');
       };

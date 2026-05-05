@@ -1,10 +1,11 @@
 import { expect as baseExpect } from '@playwright/test';
-import type { Spy } from './spy.js';
+import type { SinonSpy, SinonStub } from 'sinon';
+
+type SpyLike = SinonSpy | SinonStub;
 
 export const expect = baseExpect.extend({
-  toHaveBeenCalled(received: Spy) {
-    const count = received.calls.count();
-    const pass = count > 0;
+  toHaveBeenCalled(received: SpyLike) {
+    const pass = received.called;
     return {
       pass,
       message: () => pass
@@ -13,8 +14,8 @@ export const expect = baseExpect.extend({
     };
   },
 
-  toHaveBeenCalledTimes(received: Spy, n: number) {
-    const count = received.calls.count();
+  toHaveBeenCalledTimes(received: SpyLike, n: number) {
+    const count = received.callCount;
     const pass = count === n;
     return {
       pass,
@@ -22,8 +23,8 @@ export const expect = baseExpect.extend({
     };
   },
 
-  toHaveBeenCalledWith(received: Spy, ...expected: any[]) {
-    const allCalls = received.calls.all();
+  toHaveBeenCalledWith(received: SpyLike, ...expected: any[]) {
+    const allCalls = received.getCalls();
     const pass = allCalls.some(call => {
       try {
         baseExpect(call.args).toEqual(expected);

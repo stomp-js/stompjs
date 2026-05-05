@@ -1,10 +1,10 @@
 import { test } from '@playwright/test';
+import sinon from 'sinon';
 import {
   expect,
   StompJs,
   TEST,
   disconnectStomp,
-  spyOn,
   randomText,
 } from '../../helpers/setup.js';
 
@@ -67,11 +67,11 @@ describe('Compat Stomp Message', () => {
           resolve();
         });
 
-        const spy = spyOn(client.webSocket, 'send').and.callThrough();
+        const spy = sinon.spy(client.webSocket, 'send');
 
         client.send(TEST.destination, { 'content-length': false }, body);
 
-        const rawChunk = spy.calls.first().args[0];
+        const rawChunk = spy.firstCall.args[0];
         expect(rawChunk).not.toMatch('content-length');
       });
     });

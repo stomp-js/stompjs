@@ -1,18 +1,19 @@
 import { test } from '@playwright/test';
-import { expect, StompJs, createSpy } from '../helpers/setup.js';
+import sinon from 'sinon';
+import { expect, StompJs } from '../helpers/setup.js';
 
 const { describe } = test;
 
 describe('Stomp FrameImpl', () => {
   // un-marshall a data chunk, for ease of matching body is converted to string
   const unmarshall = (data: string, escapeHeaderValues?: boolean): any => {
-    const onFrame = createSpy('onFrame');
-    const onIncomingPing = createSpy('onIncomingPing');
+    const onFrame = sinon.spy();
+    const onIncomingPing = sinon.spy();
     const parser = new StompJs.Parser(onFrame, onIncomingPing);
 
     parser.parseChunk(data);
 
-    const rawFrame = onFrame.calls.first().args[0];
+    const rawFrame = onFrame.firstCall.args[0];
     return (StompJs.FrameImpl as any).fromRawFrame(rawFrame, escapeHeaderValues);
   };
 

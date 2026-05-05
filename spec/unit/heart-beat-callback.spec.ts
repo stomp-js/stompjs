@@ -1,4 +1,5 @@
 import { test } from '@playwright/test';
+import sinon from 'sinon';
 import {
   expect,
   stompClient,
@@ -6,7 +7,6 @@ import {
   overRideFactory,
   WrapperWS,
   getLength,
-  createSpy,
 } from '../helpers/setup.js';
 
 const { describe, beforeEach, afterEach } = test;
@@ -23,7 +23,7 @@ describe('Client heartbeat handling (callbacks)', () => {
   });
 
   test('Should invoke onHeartbeatReceived callback when a heartbeat is received', async () => {
-    const onHeartbeatReceivedSpy = createSpy('onHeartbeatReceived');
+    const onHeartbeatReceivedSpy = sinon.spy();
 
     client.onHeartbeatReceived = onHeartbeatReceivedSpy;
 
@@ -42,7 +42,7 @@ describe('Client heartbeat handling (callbacks)', () => {
   });
 
   test('Should invoke onHeartbeatLost callback when heartbeats are missed', async () => {
-    const onHeartbeatLostSpy = createSpy('onHeartbeatLost');
+    const onHeartbeatLostSpy = sinon.spy();
 
     client.onHeartbeatLost = onHeartbeatLostSpy;
 
@@ -74,7 +74,7 @@ describe('Client heartbeat handling (callbacks)', () => {
   });
 
   test('Should not invoke onHeartbeatLost when all heartbeats are received on time', async () => {
-    const onHeartbeatLostSpy = createSpy('onHeartbeatLost');
+    const onHeartbeatLostSpy = sinon.spy();
 
     client.onHeartbeatLost = onHeartbeatLostSpy;
 
