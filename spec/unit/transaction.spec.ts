@@ -3,16 +3,14 @@ import { TEST_DESTINATION } from '../helpers/test-config.js';
 import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
 import { randomText } from '../helpers/content-helpers.js';
 
-const { describe, beforeEach, afterEach } = test;
-
-describe('Stomp Transaction', () => {
+test.describe('Stomp Transaction', () => {
   let client: any;
 
-  beforeEach(() => {
+  test.beforeEach(() => {
     client = stompClient();
   });
 
-  afterEach(async () => {
+  test.afterEach(async () => {
     await disconnectStomp(client);
   });
 

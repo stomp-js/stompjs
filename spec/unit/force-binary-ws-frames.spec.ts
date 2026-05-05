@@ -4,17 +4,15 @@ import { TEST_DESTINATION } from '../helpers/test-config.js';
 import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
 import { randomText } from '../helpers/content-helpers.js';
 
-const { describe, beforeEach, afterEach } = test;
-
-describe('forceBinaryWSFrames', () => {
+test.describe('forceBinaryWSFrames', () => {
   let client: any;
 
-  beforeEach(() => {
+  test.beforeEach(() => {
     client = stompClient();
     client.configure({ forceBinaryWSFrames: true });
   });
 
-  afterEach(async () => {
+  test.afterEach(async () => {
     await disconnectStomp(client);
   });
 

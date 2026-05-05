@@ -1,9 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { Stomp } from '../../../src/index.js';
 
-const { describe, beforeEach } = test;
-
-describe('Compat Parse connect method arguments', () => {
+test.describe('Compat Parse connect method arguments', () => {
   const myConnectCallback = () => {};
   const myErrorCallback = () => {};
   const myCloseEventCallback = () => {};
@@ -28,7 +26,7 @@ describe('Compat Parse connect method arguments', () => {
 
   let client: any;
 
-  beforeEach(() => {
+  test.beforeEach(() => {
     client = Stomp.client();
   });
 

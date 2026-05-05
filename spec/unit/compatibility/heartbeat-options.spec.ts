@@ -2,16 +2,14 @@ import { test, expect } from '@playwright/test';
 import { Stomp } from '../../../src/index.js';
 import { disconnectStomp } from '../../helpers/connect-helpers.js';
 
-const { describe, beforeEach, afterEach } = test;
-
-describe('Compat mode', () => {
+test.describe('Compat mode', () => {
   let client: any;
 
-  beforeEach(() => {
+  test.beforeEach(() => {
     client = Stomp.client();
   });
 
-  afterEach(async () => {
+  test.afterEach(async () => {
     await disconnectStomp(client);
   });
 

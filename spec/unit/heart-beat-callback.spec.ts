@@ -4,16 +4,14 @@ import { stompClient, disconnectStomp, overRideFactory } from '../helpers/connec
 import { WrapperWS } from '../helpers/wrapper-ws.js';
 import { getLength } from '../helpers/utils.js';
 
-const { describe, beforeEach, afterEach } = test;
-
-describe('Client heartbeat handling (callbacks)', () => {
+test.describe('Client heartbeat handling (callbacks)', () => {
   let client: any;
 
-  beforeEach(() => {
+  test.beforeEach(() => {
     client = stompClient();
   });
 
-  afterEach(async () => {
+  test.afterEach(async () => {
     await disconnectStomp(client);
   });
 

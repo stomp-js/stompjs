@@ -2,9 +2,7 @@ import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
 import { Parser, FrameImpl } from '../../src/index.js';
 
-const { describe } = test;
-
-describe('Stomp FrameImpl', () => {
+test.describe('Stomp FrameImpl', () => {
   // un-marshall a data chunk, for ease of matching body is converted to string
   const unmarshall = (data: string, escapeHeaderValues?: boolean): any => {
     const onFrame = sinon.spy();

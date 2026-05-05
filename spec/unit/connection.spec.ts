@@ -5,12 +5,10 @@ import { WrapperWS } from '../helpers/wrapper-ws.js';
 import { parseFrame } from '../helpers/parse-frame.js';
 import { wait } from '../helpers/utils.js';
 
-const { describe, afterEach } = test;
-
-describe('Stomp Connection', () => {
+test.describe('Stomp Connection', () => {
   let client: Client;
 
-  afterEach(async () => {
+  test.afterEach(async () => {
     await disconnectStomp(client);
   });
 
@@ -306,7 +304,7 @@ describe('Stomp Connection', () => {
     });
   });
 
-  describe('CONNECTED frame eaten', () => {
+  test.describe('CONNECTED frame eaten', () => {
     test('handles connect timeout', async () => {
       await new Promise<void>(resolve => {
         client = stompClient();
@@ -375,7 +373,7 @@ describe('Stomp Connection', () => {
     });
   });
 
-  describe('deactivate with `force`', () => {
+  test.describe('deactivate with `force`', () => {
     test('skips onDisconnect', async () => {
       await new Promise<void>(resolve => {
         client = stompClient();

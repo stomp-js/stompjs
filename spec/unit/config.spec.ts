@@ -2,16 +2,14 @@ import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
 import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
 
-const { describe, beforeEach, afterEach } = test;
-
-describe('Configuration', () => {
+test.describe('Configuration', () => {
   let client: any;
 
-  beforeEach(() => {
+  test.beforeEach(() => {
     client = stompClient();
   });
 
-  afterEach(async () => {
+  test.afterEach(async () => {
     await disconnectStomp(client);
   });
 

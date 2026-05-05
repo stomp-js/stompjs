@@ -4,16 +4,14 @@ import { ReconnectionTimeMode } from '../../src/index.js';
 import { stompClient, disconnectStomp, BROKER_URL, BAD_BROKER_URL } from '../helpers/connect-helpers.js';
 import { describeSkipIf, shouldSkipTests, wait } from '../helpers/utils.js';
 
-const { describe, beforeEach, afterEach } = test;
-
-describe('Stomp Reconnect', () => {
+test.describe('Stomp Reconnect', () => {
   let client: any;
 
-  beforeEach(() => {
+  test.beforeEach(() => {
     client = stompClient();
   });
 
-  afterEach(async () => {
+  test.afterEach(async () => {
     await disconnectStomp(client);
   });
 
@@ -116,7 +114,7 @@ describe('Stomp Reconnect', () => {
   describeSkipIf(shouldSkipTests(), 'Reconnection delays', () => {
     let reconnectionDelays: number[];
 
-    beforeEach(() => {
+    test.beforeEach(() => {
       reconnectionDelays = [];
 
       const origDebug = client.debug;
@@ -129,7 +127,7 @@ describe('Stomp Reconnect', () => {
       };
     });
 
-    describe('Default Linear mode', () => {
+    test.describe('Default Linear mode', () => {
       test('Should maintain constant reconnect delays in default linear mode', async () => {
         await collectReconnectDelays(client, { reconnectDelay: 50 }, 4);
         expect(reconnectionDelays).toEqual([50, 50, 50, 50]);
@@ -145,7 +143,7 @@ describe('Stomp Reconnect', () => {
       });
     });
 
-    describe('Exponential mode', () => {
+    test.describe('Exponential mode', () => {
       test('Should exponentially increase reconnect delays', async () => {
         await collectReconnectDelays(
           client,

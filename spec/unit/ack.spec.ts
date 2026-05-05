@@ -2,13 +2,11 @@ import { test, expect } from '@playwright/test';
 import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
 import { randomText } from '../helpers/content-helpers.js';
 
-const { describe, beforeEach, afterEach } = test;
-
-describe('Stomp Acknowledgement (RabbitMQ specific queue destination)', () => {
+test.describe('Stomp Acknowledgement (RabbitMQ specific queue destination)', () => {
   let client01: any;
   let client02: any;
 
-  beforeEach(async () => {
+  test.beforeEach(async () => {
     await new Promise<void>(resolve => {
       client01 = stompClient();
       client01.onConnect = () => resolve();
@@ -16,7 +14,7 @@ describe('Stomp Acknowledgement (RabbitMQ specific queue destination)', () => {
     });
   });
 
-  beforeEach(async () => {
+  test.beforeEach(async () => {
     await new Promise<void>(resolve => {
       client02 = stompClient();
       client02.onConnect = () => resolve();
@@ -24,7 +22,7 @@ describe('Stomp Acknowledgement (RabbitMQ specific queue destination)', () => {
     });
   });
 
-  afterEach(async () => {
+  test.afterEach(async () => {
     await disconnectStomp(client01);
     await disconnectStomp(client02);
   });

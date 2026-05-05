@@ -21,20 +21,18 @@ function toArrayBuffer(cmdAndHeaders: string, binaryBody: Uint8Array): ArrayBuff
   return uint8Frame.buffer;
 }
 
-const { describe, beforeEach } = test;
-
-describe('Neo Parser', () => {
+test.describe('Neo Parser', () => {
   let onFrame: any;
   let onIncomingPing: any;
   let parser: any;
 
-  beforeEach(() => {
+  test.beforeEach(() => {
     onFrame = sinon.spy();
     onIncomingPing = sinon.spy();
     parser = new Parser(onFrame, onIncomingPing);
   });
 
-  describe('Basic', () => {
+  test.describe('Basic', () => {
     test('parses a simple Frame', () => {
       const msg = 'MESSAGE\ndestination:foo\nmessage-id:456\n\n\0';
 
@@ -185,7 +183,7 @@ describe('Neo Parser', () => {
     });
   });
 
-  describe('Incoming Ping', () => {
+  test.describe('Incoming Ping', () => {
     test('recognizes incoming pings', () => {
       parser.parseChunk('\n');
       expect(onIncomingPing.called).toBe(true);
@@ -213,7 +211,7 @@ describe('Neo Parser', () => {
     });
   });
 
-  describe('Text body', () => {
+  test.describe('Text body', () => {
     test('parses a Frame with body', () => {
       const msg = 'MESSAGE\ndestination:bar\nmessage-id:203\n\nHello World\0';
 
@@ -258,7 +256,7 @@ describe('Neo Parser', () => {
     });
   });
 
-  describe('Binary body', () => {
+  test.describe('Binary body', () => {
     let binaryBody: Uint8Array;
     let commandAndHeaders: string;
     let rawChunk: ArrayBuffer;
@@ -273,7 +271,7 @@ describe('Neo Parser', () => {
       expect(rawFrame.binaryBody.toString()).toEqual(binaryBody.toString());
     };
 
-    beforeEach(() => {
+    test.beforeEach(() => {
       // construct binaryBody with octets 0 to 255 repeated 4 times (1 Kilo Bytes)
       binaryBody = generateBinaryData(1);
       commandAndHeaders =

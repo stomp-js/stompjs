@@ -3,12 +3,10 @@ import sinon from 'sinon';
 import { Stomp } from '../../../src/index.js';
 import { disconnectStomp, LOGIN, PASSWORD, BROKER_URL } from '../../helpers/connect-helpers.js';
 
-const { describe, afterEach } = test;
-
-describe('Compat Stomp Connection', () => {
+test.describe('Compat Stomp Connection', () => {
   let client: any;
 
-  afterEach(async () => {
+  test.afterEach(async () => {
     await disconnectStomp(client);
   });
 

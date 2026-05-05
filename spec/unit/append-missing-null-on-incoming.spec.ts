@@ -4,12 +4,10 @@ import { stompClient, disconnectStomp, overRideFactory } from '../helpers/connec
 import { WrapperWS } from '../helpers/wrapper-ws.js';
 import { randomText } from '../helpers/content-helpers.js';
 
-const { describe, beforeEach, afterEach } = test;
-
-describe('appendMissingNULLonIncoming', () => {
+test.describe('appendMissingNULLonIncoming', () => {
   let client: any;
 
-  beforeEach(() => {
+  test.beforeEach(() => {
     client = stompClient();
 
     // Simulate incorrect behavior in React Native (see https://github.com/stomp-js/stompjs/issues/89)
@@ -33,7 +31,7 @@ describe('appendMissingNULLonIncoming', () => {
     );
   });
 
-  afterEach(async () => {
+  test.afterEach(async () => {
     await disconnectStomp(client);
   });
 

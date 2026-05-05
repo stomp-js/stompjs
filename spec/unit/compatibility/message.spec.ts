@@ -5,16 +5,14 @@ import { TEST_DESTINATION } from '../../helpers/test-config.js';
 import { disconnectStomp, LOGIN, PASSWORD, BROKER_URL } from '../../helpers/connect-helpers.js';
 import { randomText } from '../../helpers/content-helpers.js';
 
-const { describe, beforeEach, afterEach } = test;
-
-describe('Compat Stomp Message', () => {
+test.describe('Compat Stomp Message', () => {
   let client: any;
 
-  beforeEach(() => {
+  test.beforeEach(() => {
     client = Stomp.client(BROKER_URL);
   });
 
-  afterEach(async () => {
+  test.afterEach(async () => {
     await disconnectStomp(client);
   });
 

@@ -1,19 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
-const { describe, beforeEach, afterEach } = test;
-
-describe('Callbacks', () => {
+test.describe('Callbacks', () => {
   let client: any;
 
-  beforeEach(() => {
+  test.beforeEach(() => {
     client = stompClient();
   });
 
-  afterEach(async () => {
+  test.afterEach(async () => {
     await disconnectStomp(client);
   });
 
-  describe('invokes in sequence', () => {
+  test.describe('invokes in sequence', () => {
     test('during regular connect/disconnect', async () => {
       await new Promise<void>(resolve => {
         const expectedSeq = ['before connect', 'on connect', 'websocket close'];

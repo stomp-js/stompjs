@@ -4,17 +4,15 @@ import { TEST_DESTINATION } from '../helpers/test-config.js';
 import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
 import { generateBinaryData, generateTextData } from '../helpers/content-helpers.js';
 
-const { describe, beforeEach, afterEach } = test;
-
-describe('splitLargeFrames', () => {
+test.describe('splitLargeFrames', () => {
   let client: any;
 
-  beforeEach(() => {
+  test.beforeEach(() => {
     client = stompClient();
     client.configure({ splitLargeFrames: true });
   });
 
-  afterEach(async () => {
+  test.afterEach(async () => {
     await disconnectStomp(client);
   });
 

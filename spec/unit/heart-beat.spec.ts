@@ -14,12 +14,10 @@ import { getLength } from '../helpers/utils.js';
 */
 
 function executeTestCases(useWebWorkerHeartbeats: boolean, mode: string) {
-  const { describe, beforeEach, afterEach } = test;
-
-  describe(`Ping using (${mode})`, () => {
+  test.describe(`Ping using (${mode})`, () => {
     let client: Client;
 
-    beforeEach(() => {
+    test.beforeEach(() => {
       client = stompClient();
       if (useWebWorkerHeartbeats) {
         client.configure({
@@ -28,7 +26,7 @@ function executeTestCases(useWebWorkerHeartbeats: boolean, mode: string) {
       }
     });
 
-    afterEach(async () => {
+    test.afterEach(async () => {
       await disconnectStomp(client);
     });
 
@@ -88,8 +86,8 @@ function executeTestCases(useWebWorkerHeartbeats: boolean, mode: string) {
 
     test('Should close connection when no incoming ping', incomingPingTest);
 
-    describe('With discardWebsocketOnCommFailure', () => {
-      beforeEach(() => {
+    test.describe('With discardWebsocketOnCommFailure', () => {
+      test.beforeEach(() => {
         (client as any).discardWebsocketOnCommFailure = true;
       });
 

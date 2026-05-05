@@ -1,9 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { StompSocketState } from '../../src/index.js';
 
-const { describe } = test;
-
-describe('StompSocketState', () => {
+test.describe('StompSocketState', () => {
   test('use same constant values as WebSocket', () => {
     expect(StompSocketState.CLOSED).toEqual((WebSocket as any).CLOSED);
     expect(StompSocketState.CLOSING).toEqual((WebSocket as any).CLOSING);

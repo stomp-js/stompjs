@@ -4,16 +4,14 @@ import { TEST_DESTINATION } from '../helpers/test-config.js';
 import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
 import { randomText, generateBinaryData, generateTextData } from '../helpers/content-helpers.js';
 
-const { describe, beforeEach, afterEach } = test;
-
-describe('Stomp Message', () => {
+test.describe('Stomp Message', () => {
   let client: any;
 
-  beforeEach(() => {
+  test.beforeEach(() => {
     client = stompClient();
   });
 
-  afterEach(async () => {
+  test.afterEach(async () => {
     await disconnectStomp(client);
   });
 
@@ -190,7 +188,7 @@ describe('Stomp Message', () => {
     });
   });
 
-  describe('Large data', () => {
+  test.describe('Large data', () => {
     test('Large text message', async () => {
       await new Promise<void>(resolve => {
         const body = generateTextData(1023);

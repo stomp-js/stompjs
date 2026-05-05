@@ -3,16 +3,14 @@ import { Versions } from '../../src/index.js';
 import { TEST_DESTINATION } from '../helpers/test-config.js';
 import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
 
-const { describe, beforeEach, afterEach } = test;
-
-describe('Stomp Subscription', () => {
+test.describe('Stomp Subscription', () => {
   let client: any;
 
-  beforeEach(() => {
+  test.beforeEach(() => {
     client = stompClient();
   });
 
-  afterEach(async () => {
+  test.afterEach(async () => {
     await disconnectStomp(client);
   });
 
