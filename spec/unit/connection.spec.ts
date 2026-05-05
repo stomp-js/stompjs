@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { Client, ActivationState } from '../../src/index.js';
-import { TEST } from '../helpers/test-config.js';
-import { stompClient, badStompClient, disconnectStomp, overRideFactory } from '../helpers/connect-helpers.js';
+import { stompClient, badStompClient, disconnectStomp, overRideFactory, LOGIN, BROKER_URL } from '../helpers/connect-helpers.js';
 import { WrapperWS } from '../helpers/wrapper-ws.js';
 import { parseFrame } from '../helpers/parse-frame.js';
 import { wait } from '../helpers/utils.js';
@@ -47,7 +46,7 @@ describe('Stomp Connection', () => {
     await new Promise<void>(resolve => {
       client = stompClient();
       client.brokerURL = undefined;
-      client.webSocketFactory = () => new (WebSocket as any)(TEST.url);
+      client.webSocketFactory = () => new (WebSocket as any)(BROKER_URL);
       client.onConnect = () => resolve();
       client.activate();
     });
@@ -57,7 +56,7 @@ describe('Stomp Connection', () => {
     await new Promise<void>(resolve => {
       client = stompClient();
       client.brokerURL = undefined;
-      const socket = new (WebSocket as any)(TEST.url);
+      const socket = new (WebSocket as any)(BROKER_URL);
       client.webSocketFactory = () => socket;
       client.onConnect = () => resolve();
 
@@ -72,7 +71,7 @@ describe('Stomp Connection', () => {
     await new Promise<void>(resolve => {
       client = stompClient();
       client.configure({
-        connectHeaders: { login: TEST.login, passcode: 'bad-passcode' },
+        connectHeaders: { login: LOGIN, passcode: 'bad-passcode' },
         onConnect: () => {
           expect(false).toBe(true);
           resolve();

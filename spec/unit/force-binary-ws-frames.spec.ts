@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
-import { TEST } from '../helpers/test-config.js';
+import { TEST_DESTINATION } from '../helpers/test-config.js';
 import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
 import { randomText } from '../helpers/content-helpers.js';
 
@@ -24,7 +24,7 @@ describe('forceBinaryWSFrames', () => {
       client.onConnect = () => {
         const spyWebSocketSend = sinon.spy(client.webSocket, 'send');
 
-        client.subscribe(TEST.destination, (message: any) => {
+        client.subscribe(TEST_DESTINATION, (message: any) => {
           expect(message.body).toEqual(body);
           client.deactivate();
 
@@ -37,7 +37,7 @@ describe('forceBinaryWSFrames', () => {
           resolve();
         });
 
-        client.publish({ destination: TEST.destination, body: body });
+        client.publish({ destination: TEST_DESTINATION, body: body });
       };
       client.activate();
     });

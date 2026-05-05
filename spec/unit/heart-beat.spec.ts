@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 import { Client, FrameImpl } from '../../src/index.js';
-import { TEST } from '../helpers/test-config.js';
 import { stompClient, disconnectStomp, overRideFactory } from '../helpers/connect-helpers.js';
 import { WrapperWS } from '../helpers/wrapper-ws.js';
 import { parseFrame } from '../helpers/parse-frame.js';
@@ -125,6 +124,3 @@ function executeTestCases(useWebWorkerHeartbeats: boolean, mode: string) {
 
 executeTestCases(false, 'native');
 
-if (TEST.testHeartBeatUsingWebWorkers) {
-  executeTestCases(true, 'web worker');
-}

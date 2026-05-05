@@ -1,8 +1,7 @@
 import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
 import { ReconnectionTimeMode } from '../../src/index.js';
-import { TEST } from '../helpers/test-config.js';
-import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
+import { stompClient, disconnectStomp, BROKER_URL, BAD_BROKER_URL } from '../helpers/connect-helpers.js';
 import { describeSkipIf, shouldSkipTests, wait } from '../helpers/utils.js';
 
 const { describe, beforeEach, afterEach } = test;
@@ -98,11 +97,11 @@ describe('Stomp Reconnect', () => {
     return new Promise<void>(resolve => {
       client.configure({
         ...config,
-        brokerURL: TEST.badUrl,
+        brokerURL: BAD_BROKER_URL,
         beforeConnect: () => {
           connectCount += 1;
           if (connectCount > numDelays) {
-            client.brokerURL = TEST.url;
+            client.brokerURL = BROKER_URL;
           }
         },
         onConnect: () => {

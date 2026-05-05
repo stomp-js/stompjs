@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { TEST } from '../helpers/test-config.js';
+import { TEST_DESTINATION } from '../helpers/test-config.js';
 import { stompClient, disconnectStomp, overRideFactory } from '../helpers/connect-helpers.js';
 import { WrapperWS } from '../helpers/wrapper-ws.js';
 import { randomText } from '../helpers/content-helpers.js';
@@ -43,13 +43,13 @@ describe('appendMissingNULLonIncoming', () => {
 
       const body = randomText();
       client.onConnect = () => {
-        client.subscribe(TEST.destination, (message: any) => {
+        client.subscribe(TEST_DESTINATION, (message: any) => {
           expect(message.body).toEqual(body);
           client.deactivate();
           resolve();
         });
 
-        client.publish({ destination: TEST.destination, body: body });
+        client.publish({ destination: TEST_DESTINATION, body: body });
       };
       client.activate();
     });

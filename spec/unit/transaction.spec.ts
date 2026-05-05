@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { TEST } from '../helpers/test-config.js';
+import { TEST_DESTINATION } from '../helpers/test-config.js';
 import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
 import { randomText } from '../helpers/content-helpers.js';
 
@@ -22,19 +22,19 @@ describe('Stomp Transaction', () => {
       const body2 = randomText();
 
       client.onConnect = () => {
-        client.subscribe(TEST.destination, (message: any) => {
+        client.subscribe(TEST_DESTINATION, (message: any) => {
           expect(message.body).toEqual(body2);
           resolve();
         });
 
         const tx = client.begin('txid_' + Math.random());
         client.publish({
-          destination: TEST.destination,
+          destination: TEST_DESTINATION,
           headers: { transaction: tx.id },
           body: body,
         });
         tx.abort();
-        client.publish({ destination: TEST.destination, body: body2 });
+        client.publish({ destination: TEST_DESTINATION, body: body2 });
       };
       client.activate();
     });
@@ -45,13 +45,13 @@ describe('Stomp Transaction', () => {
       const body = randomText();
 
       client.onConnect = () => {
-        client.subscribe(TEST.destination, (message: any) => {
+        client.subscribe(TEST_DESTINATION, (message: any) => {
           expect(message.body).toEqual(body);
           resolve();
         });
         const tx = client.begin();
         client.publish({
-          destination: TEST.destination,
+          destination: TEST_DESTINATION,
           headers: { transaction: tx.id },
           body: body,
         });
@@ -66,13 +66,13 @@ describe('Stomp Transaction', () => {
       const body = randomText();
 
       client.onConnect = () => {
-        client.subscribe(TEST.destination, (message: any) => {
+        client.subscribe(TEST_DESTINATION, (message: any) => {
           expect(message.body).toEqual(body);
           resolve();
         });
 
         const tx = client.begin();
-        client.publish({ destination: TEST.destination, body: body });
+        client.publish({ destination: TEST_DESTINATION, body: body });
         tx.abort();
       };
       client.activate();

@@ -1,6 +1,10 @@
-import { TEST } from './test-config.js';
 import { Client, StompConfig } from '../../src/index.js';
 import { WrapperWS } from './wrapper-ws.js';
+
+export const LOGIN = 'guest';
+export const PASSWORD = 'guest';
+export const BROKER_URL = 'ws://localhost:15674/ws';
+export const BAD_BROKER_URL = 'ws://localhost:61625';
 
 let id = 0;
 
@@ -9,10 +13,10 @@ export function stompClient(): Client {
 
   const stompConfig: StompConfig = {
     connectHeaders: {
-      login: TEST.login,
-      passcode: TEST.password,
+      login: LOGIN,
+      passcode: PASSWORD,
     },
-    brokerURL: TEST.url,
+    brokerURL: BROKER_URL,
     debug: function (str) {
       console.log('CLIENT ' + myId + ': ' + str);
     },
@@ -26,7 +30,7 @@ export function badStompClient(): Client {
   const client = stompClient();
   // brokerURL is also provided, in this case webSocketFactory should get used
   client.webSocketFactory = function () {
-    return new (WebSocket as any)(TEST.badUrl);
+    return new (WebSocket as any)(BAD_BROKER_URL);
   };
   return client;
 }

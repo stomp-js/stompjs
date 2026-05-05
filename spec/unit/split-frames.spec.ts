@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
-import { TEST } from '../helpers/test-config.js';
+import { TEST_DESTINATION } from '../helpers/test-config.js';
 import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
 import { generateBinaryData, generateTextData } from '../helpers/content-helpers.js';
 
@@ -30,7 +30,7 @@ describe('splitLargeFrames', () => {
       client.onConnect = () => {
         const spyWebSocketSend = sinon.stub(client.webSocket, 'send');
 
-        client.publish({ destination: TEST.destination, body: body });
+        client.publish({ destination: TEST_DESTINATION, body: body });
         expect(spyWebSocketSend.callCount).toBe(3);
         expect(spyWebSocketSend.firstCall.args[0].length).toEqual(
           client.maxWebSocketChunkSize
@@ -48,13 +48,13 @@ describe('splitLargeFrames', () => {
     await new Promise<void>(resolve => {
       const binaryBody = generateBinaryData(20);
       client.onConnect = () => {
-        client.subscribe(TEST.destination, (message: any) => {
+        client.subscribe(TEST_DESTINATION, (message: any) => {
           expect(message.binaryBody.toString()).toEqual(binaryBody.toString());
           resolve();
         });
 
         const spyWebSocketSend = sinon.spy(client.webSocket, 'send');
-        client.publish({ destination: TEST.destination, binaryBody: binaryBody });
+        client.publish({ destination: TEST_DESTINATION, binaryBody: binaryBody });
         expect(spyWebSocketSend.callCount).toBe(1);
         expect(spyWebSocketSend.firstCall.args[0].length).not.toBeLessThan(
           20 * 1024
