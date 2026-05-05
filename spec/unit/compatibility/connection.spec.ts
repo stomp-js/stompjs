@@ -47,7 +47,7 @@ describe('Compat Stomp Connection', () => {
 
     client = StompJs.Stomp.over(socket);
 
-    expect(spy).toHaveBeenCalled();
+    expect(spy.called).toBe(true);
     spy.restore();
   });
 });

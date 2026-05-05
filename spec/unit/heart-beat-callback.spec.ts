@@ -33,7 +33,7 @@ describe('Client heartbeat handling (callbacks)', () => {
     await new Promise<void>(resolve => {
       client.onConnect = () => {
         setTimeout(() => {
-          expect(onHeartbeatReceivedSpy).toHaveBeenCalled();
+          expect(onHeartbeatReceivedSpy.called).toBe(true);
           resolve();
         }, 1500);
       };
@@ -65,7 +65,7 @@ describe('Client heartbeat handling (callbacks)', () => {
     await new Promise<void>(resolve => {
       client.onConnect = () => {
         setTimeout(() => {
-          expect(onHeartbeatLostSpy).toHaveBeenCalled();
+          expect(onHeartbeatLostSpy.called).toBe(true);
           resolve();
         }, 2300);
       };
@@ -85,7 +85,7 @@ describe('Client heartbeat handling (callbacks)', () => {
     await new Promise<void>(resolve => {
       client.onConnect = () => {
         setTimeout(() => {
-          expect(onHeartbeatLostSpy).not.toHaveBeenCalled();
+          expect(onHeartbeatLostSpy.called).toBe(false);
           resolve();
         }, 2000);
       };

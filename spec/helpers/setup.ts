@@ -5,5 +5,5 @@ export { WrapperWS } from './wrapper-ws.js';
 export { wait, getLength, shouldSkipTests, describeSkipIf, itSkipIf } from './utils.js';
 export { parseFrame } from './parse-frame.js';
 export { randomText, generateBinaryData, generateTextData } from './content-helpers.js';
-export { expect } from './expect-extensions.js';
+export { expect } from '@playwright/test';
 export * as StompJs from '../../esm6/index.js';

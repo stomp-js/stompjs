@@ -192,9 +192,9 @@ describe('Stomp Reconnect', () => {
         );
         expect(reconnectionDelays).toEqual([40, 40, 40]);
 
-        expect(debugSpy).toHaveBeenCalledWith(
+        expect(debugSpy.args).toContainEqual([
           'Warning: maxReconnectDelay (20ms) is less than reconnectDelay (40ms). Using reconnectDelay as the maxReconnectDelay delay.',
-        );
+        ]);
       });
     });
 
