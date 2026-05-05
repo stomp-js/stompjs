@@ -21,7 +21,7 @@ export default [
     // @rollup/plugin-typescript@12 required the file output to be within the outDir
     // Accordingly after the build the npm build steps removes the *.d.ts as these are not needed
     // for the UJS bundle
-    plugins: [typescript({compilerOptions: {outDir: 'bundles'}})],
+    plugins: [typescript({ compilerOptions: { outDir: 'bundles' } })],
     output: [umdConf, umdMinConf],
   },
 ];

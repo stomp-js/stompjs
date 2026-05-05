@@ -1,6 +1,10 @@
 import { test, expect } from '@playwright/test';
 import { TEST_DESTINATION } from '../helpers/test-config.js';
-import { stompClient, disconnectStomp, overRideFactory } from '../helpers/connect-helpers.js';
+import {
+  stompClient,
+  disconnectStomp,
+  overRideFactory,
+} from '../helpers/connect-helpers.js';
 import { WrapperWS } from '../helpers/wrapper-ws.js';
 import { randomText } from '../helpers/content-helpers.js';
 
@@ -27,7 +31,7 @@ test.describe('appendMissingNULLonIncoming', () => {
 
           super.wrapOnMessage(updatedEv);
         }
-      }
+      },
     );
   });
 

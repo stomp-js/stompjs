@@ -1,6 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { Client, ActivationState } from '../../src/index.js';
-import { stompClient, badStompClient, disconnectStomp, overRideFactory, LOGIN, BROKER_URL } from '../helpers/connect-helpers.js';
+import {
+  stompClient,
+  badStompClient,
+  disconnectStomp,
+  overRideFactory,
+  LOGIN,
+  BROKER_URL,
+} from '../helpers/connect-helpers.js';
 import { WrapperWS } from '../helpers/wrapper-ws.js';
 import { parseFrame } from '../helpers/parse-frame.js';
 import { wait } from '../helpers/utils.js';
@@ -22,7 +29,9 @@ test.describe('Stomp Connection', () => {
 
       const onWebSocketError = () => {};
       let webSocketErrorCalled = false;
-      client.onWebSocketError = () => { webSocketErrorCalled = true; };
+      client.onWebSocketError = () => {
+        webSocketErrorCalled = true;
+      };
 
       client.onWebSocketClose = () => {
         expect(webSocketErrorCalled).toBe(true);
@@ -327,7 +336,7 @@ test.describe('Stomp Connection', () => {
               }
               super.wrapOnMessage(ev);
             }
-          }
+          },
         );
 
         client.onConnect = () => resolve();
@@ -357,7 +366,7 @@ test.describe('Stomp Connection', () => {
               }
               super.wrapOnMessage(ev);
             }
-          }
+          },
         );
 
         client.onConnect = () => {

@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 permissions:
-  id-token: write  # Required for OIDC
+  id-token: write # Required for OIDC
   contents: write
 
 jobs:
@@ -22,7 +22,6 @@ jobs:
 
       - run: bin/setup-rabbit.sh
       - run: npm ci
-
 
       - name: Extract tag name
         id: tag

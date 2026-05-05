@@ -2,7 +2,11 @@ import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
 import { TEST_DESTINATION } from '../helpers/test-config.js';
 import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
-import { randomText, generateBinaryData, generateTextData } from '../helpers/content-helpers.js';
+import {
+  randomText,
+  generateBinaryData,
+  generateTextData,
+} from '../helpers/content-helpers.js';
 
 test.describe('Stomp Message', () => {
   let client: any;
@@ -62,7 +66,7 @@ test.describe('Stomp Message', () => {
         client.publish({ destination: TEST_DESTINATION, body: body });
         expect(client.debug.lastCall.args[0]).toEqual(
           '>>> SEND\ndestination:/topic/chat.general\ncontent-length:37\n\nÄlä sinä yhtään and السابق' +
-            '\0'
+            '\0',
         );
       };
       client.activate();
@@ -78,7 +82,10 @@ test.describe('Stomp Message', () => {
           client.deactivate();
           resolve();
         });
-        client.publish({ destination: TEST_DESTINATION, binaryBody: binaryBody });
+        client.publish({
+          destination: TEST_DESTINATION,
+          binaryBody: binaryBody,
+        });
       };
       client.activate();
     });
@@ -93,7 +100,9 @@ test.describe('Stomp Message', () => {
       client.onConnect = () => {
         client.subscribe(TEST_DESTINATION, (message: any) => {
           if (++numCalls === 1) {
-            expect(message.binaryBody.toString()).toEqual(binaryData.toString());
+            expect(message.binaryBody.toString()).toEqual(
+              binaryData.toString(),
+            );
             return;
           }
           expect(message.body).toEqual(textData);
@@ -210,7 +219,9 @@ test.describe('Stomp Message', () => {
         const binaryBody = generateBinaryData(1023);
         client.onConnect = () => {
           client.subscribe(TEST_DESTINATION, (message: any) => {
-            expect(message.binaryBody.toString()).toEqual(binaryBody.toString());
+            expect(message.binaryBody.toString()).toEqual(
+              binaryBody.toString(),
+            );
             client.deactivate();
             resolve();
           });

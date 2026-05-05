@@ -80,12 +80,12 @@ Important files and folders:
 
 Key npm tasks:
 
-* clean - Remove generated built artifacts
-* build-tsc - Internally used by `npm run build`
-* rollup - Internally used by `npm run build`
-* build - Build two variants - ES Modules and UMD
-* test - Run tests in NodeJS
-* karma - Rune test in browsers
+- clean - Remove generated built artifacts
+- build-tsc - Internally used by `npm run build`
+- rollup - Internally used by `npm run build`
+- build - Build two variants - ES Modules and UMD
+- test - Run tests in NodeJS
+- karma - Rune test in browsers
 
 ### Basic development workflow
 

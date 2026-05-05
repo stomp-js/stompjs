@@ -25,7 +25,9 @@ test.describe('Callbacks', () => {
           seq.push('before connect');
         };
         client.onDisconnect = () => {
-          console.log('Optional callback, not every broker will acknowledge DISCONNECT');
+          console.log(
+            'Optional callback, not every broker will acknowledge DISCONNECT',
+          );
         };
         client.onWebSocketClose = () => {
           seq.push('websocket close');
@@ -96,7 +98,9 @@ test.describe('Callbacks', () => {
           seq.push('before connect');
         };
         client.onDisconnect = () => {
-          console.log('Optional callback, not every broker will acknowledge DISCONNECT');
+          console.log(
+            'Optional callback, not every broker will acknowledge DISCONNECT',
+          );
         };
         client.onWebSocketClose = () => {
           seq.push('websocket close');

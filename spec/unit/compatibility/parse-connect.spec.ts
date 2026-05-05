@@ -11,7 +11,7 @@ test.describe('Compat Parse connect method arguments', () => {
     expectedHeaders: any,
     expectedConnectCallback: any,
     expectedErrorCallback: any,
-    expectedCloseEventCallback?: any
+    expectedCloseEventCallback?: any,
   ) {
     const headers = args[0];
     const connectCallback = args[1];
@@ -35,16 +35,21 @@ test.describe('Compat Parse connect method arguments', () => {
       client._parseConnect('jmesnil', 'wombats', myConnectCallback),
       { login: 'jmesnil', passcode: 'wombats' },
       myConnectCallback,
-      undefined
+      undefined,
     );
   });
 
   test('connect(login, passcode, connectCallback, errorCallback)', () => {
     checkArgs(
-      client._parseConnect('jmesnil', 'wombats', myConnectCallback, myErrorCallback),
+      client._parseConnect(
+        'jmesnil',
+        'wombats',
+        myConnectCallback,
+        myErrorCallback,
+      ),
       { login: 'jmesnil', passcode: 'wombats' },
       myConnectCallback,
-      myErrorCallback
+      myErrorCallback,
     );
   });
 
@@ -55,12 +60,12 @@ test.describe('Compat Parse connect method arguments', () => {
         'wombats',
         myConnectCallback,
         myErrorCallback,
-        myCloseEventCallback
+        myCloseEventCallback,
       ),
       { login: 'jmesnil', passcode: 'wombats' },
       myConnectCallback,
       myErrorCallback,
-      myCloseEventCallback
+      myCloseEventCallback,
     );
   });
 
@@ -72,12 +77,12 @@ test.describe('Compat Parse connect method arguments', () => {
         myConnectCallback,
         myErrorCallback,
         myCloseEventCallback,
-        'myvhost'
+        'myvhost',
       ),
       { login: 'jmesnil', passcode: 'wombats', host: 'myvhost' },
       myConnectCallback,
       myErrorCallback,
-      myCloseEventCallback
+      myCloseEventCallback,
     );
   });
 
@@ -88,7 +93,7 @@ test.describe('Compat Parse connect method arguments', () => {
       client._parseConnect(headers, myConnectCallback),
       headers,
       myConnectCallback,
-      undefined
+      undefined,
     );
   });
 
@@ -99,7 +104,7 @@ test.describe('Compat Parse connect method arguments', () => {
       client._parseConnect(headers, myConnectCallback, myErrorCallback),
       headers,
       myConnectCallback,
-      myErrorCallback
+      myErrorCallback,
     );
   });
 });

@@ -2,7 +2,12 @@ import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
 import { Stomp } from '../../../src/index.js';
 import { TEST_DESTINATION } from '../../helpers/test-config.js';
-import { disconnectStomp, LOGIN, PASSWORD, BROKER_URL } from '../../helpers/connect-helpers.js';
+import {
+  disconnectStomp,
+  LOGIN,
+  PASSWORD,
+  BROKER_URL,
+} from '../../helpers/connect-helpers.js';
 import { randomText } from '../../helpers/content-helpers.js';
 
 test.describe('Compat Stomp Message', () => {

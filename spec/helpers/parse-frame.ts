@@ -7,7 +7,7 @@ export const parseFrame = (chunk: string | ArrayBuffer): any => {
     (f: any) => {
       frame = f;
     },
-    () => {}
+    () => {},
   );
   parser.parseChunk(chunk as string);
 

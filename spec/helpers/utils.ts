@@ -14,7 +14,7 @@ export const shouldSkipTests = (): boolean => {
 export const describeSkipIf = (
   condition: boolean,
   description: string,
-  specDefinitions: () => void
+  specDefinitions: () => void,
 ): void => {
   if (condition) {
     test.describe.skip(description, specDefinitions);
@@ -27,7 +27,7 @@ export const itSkipIf = (
   condition: boolean,
   expectation: string,
   assertion: () => any,
-  timeout?: number
+  timeout?: number,
 ): void => {
   if (condition) {
     test.skip(expectation, assertion as any);

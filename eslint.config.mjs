@@ -20,5 +20,5 @@ export default tseslint.config(
       // tslint:recommended did not include no-this-assignment
       '@typescript-eslint/no-this-alias': 'off',
     },
-  }
+  },
 );

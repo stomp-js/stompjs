@@ -31,7 +31,7 @@ test.describe('Stomp Receipts', () => {
             expect(frame.body).toEqual(msg);
             resolve();
           },
-          { receipt: receiptId }
+          { receipt: receiptId },
         );
       };
       client.activate();

@@ -60,7 +60,7 @@ test.describe('Stomp Subscription', () => {
       client.onConnect = () => {
         if (client.connectedVersion !== Versions.V1_2) {
           client.debug(
-            `Skipping 1.2 specific test, current STOMP version: ${client.version}`
+            `Skipping 1.2 specific test, current STOMP version: ${client.version}`,
           );
           resolve();
           return;

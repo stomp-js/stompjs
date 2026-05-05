@@ -12,8 +12,8 @@
 - [Introduction](#introduction)
 - [Features](#features)
 - [Getting Started](#getting-started)
-    - [Browser](#browser)
-    - [Node.js](#nodejs)
+  - [Browser](#browser)
+  - [Node.js](#nodejs)
 - [Documentation](#documentation)
 - [Upgrading](#upgrading)
 - [Usage with RxJS](#usage-with-rxjs)
@@ -33,7 +33,7 @@ Popular brokers like RabbitMQ, ActiveMQ, and others provide support for STOMP an
 
 - Simple and intuitive API for interacting with the STOMP protocol
 - Support for STOMP protocol versions: **1.2**, **1.1**, and **1.0**
-- Support for fallback options  when WebSocket is unavailable
+- Support for fallback options when WebSocket is unavailable
 - Supports both **browser** and **Node.js** environments
 - Option to connect using **STOMP over TCP**
 - Full support for **binary payloads**
@@ -48,6 +48,7 @@ This section provides a quick guide to integrating STOMP.js into your **browser*
 To use STOMP.js in a browser:
 
 1. Add the following in your HTML file:
+
    ```html
    <script type="importmap">
      {
@@ -64,6 +65,7 @@ To use STOMP.js in a browser:
    ```
 
 2. Use the library:
+
    ```javascript
    import { Client } from '@stomp/stompjs';
 
@@ -71,7 +73,7 @@ To use STOMP.js in a browser:
      brokerURL: 'ws://localhost:15674/ws',
      onConnect: () => {
        client.subscribe('/topic/test01', message =>
-         console.log(`Received: ${message.body}`)
+         console.log(`Received: ${message.body}`),
        );
        client.publish({ destination: '/topic/test01', body: 'First Message' });
      },
@@ -85,11 +87,13 @@ To use STOMP.js in a browser:
 To use STOMP.js in a Node.js environment:
 
 1. Install the package:
+
    ```bash
    npm install @stomp/stompjs ws
    ```
 
 2. Use it in your application:
+
    ```javascript
    import { Client } from '@stomp/stompjs';
 
@@ -100,7 +104,7 @@ To use STOMP.js in a Node.js environment:
      brokerURL: 'ws://localhost:15674/ws',
      onConnect: () => {
        client.subscribe('/topic/test01', message =>
-         console.log(`Received: ${message.body}`)
+         console.log(`Received: ${message.body}`),
        );
        client.publish({ destination: '/topic/test01', body: 'First Message' });
      },

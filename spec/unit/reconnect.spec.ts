@@ -1,7 +1,12 @@
 import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
 import { ReconnectionTimeMode } from '../../src/index.js';
-import { stompClient, disconnectStomp, BROKER_URL, BAD_BROKER_URL } from '../helpers/connect-helpers.js';
+import {
+  stompClient,
+  disconnectStomp,
+  BROKER_URL,
+  BAD_BROKER_URL,
+} from '../helpers/connect-helpers.js';
 import { describeSkipIf, shouldSkipTests, wait } from '../helpers/utils.js';
 
 test.describe('Stomp Reconnect', () => {
@@ -37,7 +42,9 @@ test.describe('Stomp Reconnect', () => {
           client.deactivate();
         },
         onDisconnect: () => {
-          console.log('Optional callback, not every broker will acknowledge DISCONNECT');
+          console.log(
+            'Optional callback, not every broker will acknowledge DISCONNECT',
+          );
         },
         onWebSocketClose: () => {
           setTimeout(() => {
@@ -88,7 +95,7 @@ test.describe('Stomp Reconnect', () => {
   const collectReconnectDelays = (
     client: any,
     config: any,
-    numDelays: number
+    numDelays: number,
   ): Promise<void> => {
     let connectCount = 0;
 

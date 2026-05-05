@@ -50,7 +50,7 @@ export class Client {
    * Note:
    * - Only one of `brokerURL` or [Client#webSocketFactory]{@link Client#webSocketFactory} needs to be set.
    * - If both are provided, [Client#webSocketFactory]{@link Client#webSocketFactory} takes precedence.
-   * - When targeting environments without native WebSocket support, refer to 
+   * - When targeting environments without native WebSocket support, refer to
    *   [Polyfills]{@link https://stomp-js.github.io/guide/stompjs/rx-stomp/ng2-stompjs/pollyfils-for-stompjs-v5.html}.
    */
   public brokerURL: string | undefined;
@@ -95,10 +95,10 @@ export class Client {
 
   /**
    * Timeout for establishing STOMP connection, in milliseconds.
-   * 
+   *
    * If the connection is not established within this period, the attempt will fail.
    * The default is `0`, meaning no timeout is set for connection attempts.
-   * 
+   *
    * Example:
    * ```javascript
    * client.connectionTimeout = 5000; // Fail connection if not established in 5 seconds
@@ -112,9 +112,9 @@ export class Client {
 
   /**
    * Delay (in milliseconds) between reconnection attempts if the connection drops.
-   * 
+   *
    * Set to `0` to disable automatic reconnections. The default value is `5000` ms (5 seconds).
-   * 
+   *
    * Example:
    * ```javascript
    * client.reconnectDelay = 3000; // Attempt reconnection every 3 seconds
@@ -132,9 +132,9 @@ export class Client {
 
   /**
    * Maximum delay (in milliseconds) between reconnection attempts when using exponential backoff.
-   * 
+   *
    * Default is 15 minutes (`15 * 60 * 1000` milliseconds). If `0`, there will be no upper limit.
-   * 
+   *
    * Example:
    * ```javascript
    * client.maxReconnectDelay = 10000; // Maximum wait time is 10 seconds
@@ -144,11 +144,11 @@ export class Client {
 
   /**
    * Mode for determining the time interval between reconnection attempts.
-   * 
+   *
    * Available modes:
    * - `ReconnectionTimeMode.LINEAR` (default): Fixed delays between reconnection attempts.
    * - `ReconnectionTimeMode.EXPONENTIAL`: Delay doubles after each attempt, capped by [maxReconnectDelay]{@link Client#maxReconnectDelay}.
-   * 
+   *
    * Example:
    * ```javascript
    * client.reconnectTimeMode = ReconnectionTimeMode.EXPONENTIAL;
@@ -160,9 +160,9 @@ export class Client {
 
   /**
    * Interval (in milliseconds) for receiving heartbeat signals from the server.
-   * 
+   *
    * Specifies the expected frequency of heartbeats sent by the server. Set to `0` to disable.
-   * 
+   *
    * Example:
    * ```javascript
    * client.heartbeatIncoming = 10000; // Expect a heartbeat every 10 seconds
@@ -172,13 +172,13 @@ export class Client {
 
   /**
    * Multiplier for adjusting tolerance when processing heartbeat signals.
-   * 
+   *
    * Tolerance level is calculated using the multiplier:
    * `tolerance = heartbeatIncoming * heartbeatToleranceMultiplier`.
    * This helps account for delays in network communication or variations in timings.
-   * 
+   *
    * Default value is `2`.
-   * 
+   *
    * Example:
    * ```javascript
    * client.heartbeatToleranceMultiplier = 2.5; // Tolerates longer delays
@@ -188,9 +188,9 @@ export class Client {
 
   /**
    * Interval (in milliseconds) for sending heartbeat signals to the server.
-   * 
+   *
    * Specifies how frequently heartbeats should be sent to the server. Set to `0` to disable.
-   * 
+   *
    * Example:
    * ```javascript
    * client.heartbeatOutgoing = 5000; // Send a heartbeat every 5 seconds
@@ -200,15 +200,15 @@ export class Client {
 
   /**
    * Strategy for sending outgoing heartbeats.
-   * 
+   *
    * Options:
    * - `TickerStrategy.Worker`: Uses Web Workers for sending heartbeats (recommended for long-running or background sessions).
    * - `TickerStrategy.Interval`: Uses standard JavaScript `setInterval` (default).
-   * 
+   *
    * Note:
    * - If Web Workers are unavailable (e.g., in Node.js), the `Interval` strategy is used automatically.
    * - Web Workers are preferable in browsers for reducing disconnects when tabs are in the background.
-   * 
+   *
    * Example:
    * ```javascript
    * client.heartbeatStrategy = TickerStrategy.Worker;
@@ -1219,17 +1219,17 @@ export class Client {
 
   /**
    * Commits a transaction.
-   * 
+   *
    * It is strongly recommended to call [commit]{@link ITransaction#commit} on
    * the transaction object returned by [client#begin]{@link Client#begin}.
-   * 
+   *
    * Example:
    * ```javascript
    * const tx = client.begin();
    * // Perform operations under this transaction
    * tx.commit();
    * ```
-   * 
+   *
    * @param transactionId The ID of the transaction to commit.
    */
   public commit(transactionId: string): void {
@@ -1240,17 +1240,17 @@ export class Client {
 
   /**
    * Aborts a transaction.
-   * 
+   *
    * It is strongly recommended to call [abort]{@link ITransaction#abort} directly
    * on the transaction object returned by [client#begin]{@link Client#begin}.
-   * 
+   *
    * Example:
    * ```javascript
    * const tx = client.begin();
    * // Perform operations under this transaction
    * tx.abort(); // Abort the transaction
    * ```
-   * 
+   *
    * @param transactionId The ID of the transaction to abort.
    */
   public abort(transactionId: string): void {
@@ -1263,17 +1263,17 @@ export class Client {
    * Acknowledges receipt of a message. Typically, this should be done by calling
    * [ack]{@link IMessage#ack} directly on the {@link IMessage} instance passed
    * to the subscription callback.
-   * 
+   *
    * Example:
    * ```javascript
    * const callback = (message) => {
    *   // Process the message
    *   message.ack(); // Acknowledge the message
    * };
-   * 
+   *
    * client.subscribe("/queue/example", callback, { ack: "client" });
    * ```
-   * 
+   *
    * @param messageId The ID of the message to acknowledge.
    * @param subscriptionId The ID of the subscription.
    * @param headers Optional headers for the acknowledgment frame.
@@ -1292,7 +1292,7 @@ export class Client {
    * Rejects a message (negative acknowledgment). Like acknowledgments, this should
    * typically be done by calling [nack]{@link IMessage#nack} directly on the {@link IMessage}
    * instance passed to the subscription callback.
-   * 
+   *
    * Example:
    * ```javascript
    * const callback = (message) => {
@@ -1301,10 +1301,10 @@ export class Client {
    *     message.nack(); // Reject the message
    *   }
    * };
-   * 
+   *
    * client.subscribe("/queue/example", callback, { ack: "client" });
    * ```
-   * 
+   *
    * @param messageId The ID of the message to negatively acknowledge.
    * @param subscriptionId The ID of the subscription.
    * @param headers Optional headers for the NACK frame.

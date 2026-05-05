@@ -17,17 +17,17 @@ test.describe('Stomp FrameImpl', () => {
 
   test('escape header value', () => {
     const out = (FrameImpl as any).hdrValueEscape(
-      'anything\\a\nb\nc\rd\re:f:\\anything\\a\nb\nc\rd\re:f:\\'
+      'anything\\a\nb\nc\rd\re:f:\\anything\\a\nb\nc\rd\re:f:\\',
     );
     expect(out).toEqual(
-      'anything\\\\a\\nb\\nc\\rd\\re\\cf\\c\\\\anything\\\\a\\nb\\nc\\rd\\re\\cf\\c\\\\'
+      'anything\\\\a\\nb\\nc\\rd\\re\\cf\\c\\\\anything\\\\a\\nb\\nc\\rd\\re\\cf\\c\\\\',
     );
   });
 
   test('escapes and then unescapes header value to give original string', () => {
     const orig = 'anything\\a\nb\nc\rd\re:f:\\anything\\a\nb\nc\rd\re:f:\\';
     const out = (FrameImpl as any).hdrValueUnEscape(
-      (FrameImpl as any).hdrValueEscape(orig)
+      (FrameImpl as any).hdrValueEscape(orig),
     );
     expect(out).toEqual(orig);
   });
@@ -47,7 +47,7 @@ test.describe('Stomp FrameImpl', () => {
       body: 'hello, world!',
     });
     expect(out).toEqual(
-      'SEND\ndestination:/queue/test\ncontent-length:13\n\nhello, world!\0'
+      'SEND\ndestination:/queue/test\ncontent-length:13\n\nhello, world!\0',
     );
   });
 
@@ -126,7 +126,7 @@ test.describe('Stomp FrameImpl', () => {
         headers: { destination: dest, 'message-id': '456' },
         body: '',
         escapeHeaderValues: true,
-      })
+      }),
     ).toEqual(msg);
   });
 

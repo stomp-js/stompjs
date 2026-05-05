@@ -43,7 +43,9 @@ export function badStompClient(): Client {
 
 // This itself is important, if for some reason, deactivate does not complete, the test will time out.
 // Ensure this is called as await in an async function.
-export async function disconnectStomp(client: Client | undefined): Promise<void> {
+export async function disconnectStomp(
+  client: Client | undefined,
+): Promise<void> {
   if (client) {
     await client.deactivate();
   }
@@ -56,13 +58,17 @@ function saveOrigFactory(client: Client): void {
       (() =>
         new (WebSocket as any)(
           client.brokerURL,
-          (client as any).stompVersions.protocolVersions()
+          (client as any).stompVersions.protocolVersions(),
         ));
   }
 }
 
-export function overRideFactory(client: Client, WrapperClass: new (ws: any) => WrapperWS): void {
+export function overRideFactory(
+  client: Client,
+  WrapperClass: new (ws: any) => WrapperWS,
+): void {
   saveOrigFactory(client);
 
-  client.webSocketFactory = () => new WrapperClass((client as any)._origFactory());
+  client.webSocketFactory = () =>
+    new WrapperClass((client as any)._origFactory());
 }

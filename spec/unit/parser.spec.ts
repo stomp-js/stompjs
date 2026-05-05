@@ -7,11 +7,14 @@ function toUint8Array(str: string): Uint8Array {
   return new TextEncoder().encode(str);
 }
 
-function toArrayBuffer(cmdAndHeaders: string, binaryBody: Uint8Array): ArrayBuffer {
+function toArrayBuffer(
+  cmdAndHeaders: string,
+  binaryBody: Uint8Array,
+): ArrayBuffer {
   const uint8CmdAndHeaders = new TextEncoder().encode(cmdAndHeaders);
   const nullTerminator = new Uint8Array([0]);
   const uint8Frame = new Uint8Array(
-    uint8CmdAndHeaders.length + binaryBody.length + nullTerminator.length
+    uint8CmdAndHeaders.length + binaryBody.length + nullTerminator.length,
   );
 
   uint8Frame.set(uint8CmdAndHeaders);
@@ -38,14 +41,16 @@ test.describe('Neo Parser', () => {
 
       parser.parseChunk(msg);
 
-      expect(onFrame.args).toContainEqual([{
-        command: 'MESSAGE',
-        headers: [
-          ['destination', 'foo'],
-          ['message-id', '456'],
-        ],
-        binaryBody: toUint8Array(''),
-      }]);
+      expect(onFrame.args).toContainEqual([
+        {
+          command: 'MESSAGE',
+          headers: [
+            ['destination', 'foo'],
+            ['message-id', '456'],
+          ],
+          binaryBody: toUint8Array(''),
+        },
+      ]);
     });
 
     test('parses a simple Frame given as ArrayBuffer', () => {
@@ -55,14 +60,16 @@ test.describe('Neo Parser', () => {
 
       parser.parseChunk(msgAsArrayBuffer);
 
-      expect(onFrame.args).toContainEqual([{
-        command: 'MESSAGE',
-        headers: [
-          ['destination', 'foo'],
-          ['message-id', '456'],
-        ],
-        binaryBody: toUint8Array(''),
-      }]);
+      expect(onFrame.args).toContainEqual([
+        {
+          command: 'MESSAGE',
+          headers: [
+            ['destination', 'foo'],
+            ['message-id', '456'],
+          ],
+          binaryBody: toUint8Array(''),
+        },
+      ]);
     });
 
     test('handles header value with :', () => {
@@ -70,14 +77,16 @@ test.describe('Neo Parser', () => {
 
       parser.parseChunk(msg);
 
-      expect(onFrame.args).toContainEqual([{
-        command: 'MESSAGE',
-        headers: [
-          ['destination', 'foo:bar:baz'],
-          ['message-id', '456'],
-        ],
-        binaryBody: toUint8Array(''),
-      }]);
+      expect(onFrame.args).toContainEqual([
+        {
+          command: 'MESSAGE',
+          headers: [
+            ['destination', 'foo:bar:baz'],
+            ['message-id', '456'],
+          ],
+          binaryBody: toUint8Array(''),
+        },
+      ]);
     });
 
     test('handles header with empty value', () => {
@@ -85,15 +94,17 @@ test.describe('Neo Parser', () => {
 
       parser.parseChunk(msg);
 
-      expect(onFrame.args).toContainEqual([{
-        command: 'MESSAGE',
-        headers: [
-          ['destination', 'foo'],
-          ['hdr', ''],
-          ['message-id', '456'],
-        ],
-        binaryBody: toUint8Array(''),
-      }]);
+      expect(onFrame.args).toContainEqual([
+        {
+          command: 'MESSAGE',
+          headers: [
+            ['destination', 'foo'],
+            ['hdr', ''],
+            ['message-id', '456'],
+          ],
+          binaryBody: toUint8Array(''),
+        },
+      ]);
     });
 
     test('parses a Frame without headers or binaryBody', () => {
@@ -101,11 +112,13 @@ test.describe('Neo Parser', () => {
 
       parser.parseChunk(msg);
 
-      expect(onFrame.args).toContainEqual([{
-        command: 'MESSAGE',
-        headers: [],
-        binaryBody: toUint8Array(''),
-      }]);
+      expect(onFrame.args).toContainEqual([
+        {
+          command: 'MESSAGE',
+          headers: [],
+          binaryBody: toUint8Array(''),
+        },
+      ]);
     });
 
     test('parses a simple Frame spread in multiple chunks', () => {
@@ -119,14 +132,16 @@ test.describe('Neo Parser', () => {
       parser.parseChunk(msgChunks[1]);
       parser.parseChunk(msgChunks[2]);
 
-      expect(onFrame.args).toContainEqual([{
-        command: 'MESSAGE',
-        headers: [
-          ['destination', 'foo'],
-          ['message-id', '456'],
-        ],
-        binaryBody: toUint8Array(''),
-      }]);
+      expect(onFrame.args).toContainEqual([
+        {
+          command: 'MESSAGE',
+          headers: [
+            ['destination', 'foo'],
+            ['message-id', '456'],
+          ],
+          binaryBody: toUint8Array(''),
+        },
+      ]);
     });
 
     test('parses multiple frames, single frame in each chunk', () => {
@@ -134,14 +149,16 @@ test.describe('Neo Parser', () => {
 
       parser.parseChunk(msg);
 
-      expect(onFrame.args).toContainEqual([{
-        command: 'MESSAGE',
-        headers: [
-          ['destination', 'foo'],
-          ['message-id', '456'],
-        ],
-        binaryBody: toUint8Array(''),
-      }]);
+      expect(onFrame.args).toContainEqual([
+        {
+          command: 'MESSAGE',
+          headers: [
+            ['destination', 'foo'],
+            ['message-id', '456'],
+          ],
+          binaryBody: toUint8Array(''),
+        },
+      ]);
 
       const msg2 = 'MESSAGE\ndestination:bar\nmessage-id:203\n\nHello World\0';
 
@@ -217,14 +234,16 @@ test.describe('Neo Parser', () => {
 
       parser.parseChunk(msg);
 
-      expect(onFrame.args).toContainEqual([{
-        command: 'MESSAGE',
-        headers: [
-          ['destination', 'bar'],
-          ['message-id', '203'],
-        ],
-        binaryBody: toUint8Array('Hello World'),
-      }]);
+      expect(onFrame.args).toContainEqual([
+        {
+          command: 'MESSAGE',
+          headers: [
+            ['destination', 'bar'],
+            ['message-id', '203'],
+          ],
+          binaryBody: toUint8Array('Hello World'),
+        },
+      ]);
     });
 
     test('ignores CR while parsing a Frame with body', () => {
@@ -233,14 +252,16 @@ test.describe('Neo Parser', () => {
 
       parser.parseChunk(msg);
 
-      expect(onFrame.args).toContainEqual([{
-        command: 'MESSAGE',
-        headers: [
-          ['destination', 'bar'],
-          ['message-id', '203'],
-        ],
-        binaryBody: toUint8Array('Hello World'),
-      }]);
+      expect(onFrame.args).toContainEqual([
+        {
+          command: 'MESSAGE',
+          headers: [
+            ['destination', 'bar'],
+            ['message-id', '203'],
+          ],
+          binaryBody: toUint8Array('Hello World'),
+        },
+      ]);
     });
 
     test('parses a Frame without headers', () => {
@@ -248,11 +269,13 @@ test.describe('Neo Parser', () => {
 
       parser.parseChunk(msg);
 
-      expect(onFrame.args).toContainEqual([{
-        command: 'MESSAGE',
-        headers: [],
-        binaryBody: toUint8Array('Hello World'),
-      }]);
+      expect(onFrame.args).toContainEqual([
+        {
+          command: 'MESSAGE',
+          headers: [],
+          binaryBody: toUint8Array('Hello World'),
+        },
+      ]);
     });
   });
 

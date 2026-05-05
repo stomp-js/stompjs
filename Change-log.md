@@ -19,7 +19,6 @@
 
 - Fix: Reset reconnect delay on a successful connect, [#701](https://github.com/stomp-js/stompjs/issues/701).
 
-
 # 7.2.0 (2025-09-17)
 
 - Fix typos in Change-log.md [#656](https://github.com/stomp-js/stompjs/pull/656). Many thanks [Camille Drapier](https://github.com/CamilleDrapier).
@@ -27,7 +26,6 @@
 - Fix typos in JSDoc comments across multiple functions [#672](https://github.com/stomp-js/stompjs/pull/672). Many thanks [umsungjun](https://github.com/umsungjun).
 - Feat: configurable heartbeat grace periods [#683](https://github.com/stomp-js/stompjs/pull/683). Manay thanks [tomek3e](https://github.com/tomek3e).
 - Added Heartbeat received and lost callbacks [#668](https://github.com/stomp-js/stompjs/pull/668). Many thanks [Samuel Yinger](https://github.com/GoldenSunX).
-
 
 # 7.1.1 (2025-04-05)
 
@@ -350,7 +348,6 @@
   client is properly disconnected by calling `disconnect()`.
 
 - ack() method takes 3 parameters:
-
   - `messageID` & `subscription` are MANDATORY.
   - `headers` is OPTIONAL
 

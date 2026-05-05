@@ -1,6 +1,10 @@
 import { test, expect } from '@playwright/test';
 import { Client, FrameImpl } from '../../src/index.js';
-import { stompClient, disconnectStomp, overRideFactory } from '../helpers/connect-helpers.js';
+import {
+  stompClient,
+  disconnectStomp,
+  overRideFactory,
+} from '../helpers/connect-helpers.js';
 import { WrapperWS } from '../helpers/wrapper-ws.js';
 import { parseFrame } from '../helpers/parse-frame.js';
 import { getLength } from '../helpers/utils.js';
@@ -39,7 +43,10 @@ function executeTestCases(useWebWorkerHeartbeats: boolean, mode: string) {
             const inComingFrame = parseFrame(ev.data);
 
             if (inComingFrame.command === 'CONNECTED') {
-              const frame = (FrameImpl as any).fromRawFrame(inComingFrame, true);
+              const frame = (FrameImpl as any).fromRawFrame(
+                inComingFrame,
+                true,
+              );
               delete frame.headers['heart-beat'];
               ev = { data: frame.serialize() };
             }
@@ -121,4 +128,3 @@ function executeTestCases(useWebWorkerHeartbeats: boolean, mode: string) {
 }
 
 executeTestCases(false, 'native');
-
