@@ -174,6 +174,7 @@ test.describe('Stomp Connection', () => {
     client.activate();
     client.deactivate();
     client.activate();
+    await waitForConnection(client);
   });
 
   test('Activates immediately without awaiting for the deactivate 02', async () => {
@@ -182,6 +183,7 @@ test.describe('Stomp Connection', () => {
     await wait(50);
     client.deactivate();
     client.activate();
+    await waitForConnection(client);
   });
 
   test('Re-activates after deactivation when activate is called while deactivating', async () => {
