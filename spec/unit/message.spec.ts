@@ -169,7 +169,7 @@ test('Logs raw communication', async ({}, testInfo) => {
   const testDestination = makeTestDestination(testInfo.workerIndex);
   const client = stompClient();
   client.logRawCommunication = true;
-  let debugSpy = sinon.spy();
+  const debugSpy = sinon.spy();
   client.debug = debugSpy;
   client.activate();
   await waitForConnection(client);
