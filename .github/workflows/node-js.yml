@@ -14,10 +14,10 @@ jobs:
         version: [20, 22, 24]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: bin/setup-rabbit.sh
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.version }}
       - run: npm ci
