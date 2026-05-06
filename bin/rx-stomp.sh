@@ -13,7 +13,7 @@ npm ci
 npm i ../../../stomp-stompjs-*.tgz
 
 # Test
-npm run karma
+npm run test
 
 # Pack
 npm pack
