@@ -4,6 +4,7 @@ import {
   stompClient,
   badStompClient,
   disconnectStomp,
+  waitForConnection,
   overRideFactory,
   LOGIN,
   BROKER_URL,
@@ -180,6 +181,21 @@ test.describe('Stomp Connection', () => {
     await wait(50);
     client.deactivate();
     client.activate();
+  });
+
+  test('Re-activates after deactivation when activate is called while deactivating', async () => {
+    client = stompClient();
+
+    const firstConnect = waitForConnection(client);
+    client.activate();
+    await firstConnect;
+
+    client.deactivate();
+    await wait(1);
+
+    const secondConnect = waitForConnection(client);
+    client.activate();
+    await secondConnect;
   });
 
   test('Multiple activates and deactivates - last call activate', async () => {

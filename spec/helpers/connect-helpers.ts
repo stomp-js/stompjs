@@ -41,6 +41,16 @@ export function badStompClient(): Client {
   return client;
 }
 
+// Returns a Promise that resolves immediately if already connected, or on the next successful connection.
+export function waitForConnection(client: Client): Promise<void> {
+  if (client.connected) {
+    return Promise.resolve();
+  }
+  return new Promise<void>(resolve => {
+    client.onConnect = () => resolve();
+  });
+}
+
 // This itself is important, if for some reason, deactivate does not complete, the test will time out.
 // Ensure this is called as await in an async function.
 export async function disconnectStomp(
