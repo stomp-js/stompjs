@@ -1,9 +1,9 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import sinon from 'sinon';
 import {
-  stompClient,
   disconnectStomp,
   overRideFactory,
+  stompClient,
 } from '../helpers/connect-helpers.js';
 import { WrapperWS } from '../helpers/wrapper-ws.js';
 import { getLength } from '../helpers/utils.js';

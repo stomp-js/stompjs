@@ -1,6 +1,10 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import sinon from 'sinon';
-import { stompClient, disconnectStomp, waitForConnection } from '../helpers/connect-helpers.js';
+import {
+  disconnectStomp,
+  stompClient,
+  waitForConnection,
+} from '../helpers/connect-helpers.js';
 
 test.describe('Configuration', () => {
   let client: any;

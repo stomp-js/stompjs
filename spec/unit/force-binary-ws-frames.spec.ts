@@ -1,9 +1,9 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import sinon from 'sinon';
 import {
-  stompClient,
   disconnectStomp,
   makeTestDestination,
+  stompClient,
   waitForConnection,
 } from '../helpers/connect-helpers.js';
 import { randomText } from '../helpers/content-helpers.js';

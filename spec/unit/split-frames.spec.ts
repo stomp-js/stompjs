@@ -1,6 +1,10 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import sinon from 'sinon';
-import { stompClient, disconnectStomp, makeTestDestination } from '../helpers/connect-helpers.js';
+import {
+  disconnectStomp,
+  makeTestDestination,
+  stompClient,
+} from '../helpers/connect-helpers.js';
 import {
   generateBinaryData,
   generateTextData,
@@ -39,8 +43,11 @@ test.describe('splitLargeFrames', () => {
         );
         const header = `SEND\ndestination:${testDestination}\ncontent-length:${body.length}\n\n`;
         const totalFrameSize = header.length + body.length + 1;
-        const expectedLastChunkSize = totalFrameSize - 2 * client.maxWebSocketChunkSize;
-        expect(spyWebSocketSend.lastCall.args[0].length).toEqual(expectedLastChunkSize);
+        const expectedLastChunkSize =
+          totalFrameSize - 2 * client.maxWebSocketChunkSize;
+        expect(spyWebSocketSend.lastCall.args[0].length).toEqual(
+          expectedLastChunkSize,
+        );
 
         spyWebSocketSend.restore();
         resolve();

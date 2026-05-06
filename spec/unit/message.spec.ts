@@ -1,16 +1,16 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import sinon from 'sinon';
 import {
-  stompClient,
   connectedStompClient,
   disconnectStomp,
   makeTestDestination,
+  stompClient,
   waitForConnection,
 } from '../helpers/connect-helpers.js';
 import {
-  randomText,
   generateBinaryData,
   generateTextData,
+  randomText,
 } from '../helpers/content-helpers.js';
 
 test.describe('Stomp Message', () => {
@@ -156,7 +156,10 @@ test.describe('Stomp Message', () => {
           expect(message.binaryBody.toString()).toEqual(binaryBody.toString());
           resolve();
         });
-        client.publish({ destination: testDestination, binaryBody: binaryBody });
+        client.publish({
+          destination: testDestination,
+          binaryBody: binaryBody,
+        });
       });
     });
   });

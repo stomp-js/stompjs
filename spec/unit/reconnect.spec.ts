@@ -1,13 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import sinon from 'sinon';
 import { ReconnectionTimeMode } from '../../src/index.js';
 import {
-  stompClient,
-  disconnectStomp,
-  BROKER_URL,
   BAD_BROKER_URL,
+  BROKER_URL,
+  disconnectStomp,
+  stompClient,
 } from '../helpers/connect-helpers.js';
-import { describeSkipIf, shouldSkipTests, wait } from '../helpers/utils.js';
+import { describeSkipIf, shouldSkipTests } from '../helpers/utils.js';
 
 test.describe('Stomp Reconnect', () => {
   let client: any;

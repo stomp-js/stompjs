@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { Stomp } from '../../../src/index.js';
 
 test.describe('Compat Parse connect method arguments', () => {

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import sinon from 'sinon';
 import { Parser } from '../../src/index.js';
 import { generateBinaryData } from '../helpers/content-helpers.js';

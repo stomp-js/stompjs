@@ -1,11 +1,11 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import sinon from 'sinon';
 import { Stomp } from '../../../src/index.js';
 import {
+  BROKER_URL,
   disconnectStomp,
   LOGIN,
   PASSWORD,
-  BROKER_URL,
 } from '../../helpers/connect-helpers.js';
 
 test.describe('Compat Stomp Connection', () => {

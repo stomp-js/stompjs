@@ -1,5 +1,6 @@
-import { test, expect } from '@playwright/test';
-import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
+import { expect, test } from '@playwright/test';
+import { disconnectStomp, stompClient } from '../helpers/connect-helpers.js';
+
 test.describe('Callbacks', () => {
   let client: any;
 

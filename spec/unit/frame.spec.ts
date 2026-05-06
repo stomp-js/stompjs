@@ -1,6 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import sinon from 'sinon';
-import { Parser, FrameImpl } from '../../src/index.js';
+import { FrameImpl, Parser } from '../../src/index.js';
 
 test.describe('Stomp FrameImpl', () => {
   // un-marshall a data chunk, for ease of matching body is converted to string

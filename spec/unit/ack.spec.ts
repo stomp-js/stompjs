@@ -1,5 +1,9 @@
-import { test, expect } from '@playwright/test';
-import { connectedStompClient, disconnectStomp, makeTestQueue } from '../helpers/connect-helpers.js';
+import { expect, test } from '@playwright/test';
+import {
+  connectedStompClient,
+  disconnectStomp,
+  makeTestQueue,
+} from '../helpers/connect-helpers.js';
 import { randomText } from '../helpers/content-helpers.js';
 
 test.describe('Stomp Acknowledgement (RabbitMQ specific queue destination)', () => {
@@ -9,7 +13,10 @@ test.describe('Stomp Acknowledgement (RabbitMQ specific queue destination)', () 
 
   test.beforeEach(async ({}, testInfo) => {
     queueDestination = makeTestQueue(testInfo.workerIndex);
-    [client01, client02] = await Promise.all([connectedStompClient(), connectedStompClient()]);
+    [client01, client02] = await Promise.all([
+      connectedStompClient(),
+      connectedStompClient(),
+    ]);
   });
 
   test.afterEach(async () => {

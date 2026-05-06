@@ -1,12 +1,12 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import sinon from 'sinon';
 import { Stomp } from '../../../src/index.js';
 import {
+  BROKER_URL,
   disconnectStomp,
   LOGIN,
-  PASSWORD,
-  BROKER_URL,
   makeTestDestination,
+  PASSWORD,
 } from '../../helpers/connect-helpers.js';
 import { randomText } from '../../helpers/content-helpers.js';
 
