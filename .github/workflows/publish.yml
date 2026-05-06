@@ -22,6 +22,7 @@ jobs:
 
       - run: bin/setup-rabbit.sh
       - run: npm ci
+      - run: npx playwright install --with-deps
 
       - name: Extract tag name
         id: tag

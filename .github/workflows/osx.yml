@@ -1,9 +1,5 @@
-# This is a basic workflow that is manually triggered
+name: WebKit (Safari)
 
-name: Safari
-
-# Controls when the action will run. Workflow runs when manually triggered using the UI
-# or API.
 on: [push, pull_request]
 
 # Declare default permissions as read only.
@@ -11,18 +7,16 @@ permissions: read-all
 
 jobs:
   build:
-    # The type of runner that the job will run on
     runs-on: macos-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: bin/osx/setup-rabbit.sh
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
+          node-version: '22.x'
       - run: npm ci
-      - run: npm install "https://github.com/RLovelett/karma-safari-launcher.git#safari-webdriver"
       - run: npm run build
-      - run: npx karma start spec/karma.conf.js --single-run --browsers=Safari
+      - run: npx playwright install webkit
+      - run: npx playwright test --project=webkit
