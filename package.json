@@ -35,6 +35,7 @@
     "@playwright/test": "^1.59.1",
     "@rollup/plugin-terser": "^1.0.0",
     "@rollup/plugin-typescript": "^12.1.4",
+    "@types/sinon": "^21.0.1",
     "eslint": "^10.3.0",
     "eslint-config-prettier": "^10.1.8",
     "onchange": "^7.1.0",
