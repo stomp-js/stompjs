@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
-import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
+import { stompClient, disconnectStomp, waitForConnection } from '../helpers/connect-helpers.js';
 
 test.describe('Configuration', () => {
   let client: any;
@@ -46,16 +46,10 @@ test.describe('Configuration', () => {
   });
 
   test('should not alter connect headers', async () => {
-    await new Promise<void>(resolve => {
-      const connectHeaders = Object.assign({}, client.connectHeaders);
-
-      client.onConnect = () => {
-        expect(client.connectHeaders).toEqual(connectHeaders);
-        resolve();
-      };
-
-      client.activate();
-    });
+    const connectHeaders = Object.assign({}, client.connectHeaders);
+    client.activate();
+    await waitForConnection(client);
+    expect(client.connectHeaders).toEqual(connectHeaders);
   });
 
   test('should not alter disconnect headers', async () => {

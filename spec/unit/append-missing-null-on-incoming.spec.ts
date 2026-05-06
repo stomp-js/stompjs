@@ -4,6 +4,7 @@ import {
   disconnectStomp,
   overRideFactory,
   makeTestDestination,
+  waitForConnection,
 } from '../helpers/connect-helpers.js';
 import { WrapperWS } from '../helpers/wrapper-ws.js';
 import { randomText } from '../helpers/content-helpers.js';
@@ -42,20 +43,16 @@ test.describe('appendMissingNULLonIncoming', () => {
   });
 
   test('Should append missing null in incoming frames (bypass bug in React Native)', async () => {
+    client.appendMissingNULLonIncoming = true;
+    const body = randomText();
+    client.activate();
+    await waitForConnection(client);
     await new Promise<void>(resolve => {
-      client.appendMissingNULLonIncoming = true;
-
-      const body = randomText();
-      client.onConnect = () => {
-        client.subscribe(testDestination, (message: any) => {
-          expect(message.body).toEqual(body);
-          client.deactivate();
-          resolve();
-        });
-
-        client.publish({ destination: testDestination, body: body });
-      };
-      client.activate();
+      client.subscribe(testDestination, (message: any) => {
+        expect(message.body).toEqual(body);
+        resolve();
+      });
+      client.publish({ destination: testDestination, body: body });
     });
   });
 });
