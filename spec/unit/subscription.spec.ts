@@ -87,14 +87,13 @@ test.describe('Stomp Subscription', () => {
     await new Promise<void>(resolve => {
       const msg1 = 'Calling all cars!';
       let subscription1: any = null;
-      let subscription2: any = null;
 
       client.onConnect = () => {
         subscription1 = client.subscribe(testDestination, () => {
           expect(false).toBe(true);
         });
 
-        subscription2 = client.subscribe(testDestination, (frame: any) => {
+        client.subscribe(testDestination, (frame: any) => {
           expect(frame.body).toEqual(msg1);
           resolve();
         });
