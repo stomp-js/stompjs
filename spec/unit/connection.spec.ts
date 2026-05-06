@@ -29,7 +29,6 @@ test.describe('Stomp Connection', () => {
         resolve();
       };
 
-      const onWebSocketError = () => {};
       let webSocketErrorCalled = false;
       client.onWebSocketError = () => {
         webSocketErrorCalled = true;
@@ -228,24 +227,23 @@ test.describe('Stomp Connection', () => {
 
   test('Multiple activates and deactivates - last call activate', async () => {
     client = stompClient();
-    const ActivationState = { ACTIVE: 0, DEACTIVATING: 1, INACTIVE: 2 };
 
     client.activate();
-    expect(client.state === ActivationState.ACTIVE);
+    expect(client.state).toEqual(ActivationState.ACTIVE);
     client.deactivate();
-    expect(client.state === ActivationState.DEACTIVATING);
+    expect(client.state).toEqual(ActivationState.DEACTIVATING);
     client.deactivate();
-    expect(client.state === ActivationState.DEACTIVATING);
+    expect(client.state).toEqual(ActivationState.DEACTIVATING);
     client.activate();
-    expect(client.state === ActivationState.ACTIVE);
+    expect(client.state).toEqual(ActivationState.ACTIVE);
     client.activate();
-    expect(client.state === ActivationState.ACTIVE);
+    expect(client.state).toEqual(ActivationState.ACTIVE);
     client.deactivate();
-    expect(client.state === ActivationState.DEACTIVATING);
+    expect(client.state).toEqual(ActivationState.DEACTIVATING);
     client.deactivate();
-    expect(client.state === ActivationState.DEACTIVATING);
+    expect(client.state).toEqual(ActivationState.DEACTIVATING);
     client.activate();
-    expect(client.state === ActivationState.ACTIVE);
+    expect(client.state).toEqual(ActivationState.ACTIVE);
     await wait(500);
   });
 

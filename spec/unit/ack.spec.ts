@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { stompClient, disconnectStomp, makeTestQueue } from '../helpers/connect-helpers.js';
+import { stompClient, disconnectStomp, makeTestQueue, waitForConnection } from '../helpers/connect-helpers.js';
 import { randomText } from '../helpers/content-helpers.js';
 
 test.describe('Stomp Acknowledgement (RabbitMQ specific queue destination)', () => {
@@ -9,24 +9,15 @@ test.describe('Stomp Acknowledgement (RabbitMQ specific queue destination)', () 
 
   test.beforeEach(async ({}, testInfo) => {
     queueDestination = makeTestQueue(testInfo.workerIndex);
-    await new Promise<void>(resolve => {
-      client01 = stompClient();
-      client01.onConnect = () => resolve();
-      client01.activate();
-    });
-  });
-
-  test.beforeEach(async () => {
-    await new Promise<void>(resolve => {
-      client02 = stompClient();
-      client02.onConnect = () => resolve();
-      client02.activate();
-    });
+    client01 = stompClient();
+    client02 = stompClient();
+    client01.activate();
+    client02.activate();
+    await Promise.all([waitForConnection(client01), waitForConnection(client02)]);
   });
 
   test.afterEach(async () => {
-    await disconnectStomp(client01);
-    await disconnectStomp(client02);
+    await Promise.all([disconnectStomp(client01), disconnectStomp(client02)]);
   });
 
   test('Should deliver to other client if nacked from one', async () => {
