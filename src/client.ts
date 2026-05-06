@@ -768,32 +768,24 @@ export class Client {
   public activate(): void {
     this._intendedState = ActivationState.ACTIVE;
 
-    const _activate = () => {
-      if (this._intendedState === ActivationState.INACTIVE) {
-        this.debug('Intended state is INACTIVE, will not activate');
-        return;
-      }
-
-      if (this.active) {
-        this.debug('Already ACTIVE, ignoring request to activate');
-        return;
-      }
-
-      this._changeState(ActivationState.ACTIVE);
-
-      this._nextReconnectDelay = this.reconnectDelay;
-      this._connect();
-    };
-
-    // if it is deactivating, wait for it to complete before activating.
     if (this.state === ActivationState.DEACTIVATING) {
-      this.debug('Waiting for deactivation to finish before activating');
-      this.deactivate().then(() => {
-        _activate();
-      });
-    } else {
-      _activate();
+      // Record intent and return; onWebSocketClose will activate once deactivation finishes.
+      this.debug('Deactivation in progress, will activate once deactivation completes');
+      return;
     }
+
+    if (this.active) {
+      this.debug('Already ACTIVE, ignoring request to activate');
+      return;
+    }
+
+    this._startActivate();
+  }
+
+  private _startActivate(): void {
+    this._changeState(ActivationState.ACTIVE);
+    this._nextReconnectDelay = this.reconnectDelay;
+    this._connect();
   }
 
   private async _connect(): Promise<void> {
@@ -892,6 +884,9 @@ export class Client {
 
         if (this.active) {
           this.scheduleReconnect();
+        } else if (this._intendedState === ActivationState.ACTIVE) {
+          // activate() was called while deactivating; now that deactivation is complete, activate
+          this._startActivate();
         }
       },
       onWebSocketError: evt => {

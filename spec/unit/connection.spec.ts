@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import sinon from 'sinon';
 import { Client, ActivationState } from '../../src/index.js';
 import {
   stompClient,
@@ -196,6 +197,31 @@ test.describe('Stomp Connection', () => {
     const secondConnect = waitForConnection(client);
     client.activate();
     await secondConnect;
+  });
+
+  test('Does not re-activate when deactivate is the last call while deactivating', async () => {
+    client = stompClient();
+
+    const firstConnect = waitForConnection(client);
+    client.activate();
+    await firstConnect;
+
+    const beforeConnectSpy = sinon.spy();
+    client.beforeConnect = beforeConnectSpy;
+
+    const socketClosed = new Promise<void>(resolve => {
+      client.onWebSocketClose = () => resolve();
+    });
+
+    client.deactivate();
+    client.activate();
+    client.deactivate();
+
+    await socketClosed;
+    await wait(50);
+
+    expect(beforeConnectSpy.notCalled).toBe(true);
+    expect(client.state).toEqual(ActivationState.INACTIVE);
   });
 
   test('Multiple activates and deactivates - last call activate', async () => {
