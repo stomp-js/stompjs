@@ -1,9 +1,11 @@
 import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
 import {
+  stompClient,
   connectedStompClient,
   disconnectStomp,
   makeTestDestination,
+  waitForConnection,
 } from '../helpers/connect-helpers.js';
 import {
   randomText,
@@ -43,23 +45,6 @@ test.describe('Stomp Message', () => {
         resolve();
       });
       client.publish({ destination: testDestination, body: body });
-    });
-  });
-
-  test('Logs raw communication', async () => {
-    const body = 'Älä sinä yhtään and السابق';
-    client.logRawCommunication = true;
-    client.debug = sinon.spy();
-    await new Promise<void>(resolve => {
-      client.subscribe(testDestination, (message: any) => {
-        expect(client.debug.lastCall.args[0]).toMatch(body);
-        resolve();
-      });
-      client.publish({ destination: testDestination, body: body });
-      expect(client.debug.lastCall.args[0]).toEqual(
-        `>>> SEND\ndestination:${testDestination}\ncontent-length:37\n\nÄlä sinä yhtään and السابق` +
-          '\0',
-      );
     });
   });
 
@@ -175,4 +160,29 @@ test.describe('Stomp Message', () => {
       });
     });
   });
+});
+
+test('Logs raw communication', async ({}, testInfo) => {
+  const testDestination = makeTestDestination(testInfo.workerIndex);
+  const client = stompClient();
+  client.logRawCommunication = true;
+  let debugSpy = sinon.spy();
+  client.debug = debugSpy;
+  client.activate();
+  await waitForConnection(client);
+
+  const body = 'Älä sinä yhtään and السابق';
+  await new Promise<void>(resolve => {
+    client.subscribe(testDestination, (message: any) => {
+      expect(debugSpy.lastCall.args[0]).toMatch(body);
+      resolve();
+    });
+    client.publish({ destination: testDestination, body: body });
+    expect(debugSpy.lastCall.args[0]).toEqual(
+      `>>> SEND\ndestination:${testDestination}\ncontent-length:37\n\nÄlä sinä yhtään and السابق` +
+        '\0',
+    );
+  });
+
+  await disconnectStomp(client);
 });
