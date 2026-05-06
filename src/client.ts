@@ -610,6 +610,13 @@ export class Client {
   private _stompHandler: StompHandler | undefined;
 
   /**
+   * Tracks what the user intends the client to be — ACTIVE or INACTIVE.
+   * Set by activate()/deactivate() so that the deactivate().then(_activate) chain
+   * can be cancelled if deactivate() is called again before the chain fires.
+   */
+  private _intendedState: ActivationState = ActivationState.INACTIVE;
+
+  /**
    * Indicates whether the client is currently active.
    *
    * A client is considered active if it is connected or actively attempting to reconnect.
@@ -759,7 +766,14 @@ export class Client {
    * If the client is currently `DEACTIVATING`, connection is delayed until the deactivation process completes.
    */
   public activate(): void {
+    this._intendedState = ActivationState.ACTIVE;
+
     const _activate = () => {
+      if (this._intendedState === ActivationState.INACTIVE) {
+        this.debug('Intended state is INACTIVE, will not activate');
+        return;
+      }
+
       if (this.active) {
         this.debug('Already ACTIVE, ignoring request to activate');
         return;
@@ -980,6 +994,8 @@ export class Client {
     const force: boolean = options.force || false;
     const needToDispose = this.active;
     let retPromise: Promise<void>;
+
+    this._intendedState = ActivationState.INACTIVE;
 
     if (this.state === ActivationState.INACTIVE) {
       this.debug(`Already INACTIVE, nothing more to do`);
