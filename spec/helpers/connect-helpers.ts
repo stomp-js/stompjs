@@ -59,6 +59,13 @@ export function waitForConnection(client: Client): Promise<void> {
   });
 }
 
+export async function connectedStompClient(): Promise<Client> {
+  const client = stompClient();
+  client.activate();
+  await waitForConnection(client);
+  return client;
+}
+
 // This itself is important, if for some reason, deactivate does not complete, the test will time out.
 // Ensure this is called as await in an async function.
 export async function disconnectStomp(

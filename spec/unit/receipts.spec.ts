@@ -1,9 +1,8 @@
 import { test, expect } from '@playwright/test';
 import {
-  stompClient,
+  connectedStompClient,
   disconnectStomp,
   makeTestDestination,
-  waitForConnection,
 } from '../helpers/connect-helpers.js';
 import { randomText } from '../helpers/content-helpers.js';
 
@@ -11,9 +10,9 @@ test.describe('Stomp Receipts', () => {
   let client: any;
   let testDestination: string;
 
-  test.beforeEach(({}, testInfo) => {
+  test.beforeEach(async ({}, testInfo) => {
     testDestination = makeTestDestination(testInfo.workerIndex);
-    client = stompClient();
+    client = await connectedStompClient();
   });
 
   test.afterEach(async () => {
@@ -22,8 +21,6 @@ test.describe('Stomp Receipts', () => {
 
   test('Should confirm subscription using receipt', async () => {
     const msg = 'Is anybody out there?';
-    client.activate();
-    await waitForConnection(client);
     const receiptId = randomText();
     await new Promise<void>(resolve => {
       client.watchForReceipt(receiptId, () => {
@@ -42,8 +39,6 @@ test.describe('Stomp Receipts', () => {
 
   test('Should confirm send using receipt', async () => {
     const msg = 'Is anybody out there?';
-    client.activate();
-    await waitForConnection(client);
     const receiptId = randomText();
     await new Promise<void>(resolve => {
       client.watchForReceipt(receiptId, () => resolve());

@@ -1,10 +1,9 @@
 import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
 import {
-  stompClient,
+  connectedStompClient,
   disconnectStomp,
   makeTestDestination,
-  waitForConnection,
 } from '../helpers/connect-helpers.js';
 import {
   randomText,
@@ -16,9 +15,9 @@ test.describe('Stomp Message', () => {
   let client: any;
   let testDestination: string;
 
-  test.beforeEach(({}, testInfo) => {
+  test.beforeEach(async ({}, testInfo) => {
     testDestination = makeTestDestination(testInfo.workerIndex);
-    client = stompClient();
+    client = await connectedStompClient();
   });
 
   test.afterEach(async () => {
@@ -27,8 +26,6 @@ test.describe('Stomp Message', () => {
 
   test('Send and receive a message', async () => {
     const body = randomText();
-    client.activate();
-    await waitForConnection(client);
     await new Promise<void>(resolve => {
       client.subscribe(testDestination, (message: any) => {
         expect(message.body).toEqual(body);
@@ -40,8 +37,6 @@ test.describe('Stomp Message', () => {
 
   test('Send and receive non-ASCII UTF8 text', async () => {
     const body = 'Älä sinä yhtään and السابق';
-    client.activate();
-    await waitForConnection(client);
     await new Promise<void>(resolve => {
       client.subscribe(testDestination, (message: any) => {
         expect(message.body).toEqual(body);
@@ -55,8 +50,6 @@ test.describe('Stomp Message', () => {
     const body = 'Älä sinä yhtään and السابق';
     client.logRawCommunication = true;
     client.debug = sinon.spy();
-    client.activate();
-    await waitForConnection(client);
     await new Promise<void>(resolve => {
       client.subscribe(testDestination, (message: any) => {
         expect(client.debug.lastCall.args[0]).toMatch(body);
@@ -72,8 +65,6 @@ test.describe('Stomp Message', () => {
 
   test('Send and receive binary message', async () => {
     const binaryBody = generateBinaryData(1);
-    client.activate();
-    await waitForConnection(client);
     await new Promise<void>(resolve => {
       client.subscribe(testDestination, (message: any) => {
         expect(message.binaryBody.toString()).toEqual(binaryBody.toString());
@@ -87,8 +78,6 @@ test.describe('Stomp Message', () => {
     const binaryData = generateBinaryData(1);
     const textData = 'Hello World';
     let numCalls = 0;
-    client.activate();
-    await waitForConnection(client);
     await new Promise<void>(resolve => {
       client.subscribe(testDestination, (message: any) => {
         if (++numCalls === 1) {
@@ -111,8 +100,6 @@ test.describe('Stomp Message', () => {
 
   test('Send and receive a message with a JSON body', async () => {
     const payload = { text: 'hello', bool: true, value: randomText() };
-    client.activate();
-    await waitForConnection(client);
     await new Promise<void>(resolve => {
       client.subscribe(testDestination, (message: any) => {
         const res = JSON.parse(message.body);
@@ -130,8 +117,6 @@ test.describe('Stomp Message', () => {
 
   test('Should allow skipping content length header', async () => {
     const body = 'Hello, world';
-    client.activate();
-    await waitForConnection(client);
     const spy = sinon.spy(client.webSocket, 'send');
     await new Promise<void>(resolve => {
       client.subscribe(testDestination, (message: any) => {
@@ -150,8 +135,6 @@ test.describe('Stomp Message', () => {
 
   test('Should always add content length header for binary messages', async () => {
     const binaryBody = new Uint8Array([0]);
-    client.activate();
-    await waitForConnection(client);
     await new Promise<void>(resolve => {
       client.subscribe(testDestination, () => {
         resolve();
@@ -172,8 +155,6 @@ test.describe('Stomp Message', () => {
     test('Large text message', async () => {
       const body = generateTextData(1023);
       client.debug = () => {}; // disable for this test
-      client.activate();
-      await waitForConnection(client);
       await new Promise<void>(resolve => {
         client.subscribe(testDestination, (message: any) => {
           expect(message.body).toEqual(body);
@@ -185,8 +166,6 @@ test.describe('Stomp Message', () => {
 
     test('Large binary message', async () => {
       const binaryBody = generateBinaryData(1023);
-      client.activate();
-      await waitForConnection(client);
       await new Promise<void>(resolve => {
         client.subscribe(testDestination, (message: any) => {
           expect(message.binaryBody.toString()).toEqual(binaryBody.toString());

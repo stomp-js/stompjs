@@ -1,9 +1,8 @@
 import { test, expect } from '@playwright/test';
 import {
-  stompClient,
+  connectedStompClient,
   disconnectStomp,
   makeTestDestination,
-  waitForConnection,
 } from '../helpers/connect-helpers.js';
 import { randomText } from '../helpers/content-helpers.js';
 
@@ -11,9 +10,9 @@ test.describe('Stomp Transaction', () => {
   let client: any;
   let testDestination: string;
 
-  test.beforeEach(({}, testInfo) => {
+  test.beforeEach(async ({}, testInfo) => {
     testDestination = makeTestDestination(testInfo.workerIndex);
-    client = stompClient();
+    client = await connectedStompClient();
   });
 
   test.afterEach(async () => {
@@ -23,8 +22,6 @@ test.describe('Stomp Transaction', () => {
   test('Send a message in a transaction and abort', async () => {
     const body = randomText();
     const body2 = randomText();
-    client.activate();
-    await waitForConnection(client);
     await new Promise<void>(resolve => {
       client.subscribe(testDestination, (message: any) => {
         expect(message.body).toEqual(body2);
@@ -43,8 +40,6 @@ test.describe('Stomp Transaction', () => {
 
   test('Send a message in a transaction and commit', async () => {
     const body = randomText();
-    client.activate();
-    await waitForConnection(client);
     await new Promise<void>(resolve => {
       client.subscribe(testDestination, (message: any) => {
         expect(message.body).toEqual(body);
@@ -62,8 +57,6 @@ test.describe('Stomp Transaction', () => {
 
   test('Send a message outside a transaction and abort', async () => {
     const body = randomText();
-    client.activate();
-    await waitForConnection(client);
     await new Promise<void>(resolve => {
       client.subscribe(testDestination, (message: any) => {
         expect(message.body).toEqual(body);
