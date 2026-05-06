@@ -179,7 +179,7 @@ test.describe('Stomp Connection', () => {
   test('Activates immediately without awaiting for the deactivate 02', async () => {
     client = stompClient();
     client.activate();
-    await wait(50);
+    await waitForConnection(client);
     client.deactivate();
     client.activate();
     await waitForConnection(client);
@@ -226,25 +226,29 @@ test.describe('Stomp Connection', () => {
   });
 
   test('Multiple activates and deactivates - last call activate', async () => {
+    let retPromise: Promise<void>;
     client = stompClient();
 
     client.activate();
     expect(client.state).toEqual(ActivationState.ACTIVE);
+    await waitForConnection(client);
     client.deactivate();
     expect(client.state).toEqual(ActivationState.DEACTIVATING);
-    client.deactivate();
+    retPromise = client.deactivate();
     expect(client.state).toEqual(ActivationState.DEACTIVATING);
+    await retPromise;
     client.activate();
     expect(client.state).toEqual(ActivationState.ACTIVE);
     client.activate();
     expect(client.state).toEqual(ActivationState.ACTIVE);
+    await waitForConnection(client);
     client.deactivate();
     expect(client.state).toEqual(ActivationState.DEACTIVATING);
-    client.deactivate();
+    retPromise = client.deactivate();
     expect(client.state).toEqual(ActivationState.DEACTIVATING);
+    await retPromise;
     client.activate();
     expect(client.state).toEqual(ActivationState.ACTIVE);
-    await wait(500);
   });
 
   test('Multiple activates and deactivates - last call deactivate', async () => {
@@ -256,7 +260,6 @@ test.describe('Stomp Connection', () => {
     client.activate();
     client.deactivate();
     client.deactivate();
-    await wait(500);
   });
 
   test('Activates immediately following a deactivate', async () => {
