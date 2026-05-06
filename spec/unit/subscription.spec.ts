@@ -1,12 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { Versions } from '../../src/index.js';
-import { TEST_DESTINATION } from '../helpers/test-config.js';
-import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
+import { stompClient, disconnectStomp, makeTestDestination } from '../helpers/connect-helpers.js';
 
 test.describe('Stomp Subscription', () => {
   let client: any;
+  let testDestination: string;
 
-  test.beforeEach(() => {
+  test.beforeEach(({}, testInfo) => {
+    testDestination = makeTestDestination(testInfo.workerIndex);
     client = stompClient();
   });
 
@@ -19,11 +20,11 @@ test.describe('Stomp Subscription', () => {
       const msg = 'Is anybody out there?';
 
       client.onConnect = () => {
-        client.subscribe(TEST_DESTINATION, (frame: any) => {
+        client.subscribe(testDestination, (frame: any) => {
           expect(frame.body).toEqual(msg);
           resolve();
         });
-        client.publish({ destination: TEST_DESTINATION, body: msg });
+        client.publish({ destination: testDestination, body: msg });
       };
       client.activate();
     });
@@ -35,13 +36,13 @@ test.describe('Stomp Subscription', () => {
       let numMessages = 0;
 
       client.onConnect = () => {
-        client.subscribe(TEST_DESTINATION, () => {
+        client.subscribe(testDestination, () => {
           numMessages++;
           throw new Error('Special Error');
         });
 
-        client.publish({ destination: TEST_DESTINATION, body: msg });
-        client.publish({ destination: TEST_DESTINATION, body: msg });
+        client.publish({ destination: testDestination, body: msg });
+        client.publish({ destination: testDestination, body: msg });
 
         setTimeout(() => {
           expect(numMessages).toBe(2);
@@ -66,14 +67,14 @@ test.describe('Stomp Subscription', () => {
           return;
         }
 
-        client.subscribe(TEST_DESTINATION, (frame: any) => {
+        client.subscribe(testDestination, (frame: any) => {
           expect(frame.body).toEqual(msg);
           expect(frame.headers.cust).toEqual(cust);
           resolve();
         });
 
         client.publish({
-          destination: TEST_DESTINATION,
+          destination: testDestination,
           headers: { cust: cust },
           body: msg,
         });
@@ -89,17 +90,17 @@ test.describe('Stomp Subscription', () => {
       let subscription2: any = null;
 
       client.onConnect = () => {
-        subscription1 = client.subscribe(TEST_DESTINATION, () => {
+        subscription1 = client.subscribe(testDestination, () => {
           expect(false).toBe(true);
         });
 
-        subscription2 = client.subscribe(TEST_DESTINATION, (frame: any) => {
+        subscription2 = client.subscribe(testDestination, (frame: any) => {
           expect(frame.body).toEqual(msg1);
           resolve();
         });
 
         subscription1.unsubscribe();
-        client.publish({ destination: TEST_DESTINATION, body: msg1 });
+        client.publish({ destination: testDestination, body: msg1 });
       };
       client.activate();
     });

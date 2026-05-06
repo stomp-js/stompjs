@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
-import { TEST_DESTINATION } from '../helpers/test-config.js';
-import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
+import { stompClient, disconnectStomp, makeTestDestination } from '../helpers/connect-helpers.js';
 import {
   randomText,
   generateBinaryData,
@@ -10,8 +9,10 @@ import {
 
 test.describe('Stomp Message', () => {
   let client: any;
+  let testDestination: string;
 
-  test.beforeEach(() => {
+  test.beforeEach(({}, testInfo) => {
+    testDestination = makeTestDestination(testInfo.workerIndex);
     client = stompClient();
   });
 
@@ -23,12 +24,12 @@ test.describe('Stomp Message', () => {
     await new Promise<void>(resolve => {
       const body = randomText();
       client.onConnect = () => {
-        client.subscribe(TEST_DESTINATION, (message: any) => {
+        client.subscribe(testDestination, (message: any) => {
           expect(message.body).toEqual(body);
           client.deactivate();
           resolve();
         });
-        client.publish({ destination: TEST_DESTINATION, body: body });
+        client.publish({ destination: testDestination, body: body });
       };
       client.activate();
     });
@@ -38,12 +39,12 @@ test.describe('Stomp Message', () => {
     await new Promise<void>(resolve => {
       const body = 'Älä sinä yhtään and السابق';
       client.onConnect = () => {
-        client.subscribe(TEST_DESTINATION, (message: any) => {
+        client.subscribe(testDestination, (message: any) => {
           expect(message.body).toEqual(body);
           client.deactivate();
           resolve();
         });
-        client.publish({ destination: TEST_DESTINATION, body: body });
+        client.publish({ destination: testDestination, body: body });
       };
       client.activate();
     });
@@ -57,15 +58,15 @@ test.describe('Stomp Message', () => {
       client.debug = sinon.spy();
 
       client.onConnect = () => {
-        client.subscribe(TEST_DESTINATION, (message: any) => {
+        client.subscribe(testDestination, (message: any) => {
           expect(client.debug.lastCall.args[0]).toMatch(body);
           client.deactivate();
           resolve();
         });
 
-        client.publish({ destination: TEST_DESTINATION, body: body });
+        client.publish({ destination: testDestination, body: body });
         expect(client.debug.lastCall.args[0]).toEqual(
-          '>>> SEND\ndestination:/topic/chat.general\ncontent-length:37\n\nÄlä sinä yhtään and السابق' +
+          `>>> SEND\ndestination:${testDestination}\ncontent-length:37\n\nÄlä sinä yhtään and السابق` +
             '\0',
         );
       };
@@ -77,13 +78,13 @@ test.describe('Stomp Message', () => {
     await new Promise<void>(resolve => {
       const binaryBody = generateBinaryData(1);
       client.onConnect = () => {
-        client.subscribe(TEST_DESTINATION, (message: any) => {
+        client.subscribe(testDestination, (message: any) => {
           expect(message.binaryBody.toString()).toEqual(binaryBody.toString());
           client.deactivate();
           resolve();
         });
         client.publish({
-          destination: TEST_DESTINATION,
+          destination: testDestination,
           binaryBody: binaryBody,
         });
       };
@@ -98,7 +99,7 @@ test.describe('Stomp Message', () => {
       let numCalls = 0;
 
       client.onConnect = () => {
-        client.subscribe(TEST_DESTINATION, (message: any) => {
+        client.subscribe(testDestination, (message: any) => {
           if (++numCalls === 1) {
             expect(message.binaryBody.toString()).toEqual(
               binaryData.toString(),
@@ -111,13 +112,13 @@ test.describe('Stomp Message', () => {
         });
 
         client.publish({
-          destination: TEST_DESTINATION,
+          destination: testDestination,
           binaryBody: binaryData,
           headers: { 'content-type': 'application/octet-stream' },
         });
 
         setTimeout(() => {
-          client.publish({ destination: TEST_DESTINATION, body: textData });
+          client.publish({ destination: testDestination, body: textData });
         }, 20);
       };
       client.activate();
@@ -128,7 +129,7 @@ test.describe('Stomp Message', () => {
     await new Promise<void>(resolve => {
       const payload = { text: 'hello', bool: true, value: randomText() };
       client.onConnect = () => {
-        client.subscribe(TEST_DESTINATION, (message: any) => {
+        client.subscribe(testDestination, (message: any) => {
           const res = JSON.parse(message.body);
           expect(res.text).toEqual(payload.text);
           expect(res.bool).toEqual(payload.bool);
@@ -137,7 +138,7 @@ test.describe('Stomp Message', () => {
           resolve();
         });
         client.publish({
-          destination: TEST_DESTINATION,
+          destination: testDestination,
           body: JSON.stringify(payload),
         });
       };
@@ -150,7 +151,7 @@ test.describe('Stomp Message', () => {
       const body = 'Hello, world';
 
       client.onConnect = () => {
-        client.subscribe(TEST_DESTINATION, (message: any) => {
+        client.subscribe(testDestination, (message: any) => {
           expect(message.body).toEqual(body);
           client.deactivate();
           resolve();
@@ -159,7 +160,7 @@ test.describe('Stomp Message', () => {
         const spy = sinon.spy(client.webSocket, 'send');
 
         client.publish({
-          destination: TEST_DESTINATION,
+          destination: testDestination,
           body: body,
           skipContentLengthHeader: true,
         });
@@ -176,7 +177,7 @@ test.describe('Stomp Message', () => {
       const binaryBody = new Uint8Array([0]);
 
       client.onConnect = () => {
-        client.subscribe(TEST_DESTINATION, () => {
+        client.subscribe(testDestination, () => {
           client.deactivate();
           resolve();
         });
@@ -184,7 +185,7 @@ test.describe('Stomp Message', () => {
         const spy = sinon.spy(client.webSocket, 'send');
 
         client.publish({
-          destination: TEST_DESTINATION,
+          destination: testDestination,
           binaryBody: binaryBody,
           skipContentLengthHeader: true,
         });
@@ -203,12 +204,12 @@ test.describe('Stomp Message', () => {
         const body = generateTextData(1023);
         client.debug = () => {}; // disable for this test
         client.onConnect = () => {
-          client.subscribe(TEST_DESTINATION, (message: any) => {
+          client.subscribe(testDestination, (message: any) => {
             expect(message.body).toEqual(body);
             client.deactivate();
             resolve();
           });
-          client.publish({ destination: TEST_DESTINATION, body: body });
+          client.publish({ destination: testDestination, body: body });
         };
         client.activate();
       });
@@ -218,7 +219,7 @@ test.describe('Stomp Message', () => {
       await new Promise<void>(resolve => {
         const binaryBody = generateBinaryData(1023);
         client.onConnect = () => {
-          client.subscribe(TEST_DESTINATION, (message: any) => {
+          client.subscribe(testDestination, (message: any) => {
             expect(message.binaryBody.toString()).toEqual(
               binaryBody.toString(),
             );
@@ -226,7 +227,7 @@ test.describe('Stomp Message', () => {
             resolve();
           });
           client.publish({
-            destination: TEST_DESTINATION,
+            destination: testDestination,
             binaryBody: binaryBody,
           });
         };

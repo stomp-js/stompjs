@@ -1,13 +1,14 @@
 import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
-import { TEST_DESTINATION } from '../helpers/test-config.js';
-import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
+import { stompClient, disconnectStomp, makeTestDestination } from '../helpers/connect-helpers.js';
 import { randomText } from '../helpers/content-helpers.js';
 
 test.describe('forceBinaryWSFrames', () => {
   let client: any;
+  let testDestination: string;
 
-  test.beforeEach(() => {
+  test.beforeEach(({}, testInfo) => {
+    testDestination = makeTestDestination(testInfo.workerIndex);
     client = stompClient();
     client.configure({ forceBinaryWSFrames: true });
   });
@@ -22,7 +23,7 @@ test.describe('forceBinaryWSFrames', () => {
       client.onConnect = () => {
         const spyWebSocketSend = sinon.spy(client.webSocket, 'send');
 
-        client.subscribe(TEST_DESTINATION, (message: any) => {
+        client.subscribe(testDestination, (message: any) => {
           expect(message.body).toEqual(body);
           client.deactivate();
 
@@ -35,7 +36,7 @@ test.describe('forceBinaryWSFrames', () => {
           resolve();
         });
 
-        client.publish({ destination: TEST_DESTINATION, body: body });
+        client.publish({ destination: testDestination, body: body });
       };
       client.activate();
     });

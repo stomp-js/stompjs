@@ -7,6 +7,14 @@ export const PASSWORD = 'guest';
 export const BROKER_URL = 'ws://localhost:15674/ws';
 export const BAD_BROKER_URL = 'ws://localhost:61625';
 
+export function makeTestDestination(workerIndex: number): string {
+  return `/topic/test-${workerIndex}-${Math.random().toString(36).slice(2)}`;
+}
+
+export function makeTestQueue(workerIndex: number): string {
+  return `/queue/test-${workerIndex}-${Math.random().toString(36).slice(2)}`;
+}
+
 // Set WebSocket globally only in Node.js (browsers already have it natively)
 if (typeof process !== 'undefined' && process.versions?.node) {
   (globalThis as any).WebSocket = WebSocket;

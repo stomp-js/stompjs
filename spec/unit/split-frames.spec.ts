@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
-import { TEST_DESTINATION } from '../helpers/test-config.js';
-import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
+import { stompClient, disconnectStomp, makeTestDestination } from '../helpers/connect-helpers.js';
 import {
   generateBinaryData,
   generateTextData,
@@ -9,8 +8,10 @@ import {
 
 test.describe('splitLargeFrames', () => {
   let client: any;
+  let testDestination: string;
 
-  test.beforeEach(() => {
+  test.beforeEach(({}, testInfo) => {
+    testDestination = makeTestDestination(testInfo.workerIndex);
     client = stompClient();
     client.configure({ splitLargeFrames: true });
   });
@@ -31,12 +32,15 @@ test.describe('splitLargeFrames', () => {
       client.onConnect = () => {
         const spyWebSocketSend = sinon.stub(client.webSocket, 'send');
 
-        client.publish({ destination: TEST_DESTINATION, body: body });
+        client.publish({ destination: testDestination, body: body });
         expect(spyWebSocketSend.callCount).toBe(3);
         expect(spyWebSocketSend.firstCall.args[0].length).toEqual(
           client.maxWebSocketChunkSize,
         );
-        expect(spyWebSocketSend.lastCall.args[0].length).toEqual(4156);
+        const header = `SEND\ndestination:${testDestination}\ncontent-length:${body.length}\n\n`;
+        const totalFrameSize = header.length + body.length + 1;
+        const expectedLastChunkSize = totalFrameSize - 2 * client.maxWebSocketChunkSize;
+        expect(spyWebSocketSend.lastCall.args[0].length).toEqual(expectedLastChunkSize);
 
         spyWebSocketSend.restore();
         resolve();
@@ -49,14 +53,14 @@ test.describe('splitLargeFrames', () => {
     await new Promise<void>(resolve => {
       const binaryBody = generateBinaryData(20);
       client.onConnect = () => {
-        client.subscribe(TEST_DESTINATION, (message: any) => {
+        client.subscribe(testDestination, (message: any) => {
           expect(message.binaryBody.toString()).toEqual(binaryBody.toString());
           resolve();
         });
 
         const spyWebSocketSend = sinon.spy(client.webSocket, 'send');
         client.publish({
-          destination: TEST_DESTINATION,
+          destination: testDestination,
           binaryBody: binaryBody,
         });
         expect(spyWebSocketSend.callCount).toBe(1);

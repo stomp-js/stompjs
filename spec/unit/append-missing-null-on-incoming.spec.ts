@@ -1,17 +1,19 @@
 import { test, expect } from '@playwright/test';
-import { TEST_DESTINATION } from '../helpers/test-config.js';
 import {
   stompClient,
   disconnectStomp,
   overRideFactory,
+  makeTestDestination,
 } from '../helpers/connect-helpers.js';
 import { WrapperWS } from '../helpers/wrapper-ws.js';
 import { randomText } from '../helpers/content-helpers.js';
 
 test.describe('appendMissingNULLonIncoming', () => {
   let client: any;
+  let testDestination: string;
 
-  test.beforeEach(() => {
+  test.beforeEach(({}, testInfo) => {
+    testDestination = makeTestDestination(testInfo.workerIndex);
     client = stompClient();
 
     // Simulate incorrect behavior in React Native (see https://github.com/stomp-js/stompjs/issues/89)
@@ -45,13 +47,13 @@ test.describe('appendMissingNULLonIncoming', () => {
 
       const body = randomText();
       client.onConnect = () => {
-        client.subscribe(TEST_DESTINATION, (message: any) => {
+        client.subscribe(testDestination, (message: any) => {
           expect(message.body).toEqual(body);
           client.deactivate();
           resolve();
         });
 
-        client.publish({ destination: TEST_DESTINATION, body: body });
+        client.publish({ destination: testDestination, body: body });
       };
       client.activate();
     });

@@ -1,12 +1,13 @@
 import { test, expect } from '@playwright/test';
-import { TEST_DESTINATION } from '../helpers/test-config.js';
-import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
+import { stompClient, disconnectStomp, makeTestDestination } from '../helpers/connect-helpers.js';
 import { randomText } from '../helpers/content-helpers.js';
 
 test.describe('Stomp Transaction', () => {
   let client: any;
+  let testDestination: string;
 
-  test.beforeEach(() => {
+  test.beforeEach(({}, testInfo) => {
+    testDestination = makeTestDestination(testInfo.workerIndex);
     client = stompClient();
   });
 
@@ -20,19 +21,19 @@ test.describe('Stomp Transaction', () => {
       const body2 = randomText();
 
       client.onConnect = () => {
-        client.subscribe(TEST_DESTINATION, (message: any) => {
+        client.subscribe(testDestination, (message: any) => {
           expect(message.body).toEqual(body2);
           resolve();
         });
 
         const tx = client.begin('txid_' + Math.random());
         client.publish({
-          destination: TEST_DESTINATION,
+          destination: testDestination,
           headers: { transaction: tx.id },
           body: body,
         });
         tx.abort();
-        client.publish({ destination: TEST_DESTINATION, body: body2 });
+        client.publish({ destination: testDestination, body: body2 });
       };
       client.activate();
     });
@@ -43,13 +44,13 @@ test.describe('Stomp Transaction', () => {
       const body = randomText();
 
       client.onConnect = () => {
-        client.subscribe(TEST_DESTINATION, (message: any) => {
+        client.subscribe(testDestination, (message: any) => {
           expect(message.body).toEqual(body);
           resolve();
         });
         const tx = client.begin();
         client.publish({
-          destination: TEST_DESTINATION,
+          destination: testDestination,
           headers: { transaction: tx.id },
           body: body,
         });
@@ -64,13 +65,13 @@ test.describe('Stomp Transaction', () => {
       const body = randomText();
 
       client.onConnect = () => {
-        client.subscribe(TEST_DESTINATION, (message: any) => {
+        client.subscribe(testDestination, (message: any) => {
           expect(message.body).toEqual(body);
           resolve();
         });
 
         const tx = client.begin();
-        client.publish({ destination: TEST_DESTINATION, body: body });
+        client.publish({ destination: testDestination, body: body });
         tx.abort();
       };
       client.activate();

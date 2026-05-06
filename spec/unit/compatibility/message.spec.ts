@@ -1,19 +1,21 @@
 import { test, expect } from '@playwright/test';
 import sinon from 'sinon';
 import { Stomp } from '../../../src/index.js';
-import { TEST_DESTINATION } from '../../helpers/test-config.js';
 import {
   disconnectStomp,
   LOGIN,
   PASSWORD,
   BROKER_URL,
+  makeTestDestination,
 } from '../../helpers/connect-helpers.js';
 import { randomText } from '../../helpers/content-helpers.js';
 
 test.describe('Compat Stomp Message', () => {
   let client: any;
+  let testDestination: string;
 
-  test.beforeEach(() => {
+  test.beforeEach(({}, testInfo) => {
+    testDestination = makeTestDestination(testInfo.workerIndex);
     client = Stomp.client(BROKER_URL);
   });
 
@@ -26,13 +28,13 @@ test.describe('Compat Stomp Message', () => {
       const body = randomText();
 
       client.connect(LOGIN, PASSWORD, () => {
-        client.subscribe(TEST_DESTINATION, (message: any) => {
+        client.subscribe(testDestination, (message: any) => {
           expect(message.body).toEqual(body);
           client.disconnect();
           resolve();
         });
 
-        client.send(TEST_DESTINATION, {}, body);
+        client.send(testDestination, {}, body);
       });
     });
   });
@@ -42,7 +44,7 @@ test.describe('Compat Stomp Message', () => {
       const payload = { text: 'hello', bool: true, value: randomText() };
 
       client.connect(LOGIN, PASSWORD, () => {
-        client.subscribe(TEST_DESTINATION, (message: any) => {
+        client.subscribe(testDestination, (message: any) => {
           const res = JSON.parse(message.body);
           expect(res.text).toEqual(payload.text);
           expect(res.bool).toEqual(payload.bool);
@@ -51,7 +53,7 @@ test.describe('Compat Stomp Message', () => {
           resolve();
         });
 
-        client.send(TEST_DESTINATION, {}, JSON.stringify(payload));
+        client.send(testDestination, {}, JSON.stringify(payload));
       });
     });
   });
@@ -61,7 +63,7 @@ test.describe('Compat Stomp Message', () => {
       const body = 'Hello, world';
 
       client.connect(LOGIN, PASSWORD, () => {
-        client.subscribe(TEST_DESTINATION, (message: any) => {
+        client.subscribe(testDestination, (message: any) => {
           expect(message.body).toEqual(body);
           client.disconnect();
           resolve();
@@ -69,7 +71,7 @@ test.describe('Compat Stomp Message', () => {
 
         const spy = sinon.spy(client.webSocket, 'send');
 
-        client.send(TEST_DESTINATION, { 'content-length': false }, body);
+        client.send(testDestination, { 'content-length': false }, body);
 
         const rawChunk = spy.firstCall.args[0];
         expect(rawChunk).not.toMatch('content-length');

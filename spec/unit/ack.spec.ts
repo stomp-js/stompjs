@@ -1,12 +1,14 @@
 import { test, expect } from '@playwright/test';
-import { stompClient, disconnectStomp } from '../helpers/connect-helpers.js';
+import { stompClient, disconnectStomp, makeTestQueue } from '../helpers/connect-helpers.js';
 import { randomText } from '../helpers/content-helpers.js';
 
 test.describe('Stomp Acknowledgement (RabbitMQ specific queue destination)', () => {
   let client01: any;
   let client02: any;
+  let queueDestination: string;
 
-  test.beforeEach(async () => {
+  test.beforeEach(async ({}, testInfo) => {
+    queueDestination = makeTestQueue(testInfo.workerIndex);
     await new Promise<void>(resolve => {
       client01 = stompClient();
       client01.onConnect = () => resolve();
@@ -29,7 +31,6 @@ test.describe('Stomp Acknowledgement (RabbitMQ specific queue destination)', () 
 
   test('Should deliver to other client if nacked from one', async () => {
     await new Promise<void>(resolve => {
-      const queueDestination = '/queue/test01';
       let receivedCount = 0;
       const body = randomText();
 
@@ -62,7 +63,6 @@ test.describe('Stomp Acknowledgement (RabbitMQ specific queue destination)', () 
 
   test('Should deliver to other client if connection drops before ack', async () => {
     await new Promise<void>(resolve => {
-      const queueDestination = '/queue/test01';
       let receivedCount = 0;
       const body = randomText();
 
@@ -95,7 +95,6 @@ test.describe('Stomp Acknowledgement (RabbitMQ specific queue destination)', () 
 
   test('Should not redeliver after ack', async () => {
     await new Promise<void>(resolve => {
-      const queueDestination = '/queue/test01';
       let receivedCount = 0;
       const body = randomText();
 

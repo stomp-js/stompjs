@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './spec/unit',
-  workers: 1,
+  fullyParallel: true,
   timeout: 30000,
   reporter: 'list',
   projects: [
