@@ -6,10 +6,10 @@
     "clean": "rm -rf bundles esm6",
     "rollup": "rollup -c && rm -rf bundles/esm6/",
     "build": "npm run clean && npx tsc && npm run rollup && rm -rf bundles/compatibility bundles/*.d.ts && date",
-    "test": "playwright test",
+    "test": "playwright test --project=node",
     "lint": "eslint",
     "prettier": "prettier --write .",
-    "prepublishOnly": "npm run lint && npm run build && npm run test"
+    "prepublishOnly": "npm run lint && npm run build && playwright test"
   },
   "repository": {
     "type": "git",
