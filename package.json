@@ -1,6 +1,6 @@
 {
   "name": "@stomp/stompjs",
-  "version": "7.3.0",
+  "version": "7.4.0-beta.1",
   "description": "STOMP client for Javascript and Typescript",
   "scripts": {
     "clean": "rm -rf bundles esm6",
@@ -51,7 +51,6 @@
   "type": "module",
   "exports": {
     ".": {
-      "browser": "./bundles/stomp.umd.js",
       "require": {
         "types": "./index.d.ts",
         "default": "./bundles/stomp.umd.js"
