@@ -1,5 +1,18 @@
 # Change Log
 
+# 7.4.0-beta.2 (2026-05-07)
+
+- Update release script: delegate publishing to GitHub Actions and refine messaging.
+
+# 7.4.0-beta.1 (2026-05-07)
+
+- Remove `"browser"` export field from `package.json` to improve ESM compatibility.
+- Fix: Track intended activation state in `Client` to prevent conflicting `activate`/`deactivate` calls — reactivation is now blocked while deactivation is in progress.
+- Migrate from TSLint to ESLint.
+- Transition browser tests from Karma to Playwright; add Chromium, Firefox, and WebKit projects.
+- Update CI workflows: bump `actions/checkout` to v5 and `actions/setup-node` to v6.
+- Update dependencies (`npm update`, `npm audit fix`).
+
 # 7.3.0 (2026-01-31)
 
 - Update changelog link in publish workflow to point to the develop branch.
