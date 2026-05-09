@@ -48,4 +48,44 @@ test.describe('Compat Stomp Connection', () => {
     expect(spy.called).toBe(true);
     spy.restore();
   });
+
+  test('Throws when connect is called with fewer than 2 arguments', () => {
+    client = Stomp.client(BROKER_URL);
+    expect(() => (client as any).connect(LOGIN)).toThrow(
+      'Connect requires at least 2 arguments',
+    );
+  });
+
+  test('connect with errorCallback and closeEventCallback sets onStompError and onWebSocketClose', async () => {
+    const errorCb = sinon.spy();
+    const closeCb = sinon.spy();
+
+    await new Promise<void>(resolve => {
+      client = Stomp.client(BROKER_URL);
+      client.connect(LOGIN, PASSWORD, () => resolve(), errorCb, closeCb);
+    });
+
+    expect(client.onStompError).toBe(errorCb);
+    expect(client.onWebSocketClose).toBe(closeCb);
+  });
+
+  test('Deprecated accessors ws, version, onreceive, and onreceipt work on a connected client', async () => {
+    await new Promise<void>(resolve => {
+      client = Stomp.client(BROKER_URL);
+      client.connect(LOGIN, PASSWORD, () => {
+        expect(client.ws).toBeDefined();
+        expect(client.version).toBeDefined();
+
+        const msgHandler = sinon.spy();
+        client.onreceive = msgHandler;
+        expect(client.onreceive).toBe(msgHandler);
+
+        const receiptHandler = sinon.spy();
+        client.onreceipt = receiptHandler;
+        expect(client.onreceipt).toBe(receiptHandler);
+
+        resolve();
+      });
+    });
+  });
 });
