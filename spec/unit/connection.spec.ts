@@ -495,4 +495,67 @@ test.describe('Stomp Connection', () => {
       await client.deactivate({ force: true });
     });
   });
+
+  test.describe('Activation state machine edge cases', () => {
+    test('Discards STOMP connection when deactivate was issued before CONNECTED frame arrived', async () => {
+      await new Promise<void>((resolve, reject) => {
+        client = stompClient();
+
+        overRideFactory(
+          client,
+          class extends WrapperWS {
+            wrapOnMessage(ev: any) {
+              const frame = parseFrame(ev.data);
+              if (frame?.command === 'CONNECTED') {
+                // Deactivate before the CONNECTED frame is processed. This sets
+                // state=DEACTIVATING so the !this.active guard (client.ts:858) fires
+                // when StompHandler calls back, preventing onConnect from firing.
+                client.deactivate().then(() => {
+                  expect(client.state).toEqual(ActivationState.INACTIVE);
+                  resolve();
+                });
+                setTimeout(() => {
+                  super.wrapOnMessage(ev);
+                }, 10);
+                return;
+              }
+              super.wrapOnMessage(ev);
+            }
+          },
+        );
+
+        client.onConnect = () => {
+          reject(new Error('onConnect must not fire after deactivate was issued'));
+        };
+
+        client.activate();
+      });
+    });
+
+    test('Re-activates via _intendedState when activate is called before deactivation WS close fires', async () => {
+      client = stompClient();
+
+      overRideFactory(
+        client,
+        class extends WrapperWS {
+          wrapOnClose(ev: any) {
+            // Delay the close notification so that activate() can be called while
+            // state=DEACTIVATING. This ensures the _intendedState===ACTIVE branch
+            // (client.ts:887) fires to re-activate once deactivation completes.
+            setTimeout(() => super.wrapOnClose(ev), 50);
+          }
+        },
+      );
+
+      client.activate();
+      await waitForConnection(client);
+
+      // Start deactivating but do not await — call activate() before the delayed
+      // close event fires, while state is still DEACTIVATING.
+      client.deactivate();
+      client.activate();
+
+      await waitForConnection(client);
+    });
+  });
 });
