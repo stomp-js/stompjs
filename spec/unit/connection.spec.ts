@@ -496,6 +496,13 @@ test.describe('Stomp Connection', () => {
     });
   });
 
+  test('Throws TypeError when calling connection methods without an active connection', () => {
+    client = stompClient();
+    expect(() =>
+      client.publish({ destination: '/test', body: 'hello' }),
+    ).toThrow(TypeError);
+  });
+
   test.describe('Activation state machine edge cases', () => {
     test('Discards STOMP connection when deactivate was issued before CONNECTED frame arrived', async () => {
       await new Promise<void>((resolve, reject) => {

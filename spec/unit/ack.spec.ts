@@ -87,6 +87,73 @@ test.describe('Stomp Acknowledgement (RabbitMQ specific queue destination)', () 
     });
   });
 
+  test('Should ack using client.ack', async () => {
+    await new Promise<void>(resolve => {
+      let receivedCount = 0;
+      const body = randomText();
+
+      const subscription = client01.subscribe(
+        queueDestination,
+        (message: any) => {
+          if (message.body !== body) {
+            return;
+          }
+          receivedCount++;
+          // Call client.ack directly instead of message.ack()
+          client01.ack(
+            message.headers.ack ?? message.headers['message-id'],
+            message.headers['subscription'],
+          );
+          setTimeout(() => {
+            expect(receivedCount).toEqual(1);
+            resolve();
+          }, 100);
+        },
+        { ack: 'client' },
+      );
+
+      // suppress unused-variable warning
+      void subscription;
+
+      client01.publish({ destination: queueDestination, body });
+    });
+  });
+
+  test('Should nack using client.nack', async () => {
+    await new Promise<void>(resolve => {
+      let receivedCount = 0;
+      const body = randomText();
+
+      const setUpSubscription = (client: any) => {
+        client.subscribe(
+          queueDestination,
+          (message: any) => {
+            if (message.body !== body) {
+              return;
+            }
+            receivedCount++;
+            if (receivedCount < 3) {
+              // Call client.nack directly instead of message.nack()
+              client.nack(
+                message.headers.ack ?? message.headers['message-id'],
+                message.headers['subscription'],
+              );
+              return;
+            }
+            message.ack();
+            resolve();
+          },
+          { ack: 'client' },
+        );
+      };
+
+      setUpSubscription(client01);
+      setUpSubscription(client02);
+
+      client01.publish({ destination: queueDestination, body });
+    });
+  });
+
   test('Should not redeliver after ack', async () => {
     await new Promise<void>(resolve => {
       let receivedCount = 0;

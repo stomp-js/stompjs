@@ -81,4 +81,19 @@ test.describe('Stomp Subscription', () => {
       client.publish({ destination: testDestination, body: msg1 });
     });
   });
+
+  test('Should unsubscribe using client.unsubscribe', async () => {
+    const msg = 'Calling all cars!';
+    await new Promise<void>(resolve => {
+      const subscription = client.subscribe(testDestination, () => {
+        expect(false).toBe(true);
+      });
+      client.subscribe(testDestination, (frame: any) => {
+        expect(frame.body).toEqual(msg);
+        resolve();
+      });
+      client.unsubscribe(subscription.id);
+      client.publish({ destination: testDestination, body: msg });
+    });
+  });
 });
