@@ -17,3 +17,6 @@ esm6/
 
 # Test results
 /test-results/
+
+# Coverage reports
+/coverage/

@@ -7,6 +7,7 @@
     "rollup": "rollup -c && rm -rf bundles/esm6/",
     "build": "npm run clean && npx tsc && npm run rollup && rm -rf bundles/compatibility bundles/*.d.ts && date",
     "test": "playwright test --project=node",
+    "test:coverage": "c8 playwright test --project=node",
     "lint": "eslint",
     "prettier": "prettier --write .",
     "prepublishOnly": "npm run lint && npm run build && playwright test"
@@ -36,6 +37,7 @@
     "@rollup/plugin-terser": "^1.0.0",
     "@rollup/plugin-typescript": "^12.1.4",
     "@types/sinon": "^21.0.1",
+    "c8": "^11.0.0",
     "eslint": "^10.3.0",
     "eslint-config-prettier": "^10.1.8",
     "onchange": "^7.1.0",
@@ -64,5 +66,10 @@
   "main": "./bundles/stomp.umd.js",
   "browser": "./bundles/stomp.umd.js",
   "typings": "index.d.ts",
-  "sideEffects": false
+  "sideEffects": false,
+  "c8": {
+    "reporter": ["text", "html", "lcov"],
+    "include": ["src/**/*.ts"],
+    "all": true
+  }
 }
