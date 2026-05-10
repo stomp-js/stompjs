@@ -29,13 +29,11 @@ test.describe('Stomp Connection', () => {
         resolve();
       };
 
-      let webSocketErrorCalled = false;
-      client.onWebSocketError = () => {
-        webSocketErrorCalled = true;
-      };
+      const webSocketErrorSpy = sinon.spy();
+      client.onWebSocketError = webSocketErrorSpy;
 
       client.onWebSocketClose = () => {
-        expect(webSocketErrorCalled).toBe(true);
+        expect(webSocketErrorSpy.called).toBe(true);
         resolve();
       };
       client.activate();

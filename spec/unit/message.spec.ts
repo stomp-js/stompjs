@@ -62,10 +62,11 @@ test.describe('Stomp Message', () => {
   test('Send and receive text/binary messages', async () => {
     const binaryData = generateBinaryData(1);
     const textData = 'Hello World';
-    let numCalls = 0;
+    const onMessage = sinon.spy();
     await new Promise<void>(resolve => {
       client.subscribe(testDestination, (message: any) => {
-        if (++numCalls === 1) {
+        onMessage(message);
+        if (onMessage.calledOnce) {
           expect(message.binaryBody.toString()).toEqual(binaryData.toString());
           return;
         }

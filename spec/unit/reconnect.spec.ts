@@ -97,15 +97,15 @@ test.describe('Stomp Reconnect', () => {
     config: any,
     numDelays: number,
   ): Promise<void> => {
-    let connectCount = 0;
+    const beforeConnectSpy = sinon.spy();
 
     return new Promise<void>(resolve => {
       client.configure({
         ...config,
         brokerURL: BAD_BROKER_URL,
         beforeConnect: () => {
-          connectCount += 1;
-          if (connectCount > numDelays) {
+          beforeConnectSpy();
+          if (beforeConnectSpy.callCount > numDelays) {
             client.brokerURL = BROKER_URL;
           }
         },
