@@ -530,7 +530,9 @@ test.describe('Stomp Connection', () => {
         );
 
         client.onConnect = () => {
-          reject(new Error('onConnect must not fire after deactivate was issued'));
+          reject(
+            new Error('onConnect must not fire after deactivate was issued'),
+          );
         };
 
         client.activate();

@@ -770,7 +770,9 @@ export class Client {
 
     if (this.state === ActivationState.DEACTIVATING) {
       // Record intent and return; onWebSocketClose will activate once deactivation finishes.
-      this.debug('Deactivation in progress, will activate once deactivation completes');
+      this.debug(
+        'Deactivation in progress, will activate once deactivation completes',
+      );
       return;
     }
 

@@ -68,9 +68,17 @@
   "typings": "index.d.ts",
   "sideEffects": false,
   "c8": {
-    "reporter": ["text", "html", "lcov"],
-    "include": ["src/**/*.ts"],
-    "exclude": ["src/stomp-config.ts"],
+    "reporter": [
+      "text",
+      "html",
+      "lcov"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "src/stomp-config.ts"
+    ],
     "all": true
   }
 }
