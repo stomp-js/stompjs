@@ -90,7 +90,6 @@ export class StompHandler {
 
   private readonly _subscriptions: { [key: string]: messageCallbackType };
   private readonly _receiptWatchers: { [key: string]: frameCallbackType };
-  private _partialData: string;
   private _escapeHeaderValues: boolean;
   private _counter: number;
   private _pinger?: Ticker;
@@ -110,8 +109,6 @@ export class StompHandler {
 
     // receipt-watchers indexed by receipts-ids
     this._receiptWatchers = {};
-
-    this._partialData = '';
 
     this._escapeHeaderValues = false;
 

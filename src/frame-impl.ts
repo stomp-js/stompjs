@@ -99,8 +99,6 @@ export class FrameImpl implements IFrame {
 
     // In case of repeated headers, as per standards, first value need to be used
     for (const header of rawFrame.headers.reverse()) {
-      const idx = header.indexOf(':');
-
       const key = trim(header[0]);
       let value = trim(header[1]);
 
@@ -184,14 +182,6 @@ export class FrameImpl implements IFrame {
   private bodyLength(): number {
     const binaryBody = this.binaryBody;
     return binaryBody ? binaryBody.length : 0;
-  }
-
-  /**
-   * Compute the size of a UTF-8 string by counting its number of bytes
-   * (and not the number of characters composing the string)
-   */
-  private static sizeOfUTF8(s: string): number {
-    return s ? new TextEncoder().encode(s).length : 0;
   }
 
   private static toUnit8Array(

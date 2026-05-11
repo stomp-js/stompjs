@@ -1017,7 +1017,7 @@ export class Client {
     ) {
       const origOnWebSocketClose = this._stompHandler.onWebSocketClose;
       // we need to wait for the underlying websocket to close
-      retPromise = new Promise<void>((resolve, reject) => {
+      retPromise = new Promise<void>(resolve => {
         // @ts-ignore - there is a _stompHandler
         this._stompHandler.onWebSocketClose = evt => {
           origOnWebSocketClose(evt);

@@ -152,13 +152,4 @@ test.describe('Stomp FrameImpl', () => {
 
     expect(unmarshall(msg).headers['foo']).toEqual('World');
   });
-
-  test('Content length of UTF-8 strings', () => {
-    expect(0).toEqual((FrameImpl as any).sizeOfUTF8());
-    expect(0).toEqual((FrameImpl as any).sizeOfUTF8(''));
-    expect(1).toEqual((FrameImpl as any).sizeOfUTF8('a'));
-    expect(2).toEqual((FrameImpl as any).sizeOfUTF8('ф'));
-    expect(3).toEqual((FrameImpl as any).sizeOfUTF8('№'));
-    expect(15).toEqual((FrameImpl as any).sizeOfUTF8('1 a ф № @ ®'));
-  });
 });
