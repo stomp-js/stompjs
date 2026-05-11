@@ -831,7 +831,7 @@ export class Client {
     // Get the actual WebSocket (or a similar object)
     const webSocket = this._createWebSocket();
 
-    this._stompHandler = new StompHandler(this, webSocket, {
+    this._stompHandler = new StompHandler(webSocket, {
       debug: this.debug,
       stompVersions: this.stompVersions,
       connectHeaders: this.connectHeaders,

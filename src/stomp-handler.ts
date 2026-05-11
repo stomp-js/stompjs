@@ -1,6 +1,5 @@
 import { augmentWebsocket } from './augment-websocket.js';
 import { BYTE } from './byte.js';
-import { Client } from './client.js';
 import { FrameImpl } from './frame-impl.js';
 import type { IMessage } from './i-message.js';
 import { ITransaction } from './i-transaction.js';
@@ -19,6 +18,7 @@ import {
   IStomptHandlerConfig,
   messageCallbackType,
   StompSocketState,
+  TickerStrategy,
   wsErrorCallbackType,
 } from './types.js';
 import { Versions } from './versions.js';
@@ -44,6 +44,8 @@ export class StompHandler {
   public heartbeatToleranceMultiplier: number;
 
   public heartbeatOutgoing: number;
+
+  public heartbeatStrategy: TickerStrategy;
 
   public onUnhandledMessage: messageCallbackType;
 
@@ -97,7 +99,6 @@ export class StompHandler {
   private _lastServerActivityTS: number;
 
   constructor(
-    private _client: Client,
     public _webSocket: IStompSocket,
     config: IStomptHandlerConfig,
   ) {
@@ -121,6 +122,7 @@ export class StompHandler {
     this.heartbeatIncoming = config.heartbeatIncoming;
     this.heartbeatToleranceMultiplier = config.heartbeatGracePeriods;
     this.heartbeatOutgoing = config.heartbeatOutgoing;
+    this.heartbeatStrategy = config.heartbeatStrategy;
     this.splitLargeFrames = config.splitLargeFrames;
     this.maxWebSocketChunkSize = config.maxWebSocketChunkSize;
     this.forceBinaryWSFrames = config.forceBinaryWSFrames;
@@ -321,11 +323,7 @@ export class StompHandler {
       const ttl: number = Math.max(this.heartbeatOutgoing, serverIncoming);
       this.debug(`send PING every ${ttl}ms`);
 
-      this._pinger = new Ticker(
-        ttl,
-        this._client.heartbeatStrategy,
-        this.debug,
-      );
+      this._pinger = new Ticker(ttl, this.heartbeatStrategy, this.debug);
       this._pinger.start(() => {
         if (this._webSocket.readyState === StompSocketState.OPEN) {
           this._webSocket.send(BYTE.LF);
