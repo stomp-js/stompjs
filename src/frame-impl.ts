@@ -57,11 +57,11 @@ export class FrameImpl implements IFrame {
    */
   constructor(params: {
     command: string;
-    headers?: StompHeaders;
-    body?: string;
-    binaryBody?: Uint8Array;
-    escapeHeaderValues?: boolean;
-    skipContentLengthHeader?: boolean;
+    headers?: StompHeaders | undefined;
+    body?: string | undefined;
+    binaryBody?: Uint8Array | undefined;
+    escapeHeaderValues?: boolean | undefined;
+    skipContentLengthHeader?: boolean | undefined;
   }) {
     const {
       command,
@@ -210,11 +210,11 @@ export class FrameImpl implements IFrame {
    */
   public static marshall(params: {
     command: string;
-    headers?: StompHeaders;
-    body?: string;
-    binaryBody?: Uint8Array;
-    escapeHeaderValues?: boolean;
-    skipContentLengthHeader?: boolean;
+    headers?: StompHeaders | undefined;
+    body?: string | undefined;
+    binaryBody?: Uint8Array | undefined;
+    escapeHeaderValues?: boolean | undefined;
+    skipContentLengthHeader?: boolean | undefined;
   }) {
     const frame = new FrameImpl(params);
     return frame.serialize();

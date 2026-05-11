@@ -92,7 +92,7 @@ export class StompHandler {
   private readonly _receiptWatchers: { [key: string]: frameCallbackType };
   private _escapeHeaderValues: boolean;
   private _counter: number;
-  private _pinger?: Ticker;
+  private _pinger: Ticker | undefined;
   private _ponger: any;
   private _lastServerActivityTS: number;
 
@@ -372,10 +372,10 @@ export class StompHandler {
 
   private _transmit(params: {
     command: string;
-    headers?: StompHeaders;
-    body?: string;
-    binaryBody?: Uint8Array;
-    skipContentLengthHeader?: boolean;
+    headers?: StompHeaders | undefined;
+    body?: string | undefined;
+    binaryBody?: Uint8Array | undefined;
+    skipContentLengthHeader?: boolean | undefined;
   }): void {
     const { command, headers, body, binaryBody, skipContentLengthHeader } =
       params;
