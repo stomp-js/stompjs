@@ -138,7 +138,7 @@ export class CompatClient extends Client {
     }
     this.disconnectHeaders = headers;
 
-    super.deactivate();
+    void super.deactivate();
   }
 
   /**

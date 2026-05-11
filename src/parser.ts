@@ -63,15 +63,13 @@ export class Parser {
   private readonly _encoder = new TextEncoder();
   private readonly _decoder = new TextDecoder();
 
-  // @ts-ignore - it always has a value
-  private _results: IRawFrameType;
+  private _results!: IRawFrameType;
 
   private _token: number[] = [];
   private _headerKey: string | undefined;
   private _bodyBytesRemaining: number | undefined;
 
-  // @ts-ignore - it always has a value
-  private _onByte: (byte: number) => void;
+  private _onByte!: (byte: number) => void;
 
   public constructor(
     public onFrame: (rawFrame: IRawFrameType) => void,

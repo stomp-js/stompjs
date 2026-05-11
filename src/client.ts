@@ -787,7 +787,7 @@ export class Client {
   private _startActivate(): void {
     this._changeState(ActivationState.ACTIVE);
     this._nextReconnectDelay = this.reconnectDelay;
-    this._connect();
+    void this._connect();
   }
 
   private async _connect(): Promise<void> {
@@ -950,7 +950,7 @@ export class Client {
           }
         }
 
-        this._connect();
+        void this._connect();
       }, this._nextReconnectDelay);
     }
   }
@@ -1010,16 +1010,12 @@ export class Client {
       this._reconnector = undefined;
     }
 
-    if (
-      this._stompHandler &&
-      // @ts-ignore - if there is a _stompHandler, there is the webSocket
-      this.webSocket.readyState !== StompSocketState.CLOSED
-    ) {
-      const origOnWebSocketClose = this._stompHandler.onWebSocketClose;
+    const handler = this._stompHandler;
+    if (handler && handler._webSocket.readyState !== StompSocketState.CLOSED) {
+      const origOnWebSocketClose = handler.onWebSocketClose;
       // we need to wait for the underlying websocket to close
       retPromise = new Promise<void>(resolve => {
-        // @ts-ignore - there is a _stompHandler
-        this._stompHandler.onWebSocketClose = evt => {
+        handler.onWebSocketClose = evt => {
           origOnWebSocketClose(evt);
           resolve();
         };
@@ -1102,15 +1098,20 @@ export class Client {
    * ```
    */
   public publish(params: IPublishParams) {
-    this._checkConnection();
-    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
-    this._stompHandler.publish(params);
+    this._requireHandler().publish(params);
   }
 
-  private _checkConnection() {
-    if (!this.connected) {
+  /**
+   * Returns the active StompHandler or throws if the client is not connected.
+   * Single chokepoint for every public STOMP method that requires a live session —
+   * keeps callers free of `_stompHandler` null-handling and TypeScript narrowing tricks.
+   */
+  private _requireHandler(): StompHandler {
+    const handler = this._stompHandler;
+    if (!handler || !handler.connected) {
       throw new TypeError('There is no underlying STOMP connection');
     }
+    return handler;
   }
 
   /**
@@ -1137,9 +1138,7 @@ export class Client {
    * @param callback Callback function invoked on receiving the RECEIPT frame.
    */
   public watchForReceipt(receiptId: string, callback: frameCallbackType): void {
-    this._checkConnection();
-    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
-    this._stompHandler.watchForReceipt(receiptId, callback);
+    this._requireHandler().watchForReceipt(receiptId, callback);
   }
 
   /**
@@ -1176,9 +1175,7 @@ export class Client {
     callback: messageCallbackType,
     headers: StompHeaders = {},
   ): StompSubscription {
-    this._checkConnection();
-    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
-    return this._stompHandler.subscribe(destination, callback, headers);
+    return this._requireHandler().subscribe(destination, callback, headers);
   }
 
   /**
@@ -1202,9 +1199,7 @@ export class Client {
    * @param headers Optional headers to pass for the UNSUBSCRIBE frame.
    */
   public unsubscribe(id: string, headers: StompHeaders = {}): void {
-    this._checkConnection();
-    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
-    this._stompHandler.unsubscribe(id, headers);
+    this._requireHandler().unsubscribe(id, headers);
   }
 
   /**
@@ -1225,9 +1220,7 @@ export class Client {
    * @returns An instance of {@link ITransaction}.
    */
   public begin(transactionId?: string): ITransaction {
-    this._checkConnection();
-    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
-    return this._stompHandler.begin(transactionId);
+    return this._requireHandler().begin(transactionId);
   }
 
   /**
@@ -1246,9 +1239,7 @@ export class Client {
    * @param transactionId The ID of the transaction to commit.
    */
   public commit(transactionId: string): void {
-    this._checkConnection();
-    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
-    this._stompHandler.commit(transactionId);
+    this._requireHandler().commit(transactionId);
   }
 
   /**
@@ -1267,9 +1258,7 @@ export class Client {
    * @param transactionId The ID of the transaction to abort.
    */
   public abort(transactionId: string): void {
-    this._checkConnection();
-    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
-    this._stompHandler.abort(transactionId);
+    this._requireHandler().abort(transactionId);
   }
 
   /**
@@ -1296,9 +1285,7 @@ export class Client {
     subscriptionId: string,
     headers: StompHeaders = {},
   ): void {
-    this._checkConnection();
-    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
-    this._stompHandler.ack(messageId, subscriptionId, headers);
+    this._requireHandler().ack(messageId, subscriptionId, headers);
   }
 
   /**
@@ -1327,8 +1314,6 @@ export class Client {
     subscriptionId: string,
     headers: StompHeaders = {},
   ): void {
-    this._checkConnection();
-    // @ts-ignore - we already checked that there is a _stompHandler, and it is connected
-    this._stompHandler.nack(messageId, subscriptionId, headers);
+    this._requireHandler().nack(messageId, subscriptionId, headers);
   }
 }

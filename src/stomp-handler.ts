@@ -382,8 +382,7 @@ export class StompHandler {
       augmentWebsocket(this._webSocket, (msg: string) => this.debug(msg));
     }
 
-    // @ts-ignore - this method will be there at this stage
-    this._webSocket.terminate();
+    this._webSocket.terminate!();
   }
 
   private _transmit(params: {
@@ -523,7 +522,7 @@ export class StompHandler {
     this._transmit({ command: 'UNSUBSCRIBE', headers });
   }
 
-  public begin(transactionId: string): ITransaction {
+  public begin(transactionId?: string): ITransaction {
     const txId = transactionId || `tx-${this._counter++}`;
     this._transmit({
       command: 'BEGIN',
