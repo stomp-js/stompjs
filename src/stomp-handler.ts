@@ -239,8 +239,16 @@ export class StompHandler {
       // on the browser side (e.g. [RabbitMQ's temporary
       // queues](https://www.rabbitmq.com/stomp.html)).
       const subscription = frame.headers.subscription;
-      const onReceive =
-        this._subscriptions[subscription] || this.onUnhandledMessage;
+
+      let onReceive: messageCallbackType|undefined;
+
+      if (subscription !== undefined && this._subscriptions[subscription]) {
+        onReceive = this._subscriptions[subscription];
+      }
+
+      if (onReceive === undefined) {
+        onReceive = this.onUnhandledMessage;
+      }
 
       // bless the frame to be a Message
       const message = frame as IMessage;
@@ -254,21 +262,27 @@ export class StompHandler {
       // add `ack()` and `nack()` methods directly to the returned frame
       // so that a simple call to `message.ack()` can acknowledge the message.
       message.ack = (headers: StompHeaders = {}): void => {
-        return client.ack(messageId, subscription, headers);
+        if (messageId !== undefined && subscription !== undefined) {
+          client.ack(messageId, subscription, headers);
+        }
       };
       message.nack = (headers: StompHeaders = {}): void => {
-        return client.nack(messageId, subscription, headers);
+        if (messageId !== undefined && subscription !== undefined) {
+          client.nack(messageId, subscription, headers);
+        }
       };
       onReceive(message);
     },
 
     // [RECEIPT Frame](https://stomp.github.com/stomp-specification-1.2.html#RECEIPT)
     RECEIPT: frame => {
-      const callback = this._receiptWatchers[frame.headers['receipt-id']];
-      if (callback) {
+      const receiptId = frame.headers['receipt-id'];
+      const callback =
+        receiptId !== undefined ? this._receiptWatchers[receiptId] : undefined;
+      if (callback && receiptId !== undefined) {
         callback(frame);
         // Server will acknowledge only once, remove the callback
-        delete this._receiptWatchers[frame.headers['receipt-id']];
+        delete this._receiptWatchers[receiptId];
       } else {
         this.onUnhandledReceipt(frame);
       }
@@ -297,9 +311,11 @@ export class StompHandler {
     // heart-beat header received from the server looks like:
     //
     //     heart-beat: sx, sy
-    const [serverOutgoing, serverIncoming] = headers['heart-beat']
+    const parts = headers['heart-beat']
       .split(',')
       .map((v: string) => parseInt(v, 10));
+    const serverOutgoing = parts[0] ?? 0;
+    const serverIncoming = parts[1] ?? 0;
 
     if (this.heartbeatOutgoing !== 0 && serverIncoming !== 0) {
       const ttl: number = Math.max(this.heartbeatOutgoing, serverIncoming);
@@ -485,15 +501,16 @@ export class StompHandler {
     if (!headers.id) {
       headers.id = `sub-${this._counter++}`;
     }
+    const subId = headers.id;
     headers.destination = destination;
-    this._subscriptions[headers.id] = callback;
+    this._subscriptions[subId] = callback;
     this._transmit({ command: 'SUBSCRIBE', headers });
     const client = this;
     return {
-      id: headers.id,
+      id: subId,
 
       unsubscribe(hdrs) {
-        return client.unsubscribe(headers.id, hdrs);
+        return client.unsubscribe(subId, hdrs);
       },
     };
   }

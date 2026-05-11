@@ -103,9 +103,7 @@ export class Parser {
       chunk = chunkWithNull;
     }
 
-    // tslint:disable-next-line:prefer-for-of
-    for (let i = 0; i < chunk.length; i++) {
-      const byte = chunk[i];
+    for (const byte of chunk) {
       this._onByte(byte);
     }
   }

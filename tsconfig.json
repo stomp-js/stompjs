@@ -23,6 +23,7 @@
     /* Strict Type-Checking Options */
     "strict": true,                           /* Enable all strict type-checking options. */
     "exactOptionalPropertyTypes": true,       /* Differentiate between undefined and not present for optional properties. */
+    "noUncheckedIndexedAccess": true,         /* Add 'undefined' to a type when accessed using an index. */
     // "noImplicitAny": true,                 /* Raise error on expressions and declarations with an implied 'any' type. */
     // "strictNullChecks": true,                /* Enable strict null checks. */
     // "strictFunctionTypes": true,           /* Enable strict checking of function types. */
