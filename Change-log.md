@@ -1,5 +1,11 @@
 # Change Log
 
+# 7.4.0-beta.3 (Unreleased)
+
+- Add `c8` for code coverage and a `test:coverage` script; exclude `stomp-config.ts`.
+- Expand unit tests: activation state-machine edge cases; direct calls on `Client` for connection, subscription, acknowledgment, and transaction methods; `Ticker` interval and worker strategies via a stubbed `Worker`.
+- Replace manual call counters with Sinon spies across unit tests.
+
 # 7.4.0-beta.2 (2026-05-07)
 
 - Update release script: delegate publishing to GitHub Actions and refine messaging.

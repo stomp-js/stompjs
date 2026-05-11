@@ -13,9 +13,11 @@
 Following tools are getting used:
 
 - `TypeScript` as primary language - https://www.typescriptlang.org/
-- `Jasmine` for test cases - https://jasmine.github.io/
-- `Karma` for running test cases in browsers - http://karma-runner.github.io/
+- `Playwright` for test cases - https://playwright.dev/
+- `c8` for code coverage - https://github.com/bcoe/c8
 - `Rollup` for build - https://rollupjs.org/
+- `ESLint` for linting - https://eslint.org/
+- `Prettier` for code formatting - https://prettier.io/
 - `nodejs` during development - https://nodejs.org/
 - `npm` for dependency management, packaging and distribution - https://www.npmjs.com/
 - `git` for version control - https://git-scm.com/
@@ -30,6 +32,10 @@ Instructions on setting up development environment:
   ```bash
   $ npm i
   ```
+- Install the Playwright browsers (only needed if you plan to run tests in a browser project):
+  ```bash
+  $ npx playwright install
+  ```
 
 ## Project structure
 
@@ -40,30 +46,29 @@ Important files and folders:
 ├── LICENSE
 ├── README.md
 ├── bin/                     -- Scripts invoked from `npm` tasks
-├── esm6/                    -- Generated ES6 modules
-├── karma.conf.js
+├── bundles/                 -- Generated UMD bundle (build output)
+├── esm6/                    -- Generated ES modules (build output)
+├── eslint.config.mjs
 ├── package-lock.json
 ├── package.json
+├── playwright.config.ts     -- Playwright projects: node, chromium, firefox, webkit
 ├── rabbitmq/
-│   └── Dockerfile           -- This builds a docker image that is used to run test cases
-├── spec/                    -- These test cases run both for nodejs (using just Jasmine) and Chrome (Jasmine/Karma)
-│   ├── config/              -- Slightly different setups for nodejs and Karma
-│   ├── helpers/
-│   ├── support/
-│   │   └── jasmine.json     -- Used only while running for nodejs
-│   └── unit/                -- Test cases using Jasmine
-│       └── compatibility/   -- Test cases to check compatibility mode
+│   └── Dockerfile           -- This builds a docker image that is used to run test cases
+├── rollup.config.mjs
+├── spec/                    -- Test cases run via Playwright (Node and browser projects)
+│   ├── helpers/
+│   └── unit/                -- Unit tests
+│       └── compatibility/   -- Tests for the compatibility (Stomp v5) API
 ├── src/                     -- Typescript sources
-│   └── compatibility/       -- Code for compatibility mode
-├── tsconfig.json
-└── rollup.config.mjs
+│   └── compatibility/       -- Code for compatibility mode
+└── tsconfig.json
 ```
 
 ## Setup a Stomp broker
 
 - A Stomp broker is used for running the tests. I have been using RabbitMQ.
-- Edit `spec/config/browser-config.js` and `spec/config/node-config.js` as per
-  your setup. Defaults should work for RabbitMQ default setup on localhost.
+- The broker URL and credentials are defined in `spec/helpers/connect-helpers.ts`.
+  Defaults assume RabbitMQ on `localhost:15674`.
 - Please note that in RabbitMQ you will need to enable Stomp and WebStomp plugins.
 - By default RabbitMQ WebStomp will treat messages as text, you will need to tell
   it to use binary frames:
@@ -80,12 +85,13 @@ Important files and folders:
 
 Key npm tasks:
 
-- clean - Remove generated built artifacts
-- build-tsc - Internally used by `npm run build`
-- rollup - Internally used by `npm run build`
-- build - Build two variants - ES Modules and UMD
-- test - Run tests in NodeJS
-- karma - Rune test in browsers
+- `clean` - Remove generated build artifacts
+- `build` - Build two variants - ES Modules and UMD
+- `rollup` - Internally used by `npm run build`
+- `test` - Run tests in Node via Playwright (`--project=node`)
+- `test:coverage` - Run tests under `c8` and produce coverage reports (text, html, lcov)
+- `lint` - Run ESLint
+- `prettier` - Format source files with Prettier
 
 ### Basic development workflow
 
@@ -96,15 +102,24 @@ Key npm tasks:
    $ npm run build
    ```
 1. Run tests:
-   - To run tests using nodejs:
+   - Default (Node):
      ```bash
      $ npm run test
      ```
-   - To run tests using Chrome:
+   - With coverage:
      ```bash
-     $ npm run karma
+     $ npm run test:coverage
      ```
-   - _**Caution:** As both browser and nodejs use same set of test cases and same queue
-     names. So, running both together may cause unexpected failures._
+   - In a specific browser via Playwright:
+     ```bash
+     $ npx playwright test --project=chromium   # or firefox, webkit
+     ```
+   - _**Caution:** All projects share the same broker and queue names, so running
+     several projects against the same broker concurrently may cause unexpected failures._
+1. Lint and format before committing:
+   ```bash
+   $ npm run lint
+   $ npm run prettier
+   ```
 1. Update documentation - do update Change-log.md
 1. Please follow GitHub guidelines. Raise an issue if you are unclear.
