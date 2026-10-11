@@ -1,10 +1,16 @@
 # Change Log
 
-# 7.4.0-beta.3 (Unreleased)
+# 7.4.0 (2026-10-11)
 
-- Add `c8` for code coverage and a `test:coverage` script; exclude `stomp-config.ts`.
-- Expand unit tests: activation state-machine edge cases; direct calls on `Client` for connection, subscription, acknowledgment, and transaction methods; `Ticker` interval and worker strategies via a stubbed `Worker`.
+- Add `c8` for code coverage via `npm run test:coverage`.
+- Expand unit tests to cover race conditions in activation/deactivation.
 - Replace manual call counters with Sinon spies across unit tests.
+- Fix activation/deactivation race conditions — defer reactivation until deactivation completes, respecting the latest activation intent.
+- Remove the `"browser"` export field from `package.json` to improve ESM compatibility.
+- Migrate from TSLint to ESLint and browser tests from Karma to Playwright.
+- Update the release script to delegate publishing to GitHub Actions.
+- Update CI workflows to use `actions/checkout` v5 and `actions/setup-node` v6; refresh dependencies with `npm update` and `npm audit fix`.
+- Update README for clearer examples and updated importmap directives.
 
 # 7.4.0-beta.2 (2026-05-07)
 
