@@ -25,23 +25,27 @@
 
 ## Introduction
 
-This library enables clients to connect to STOMP brokers over WebSocket (or TCP). It fully implements the STOMP protocol specifications (v1.0, v1.1, and v1.2), making it compatible with any broker that supports STOMP or STOMP over WebSocket.
+This library enables clients to connect to configured STOMP-over-WebSocket broker endpoints. It supports the STOMP protocol specifications v1.0, v1.1, and v1.2; a broker supporting STOMP over TCP alone is not sufficient for a direct WebSocket connection.
 
-Popular brokers like RabbitMQ, ActiveMQ, and others provide support for STOMP and STOMP over WebSockets out-of-the-box.
+Popular brokers like RabbitMQ and ActiveMQ can provide STOMP-over-WebSocket endpoints with the appropriate configuration. For RabbitMQ, enable the `rabbitmq_web_stomp` plugin. Node.js clients can use STOMP over TCP through the separate [tcp-wrapper](https://github.com/stomp-js/tcp-wrapper) adapter.
 
 ## Features
 
 - Simple and intuitive API for interacting with the STOMP protocol
 - Support for STOMP protocol versions: **1.2**, **1.1**, and **1.0**
-- Support for fallback options when WebSocket is unavailable
+- Optional SockJS integration through `webSocketFactory` (requires a separate SockJS client and a compatible server endpoint; fallback is not supplied automatically)
 - Supports both **browser** and **Node.js** environments
-- Option to connect using **STOMP over TCP**
+- STOMP over TCP in Node.js through [tcp-wrapper](https://github.com/stomp-js/tcp-wrapper) (separate adapter)
+- Automatic reconnection with configurable delays
+- Configurable incoming and outgoing STOMP heartbeats
 - Full support for **binary payloads**
-- Compatible with RxJS for reactive programming
+- RxJS integration through [rx-stomp](https://github.com/stomp-js/rx-stomp) for reactive programming
 
 ## Getting Started
 
 This section provides a quick guide to integrating STOMP.js into your **browser** or **Node.js** application.
+
+Both examples assume a local RabbitMQ broker with the `rabbitmq_web_stomp` plugin enabled and a WebSocket endpoint at `ws://localhost:15674/ws` (see [the RabbitMQ Dockerfile](rabbitmq/Dockerfile)). The `/topic/test01` destination follows RabbitMQ's STOMP conventions; adapt the endpoint, destinations, and `connectHeaders` for your broker. The `guest`/`guest` credentials are for local development only, and RabbitMQ restricts guest access to loopback by default. Use a configured account with appropriate permissions in production. For HTTPS pages, use a TLS-enabled `wss://` endpoint instead of `ws://`.
 
 ### Browser
 
@@ -53,33 +57,45 @@ To use STOMP.js in a browser:
    <script type="importmap">
      {
        "imports": {
-         "@stomp/stompjs": "https://ga.jspm.io/npm:@stomp/stompjs@7.0.0/esm6/index.js"
+         "@stomp/stompjs": "https://ga.jspm.io/npm:@stomp/stompjs@7.3.0/esm6/index.js"
        }
      }
    </script>
-   <script
-     async
-     src="https://ga.jspm.io/npm:es-module-shims@1.5.1/dist/es-module-shims.js"
-     crossorigin="anonymous"
-   ></script>
    ```
 
-2. Use the library:
+   Modern browsers support import maps natively; no shim is needed. For older browsers without import-map support, use a compatible version of [es-module-shims](https://github.com/guybedford/es-module-shims) following its setup instructions.
 
-   ```javascript
-   import { Client } from '@stomp/stompjs';
+2. Add this module script after the import map:
 
-   const client = new Client({
-     brokerURL: 'ws://localhost:15674/ws',
-     onConnect: () => {
-       client.subscribe('/topic/test01', message =>
-         console.log(`Received: ${message.body}`),
-       );
-       client.publish({ destination: '/topic/test01', body: 'First Message' });
-     },
-   });
+   ```html
+   <script type="module">
+     import { Client } from '@stomp/stompjs';
 
-   client.activate();
+     const client = new Client({
+       brokerURL: 'ws://localhost:15674/ws',
+       connectHeaders: { login: 'guest', passcode: 'guest' },
+       onConnect: () => {
+         client.subscribe('/topic/test01', message =>
+           console.log(`Received: ${message.body}`),
+         );
+         client.publish({
+           destination: '/topic/test01',
+           body: 'First Message',
+         });
+       },
+       onStompError: frame => {
+         console.error('Broker error:', frame.headers['message'], frame.body);
+       },
+       onWebSocketError: event => {
+         console.error('WebSocket error:', event);
+       },
+     });
+
+     client.activate();
+
+     // When finished, call this from your application's cleanup logic:
+     // await client.deactivate();
+   </script>
    ```
 
 ### Node.js
@@ -92,26 +108,38 @@ To use STOMP.js in a Node.js environment:
    npm install @stomp/stompjs ws
    ```
 
-2. Use it in your application:
+2. Save this as `example.mjs` and run `node example.mjs` (or use a `.js` file in a package with `"type": "module"`):
 
    ```javascript
    import { Client } from '@stomp/stompjs';
 
    import { WebSocket } from 'ws';
-   Object.assign(global, { WebSocket });
+   globalThis.WebSocket = WebSocket;
 
    const client = new Client({
      brokerURL: 'ws://localhost:15674/ws',
+     connectHeaders: { login: 'guest', passcode: 'guest' },
      onConnect: () => {
        client.subscribe('/topic/test01', message =>
          console.log(`Received: ${message.body}`),
        );
        client.publish({ destination: '/topic/test01', body: 'First Message' });
      },
+     onStompError: frame => {
+       console.error('Broker error:', frame.headers['message'], frame.body);
+     },
+     onWebSocketError: event => {
+       console.error('WebSocket error:', event);
+     },
    });
 
    client.activate();
+
+   // When finished, call this from your application's cleanup logic:
+   // await client.deactivate();
    ```
+
+Keep subscriptions inside `onConnect` so they are recreated after automatic reconnection. When your application no longer needs the connection, run `await client.deactivate()` in the same scope as `client` to disconnect and stop reconnection attempts.
 
 ---
 
