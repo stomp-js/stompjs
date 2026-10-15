@@ -1,0 +1,6 @@
+{
+  "name": "bundle",
+  "version": "1.0.0",
+  "description": "To ensure that the bundle is compatible with commonjs modules",
+  "type": "commonjs"
+}
