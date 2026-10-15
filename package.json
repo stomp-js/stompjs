@@ -5,12 +5,12 @@
   "scripts": {
     "clean": "rm -rf bundles esm6",
     "rollup": "rollup -c && rm -rf bundles/esm6/",
-    "build": "npm run clean && npx tsc && npm run rollup && rm -rf bundles/compatibility bundles/*.d.ts && date",
+    "build": "npm run clean && npx tsc && npm run rollup && rm -rf bundles/compatibility bundles/*.d.ts && cp src/ensure-commonjs/package.json bundles/ && date",
     "test": "playwright test --project=node",
     "test:coverage": "c8 playwright test --project=node",
     "lint": "eslint",
     "prettier": "prettier --write .",
-    "prepublishOnly": "npm run lint && npm run build && playwright test"
+    "prepublishOnly": "npm run lint && npm run build && playwright test && bin/smoke-test.sh"
   },
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
   "homepage": "https://github.com/stomp-js/stompjs#readme",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "^1.59.1",
+    "@playwright/test": "^1.61.1",
     "@rollup/plugin-terser": "^1.0.0",
     "@rollup/plugin-typescript": "^12.1.4",
     "@types/sinon": "^21.0.1",
