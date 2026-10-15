@@ -1,5 +1,10 @@
 # Change Log
 
+# 7.4.1-beta.1 (2026-10-15)
+
+- Fix [#743](https://github.com/stomp-js/stompjs/issues/743)
+- Add smoke tests for CommonJS and Browser UMD usage
+
 # 7.4.0 (2026-10-11)
 
 - Add `c8` for code coverage via `npm run test:coverage`.
