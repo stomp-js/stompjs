@@ -418,9 +418,27 @@ export class StompHandler {
       this._webSocket.send(rawChunk);
     } else {
       let out = rawChunk as string;
+      if (
+        this.maxWebSocketChunkSize < 2 &&
+        /[\uD800-\uDBFF][\uDC00-\uDFFF]/.test(out)
+      ) {
+        throw new RangeError(
+          'maxWebSocketChunkSize must be at least 2 to split surrogate pairs',
+        );
+      }
       while (out.length > 0) {
-        const chunk = out.substring(0, this.maxWebSocketChunkSize);
-        out = out.substring(this.maxWebSocketChunkSize);
+        let chunk = out.substring(0, this.maxWebSocketChunkSize);
+        const last = chunk.charCodeAt(chunk.length - 1);
+        const next = out.charCodeAt(chunk.length);
+        if (
+          last >= 0xd800 &&
+          last <= 0xdbff &&
+          next >= 0xdc00 &&
+          next <= 0xdfff
+        ) {
+          chunk = chunk.substring(0, chunk.length - 1);
+        }
+        out = out.substring(chunk.length);
         this._webSocket.send(chunk);
         this.debug(`chunk sent = ${chunk.length}, remaining = ${out.length}`);
       }

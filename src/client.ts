@@ -229,15 +229,16 @@ export class Client {
    * Example:
    * ```javascript
    * client.splitLargeFrames = true;
-   * client.maxWebSocketChunkSize = 4096; // Allow chunks of 4 KB
+   * client.maxWebSocketChunkSize = 4096; // Allow chunks of 4096 UTF-16 code units
    * ```
    */
   public splitLargeFrames: boolean = false;
 
   /**
-   * Maximum size (in bytes) for individual WebSocket chunks if [splitLargeFrames]{@link Client#splitLargeFrames} is enabled.
+   * Maximum size (in UTF-16 code units) for individual text WebSocket chunks if [splitLargeFrames]{@link Client#splitLargeFrames} is enabled.
    *
-   * Default is 8 KB (`8 * 1024` bytes). This value has no effect if [splitLargeFrames]{@link Client#splitLargeFrames} is `false`.
+   * Default is `8 * 1024` UTF-16 code units. This value has no effect if [splitLargeFrames]{@link Client#splitLargeFrames} is `false`.
+   * Text chunks preserve surrogate pairs. A value of `1` throws a `RangeError` before sending a text frame containing such a pair.
    */
   public maxWebSocketChunkSize: number = 8 * 1024;
 

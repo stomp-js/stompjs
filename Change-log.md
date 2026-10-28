@@ -1,5 +1,9 @@
 # Change Log
 
+# Unreleased
+
+- Preserve Unicode surrogate pairs when splitting large text frames; reject a one-unit chunk size before sending a frame that requires a pair.
+
 # 7.5.0 (2026-10-15)
 
 - Fix [#743](https://github.com/stomp-js/stompjs/issues/743)
