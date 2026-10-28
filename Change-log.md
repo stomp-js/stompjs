@@ -1,5 +1,10 @@
 # Change Log
 
+# Unreleased
+
+- Fall back to interval-based outgoing heartbeats when a Web Worker fails, and
+  revoke the worker's blob URL ([#751](https://github.com/stomp-js/stompjs/issues/751)).
+
 # 7.5.0 (2026-10-15)
 
 - Fix [#743](https://github.com/stomp-js/stompjs/issues/743)

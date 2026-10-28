@@ -5,6 +5,7 @@ import { TickerStrategy } from '../../src/types.js';
 
 class FakeWorker {
   public onmessage: ((ev: { data: any }) => void) | null = null;
+  public onerror: ((ev: { message: string }) => void) | null = null;
   public terminate = sinon.spy();
   public readonly url: string;
 
@@ -17,6 +18,10 @@ class FakeWorker {
     this.onmessage?.({ data });
   }
 
+  fail(message = 'worker failed'): void {
+    this.onerror?.({ message });
+  }
+
   static instances: FakeWorker[] = [];
   static reset(): void {
     FakeWorker.instances = [];
@@ -26,15 +31,23 @@ class FakeWorker {
 test.describe('Ticker', () => {
   let originalWorker: any;
   let debug: sinon.SinonSpy;
+  let createObjectURL: sinon.SinonStub;
+  let revokeObjectURL: sinon.SinonStub;
 
   test.beforeEach(() => {
     FakeWorker.reset();
     originalWorker = (globalThis as any).Worker;
     (globalThis as any).Worker = FakeWorker;
     debug = sinon.spy();
+    createObjectURL = sinon
+      .stub(URL, 'createObjectURL')
+      .returns('blob:heartbeat-worker');
+    revokeObjectURL = sinon.stub(URL, 'revokeObjectURL');
   });
 
   test.afterEach(() => {
+    createObjectURL.restore();
+    revokeObjectURL.restore();
     if (originalWorker === undefined) {
       delete (globalThis as any).Worker;
     } else {
@@ -86,8 +99,11 @@ test.describe('Ticker', () => {
 
       expect(FakeWorker.instances.length).toBe(1);
       const worker = FakeWorker.instances[0];
-      expect(worker.url).toMatch(/^blob:/);
+      expect(worker.url).toBe('blob:heartbeat-worker');
       expect(typeof worker.onmessage).toBe('function');
+      expect(revokeObjectURL.calledOnceWith('blob:heartbeat-worker')).toBe(
+        true,
+      );
 
       worker.fire(123);
       worker.fire(456);
@@ -98,6 +114,69 @@ test.describe('Ticker', () => {
       expect(debug.calledWith('Using runWorker for outgoing pings')).toBe(true);
 
       ticker.stop();
+    });
+
+    test('falls back to interval when Worker construction throws', async () => {
+      globalThis.Worker = class {
+        constructor() {
+          throw new Error('worker construction failed');
+        }
+      } as unknown as typeof Worker;
+      const ticker = new Ticker(20, TickerStrategy.Worker, debug);
+      const tick = sinon.spy();
+
+      ticker.start(tick);
+      await new Promise(r => setTimeout(r, 70));
+
+      expect(tick.callCount).toBeGreaterThanOrEqual(2);
+      expect(
+        debug.calledWith('Web Worker failed, falling back to setInterval'),
+      ).toBe(true);
+      expect(debug.calledWith('Using runInterval for outgoing pings')).toBe(
+        true,
+      );
+      expect(revokeObjectURL.calledOnceWith('blob:heartbeat-worker')).toBe(
+        true,
+      );
+
+      ticker.stop();
+    });
+
+    test('falls back to interval when Worker reports an error', async () => {
+      const ticker = new Ticker(20, TickerStrategy.Worker, debug);
+      const tick = sinon.spy();
+
+      ticker.start(tick);
+      const worker = FakeWorker.instances[0];
+      worker.fail();
+      await new Promise(r => setTimeout(r, 70));
+
+      expect(worker.terminate.calledOnce).toBe(true);
+      expect(tick.callCount).toBeGreaterThanOrEqual(2);
+      expect(
+        debug.calledWith('Web Worker failed, falling back to setInterval'),
+      ).toBe(true);
+      expect(debug.calledWith('Using runInterval for outgoing pings')).toBe(
+        true,
+      );
+
+      ticker.stop();
+    });
+
+    test('ignores a Worker error after the ticker has stopped', async () => {
+      const ticker = new Ticker(20, TickerStrategy.Worker, debug);
+      const tick = sinon.spy();
+
+      ticker.start(tick);
+      const worker = FakeWorker.instances[0];
+      ticker.stop();
+      worker.fail();
+      await new Promise(r => setTimeout(r, 50));
+
+      expect(tick.callCount).toBe(0);
+      expect(
+        debug.calledWith('Web Worker failed, falling back to setInterval'),
+      ).toBe(false);
     });
 
     test('stop terminates the worker', () => {

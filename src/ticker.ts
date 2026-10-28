@@ -40,13 +40,35 @@ export class Ticker {
 
   private runWorker(tick: (elapsedTime: number) => void): void {
     this._debug('Using runWorker for outgoing pings');
-    if (!this._worker) {
-      this._worker = new Worker(
-        URL.createObjectURL(
-          new Blob([this._workerScript], { type: 'text/javascript' }),
-        ),
+    if (this._worker) {
+      return;
+    }
+
+    let workerUrl: string | undefined;
+    try {
+      workerUrl = URL.createObjectURL(
+        new Blob([this._workerScript], { type: 'text/javascript' }),
       );
-      this._worker.onmessage = message => tick(message.data);
+      const worker = new Worker(workerUrl);
+      this._worker = worker;
+      worker.onmessage = message => tick(message.data);
+      worker.onerror = () => {
+        // Ignore an error from a worker that has already been stopped or replaced.
+        if (this._worker !== worker) {
+          return;
+        }
+        this._debug('Web Worker failed, falling back to setInterval');
+        this.disposeWorker();
+        this.runInterval(tick);
+      };
+    } catch {
+      this._debug('Web Worker failed, falling back to setInterval');
+      this.disposeWorker();
+      this.runInterval(tick);
+    } finally {
+      if (workerUrl) {
+        URL.revokeObjectURL(workerUrl);
+      }
     }
   }
 
