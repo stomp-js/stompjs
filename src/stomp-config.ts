@@ -4,6 +4,7 @@ import {
   TickerStrategy,
   closeEventCallbackType,
   debugFnType,
+  HeartbeatToleranceMultiplier,
   frameCallbackType,
   messageCallbackType,
   ReconnectionTimeMode,
@@ -64,7 +65,7 @@ export class StompConfig {
   /**
    * See [Client#heartbeatToleranceMultiplier]{@link Client#heartbeatToleranceMultiplier}.
    */
-  public heartbeatToleranceMultiplier?: number;
+  public heartbeatToleranceMultiplier?: HeartbeatToleranceMultiplier;
 
   /**
    * See [Client#heartbeatOutgoing]{@link Client#heartbeatOutgoing}.
