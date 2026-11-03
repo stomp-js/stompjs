@@ -12,8 +12,6 @@ export type debugFnType = (msg: string) => void;
 
 /**
  * Incoming heartbeat tolerance multiplier, or a synchronous lookup evaluated on each check.
- *
- * Part of `@stomp/stompjs`.
  */
 export type HeartbeatToleranceMultiplier = number | (() => number);
 
