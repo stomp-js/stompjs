@@ -137,20 +137,20 @@ test.describe('Heartbeat tolerance lookup', () => {
 
   test('looks up changing tolerance on every check without reconnecting', async () => {
     let multiplier = 2;
-    const lookup = sinon.spy(() => multiplier);
-    await connect(lookup);
-    expect(lookup.called).toBe(false);
+    const getHeartbeatMultiplier = sinon.spy(() => multiplier);
+    await connect(getHeartbeatMultiplier);
+    expect(getHeartbeatMultiplier.called).toBe(false);
     await clock.tickAsync(1000);
-    expect(lookup.callCount).toBe(1);
+    expect(getHeartbeatMultiplier.callCount).toBe(1);
 
     multiplier = 4;
     await clock.tickAsync(2000);
-    expect(lookup.callCount).toBe(3);
+    expect(getHeartbeatMultiplier.callCount).toBe(3);
     expect(lost.called).toBe(false);
 
     multiplier = 1;
     await clock.tickAsync(1000);
-    expect(lookup.callCount).toBe(4);
+    expect(getHeartbeatMultiplier.callCount).toBe(4);
     expect(lost.calledOnce).toBe(true);
     expect(socket.close.calledOnce).toBe(true);
   });
