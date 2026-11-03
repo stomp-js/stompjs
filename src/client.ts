@@ -174,21 +174,14 @@ export class Client {
    * Multiplier for adjusting tolerance when processing heartbeat signals.
    *
    * Tolerance level is calculated using the multiplier:
-   * `tolerance = negotiatedIncomingInterval * multiplier`, where the interval is
-   * the maximum of `heartbeatIncoming` and the server's outgoing heartbeat interval.
+   * `tolerance = heartbeatIncoming * heartbeatToleranceMultiplier`.
    * This helps account for delays in network communication or variations in timings.
-   *
-   * Supply a synchronous callback to look up the multiplier on every incoming
-   * heartbeat check. Its return value can change during an active connection,
-   * without reconnecting. This does not change the negotiated heartbeat interval.
    *
    * Default value is `2`.
    *
    * Example:
    * ```javascript
    * client.heartbeatToleranceMultiplier = 2.5; // Tolerates longer delays
-   * // Or adapt tolerance as network conditions change:
-   * client.heartbeatToleranceMultiplier = () => currentNetworkMultiplier;
    * ```
    */
   public heartbeatToleranceMultiplier: number | (() => number) = 2;
