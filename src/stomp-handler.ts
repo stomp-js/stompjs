@@ -41,7 +41,7 @@ export class StompHandler {
 
   public heartbeatIncoming: number;
 
-  public heartbeatToleranceMultiplier: number;
+  public heartbeatToleranceMultiplier: number | (() => number);
 
   public heartbeatOutgoing: number;
 
@@ -338,7 +338,11 @@ export class StompHandler {
       this._ponger = setInterval(() => {
         const delta = Date.now() - this._lastServerActivityTS;
         // We wait multiple grace periods to be flexible on window's setInterval calls
-        if (delta > ttl * this.heartbeatToleranceMultiplier) {
+        const multiplier =
+          typeof this.heartbeatToleranceMultiplier === 'function'
+            ? this.heartbeatToleranceMultiplier()
+            : this.heartbeatToleranceMultiplier;
+        if (delta > ttl * multiplier) {
           this.debug(`did not receive server activity for the last ${delta}ms`);
           this.onHeartbeatLost();
           this._closeOrDiscardWebsocket();
