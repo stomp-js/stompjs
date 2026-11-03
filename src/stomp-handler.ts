@@ -10,6 +10,7 @@ import { Ticker } from './ticker.js';
 import {
   closeEventCallbackType,
   debugFnType,
+  HeartbeatToleranceMultiplier,
   emptyCallbackType,
   frameCallbackType,
   IPublishParams,
@@ -41,7 +42,7 @@ export class StompHandler {
 
   public heartbeatIncoming: number;
 
-  public heartbeatToleranceMultiplier: number | (() => number);
+  public heartbeatToleranceMultiplier: HeartbeatToleranceMultiplier;
 
   public heartbeatOutgoing: number;
 

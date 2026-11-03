@@ -11,6 +11,13 @@ import { Versions } from './versions.js';
 export type debugFnType = (msg: string) => void;
 
 /**
+ * Incoming heartbeat tolerance multiplier, or a synchronous lookup evaluated on each check.
+ *
+ * Part of `@stomp/stompjs`.
+ */
+export type HeartbeatToleranceMultiplier = number | (() => number);
+
+/**
  * This callback will receive a {@link IMessage} as parameter.
  *
  * Part of `@stomp/stompjs`.
@@ -189,7 +196,7 @@ export interface IStomptHandlerConfig {
   connectHeaders: StompHeaders;
   disconnectHeaders: StompHeaders;
   heartbeatIncoming: number;
-  heartbeatGracePeriods: number | (() => number);
+  heartbeatGracePeriods: HeartbeatToleranceMultiplier;
   heartbeatOutgoing: number;
   heartbeatStrategy: TickerStrategy;
   splitLargeFrames: boolean;

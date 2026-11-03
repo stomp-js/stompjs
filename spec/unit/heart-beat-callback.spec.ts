@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import sinon from 'sinon';
 import { Client } from '../../src/client.js';
+import type { HeartbeatToleranceMultiplier } from '../../src/types.js';
 import {
   disconnectStomp,
   overRideFactory,
@@ -116,7 +117,7 @@ test.describe('Heartbeat tolerance lookup', () => {
   });
 
   async function connect(
-    multiplier: number | (() => number),
+    multiplier: HeartbeatToleranceMultiplier,
     serverInterval = 1000,
   ) {
     client = new Client({
