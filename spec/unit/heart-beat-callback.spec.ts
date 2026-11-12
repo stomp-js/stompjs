@@ -95,19 +95,30 @@ test.describe('Client heartbeat handling (callbacks)', () => {
 
 test.describe('Heartbeat tolerance lookup', () => {
   let client: Client;
+  let serverHeartbeatInterval: number;
 
   test.beforeEach(() => {
     client = stompClient();
-    client.heartbeatIncoming = 1000;
+    client.heartbeatIncoming = 250;
+    serverHeartbeatInterval = 250;
     client.heartbeatOutgoing = 0;
 
     overRideFactory(
       client,
       class extends WrapperWS {
         wrapOnMessage(ev: any) {
-          // Eat away incoming pings so the client's tolerance determines closure.
+          // Drop the server's heartbeat messages to simulate missed heartbeats.
+          // The client should close the connection once its tolerance is exceeded.
           if (getLength(ev.data) === 1) {
             return;
+          }
+          const incomingFrame = parseFrame(ev.data);
+          if (incomingFrame.command === 'CONNECTED') {
+            const frame = FrameImpl.fromRawFrame(incomingFrame, true);
+            // Advertise a shorter interval to speed up the client's checks.
+            // The connection and timers remain real; server heartbeats are dropped above.
+            frame.headers['heart-beat'] = `${serverHeartbeatInterval},0`;
+            ev = { data: frame.serialize() };
           }
           super.wrapOnMessage(ev);
         }
@@ -139,12 +150,12 @@ test.describe('Heartbeat tolerance lookup', () => {
     });
     expect(getHeartbeatMultiplier.called).toBe(false);
     await expect
-      .poll(() => getHeartbeatMultiplier.callCount)
+      .poll(() => getHeartbeatMultiplier.callCount, { intervals: [20, 40, 50] })
       .toBeGreaterThanOrEqual(1);
 
     multiplier = 10;
     await expect
-      .poll(() => getHeartbeatMultiplier.callCount)
+      .poll(() => getHeartbeatMultiplier.callCount, { intervals: [20, 40, 50] })
       .toBeGreaterThanOrEqual(3);
     expect(onHeartbeatLost.called).toBe(false);
     expect(client.connected).toBe(true);
@@ -163,23 +174,7 @@ test.describe('Heartbeat tolerance lookup', () => {
     client.heartbeatToleranceMultiplier = () => 2;
     client.onHeartbeatLost = onHeartbeatLost;
 
-    overRideFactory(
-      client,
-      class extends WrapperWS {
-        wrapOnMessage(ev: any) {
-          if (getLength(ev.data) === 1) {
-            return;
-          }
-          const incomingFrame = parseFrame(ev.data);
-          if (incomingFrame.command === 'CONNECTED') {
-            const frame = FrameImpl.fromRawFrame(incomingFrame, true);
-            frame.headers['heart-beat'] = '2000,0';
-            ev = { data: frame.serialize() };
-          }
-          super.wrapOnMessage(ev);
-        }
-      },
-    );
+    serverHeartbeatInterval = 500;
 
     const closed = new Promise<void>(resolve => {
       client.onWebSocketClose = () => resolve();
@@ -189,8 +184,8 @@ test.describe('Heartbeat tolerance lookup', () => {
       client.activate();
     });
 
-    // Beyond the unnegotiated 1000 * 2 tolerance, but within 2000 * 2.
-    await wait(3000);
+    // Beyond the unnegotiated 250 * 2 tolerance, but within 500 * 2.
+    await wait(750);
     expect(onHeartbeatLost.called).toBe(false);
     expect(client.connected).toBe(true);
 
