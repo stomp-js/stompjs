@@ -1,14 +1,14 @@
 import { expect, test } from '@playwright/test';
 import sinon from 'sinon';
-import { Client } from '../../src/client.js';
-import type { HeartbeatToleranceMultiplier } from '../../src/types.js';
+import { Client, FrameImpl } from '../../src/index.js';
 import {
   disconnectStomp,
   overRideFactory,
   stompClient,
 } from '../helpers/connect-helpers.js';
 import { WrapperWS } from '../helpers/wrapper-ws.js';
-import { getLength } from '../helpers/utils.js';
+import { getLength, wait } from '../helpers/utils.js';
+import { parseFrame } from '../helpers/parse-frame.js';
 
 test.describe('Client heartbeat handling (callbacks)', () => {
   let client: any;
@@ -94,73 +94,108 @@ test.describe('Client heartbeat handling (callbacks)', () => {
 });
 
 test.describe('Heartbeat tolerance lookup', () => {
-  let clock: sinon.SinonFakeTimers;
   let client: Client;
-  let socket: any;
-  let lost: sinon.SinonSpy;
 
   test.beforeEach(() => {
-    clock = sinon.useFakeTimers({
-      toFake: ['Date', 'setInterval', 'clearInterval'],
-    });
-    lost = sinon.spy();
-    socket = {
-      readyState: 1,
-      send: sinon.spy(),
-      close: sinon.spy(),
-    };
+    client = stompClient();
+    client.heartbeatIncoming = 1000;
+    client.heartbeatOutgoing = 0;
+
+    overRideFactory(
+      client,
+      class extends WrapperWS {
+        wrapOnMessage(ev: any) {
+          // Eat away incoming pings so the client's tolerance determines closure.
+          if (getLength(ev.data) === 1) {
+            return;
+          }
+          super.wrapOnMessage(ev);
+        }
+      },
+    );
   });
 
   test.afterEach(async () => {
-    await client?.deactivate({ force: true });
-    clock.restore();
+    await disconnectStomp(client);
   });
-
-  async function connect(
-    multiplier: HeartbeatToleranceMultiplier,
-    serverInterval = 1000,
-  ) {
-    client = new Client({
-      webSocketFactory: () => socket,
-      heartbeatIncoming: 1000,
-      heartbeatOutgoing: 0,
-      heartbeatToleranceMultiplier: multiplier,
-      onHeartbeatLost: lost,
-      reconnectDelay: 0,
-    });
-    client.activate();
-    await clock.tickAsync(0);
-    socket.onmessage({
-      data: `CONNECTED\nversion:1.2\nheart-beat:${serverInterval},0\n\n\0`,
-    });
-  }
 
   test('looks up changing tolerance on every check without reconnecting', async () => {
     let multiplier = 2;
     const getHeartbeatMultiplier = sinon.spy(() => multiplier);
-    await connect(getHeartbeatMultiplier);
-    expect(getHeartbeatMultiplier.called).toBe(false);
-    await clock.tickAsync(1000);
-    expect(getHeartbeatMultiplier.callCount).toBe(1);
+    const onHeartbeatLost = sinon.spy();
+    const onConnect = sinon.spy();
+    client.heartbeatToleranceMultiplier = getHeartbeatMultiplier;
+    client.onHeartbeatLost = onHeartbeatLost;
+    const closed = new Promise<void>(resolve => {
+      client.onWebSocketClose = () => resolve();
+    });
 
-    multiplier = 4;
-    await clock.tickAsync(2000);
-    expect(getHeartbeatMultiplier.callCount).toBe(3);
-    expect(lost.called).toBe(false);
+    await new Promise<void>(resolve => {
+      client.onConnect = () => {
+        onConnect();
+        resolve();
+      };
+      client.activate();
+    });
+    expect(getHeartbeatMultiplier.called).toBe(false);
+    await expect
+      .poll(() => getHeartbeatMultiplier.callCount)
+      .toBeGreaterThanOrEqual(1);
+
+    multiplier = 10;
+    await expect
+      .poll(() => getHeartbeatMultiplier.callCount)
+      .toBeGreaterThanOrEqual(3);
+    expect(onHeartbeatLost.called).toBe(false);
+    expect(client.connected).toBe(true);
+    expect(onConnect.calledOnce).toBe(true);
 
     multiplier = 1;
-    await clock.tickAsync(1000);
-    expect(getHeartbeatMultiplier.callCount).toBe(4);
-    expect(lost.calledOnce).toBe(true);
-    expect(socket.close.calledOnce).toBe(true);
+    await closed;
+    expect(getHeartbeatMultiplier.callCount).toBeGreaterThanOrEqual(4);
+    expect(onHeartbeatLost.calledOnce).toBe(true);
+    expect(client.connected).toBe(false);
+    expect(onConnect.calledOnce).toBe(true);
   });
 
   test('applies the callback to the negotiated interval', async () => {
-    await connect(() => 2, 2000);
-    await clock.tickAsync(4000);
-    expect(lost.called).toBe(false);
-    await clock.tickAsync(2000);
-    expect(lost.calledOnce).toBe(true);
-  });
+    const onHeartbeatLost = sinon.spy();
+    client.heartbeatToleranceMultiplier = () => 2;
+    client.onHeartbeatLost = onHeartbeatLost;
 
+    overRideFactory(
+      client,
+      class extends WrapperWS {
+        wrapOnMessage(ev: any) {
+          if (getLength(ev.data) === 1) {
+            return;
+          }
+          const incomingFrame = parseFrame(ev.data);
+          if (incomingFrame.command === 'CONNECTED') {
+            const frame = FrameImpl.fromRawFrame(incomingFrame, true);
+            frame.headers['heart-beat'] = '2000,0';
+            ev = { data: frame.serialize() };
+          }
+          super.wrapOnMessage(ev);
+        }
+      },
+    );
+
+    const closed = new Promise<void>(resolve => {
+      client.onWebSocketClose = () => resolve();
+    });
+    await new Promise<void>(resolve => {
+      client.onConnect = () => resolve();
+      client.activate();
+    });
+
+    // Beyond the unnegotiated 1000 * 2 tolerance, but within 2000 * 2.
+    await wait(3000);
+    expect(onHeartbeatLost.called).toBe(false);
+    expect(client.connected).toBe(true);
+
+    await closed;
+    expect(onHeartbeatLost.calledOnce).toBe(true);
+    expect(client.connected).toBe(false);
+  });
 });

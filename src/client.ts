@@ -173,6 +173,7 @@ export class Client {
 
   /**
    * Multiplier for adjusting tolerance when processing heartbeat signals.
+   * Accepts a number or a function of type `() => number`.
    *
    * Tolerance level is calculated using the multiplier:
    * `tolerance = heartbeatIncoming * heartbeatToleranceMultiplier`.
