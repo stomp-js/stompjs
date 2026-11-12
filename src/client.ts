@@ -7,6 +7,7 @@ import {
   ActivationState,
   closeEventCallbackType,
   debugFnType,
+  HeartbeatToleranceMultiplier,
   emptyCallbackType,
   frameCallbackType,
   IPublishParams,
@@ -172,6 +173,7 @@ export class Client {
 
   /**
    * Multiplier for adjusting tolerance when processing heartbeat signals.
+   * Accepts a number or a function of type `() => number`.
    *
    * Tolerance level is calculated using the multiplier:
    * `tolerance = heartbeatIncoming * heartbeatToleranceMultiplier`.
@@ -184,7 +186,7 @@ export class Client {
    * client.heartbeatToleranceMultiplier = 2.5; // Tolerates longer delays
    * ```
    */
-  public heartbeatToleranceMultiplier: number = 2;
+  public heartbeatToleranceMultiplier: HeartbeatToleranceMultiplier = 2;
 
   /**
    * Interval (in milliseconds) for sending heartbeat signals to the server.

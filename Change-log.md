@@ -1,5 +1,9 @@
 # Change Log
 
+# Unreleased
+
+- Support a callback for `heartbeatToleranceMultiplier`, evaluated on every incoming heartbeat check ([#755](https://github.com/stomp-js/stompjs/issues/755)).
+
 # 7.5.0 (2026-10-15)
 
 - Fix [#743](https://github.com/stomp-js/stompjs/issues/743)
