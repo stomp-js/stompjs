@@ -101,6 +101,42 @@ function executeTestCases(useWebWorkerHeartbeats: boolean, mode: string) {
       test('Should close connection when no incoming ping', incomingPingTest);
     });
 
+    // See https://github.com/stomp-js/stompjs/issues/759
+    test('Should call onHeartbeatLost once when the close event is late', async () => {
+      client.heartbeatIncoming = 1000;
+      client.heartbeatOutgoing = 0;
+
+      overRideFactory(
+        client,
+        class extends WrapperWS {
+          wrapOnMessage(ev: any) {
+            // Eat away incoming ping
+            if (getLength(ev.data) === 1) {
+              return;
+            }
+            super.wrapOnMessage(ev);
+          }
+
+          wrapOnClose(ev: any) {
+            // On a dead link, the close handshake can take long
+            setTimeout(() => super.wrapOnClose(ev), 3000);
+          }
+        },
+      );
+
+      let heartbeatLostCount = 0;
+      client.onHeartbeatLost = () => {
+        heartbeatLostCount++;
+      };
+
+      await new Promise<void>(resolve => {
+        client.onWebSocketClose = () => resolve();
+        client.activate();
+      });
+
+      expect(heartbeatLostCount).toBe(1);
+    });
+
     test('Should close connection when no outgoing ping', async () => {
       client.heartbeatIncoming = 0;
       client.heartbeatOutgoing = 1000;
