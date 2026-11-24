@@ -423,6 +423,33 @@ test.describe('Stomp Connection', () => {
         }, 1000);
       });
     });
+
+    // See https://github.com/stomp-js/stompjs/issues/761
+    test('deactivate stops the connection watcher', async () => {
+      client = stompClient();
+      client.connectionTimeout = 5000;
+
+      await new Promise<void>(resolve => {
+        overRideFactory(
+          client,
+          class extends WrapperWS {
+            wrapOnMessage(ev: any) {
+              const frame = parseFrame(ev.data);
+              if (frame?.command === 'CONNECTED') {
+                client.debug('Ate CONNECTED frame');
+                resolve();
+                return;
+              }
+              super.wrapOnMessage(ev);
+            }
+          },
+        );
+        client.activate();
+      });
+
+      await client.deactivate();
+      expect((client as any)._connectionWatcher).toBeUndefined();
+    });
   });
 
   test.describe('deactivate with `force`', () => {
