@@ -106,10 +106,11 @@ export class StompHandler {
     this._counter = 0;
 
     // subscription callbacks indexed by subscriber's ID
-    this._subscriptions = {};
+    // (no prototype, so that an id such as `constructor` from the server finds nothing)
+    this._subscriptions = Object.create(null);
 
     // receipt-watchers indexed by receipts-ids
-    this._receiptWatchers = {};
+    this._receiptWatchers = Object.create(null);
 
     this._escapeHeaderValues = false;
 
@@ -155,8 +156,14 @@ export class StompHandler {
           this.debug(`<<< ${frame}`);
         }
 
+        // Own properties only: a command such as `constructor` is unhandled
         const serverFrameHandler =
-          this._serverFrameHandlers[frame.command] || this.onUnhandledFrame;
+          (Object.prototype.hasOwnProperty.call(
+            this._serverFrameHandlers,
+            frame.command,
+          ) &&
+            this._serverFrameHandlers[frame.command]) ||
+          this.onUnhandledFrame;
         serverFrameHandler(frame);
       },
       // On Incoming Ping
