@@ -340,6 +340,9 @@ export class StompHandler {
         // We wait multiple grace periods to be flexible on window's setInterval calls
         if (delta > ttl * this.heartbeatToleranceMultiplier) {
           this.debug(`did not receive server activity for the last ${delta}ms`);
+          // Report the loss once: stop the check before the socket close event arrives.
+          clearInterval(this._ponger);
+          this._ponger = undefined;
           this.onHeartbeatLost();
           this._closeOrDiscardWebsocket();
         }
