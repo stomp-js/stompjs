@@ -849,10 +849,7 @@ export class Client {
 
       onConnect: frame => {
         // Successfully connected, stop the connection watcher
-        if (this._connectionWatcher) {
-          clearTimeout(this._connectionWatcher);
-          this._connectionWatcher = undefined;
-        }
+        this._clearConnectionWatcher();
 
         // Reset reconnect delay after successful connection
         this._nextReconnectDelay = this.reconnectDelay;
@@ -874,6 +871,9 @@ export class Client {
       },
       onWebSocketClose: evt => {
         this._stompHandler = undefined; // a new one will be created in case of a reconnect
+
+        // This connection attempt is over, stop its connection watcher
+        this._clearConnectionWatcher();
 
         if (this.state === ActivationState.DEACTIVATING) {
           // Mark deactivation complete
@@ -1010,6 +1010,9 @@ export class Client {
       this._reconnector = undefined;
     }
 
+    // Stop the connection watcher, so that it does not fire after deactivation
+    this._clearConnectionWatcher();
+
     const handler = this._stompHandler;
     if (handler && handler._webSocket.readyState !== StompSocketState.CLOSED) {
       const origOnWebSocketClose = handler.onWebSocketClose;
@@ -1052,6 +1055,13 @@ export class Client {
   public forceDisconnect() {
     if (this._stompHandler) {
       this._stompHandler.forceDisconnect();
+    }
+  }
+
+  private _clearConnectionWatcher() {
+    if (this._connectionWatcher) {
+      clearTimeout(this._connectionWatcher);
+      this._connectionWatcher = undefined;
     }
   }
 
